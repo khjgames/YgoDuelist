@@ -25,7 +25,7 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
     public override string Title => "YGO_COMMAND";
 
     // Use base game ui_atlas sprite (card/energy_ironclad); no custom energy_ygo_command in atlas
-    public override string EnergyColorName => "ironclad";
+    public override string EnergyColorName => "regent";
 
     // Slightly neutral grey; these cards shouldn't normally be visible,
     // but this keeps the pool definition consistent with Oddmelt.

@@ -6,8 +6,8 @@ namespace YgoDuelist.YgoDuelistCode.Character;
 public class YgoDuelistCardPool : CustomCardPoolModel
 {
     public override string Title => YgoDuelist.CharacterId; //This is not a display name.
-    // Use Ironclad's energy icon from base game ui_atlas (card/energy_ironclad)
-    public override string EnergyColorName => "ironclad";
+    // Use Regent's star energy (second energy type) from base game
+    public override string EnergyColorName => "regent";
 
     /* These HSV values will determine the color of your card back.
     They are applied as a shader onto an already colored image,

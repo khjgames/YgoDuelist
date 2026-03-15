@@ -15,15 +15,23 @@ namespace YgoDuelist.YgoDuelistCode.Character;
 public class YgoDuelist : PlaceholderCharacterModel
 {
     public const string CharacterId = "YgoDuelist";
+    public const string energyColorName = "regent";
 
     public static readonly Color Color = new("ffffff");
 
     public override Color NameColor => Color;
+    public override bool ShouldAlwaysShowStarCounter => true;
     public override CharacterGender Gender => CharacterGender.Neutral;
     public override int StartingHp => 70;
 
     public override IEnumerable<CardModel> StartingDeck =>
     [
+        ModelDb.Card<StrikeRegent>(),
+        ModelDb.Card<StrikeRegent>(),
+        ModelDb.Card<StrikeRegent>(),
+        ModelDb.Card<DefendRegent>(),
+        ModelDb.Card<DefendRegent>(),
+        ModelDb.Card<DefendRegent>(),
         ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Pot_Of_Greed>(),

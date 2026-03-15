@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Patches.Content;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
@@ -38,6 +40,13 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         UnsubscribeFromGraveyardPile();
         return Task.CompletedTask;
+    }
+
+    /// <summary>At the start of your turn, set your star count to 1 (from the graveyard).</summary>
+    public override async Task AfterSideTurnStart(CombatSide side, CombatState combatState)
+    {
+        if (side == Owner?.Creature.Side)
+            await PlayerCmd.SetStars(1, Owner);
     }
 
     /// <summary>Gets the graveyard pile for the current combat player, or null if not in combat.</summary>

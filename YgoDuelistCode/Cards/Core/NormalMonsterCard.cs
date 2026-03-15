@@ -38,6 +38,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
+        new StarsVar(1),
         new DamageVar((decimal)BaseAtk, ValueProp.Move),
         new BlockVar((decimal)BaseDef, ValueProp.Move),
         new DynamicVar("Def", (decimal)BaseDef),
@@ -48,9 +49,13 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     };
 
     /// <summary>One normal summon per turn; special summons (e.g. Monster Reborn) bypass this.</summary>
-    protected override bool IsPlayable =>
-        base.IsPlayable &&
-        (Owner == null || !NormalSummonTracker.HasUsedThisTurn(Owner));
+    //protected override bool IsPlayable =>
+    //base.IsPlayable &&
+    //(Owner == null || !NormalSummonTracker.HasUsedThisTurn(Owner));
+    
+    /// <summary>Star cost for display and payment; matches StarsVar in CanonicalVars.</summary>
+    public override int CanonicalStarCost => (int)DynamicVars.Stars.BaseValue;
+
 
     public async Task CombatAction(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -94,8 +99,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         if (Owner != null && CanSummonDuelMonster)
         {
             bool summoned = await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);
-            if (summoned)
-                NormalSummonTracker.MarkUsed(Owner);
+            //if (summoned)
+                //NormalSummonTracker.MarkUsed(Owner);
         }
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
