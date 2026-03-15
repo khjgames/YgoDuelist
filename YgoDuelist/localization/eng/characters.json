@@ -1,3 +1,16 @@
 {
-  
+  "YGODUELIST-YGO_DUELIST.title": "The Duelist",
+  "YGODUELIST-YGO_DUELIST.titleObject": "The Duelist",
+  "YGODUELIST-YGO_DUELIST.description": "A duelist who fights with monsters and spells. They believe in their cards and their friends—when your heart and your deck are one, anything is possible.",
+  "YGODUELIST-YGO_DUELIST.pronounObject": "them",
+  "YGODUELIST-YGO_DUELIST.possessiveAdjective": "their",
+  "YGODUELIST-YGO_DUELIST.pronounPossessive": "theirs",
+  "YGODUELIST-YGO_DUELIST.pronounSubject": "they",
+  "YGODUELIST-YGO_DUELIST.goldMonologue": "I believe in my cards, and they believe in me. As long as we're together, we'll find a way to win.",
+  "YGODUELIST-YGO_DUELIST.eventDeathPrevention": "It's not over yet! The heart of the cards will show us the way. I won't give up on my friends.",
+  "YGODUELIST-YGO_DUELIST.aromaPrinciple": "Every duel is a bond between duelists. Win or lose, we grow stronger when we face each other with everything we've got.",
+  "YGODUELIST-YGO_DUELIST.cardsModifierTitle": "Heart of the Cards",
+  "YGODUELIST-YGO_DUELIST.cardsModifierDescription": "When you trust in your deck, your deck answers. Our bond is unbreakable.",
+  "YGODUELIST-YGO_DUELIST.banter.alive.endTurnPing": "Your turn. Show me what you've got!",
+  "YGODUELIST-YGO_DUELIST.banter.dead.endTurnPing": "I'll... draw one more card... My friends are counting on me..."
 }

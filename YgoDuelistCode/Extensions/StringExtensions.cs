@@ -1,17 +1,18 @@
-﻿namespace YgoDuelist.YgoDuelistCode.Extensions;
+namespace YgoDuelist.YgoDuelistCode.Extensions;
 
 //Mostly utilities to get asset paths.
 public static class StringExtensions
 {
     public static string ImagePath(this string path)
     {
-        return Path.Join(MainFile.ModId, "images", path);
+        return Path.Join(MainFile.ModId, "images", path).Replace('\\', '/');
     }
-    
+
     public static string CardImagePath(this string path)
     {
         return Path.Join(MainFile.ModId, "images", "card_portraits", path);
     }
+
     public static string BigCardImagePath(this string path)
     {
         return Path.Join(MainFile.ModId, "images", "card_portraits", "big", path);

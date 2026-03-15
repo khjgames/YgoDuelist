@@ -1,3 +1,11 @@
 {
+  "YGODUELIST-GRAVEYARD_RELIC.title": "Graveyard",
+  "YGODUELIST-GRAVEYARD_RELIC.description": "A special combat-only card zone. Cards are temporarily added during combat; the zone is empty outside of combat. Click to view graveyard cards when at least one is in it.",
+  "YGODUELIST-GRAVEYARD_RELIC.flavor": "Cards laid to rest await their return.",
+  "YGODUELIST-GRAVEYARD_RELIC.selectionScreenPrompt": "Cards in the Graveyard",
   
+  "YGODUELIST-CARD_OPTIONS_RELIC.title": "Card Options",
+  "YGODUELIST-CARD_OPTIONS_RELIC.description": "Debug relic. Click to view whatever cards are currently in the card options pile during combat.",
+  "YGODUELIST-CARD_OPTIONS_RELIC.flavor": "A window into hidden choices.",
+  "YGODUELIST-CARD_OPTIONS_RELIC.selectionScreenPrompt": "Viewing option cards"
 }
