@@ -1,10 +1,11 @@
+using System;
+using System.Linq;
+using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 using BaseLib.Utils;
-using YgoDuelist.YgoDuelistCode.Cards.Monster;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
-using YgoDuelist.YgoDuelistCode.Cards.Spell;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Nodes;
 using YgoDuelist.YgoDuelistCode.Relics;
@@ -28,20 +29,40 @@ public partial class MainFile : Node
         ModHelper.AddModelToPool<YgoDuelistRelicPool, GraveyardRelic>();
         ModHelper.AddModelToPool<YgoDuelistRelicPool, CardOptionsRelic>();
 
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Pot_Of_Greed>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Foolish_Burial>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Monster_Reborn>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Muka_Muka>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Enraged_Muka_Muka>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Witchs_Apprentice>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Milus_Radiant>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Bladefly>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Hoshiningen>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Little_Chimera>();
-        ModHelper.AddModelToPool<YgoDuelistCardPool, Star_Boy>();
+        RegisterAllYgoCards();
 
         // Prewarm pool for the ZGO option-hand holders so NodePool.Get<NYgoOptionCardHolder>()
         // is valid when the option UI first appears.
         GeneratedNodePool.Init(NYgoOptionCardHolder.NewInstanceForPool, 8);
+    }
+
+    private static void RegisterAllYgoCards()
+    {
+        MethodInfo? addToPoolMethod = typeof(ModHelper)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .FirstOrDefault(method =>
+                method.Name == nameof(ModHelper.AddModelToPool) &&
+                method.IsGenericMethodDefinition &&
+                method.GetGenericArguments().Length == 2 &&
+                method.GetParameters().Length == 0);
+
+        if (addToPoolMethod == null)
+            throw new InvalidOperationException("Unable to locate ModHelper.AddModelToPool<TPool, TModel>.");
+
+        var cardTypes = typeof(MainFile).Assembly
+            .GetTypes()
+            .Where(type =>
+                type is { IsAbstract: false, IsClass: true } &&
+                type.Namespace != null &&
+                type.Namespace.StartsWith("YgoDuelist.YgoDuelistCode.Cards.", StringComparison.Ordinal) &&
+                !type.Namespace.Contains(".Command", StringComparison.Ordinal) &&
+                typeof(YgoDuelistCard).IsAssignableFrom(type))
+            .OrderBy(type => type.FullName, StringComparer.Ordinal);
+
+        foreach (Type cardType in cardTypes)
+        {
+            MethodInfo generic = addToPoolMethod.MakeGenericMethod(typeof(YgoDuelistCardPool), cardType);
+            generic.Invoke(null, null);
+        }
     }
 }
