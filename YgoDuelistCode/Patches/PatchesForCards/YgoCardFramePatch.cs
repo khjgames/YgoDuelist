@@ -11,12 +11,14 @@ public static class YgoCardFramePatch
 {
     private const string FrameFolder = "card_frames";
 
+    // Run after any other get_Frame modifications so our custom textures always win.
+    [HarmonyPriority(Priority.Last)]
     public static void Postfix(CardModel __instance, ref Texture2D __result)
     {
         if (__instance is not IYgoCard ygo)
             return;
 
-        string fileName = ygo.YgoCardType switch
+        string? fileName = ygo.YgoCardType switch
         {
             YgoCardType.Spell => "ygo_spell.png",
             YgoCardType.Trap => "ygo_trap.png",
