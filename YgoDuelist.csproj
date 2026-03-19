@@ -54,6 +54,17 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="YgoDuelistCode\Cards\Monster\Todo\Effect\" />
+        <Folder Include="YgoDuelistCode\Cards\Monster\Todo\Fusion\" />
+        <Folder Include="YgoDuelistCode\Cards\Monster\Todo\Normal\" />
+        <Folder Include="YgoDuelistCode\Cards\Monster\Todo\Ritual\" />
+        <Folder Include="YgoDuelistCode\Cards\Spell\Todo\Continuos\" />
+        <Folder Include="YgoDuelistCode\Cards\Spell\Todo\Equip\" />
+        <Folder Include="YgoDuelistCode\Cards\Spell\Todo\Field\" />
+        <Folder Include="YgoDuelistCode\Cards\Spell\Todo\Normal\" />
+        <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Continuos\" />
+        <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Equip\" />
+        <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Normal\" />
         <Folder Include="YgoDuelist\images\card_portraits\big\"/>
         <Folder Include="YgoDuelist\images\powers\big\"/>
         <Folder Include="YgoDuelist\images\relics\big\"/>
