@@ -1,3 +1,4 @@
 {
-  
+  "CONDUIT_COUNT.title": "Conduit",
+  "CONDUIT_COUNT.description": "Your current Conduit {conduitIcon} count.\n\nThe Duelist's monsters may require {conduitIcon} to play."
 }
