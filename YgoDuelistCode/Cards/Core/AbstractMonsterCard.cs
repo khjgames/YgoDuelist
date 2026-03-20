@@ -123,6 +123,12 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// <summary>If true, playing this monster card can summon a duel monster in a zone (max 5 per player).</summary>
     public virtual bool CanSummonDuelMonster => true;
 
+    /// <summary>
+    /// Monsters released for a normal tribute summon: 0 unless level 5+ non-ritual non-fusion (1 for level 5–6, 2 for 7+).
+    /// Uses current <see cref="DuelMonsterLevel"/> (updates when level changes).
+    /// </summary>
+    public int TributeReleaseCount => ComputeTributeReleaseCount();
+
     /// <summary>Returns the correct description LocString for attack vs skill form. Used by description patch.</summary>
     public LocString GetDescriptionLocString()
     {
@@ -151,20 +157,26 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return RitualMonsterKeyword;
     }
 
-    private IEnumerable<CardKeyword> GetSummonKeywordsByMonsterLevel()
+    private int ComputeTributeReleaseCount()
     {
         if (IsRitualOrFusionMonster)
-            yield break;
+            return 0;
 
         int level = DuelMonsterLevel;
-        if (level == 5 || level == 6)
-        {
-            yield return TributeSummon1Keyword; // Tribute (1)
-        }
-        else if (level >= 7)
-        {
-            yield return TributeSummon2Keyword; // Tribute (2)
-        }
+        if (level < 5)
+            return 0;
+        if (level <= 6)
+            return 1;
+        return 2;
+    }
+
+    private IEnumerable<CardKeyword> GetSummonKeywordsByMonsterLevel()
+    {
+        int n = ComputeTributeReleaseCount();
+        if (n == 1)
+            yield return TributeSummon1Keyword;
+        else if (n >= 2)
+            yield return TributeSummon2Keyword;
     }
 
     private IEnumerable<CardKeyword> GetFaceDownKeywordsFromBool()

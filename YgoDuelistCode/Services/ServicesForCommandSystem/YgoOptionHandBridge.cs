@@ -43,7 +43,7 @@ public static class YgoOptionHandBridge
 
     /// <summary>
     /// Sort key for option command cards so second hand order is always:
-    /// Command_Defend, Command_Attack, Command_Change_Battle_Position, Toggle_Die_For_You, Exit_Monster_Options.
+    /// Command_Defend, Command_Attack, Command_Change_Battle_Position, Command_Toggle_Tribute_Sacrifice, Toggle_Die_For_You, Exit_Monster_Options.
     /// Public so callers can insert cards at the correct index when modifying the pile.
     /// </summary>
     public static int GetOptionCardSortKey(CardModel c)
@@ -53,9 +53,10 @@ public static class YgoOptionHandBridge
             Command_Defend => 0,
             Command_Attack => 1,
             Command_Change_Battle_Position => 2,
-            Toggle_Die_For_You => 3,
-            Exit_Monster_Options => 4,
-            _ => 5
+            Command_Toggle_Tribute_Sacrifice => 3,
+            Toggle_Die_For_You => 4,
+            Exit_Monster_Options => 5,
+            _ => 6
         };
     }
 
@@ -125,7 +126,7 @@ public static class YgoOptionHandBridge
 
         // Clamp to the requested cap and materialise so subscribers get a
         // stable snapshot even if the underlying pile mutates later.
-        // Sort so display order is always: Defend > Attack > Change position > Toggle > Exit.
+        // Sort so display order is always: Defend > Attack > Change position > Toggle tribute > Toggle Die > Exit.
         List<CardModel> cards = pile.Cards
             .Take(Math.Max(0, maxCount))
             .OrderBy(OptionCardSortKey)

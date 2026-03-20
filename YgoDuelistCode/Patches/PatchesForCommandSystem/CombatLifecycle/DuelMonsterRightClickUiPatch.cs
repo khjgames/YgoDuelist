@@ -172,6 +172,13 @@ public static class DuelMonsterRightClickUiPatch
         changePos.InitializeSource(monsterCard);
         commands.Add(changePos);
 
+        if (TributeMaterialMarkTracker.ShouldShowToggleTributeSacrificeCommand(player))
+        {
+            Command_Toggle_Tribute_Sacrifice tributeToggle = combatState.CreateCard<Command_Toggle_Tribute_Sacrifice>(player);
+            tributeToggle.InitializeSource(monsterCard);
+            commands.Add(tributeToggle);
+        }
+
         Toggle_Die_For_You toggle = combatState.CreateCard<Toggle_Die_For_You>(player);
         toggle.InitializeSource(monsterCard);
         commands.Add(toggle);

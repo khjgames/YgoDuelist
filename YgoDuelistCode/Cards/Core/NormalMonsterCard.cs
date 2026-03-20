@@ -57,6 +57,20 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     /// <summary>Star cost for display and payment; matches StarsVar in CanonicalVars.</summary>
     public override int CanonicalStarCost => (int)DynamicVars.Stars.BaseValue;
 
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (!base.IsPlayable)
+                return false;
+            if (!CanSummonDuelMonster || Owner == null)
+                return true;
+            int tribute = TributeReleaseCount;
+            if (tribute <= 0)
+                return true;
+            return TributeMaterialMarkTracker.CanSatisfyTribute(Owner, tribute);
+        }
+    }
 
     public async Task CombatAction(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -101,9 +115,22 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     {
         if (Owner != null && CanSummonDuelMonster)
         {
-            bool summoned = await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);
-            //if (summoned)
-            //NormalSummonTracker.MarkUsed(Owner);
+            int tribute = TributeReleaseCount;
+            if (tribute > 0)
+            {
+                IReadOnlyList<Creature> mats = await TributeMaterialMarkTracker.ConsumeTributeMaterialsAsync(Owner, tribute);
+                if (mats.Count < tribute)
+                {
+                    await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
+                    await CombatAction(choiceContext, cardPlay);
+                    return;
+                }
+
+                foreach (Creature pet in mats)
+                    await CreatureCmd.Kill(pet, force: true);
+            }
+
+            await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);
         }
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);

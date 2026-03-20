@@ -51,6 +51,8 @@ public static class DuelMonsterPetDeathPatch
                 return;
             }
 
+            TributeMaterialMarkTracker.RemoveCardFromMarkList(player, card);
+
             // If the current option pile is for this monster, clear it so the player can't use options pointing at a dead monster.
             var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
             if (optionPile != null && optionPile.Cards.Count > 0)

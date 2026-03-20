@@ -9,7 +9,7 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1774042557
+::res://bin/ExportRelease/net9.0/publish/::1774043162
 YgoDuelist.deps.json::JSON::-1::1774042557::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
 ::res://packages/alchyr.sts2.baselib/::1773960954
@@ -1672,13 +1672,13 @@ YgoCardTypes.cs::CSharpScript::8470661758287105871::1773970500::0::1::::<><><>0<
 YgoDuelistCard.cs::CSharpScript::1750447615170480644::1773589494::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Command/::1774042188
 Command_Attack.cs::CSharpScript::6230304481939202254::1774040365::0::1::::<><><>0<>0<><>::
-Command_Change_Battle_Position.cs::CSharpScript::2684360895805627397::1774042495::0::1::::<><><>0<>0<><>::
+Command_Change_Battle_Position.cs::CSharpScript::2684360895805627397::1774043035::0::1::::<><><>0<>0<><>::
 Command_Defend.cs::CSharpScript::2671056487115180850::1774040365::0::1::::<><><>0<>0<><>::
 Exit_Monster_Options.cs::CSharpScript::889353100451011932::1773607145::0::1::::<><><>0<>0<><>::
 MonsterCommandCard.cs::CSharpScript::2141012884981456081::1773970500::0::1::::<><><>0<>0<><>::
 Toggle_Die_For_You.cs::CSharpScript::777169850227679302::1773607139::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Core/::1774030615
-AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774042052::0::1::::<><><>0<>0<><>::
+AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774043034::0::1::::<><><>0<>0<><>::
 BaseMonsterCard.cs::CSharpScript::9102026597318480692::1774020019::0::1::::<><><>0<>0<><>::
 BaseSpellCard.cs::CSharpScript::4032814977770574970::1774030971::0::1::::<><><>0<>0<><>::
 BaseTrapCard.cs::CSharpScript::3408567566577426753::1774030976::0::1::::<><><>0<>0<><>::
@@ -2792,7 +2792,7 @@ GraveyardRelic.cs::CSharpScript::6178530522595463694::1773609883::0::1::::<><><>
 YgoDuelistRelic.cs::CSharpScript::1362123596858446735::1773589494::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Services/::1773589494
 ::res://YgoDuelistCode/Services/ServicesForCommandSystem/::1773609163
-MonsterCommandRegistry.cs::CSharpScript::6888007258818941403::1774034083::0::1::::<><><>0<>0<><>::
+MonsterCommandRegistry.cs::CSharpScript::6888007258818941403::1774043136::0::1::::<><><>0<>0<><>::
 NormalSummonTracker.cs::CSharpScript::2717777347360340752::1773609163::0::1::::<><><>0<>0<><>::
 YgoOptionHandBridge.cs::CSharpScript::4770363763851199238::1774042498::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Services/ServicesForDuelMonsters/::1774040080
