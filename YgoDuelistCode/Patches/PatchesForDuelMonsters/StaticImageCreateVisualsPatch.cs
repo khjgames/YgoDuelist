@@ -24,17 +24,21 @@ public static class StaticImageCreateVisualsPatch
         var path = (string)_visualsPathGetter.Invoke(__instance, null)!;
         var scene = PreloadManager.Cache.GetScene(path);
 
-        try
+        // C# scenes often root as Node2D + NCreatureVisuals script; Instantiate<T>() throws (see godot.log).
+        var root = scene.Instantiate(PackedScene.GenEditState.Disabled);
+        if (root is NCreatureVisuals direct)
         {
-            __result = scene.Instantiate<NCreatureVisuals>(PackedScene.GenEditState.Disabled);
+            __result = direct;
             return false;
         }
-        catch (InvalidCastException)
+
+        if (root is not Node2D raw)
         {
-            // Mod scene didn't register the script properly, fall through to manual wrap.
+            root.QueueFree();
+            throw new InvalidOperationException(
+                $"Creature visuals scene at '{path}' root must be NCreatureVisuals or Node2D, got {root.GetType().Name}.");
         }
 
-        var raw = scene.Instantiate<Node2D>(PackedScene.GenEditState.Disabled);
         var visuals = new NCreatureVisuals
         {
             Name = raw.Name
