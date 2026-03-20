@@ -1,20 +1,24 @@
+using System.Collections.Generic;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Renders YGO level stars (cropped from 12_stars.png) in a row directly under the title banner for monster cards.
+/// Renders YGO level stars and attribute icon on monster cards (under title banner, right-aligned).
 /// </summary>
 [HarmonyPatch(typeof(NCard), "Reload")]
 public static class YgoMonsterLevelStripPatch
 {
     private const string StarsStripPath = "YgoDuelist/images/card_frames/12_stars.png";
+    private const string AttributeIconFolder = "YgoDuelist/images/card_frames/Attribute";
     private const string StripNodeName = "YgoLevelStarsStrip";
+    private const string AttributeNodeName = "YgoAttributeIcon";
 
     /// <summary>Vertical strip height in card-local space (same anchor mode as title banner).</summary>
     private const float StripHeightPx = 20f;
@@ -30,8 +34,21 @@ public static class YgoMonsterLevelStripPatch
     /// </summary>
     private const float StripHorizontalNudgePx = 48f;
 
+    /// <summary>Gap between the bottom of the level strip and the top of the attribute icon.</summary>
+    private const float AttributeGapBelowLevelStripPx = 2f;
+
+    /// <summary>Attribute icon box height (width follows texture aspect).</summary>
+    private const float AttributeIconHeightPx = 24f;
+
+    /// <summary>Extra vertical offset after gap below level strip (negative = further up).</summary>
+    private const float AttributeExtraVerticalNudgePx = 0f;
+
+    /// <summary>Horizontal nudge for attribute (positive = move left), same sense as <see cref="StripHorizontalNudgePx"/>.</summary>
+    private const float AttributeHorizontalNudgePx = 48f;
+
     private static Texture2D? _stripTexture;
     private static AtlasTexture[]? _atlasesByLevel;
+    private static readonly Dictionary<DuelMonsterAttribute, Texture2D?> _attributeTextures = new();
 
     [HarmonyPostfix]
     [HarmonyPriority(Priority.Last)]
@@ -42,11 +59,13 @@ public static class YgoMonsterLevelStripPatch
 
         Control body = __instance.Body;
         var strip = body.GetNodeOrNull<TextureRect>(StripNodeName);
+        var attributeIcon = body.GetNodeOrNull<TextureRect>(AttributeNodeName);
 
         CardModel? model = __instance.Model;
         if (model == null || model.Rarity == CardRarity.Ancient || model is not AbstractMonsterCard monster)
         {
             strip?.Hide();
+            attributeIcon?.Hide();
             return;
         }
 
@@ -54,15 +73,17 @@ public static class YgoMonsterLevelStripPatch
         if (_stripTexture == null)
         {
             strip?.Hide();
-            return;
         }
-
-        EnsureAtlases(_stripTexture);
+        else
+        {
+            EnsureAtlases(_stripTexture);
+        }
 
         var banner = body.GetNodeOrNull<TextureRect>("%TitleBanner");
         if (banner == null)
         {
             strip?.Hide();
+            attributeIcon?.Hide();
             return;
         }
 
@@ -82,17 +103,96 @@ public static class YgoMonsterLevelStripPatch
         }
 
         int level = Mathf.Clamp(monster.DuelMonsterLevel, 1, 12);
-        if (_atlasesByLevel == null || level < 1 || level > 12)
+        if (_stripTexture == null || _atlasesByLevel == null || level < 1 || level > 12)
         {
-            strip.Hide();
+            strip?.Hide();
+        }
+        else
+        {
+            strip!.Texture = _atlasesByLevel[level - 1];
+            strip.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+            strip.StretchMode = TextureRect.StretchModeEnum.Scale;
+            ApplyLayoutRightAnchoredBelowBanner(strip, banner, level);
+            strip.Show();
+        }
+
+        TextureRect attrNode = EnsureAttributeIconNode(body, banner, strip);
+        UpdateAttributeIcon(attrNode, monster, banner);
+    }
+
+    private static TextureRect EnsureAttributeIconNode(Control body, TextureRect banner, TextureRect? strip)
+    {
+        var attr = body.GetNodeOrNull<TextureRect>(AttributeNodeName);
+        if (attr != null)
+            return attr;
+
+        attr = new TextureRect
+        {
+            Name = AttributeNodeName,
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.Scale,
+            GrowHorizontal = Control.GrowDirection.Both,
+            GrowVertical = Control.GrowDirection.Both,
+        };
+        body.AddChild(attr);
+        int insertAt = strip != null ? strip.GetIndex() + 1 : banner.GetIndex() + 1;
+        body.MoveChild(attr, insertAt);
+        return attr;
+    }
+
+    private static void UpdateAttributeIcon(TextureRect attr, AbstractMonsterCard monster, TextureRect banner)
+    {
+        Texture2D? tex = GetAttributeTexture(monster.DuelMonsterAttribute);
+        if (tex == null)
+        {
+            attr.Hide();
             return;
         }
 
-        strip.Texture = _atlasesByLevel[level - 1];
-        strip.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-        strip.StretchMode = TextureRect.StretchModeEnum.Scale;
-        ApplyLayoutRightAnchoredBelowBanner(strip, banner, level);
-        strip.Show();
+        attr.Texture = tex;
+        attr.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+        attr.StretchMode = TextureRect.StretchModeEnum.Scale;
+
+        attr.AnchorLeft = 0.5f;
+        attr.AnchorRight = 0.5f;
+        attr.AnchorTop = banner.AnchorTop;
+        attr.AnchorBottom = banner.AnchorBottom;
+
+        float levelStripTop = banner.OffsetBottom + StripVerticalNudgePx;
+        float top = levelStripTop + StripHeightPx + AttributeGapBelowLevelStripPx + AttributeExtraVerticalNudgePx;
+        attr.OffsetTop = top;
+        attr.OffsetBottom = top + AttributeIconHeightPx;
+
+        Vector2 szf = tex.GetSize();
+        int tw = (int)szf.X;
+        int th = (int)szf.Y;
+        if (tw <= 0 || th <= 0)
+        {
+            attr.Hide();
+            return;
+        }
+
+        float displayW = AttributeIconHeightPx * (tw / (float)th);
+        float bannerW = banner.OffsetRight - banner.OffsetLeft;
+        if (displayW > bannerW)
+            displayW = bannerW;
+
+        float right = banner.OffsetRight - AttributeHorizontalNudgePx;
+        attr.OffsetRight = right;
+        attr.OffsetLeft = right - displayW;
+        attr.Show();
+    }
+
+    private static Texture2D? GetAttributeTexture(DuelMonsterAttribute attribute)
+    {
+        if (_attributeTextures.TryGetValue(attribute, out Texture2D? cached))
+            return cached;
+
+        string path = $"{AttributeIconFolder}/{attribute.ToString().ToLowerInvariant()}.png";
+        Texture2D? loaded = ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
+        _attributeTextures[attribute] = loaded;
+        return loaded;
     }
 
     private static void EnsureAtlases(Texture2D strip)
