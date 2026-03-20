@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
@@ -65,6 +66,15 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             FaceDown = true;
         }
         UpdateFaceDownKeywordFromBool();
+    }
+
+    /// <summary>
+    /// Sets attack vs defense position when the player uses <see cref="Command.Command_Attack"/> or <see cref="Command.Command_Defend"/>.
+    /// Persists after the command resolves (same rules as <see cref="SetDisplayAttackSkill"/> for face-down).
+    /// </summary>
+    public void SetBattlePositionFromDuelCommand(bool attackPosition)
+    {
+        SetDisplayAttackSkill(attackPosition);
     }
 
     /// <summary>Swaps between Attack and Skill (attack position / defense position). Called by right-click in hand.</summary>
@@ -183,6 +193,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         RemoveKeyword(FaceDownKeyword);
         foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
             AddKeyword(kw);
+
+        DuelMonsterStancePowerSync.RequestSyncIfSummoned(this);
     }
 
     /// <summary>

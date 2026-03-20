@@ -68,18 +68,8 @@ public sealed class Command_Attack : MonsterCommandCard
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, true, player.Creature, SourceMonster);
         }
 
-        bool swapped = SourceMonster.Type != CardType.Attack;
-        if (swapped)
-            SourceMonster.ToggleAttackSkill();
-        try
-        {
-            await SourceMonster.CombatAction(choiceContext, cardPlay);
-        }
-        finally
-        {
-            if (swapped)
-                SourceMonster.ToggleAttackSkill();
-        }
+        SourceMonster.SetBattlePositionFromDuelCommand(attackPosition: true);
+        await SourceMonster.CombatAction(choiceContext, cardPlay);
     }
 
     private static Creature? FindPetForMonster(NormalMonsterCard source)

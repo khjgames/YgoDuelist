@@ -57,6 +57,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         if (canAttackThisTurn == false)
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(petCreature, true, player.Creature, card);
 
+        await DuelMonsterStancePowerSync.SyncForPetAsync(petCreature, card, player.Creature, card);
+
         // After the summon completes, move the monster card into the MonsterPile
         // so it is no longer in Hand/Discard/etc.
         await MoveCardToMonsterPile(player, card);

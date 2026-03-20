@@ -69,18 +69,8 @@ public sealed class Command_Defend : MonsterCommandCard
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, true, player.Creature, SourceMonster);
         }
 
-        bool swapped = SourceMonster.Type != CardType.Skill;
-        if (swapped)
-            SourceMonster.ToggleAttackSkill();
-        try
-        {
-            await SourceMonster.CombatAction(choiceContext, cardPlay);
-        }
-        finally
-        {
-            if (swapped)
-                SourceMonster.ToggleAttackSkill();
-        }
+        SourceMonster.SetBattlePositionFromDuelCommand(attackPosition: false);
+        await SourceMonster.CombatAction(choiceContext, cardPlay);
     }
 
     private static Creature? FindPetForMonster(BaseMonsterCard source)
