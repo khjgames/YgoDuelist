@@ -15,9 +15,10 @@ public sealed class Kaiser_Glider : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2400,
-            baseDef: 2200,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 22,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

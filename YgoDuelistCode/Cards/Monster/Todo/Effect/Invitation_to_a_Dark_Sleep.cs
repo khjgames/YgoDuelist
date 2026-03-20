@@ -15,9 +15,10 @@ public sealed class Invitation_to_a_Dark_Sleep : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1500,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

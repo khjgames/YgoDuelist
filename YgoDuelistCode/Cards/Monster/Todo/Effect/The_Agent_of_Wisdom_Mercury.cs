@@ -16,8 +16,9 @@ public sealed class The_Agent_of_Wisdom_Mercury : EffectMonsterCard
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 0,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

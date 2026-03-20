@@ -15,9 +15,10 @@ public sealed class Bowganian : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1300,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

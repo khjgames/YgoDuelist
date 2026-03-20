@@ -15,9 +15,10 @@ public sealed class King_Tiger_Wanghu : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1700,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Spirit_of_the_Pharaoh : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2500,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 25,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

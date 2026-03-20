@@ -15,9 +15,10 @@ public sealed class Witch_Doctor_of_Chaos : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 500,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

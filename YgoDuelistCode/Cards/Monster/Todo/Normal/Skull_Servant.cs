@@ -15,9 +15,10 @@ public sealed class Skull_Servant : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 300,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Bubonic_Vermin : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 900,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 10,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 4000,
-            baseDef: 4000,
-            baseMgc: 0)
+            baseAtk: 40,
+            baseDef: 40,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.DivineBeast)
     {
     }
 

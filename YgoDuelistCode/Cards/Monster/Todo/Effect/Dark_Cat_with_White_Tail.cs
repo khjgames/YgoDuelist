@@ -15,9 +15,10 @@ public sealed class Dark_Cat_with_White_Tail : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 800,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

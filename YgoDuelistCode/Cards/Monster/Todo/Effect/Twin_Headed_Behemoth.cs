@@ -15,9 +15,10 @@ public sealed class Twin_Headed_Behemoth : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1500,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

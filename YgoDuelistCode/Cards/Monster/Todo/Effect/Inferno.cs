@@ -15,9 +15,10 @@ public sealed class Inferno : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1100,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

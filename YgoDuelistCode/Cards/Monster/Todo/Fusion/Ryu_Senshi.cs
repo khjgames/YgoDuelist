@@ -15,9 +15,10 @@ public sealed class Ryu_Senshi : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2000,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

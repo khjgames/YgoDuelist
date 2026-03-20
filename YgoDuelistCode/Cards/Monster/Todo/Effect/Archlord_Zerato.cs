@@ -15,9 +15,10 @@ public sealed class Archlord_Zerato : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2800,
-            baseDef: 2300,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 23,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

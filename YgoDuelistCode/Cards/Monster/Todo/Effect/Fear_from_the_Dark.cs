@@ -15,9 +15,10 @@ public sealed class Fear_from_the_Dark : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1700,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

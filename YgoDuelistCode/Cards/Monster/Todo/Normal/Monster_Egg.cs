@@ -15,9 +15,10 @@ public sealed class Monster_Egg : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 600,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 6,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

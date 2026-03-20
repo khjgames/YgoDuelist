@@ -15,9 +15,10 @@ public sealed class Dark_Dust_Spirit : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2200,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

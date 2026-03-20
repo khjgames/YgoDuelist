@@ -15,9 +15,10 @@ public sealed class Witty_Phantom : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1400,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

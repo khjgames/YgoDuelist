@@ -15,9 +15,10 @@ public sealed class Magician_of_Faith : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 300,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -16,8 +16,9 @@ public sealed class Mucus_Yolk : EffectMonsterCard
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 0,
-            baseDef: 100,
-            baseMgc: 0)
+            baseDef: 1,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

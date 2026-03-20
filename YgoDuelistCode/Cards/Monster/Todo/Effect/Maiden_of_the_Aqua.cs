@@ -15,9 +15,10 @@ public sealed class Maiden_of_the_Aqua : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 700,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

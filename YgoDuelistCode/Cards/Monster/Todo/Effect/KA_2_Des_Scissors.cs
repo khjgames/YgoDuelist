@@ -15,9 +15,10 @@ public sealed class KA_2_Des_Scissors : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1000,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

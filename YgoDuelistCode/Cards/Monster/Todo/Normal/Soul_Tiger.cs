@@ -16,8 +16,9 @@ public sealed class Soul_Tiger : NormalMonsterCard
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 0,
-            baseDef: 2100,
-            baseMgc: 0)
+            baseDef: 21,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

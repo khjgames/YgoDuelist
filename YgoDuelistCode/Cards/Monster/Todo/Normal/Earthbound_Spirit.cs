@@ -15,9 +15,10 @@ public sealed class Earthbound_Spirit : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 500,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

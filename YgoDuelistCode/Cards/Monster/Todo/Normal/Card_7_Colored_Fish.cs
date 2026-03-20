@@ -15,9 +15,10 @@ public sealed class Card_7_Colored_Fish : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1800,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Throwstone_Unit : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 900,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

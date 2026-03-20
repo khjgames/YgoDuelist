@@ -15,9 +15,10 @@ public sealed class Sand_Gambler : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 300,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

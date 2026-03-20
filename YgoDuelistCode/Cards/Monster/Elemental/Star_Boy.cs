@@ -15,9 +15,10 @@ public sealed class Star_Boy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 6,
+            baseAtk: 5,
             baseDef: 5,
-            baseMgc: 5)
+            baseMgc: 5,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

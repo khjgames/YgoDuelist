@@ -15,9 +15,10 @@ public sealed class Molten_Behemoth : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1000,
-            baseDef: 2200,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 22,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

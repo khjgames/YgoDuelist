@@ -15,9 +15,10 @@ public sealed class Buster_Blader : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2600,
-            baseDef: 2300,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 23,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

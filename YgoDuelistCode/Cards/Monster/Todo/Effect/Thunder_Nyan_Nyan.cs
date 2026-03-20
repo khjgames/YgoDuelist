@@ -15,9 +15,10 @@ public sealed class Thunder_Nyan_Nyan : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1900,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

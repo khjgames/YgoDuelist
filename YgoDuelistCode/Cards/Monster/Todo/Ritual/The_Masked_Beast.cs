@@ -15,9 +15,10 @@ public sealed class The_Masked_Beast : RitualMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 3200,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 32,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

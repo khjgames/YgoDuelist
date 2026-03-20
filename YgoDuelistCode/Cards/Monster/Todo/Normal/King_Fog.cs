@@ -15,9 +15,10 @@ public sealed class King_Fog : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1000,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Gora_Turtle : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1100,
-            baseDef: 1100,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 11,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

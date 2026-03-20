@@ -15,9 +15,10 @@ public sealed class Aqua_Spirit : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1600,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

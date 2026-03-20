@@ -15,9 +15,10 @@ public sealed class Nin_Ken_Dog : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1800,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

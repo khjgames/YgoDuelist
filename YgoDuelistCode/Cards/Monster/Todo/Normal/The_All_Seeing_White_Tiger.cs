@@ -15,9 +15,10 @@ public sealed class The_All_Seeing_White_Tiger : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1300,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Ghost_Knight_of_Jackal : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1700,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

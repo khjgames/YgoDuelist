@@ -15,9 +15,10 @@ public sealed class Ocubeam : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1550,
-            baseDef: 1650,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

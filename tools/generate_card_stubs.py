@@ -8,6 +8,48 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 CARDS_JSON = REPO_ROOT / "cards.json"
 CARDS_ROOT = REPO_ROOT / "YgoDuelistCode" / "Cards"
 
+MONSTER_RACE_TO_ENUM = {
+    "Aqua": "Aqua",
+    "Beast": "Beast",
+    "Beast-Warrior": "BeastWarrior",
+    "Dinosaur": "Dinosaur",
+    "Divine-Beast": "DivineBeast",
+    "Dragon": "Dragon",
+    "Fairy": "Fairy",
+    "Fiend": "Fiend",
+    "Fish": "Fish",
+    "Insect": "Insect",
+    "Machine": "Machine",
+    "Plant": "Plant",
+    "Pyro": "Pyro",
+    "Reptile": "Reptile",
+    "Rock": "Rock",
+    "Sea Serpent": "SeaSerpent",
+    "Spellcaster": "Spellcaster",
+    "Thunder": "Thunder",
+    "Warrior": "Warrior",
+    "Winged Beast": "WingedBeast",
+    "Zombie": "Zombie",
+    "Psychic": "Psychic",
+    "Wyrm": "Wyrm",
+}
+
+SPELL_RACE_TO_ENUM = {
+    "Normal": "SpellNormal",
+    "Continuous": "SpellContinuous",
+    "Quick-Play": "SpellQuickPlay",
+    "Equip": "SpellEquip",
+    "Field": "SpellField",
+    "Ritual": "SpellRitual",
+}
+
+TRAP_RACE_TO_ENUM = {
+    "Normal": "TrapNormal",
+    "Continuous": "TrapContinuous",
+    "Counter": "TrapCounter",
+    "Equip": "TrapNormal",
+}
+
 
 def to_identifier(name: str) -> str:
     cleaned = re.sub(r"[^A-Za-z0-9]+", "_", name).strip("_")
@@ -32,6 +74,33 @@ def attr_to_enum(value: str | None) -> str:
         "DARK": "Dark",
     }
     return mapping.get((value or "").upper(), "Earth")
+
+
+def scale_stat(value) -> int:
+    if value is None:
+        return 0
+    try:
+        return int(value) // 100
+    except (TypeError, ValueError):
+        return 0
+
+
+def json_monster_race(race: str | None) -> str:
+    if not race:
+        return "Warrior"
+    return MONSTER_RACE_TO_ENUM.get(race.strip(), "Warrior")
+
+
+def json_spell_race(race: str | None) -> str:
+    if not race:
+        return "SpellNormal"
+    return SPELL_RACE_TO_ENUM.get(race.strip(), "SpellNormal")
+
+
+def json_trap_race(race: str | None) -> str:
+    if not race:
+        return "TrapNormal"
+    return TRAP_RACE_TO_ENUM.get(race.strip(), "TrapNormal")
 
 
 def classify(card_type: str, race: str | None) -> tuple[str, str, str]:
@@ -65,7 +134,16 @@ def classify(card_type: str, race: str | None) -> tuple[str, str, str]:
     return "Spell/Todo/Normal", "BaseSpellCard", "Spell"
 
 
-def build_monster_source(namespace: str, class_name: str, base_class: str, level: int, attr: str, atk: int, defense: int) -> str:
+def build_monster_source(
+    namespace: str,
+    class_name: str,
+    base_class: str,
+    level: int,
+    attr: str,
+    atk: int,
+    defense: int,
+    duel_race: str,
+) -> str:
     return f"""using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -85,7 +163,8 @@ public sealed class {class_name} : {base_class}
             duelMonsterAttribute: DuelMonsterAttribute.{attr},
             baseAtk: {atk},
             baseDef: {defense},
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.{duel_race})
     {{
     }}
 
@@ -101,19 +180,20 @@ public sealed class {class_name} : {base_class}
 """
 
 
-def build_spell_source(namespace: str, class_name: str, target: str) -> str:
+def build_spell_source(namespace: str, class_name: str, target: str, duel_race: str) -> str:
     return f"""using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace {namespace};
 
 public sealed class {class_name} : BaseSpellCard
 {{
     public {class_name}()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.{target})
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.{target}, duelMonsterRace: DuelMonsterRace.{duel_race})
     {{
     }}
 
@@ -139,19 +219,20 @@ public sealed class {class_name} : BaseSpellCard
 """
 
 
-def build_trap_source(namespace: str, class_name: str, target: str) -> str:
+def build_trap_source(namespace: str, class_name: str, target: str, duel_race: str) -> str:
     return f"""using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace {namespace};
 
 public sealed class {class_name} : BaseTrapCard
 {{
     public {class_name}()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.{target})
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.{target}, duelMonsterRace: DuelMonsterRace.{duel_race})
     {{
     }}
 
@@ -180,14 +261,9 @@ public sealed class {class_name} : BaseTrapCard
 def main() -> None:
     cards = json.loads(CARDS_JSON.read_text(encoding="utf-8"))
 
-    all_cs_files = list(CARDS_ROOT.rglob("*.cs"))
-    existing_stems = {path.stem for path in all_cs_files}
-    existing_normalized = {normalized(path.stem) for path in all_cs_files}
-
-    created = 0
-    skipped_existing = 0
-    created_by_folder: dict[str, int] = {}
-    used_names = set(existing_stems)
+    written = 0
+    written_by_folder: dict[str, int] = {}
+    used_names: set[str] = set()
 
     for card in cards:
         name = card.get("name", "")
@@ -196,44 +272,45 @@ def main() -> None:
         rel_folder, base_class, card_group = classify(card_type, race)
         class_name = to_identifier(name)
 
-        if normalized(class_name) in existing_normalized:
-            skipped_existing += 1
-            continue
-
         if class_name in used_names:
             class_name = f"{class_name}_{card.get('id', 'Card')}"
-            if normalized(class_name) in existing_normalized:
-                skipped_existing += 1
-                continue
+        while class_name in used_names:
+            class_name = f"{class_name}_dup"
 
         target_dir = CARDS_ROOT / rel_folder
+        if "Todo" not in target_dir.parts:
+            continue
+
         target_dir.mkdir(parents=True, exist_ok=True)
         target_file = target_dir / f"{class_name}.cs"
         namespace = "YgoDuelist.YgoDuelistCode.Cards." + rel_folder.replace("/", ".")
 
         if card_group == "Monster":
             level = int(card.get("level") or 4)
-            atk = int(card.get("atk") or 0)
-            defense = int(card.get("def") or 0)
+            atk = scale_stat(card.get("atk"))
+            defense = scale_stat(card.get("def"))
             attr = attr_to_enum(card.get("attribute"))
-            source = build_monster_source(namespace, class_name, base_class, level, attr, atk, defense)
+            duel_race = json_monster_race(race)
+            source = build_monster_source(
+                namespace, class_name, base_class, level, attr, atk, defense, duel_race
+            )
         elif card_group == "Spell":
             target = "AnyEnemy" if (race or "").strip().lower() == "equip" else "Self"
-            source = build_spell_source(namespace, class_name, target)
+            duel_race = json_spell_race(race)
+            source = build_spell_source(namespace, class_name, target, duel_race)
         else:
             target = "AnyEnemy" if (race or "").strip().lower() == "equip" else "Self"
-            source = build_trap_source(namespace, class_name, target)
+            duel_race = json_trap_race(race)
+            source = build_trap_source(namespace, class_name, target, duel_race)
 
         target_file.write_text(source, encoding="utf-8", newline="\n")
         used_names.add(class_name)
-        existing_normalized.add(normalized(class_name))
-        created += 1
-        created_by_folder[rel_folder] = created_by_folder.get(rel_folder, 0) + 1
+        written += 1
+        written_by_folder[rel_folder] = written_by_folder.get(rel_folder, 0) + 1
 
-    print(f"Created stubs: {created}")
-    print(f"Skipped existing: {skipped_existing}")
-    for folder in sorted(created_by_folder):
-        print(f"{folder}: {created_by_folder[folder]}")
+    print(f"Written Todo stubs: {written}")
+    for folder in sorted(written_by_folder):
+        print(f"{folder}: {written_by_folder[folder]}")
 
 
 if __name__ == "__main__":

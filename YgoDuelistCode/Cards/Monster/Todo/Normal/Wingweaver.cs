@@ -15,9 +15,10 @@ public sealed class Wingweaver : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2750,
-            baseDef: 2400,
-            baseMgc: 0)
+            baseAtk: 27,
+            baseDef: 24,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

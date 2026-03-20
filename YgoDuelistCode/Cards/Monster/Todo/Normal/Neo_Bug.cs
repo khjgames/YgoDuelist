@@ -15,9 +15,10 @@ public sealed class Neo_Bug : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1800,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

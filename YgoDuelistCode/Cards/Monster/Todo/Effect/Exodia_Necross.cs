@@ -15,9 +15,10 @@ public sealed class Exodia_Necross : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1800,
+            baseAtk: 18,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

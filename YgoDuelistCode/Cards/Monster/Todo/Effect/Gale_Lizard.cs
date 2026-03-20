@@ -15,9 +15,10 @@ public sealed class Gale_Lizard : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1400,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
 

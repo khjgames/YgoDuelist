@@ -15,9 +15,10 @@ public sealed class Spike_Seadra : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1600,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.SeaSerpent)
     {
     }
 

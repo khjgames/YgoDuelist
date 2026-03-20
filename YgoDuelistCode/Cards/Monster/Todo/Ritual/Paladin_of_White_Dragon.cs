@@ -15,9 +15,10 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1900,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

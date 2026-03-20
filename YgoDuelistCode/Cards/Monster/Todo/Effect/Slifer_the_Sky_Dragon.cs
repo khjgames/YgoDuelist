@@ -17,7 +17,8 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: -1,
             baseDef: -1,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.DivineBeast)
     {
     }
 

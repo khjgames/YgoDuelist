@@ -15,9 +15,10 @@ public sealed class Giant_Soldier_of_Stone : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1300,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

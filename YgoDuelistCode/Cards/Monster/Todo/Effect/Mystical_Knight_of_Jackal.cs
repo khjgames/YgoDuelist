@@ -15,9 +15,10 @@ public sealed class Mystical_Knight_of_Jackal : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2700,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 27,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

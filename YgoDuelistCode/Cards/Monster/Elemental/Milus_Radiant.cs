@@ -17,7 +17,8 @@ public sealed class Milus_Radiant : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 3,
             baseDef: 3,
-            baseMgc: 5)
+            baseMgc: 5,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

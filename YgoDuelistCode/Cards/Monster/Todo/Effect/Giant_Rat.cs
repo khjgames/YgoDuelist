@@ -15,9 +15,10 @@ public sealed class Giant_Rat : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1400,
-            baseDef: 1450,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Burning_Algae : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 500,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

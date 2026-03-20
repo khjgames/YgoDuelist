@@ -15,9 +15,10 @@ public sealed class Armored_Zombie : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1500,
+            baseAtk: 15,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

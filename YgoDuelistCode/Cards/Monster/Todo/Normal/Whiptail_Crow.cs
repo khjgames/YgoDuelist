@@ -15,9 +15,10 @@ public sealed class Whiptail_Crow : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1650,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

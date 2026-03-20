@@ -15,9 +15,10 @@ public sealed class Souls_of_the_Forgotten : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 900,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

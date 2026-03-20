@@ -24,7 +24,8 @@ public sealed class Muka_Muka : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 6,
             baseDef: 3,
-            baseMgc: 2)
+            baseMgc: 2,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

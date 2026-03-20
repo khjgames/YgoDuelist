@@ -17,7 +17,8 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: -1,
             baseDef: -1,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.DivineBeast)
     {
     }
 

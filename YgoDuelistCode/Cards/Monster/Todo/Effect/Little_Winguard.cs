@@ -15,9 +15,10 @@ public sealed class Little_Winguard : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1400,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

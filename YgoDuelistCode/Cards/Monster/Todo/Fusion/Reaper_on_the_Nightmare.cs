@@ -15,9 +15,10 @@ public sealed class Reaper_on_the_Nightmare : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 800,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

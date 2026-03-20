@@ -15,9 +15,10 @@ public sealed class Stealth_Bird : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 700,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

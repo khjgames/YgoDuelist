@@ -15,9 +15,10 @@ public sealed class Dice_Jar : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 200,
-            baseDef: 300,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 3,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

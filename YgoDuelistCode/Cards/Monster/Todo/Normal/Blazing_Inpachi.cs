@@ -15,9 +15,10 @@ public sealed class Blazing_Inpachi : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1850,
+            baseAtk: 18,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

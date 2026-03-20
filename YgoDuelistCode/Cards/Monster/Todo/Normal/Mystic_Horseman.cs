@@ -15,9 +15,10 @@ public sealed class Mystic_Horseman : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1300,
-            baseDef: 1550,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

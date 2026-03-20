@@ -15,9 +15,10 @@ public sealed class Wolf_Axwielder : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1650,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

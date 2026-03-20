@@ -15,9 +15,10 @@ public sealed class Morphing_Jar_2 : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 800,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

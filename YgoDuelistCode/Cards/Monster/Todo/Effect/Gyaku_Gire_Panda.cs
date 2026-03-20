@@ -15,9 +15,10 @@ public sealed class Gyaku_Gire_Panda : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 800,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

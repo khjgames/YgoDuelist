@@ -15,9 +15,10 @@ public sealed class Psychic_Kappa : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 400,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

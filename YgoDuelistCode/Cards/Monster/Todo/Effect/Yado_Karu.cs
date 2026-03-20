@@ -15,9 +15,10 @@ public sealed class Yado_Karu : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 900,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

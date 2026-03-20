@@ -15,9 +15,10 @@ public sealed class Terrorking_Salmon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2400,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

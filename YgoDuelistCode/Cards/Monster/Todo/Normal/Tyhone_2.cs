@@ -15,9 +15,10 @@ public sealed class Tyhone_2 : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1700,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

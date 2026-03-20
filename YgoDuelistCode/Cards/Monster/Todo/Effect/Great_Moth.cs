@@ -15,9 +15,10 @@ public sealed class Great_Moth : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2600,
-            baseDef: 2500,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 25,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

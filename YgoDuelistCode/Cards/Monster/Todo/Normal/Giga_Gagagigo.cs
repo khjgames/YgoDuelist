@@ -15,9 +15,10 @@ public sealed class Giga_Gagagigo : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2450,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
 

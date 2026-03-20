@@ -15,9 +15,10 @@ public sealed class Gaia_The_Fierce_Knight : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2300,
-            baseDef: 2100,
-            baseMgc: 0)
+            baseAtk: 23,
+            baseDef: 21,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

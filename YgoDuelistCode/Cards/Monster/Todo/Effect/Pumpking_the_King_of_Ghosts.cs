@@ -15,9 +15,10 @@ public sealed class Pumpking_the_King_of_Ghosts : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1800,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

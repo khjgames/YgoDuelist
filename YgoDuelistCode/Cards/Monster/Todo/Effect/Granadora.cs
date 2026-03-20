@@ -15,9 +15,10 @@ public sealed class Granadora : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1900,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
 

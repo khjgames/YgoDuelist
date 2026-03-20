@@ -15,9 +15,10 @@ public sealed class Boar_Soldier : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2000,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Dark_King_of_the_Abyss : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1200,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

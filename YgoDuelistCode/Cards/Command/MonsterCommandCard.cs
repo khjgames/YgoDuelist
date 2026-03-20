@@ -40,6 +40,9 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
 
     public YgoCardType YgoCardType => YgoCardType.Spell;
 
+    public DuelMonsterRace DuelMonsterRace =>
+        SourceMonster?.DuelMonsterRace ?? DuelMonsterRace.Warrior;
+
     // Default to the source monster's portrait if available; otherwise use the generic card back so command cards always have art.
     public override string PortraitPath =>
         !string.IsNullOrEmpty(SourceMonster?.PortraitPath)

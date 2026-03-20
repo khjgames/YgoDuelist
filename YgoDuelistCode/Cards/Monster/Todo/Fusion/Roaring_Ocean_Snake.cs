@@ -15,9 +15,10 @@ public sealed class Roaring_Ocean_Snake : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2100,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 21,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

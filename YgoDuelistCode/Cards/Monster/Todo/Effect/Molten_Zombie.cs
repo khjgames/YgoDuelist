@@ -15,9 +15,10 @@ public sealed class Molten_Zombie : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1600,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Protector_of_the_Throne : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 800,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

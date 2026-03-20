@@ -15,9 +15,10 @@ public sealed class Marauding_Captain : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1200,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

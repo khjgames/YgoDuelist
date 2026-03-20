@@ -262,6 +262,15 @@ public static class YgoMonsterLevelStripPatch
             DuelMonsterRace.DivineBeast => "Divine-Beast.png",
             DuelMonsterRace.SeaSerpent => "Sea Serpent.png",
             DuelMonsterRace.WingedBeast => "Winged Beast.png",
+            DuelMonsterRace.SpellNormal => "Spellcaster.png",
+            DuelMonsterRace.SpellContinuous => "Continuous.png",
+            DuelMonsterRace.SpellQuickPlay => "Quick-Play.png",
+            DuelMonsterRace.SpellEquip => "Equip.png",
+            DuelMonsterRace.SpellField => "Field.png",
+            DuelMonsterRace.SpellRitual => "Ritual.png",
+            DuelMonsterRace.TrapNormal => "Spellcaster.png",
+            DuelMonsterRace.TrapContinuous => "Continuous.png",
+            DuelMonsterRace.TrapCounter => "Counter.png",
             _ => $"{race}.png",
         };
 

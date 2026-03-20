@@ -15,9 +15,10 @@ public sealed class Saggi_the_Dark_Clown : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 600,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 6,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

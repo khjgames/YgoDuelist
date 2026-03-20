@@ -15,9 +15,10 @@ public sealed class Cyber_Stein : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 700,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

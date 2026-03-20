@@ -15,9 +15,10 @@ public sealed class Dark_Jeroid : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1200,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

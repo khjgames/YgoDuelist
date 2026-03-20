@@ -15,9 +15,10 @@ public sealed class Sky_Scout : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1800,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

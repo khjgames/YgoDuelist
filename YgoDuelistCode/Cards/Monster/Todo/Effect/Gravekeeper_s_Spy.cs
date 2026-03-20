@@ -15,9 +15,10 @@ public sealed class Gravekeeper_s_Spy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1200,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

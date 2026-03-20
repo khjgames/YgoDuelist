@@ -15,9 +15,10 @@ public sealed class Guardian_Baou : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 800,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Dark_Blade : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1800,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

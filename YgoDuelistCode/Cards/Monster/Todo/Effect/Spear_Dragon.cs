@@ -15,9 +15,10 @@ public sealed class Spear_Dragon : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1900,
+            baseAtk: 19,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

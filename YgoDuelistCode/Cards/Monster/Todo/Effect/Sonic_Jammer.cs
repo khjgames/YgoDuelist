@@ -15,9 +15,10 @@ public sealed class Sonic_Jammer : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 350,
-            baseDef: 650,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

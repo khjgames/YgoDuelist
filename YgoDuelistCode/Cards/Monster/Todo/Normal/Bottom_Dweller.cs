@@ -15,9 +15,10 @@ public sealed class Bottom_Dweller : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1650,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

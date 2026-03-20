@@ -15,9 +15,10 @@ public sealed class Armored_Starfish : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 850,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

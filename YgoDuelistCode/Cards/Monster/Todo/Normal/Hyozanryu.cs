@@ -15,9 +15,10 @@ public sealed class Hyozanryu : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2100,
-            baseDef: 2800,
-            baseMgc: 0)
+            baseAtk: 21,
+            baseDef: 28,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

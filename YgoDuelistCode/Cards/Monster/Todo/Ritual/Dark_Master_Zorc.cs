@@ -15,9 +15,10 @@ public sealed class Dark_Master_Zorc : RitualMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2700,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 27,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

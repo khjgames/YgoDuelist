@@ -15,9 +15,10 @@ public sealed class Kagemusha_of_the_Blue_Flame : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 800,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

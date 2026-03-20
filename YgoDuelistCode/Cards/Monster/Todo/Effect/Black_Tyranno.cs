@@ -15,9 +15,10 @@ public sealed class Black_Tyranno : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2600,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dinosaur)
     {
     }
 

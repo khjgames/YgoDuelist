@@ -15,9 +15,10 @@ public sealed class Guardian_Angel_Joan : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2800,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

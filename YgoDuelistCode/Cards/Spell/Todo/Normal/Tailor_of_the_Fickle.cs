@@ -3,13 +3,14 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Tailor_of_the_Fickle : BaseSpellCard
 {
     public Tailor_of_the_Fickle()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
     {
     }
 

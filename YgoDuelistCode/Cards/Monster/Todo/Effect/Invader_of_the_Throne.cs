@@ -15,9 +15,10 @@ public sealed class Invader_of_the_Throne : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1350,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

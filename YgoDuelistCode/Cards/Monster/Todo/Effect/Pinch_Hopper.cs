@@ -15,9 +15,10 @@ public sealed class Pinch_Hopper : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1000,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

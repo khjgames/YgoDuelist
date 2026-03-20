@@ -15,9 +15,10 @@ public sealed class Baby_Dragon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1200,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

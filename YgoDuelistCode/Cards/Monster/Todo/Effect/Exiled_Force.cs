@@ -15,9 +15,10 @@ public sealed class Exiled_Force : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1000,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

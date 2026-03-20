@@ -15,9 +15,10 @@ public sealed class Wind_Effigy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1800,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2900,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 29,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.SeaSerpent)
     {
     }
 

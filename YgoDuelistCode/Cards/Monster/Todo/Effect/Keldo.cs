@@ -15,9 +15,10 @@ public sealed class Keldo : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1200,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

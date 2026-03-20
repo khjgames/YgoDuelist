@@ -15,9 +15,10 @@ public sealed class Kuraz_the_Light_Monarch : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2400,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

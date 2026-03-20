@@ -15,9 +15,10 @@ public sealed class Gear_Golem_the_Moving_Fortress : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 800,
-            baseDef: 2200,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 22,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

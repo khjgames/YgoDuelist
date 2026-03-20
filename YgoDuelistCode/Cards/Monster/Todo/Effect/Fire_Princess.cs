@@ -15,9 +15,10 @@ public sealed class Fire_Princess : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1300,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

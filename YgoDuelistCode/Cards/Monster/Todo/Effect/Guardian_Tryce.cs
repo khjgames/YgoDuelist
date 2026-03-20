@@ -15,9 +15,10 @@ public sealed class Guardian_Tryce : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1900,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

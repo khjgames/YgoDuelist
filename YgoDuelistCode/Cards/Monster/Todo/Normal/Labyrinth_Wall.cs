@@ -16,8 +16,9 @@ public sealed class Labyrinth_Wall : NormalMonsterCard
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 0,
-            baseDef: 3000,
-            baseMgc: 0)
+            baseDef: 30,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

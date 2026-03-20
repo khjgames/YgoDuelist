@@ -15,9 +15,10 @@ public sealed class High_Tide_Gyojin : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1650,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

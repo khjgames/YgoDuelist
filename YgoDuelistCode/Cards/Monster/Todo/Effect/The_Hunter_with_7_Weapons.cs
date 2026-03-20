@@ -15,9 +15,10 @@ public sealed class The_Hunter_with_7_Weapons : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1000,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

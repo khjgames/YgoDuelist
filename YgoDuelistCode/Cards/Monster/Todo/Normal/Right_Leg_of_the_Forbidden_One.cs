@@ -15,9 +15,10 @@ public sealed class Right_Leg_of_the_Forbidden_One : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 200,
-            baseDef: 300,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 3,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

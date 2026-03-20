@@ -15,9 +15,10 @@ public sealed class Gagagigo : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1850,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Z_Metal_Tank : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1500,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

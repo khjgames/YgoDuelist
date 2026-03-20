@@ -15,9 +15,10 @@ public sealed class Red_Eyes_Black_Dragon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2400,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

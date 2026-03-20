@@ -15,9 +15,10 @@ public sealed class Breaker_the_Magical_Warrior : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1600,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

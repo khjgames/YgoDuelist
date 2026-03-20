@@ -15,9 +15,10 @@ public sealed class Ancient_Brain : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1000,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

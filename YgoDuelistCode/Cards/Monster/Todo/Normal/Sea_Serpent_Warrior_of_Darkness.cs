@@ -15,9 +15,10 @@ public sealed class Sea_Serpent_Warrior_of_Darkness : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1800,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.SeaSerpent)
     {
     }
 

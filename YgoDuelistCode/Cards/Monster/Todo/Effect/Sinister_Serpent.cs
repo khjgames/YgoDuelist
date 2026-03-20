@@ -15,9 +15,10 @@ public sealed class Sinister_Serpent : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 300,
-            baseDef: 250,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
 

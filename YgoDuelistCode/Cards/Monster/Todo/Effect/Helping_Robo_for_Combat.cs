@@ -15,9 +15,10 @@ public sealed class Helping_Robo_for_Combat : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1600,
+            baseAtk: 16,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

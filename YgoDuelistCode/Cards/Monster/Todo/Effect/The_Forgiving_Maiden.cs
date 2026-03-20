@@ -15,9 +15,10 @@ public sealed class The_Forgiving_Maiden : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 850,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

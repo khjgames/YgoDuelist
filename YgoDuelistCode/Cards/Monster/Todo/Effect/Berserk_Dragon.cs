@@ -15,9 +15,10 @@ public sealed class Berserk_Dragon : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 3500,
+            baseAtk: 35,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

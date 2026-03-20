@@ -15,9 +15,10 @@ public sealed class Hane_Hane : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 450,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

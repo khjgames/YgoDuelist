@@ -15,9 +15,10 @@ public sealed class Catapult_Turtle : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1000,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

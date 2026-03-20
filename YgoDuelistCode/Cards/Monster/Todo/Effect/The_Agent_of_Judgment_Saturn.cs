@@ -15,9 +15,10 @@ public sealed class The_Agent_of_Judgment_Saturn : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2400,
+            baseAtk: 24,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

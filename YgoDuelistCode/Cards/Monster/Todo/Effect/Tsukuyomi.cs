@@ -15,9 +15,10 @@ public sealed class Tsukuyomi : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1100,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class D_D_Crazy_Beast : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1400,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Flame_Manipulator : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 900,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

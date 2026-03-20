@@ -15,9 +15,10 @@ public sealed class Kiseitai : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 300,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

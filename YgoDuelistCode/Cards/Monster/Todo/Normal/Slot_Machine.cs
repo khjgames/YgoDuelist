@@ -15,9 +15,10 @@ public sealed class Slot_Machine : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2000,
-            baseDef: 2300,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 23,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

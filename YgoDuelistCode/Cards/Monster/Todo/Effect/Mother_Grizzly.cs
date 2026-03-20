@@ -15,9 +15,10 @@ public sealed class Mother_Grizzly : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1400,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Terra_the_Terrible : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1200,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

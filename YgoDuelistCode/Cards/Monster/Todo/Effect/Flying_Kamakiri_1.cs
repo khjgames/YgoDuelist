@@ -15,9 +15,10 @@ public sealed class Flying_Kamakiri_1 : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1400,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

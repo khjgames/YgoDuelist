@@ -15,9 +15,10 @@ public sealed class Jinzo : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2400,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

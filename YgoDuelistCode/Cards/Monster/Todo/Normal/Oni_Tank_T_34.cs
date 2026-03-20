@@ -15,9 +15,10 @@ public sealed class Oni_Tank_T_34 : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1400,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

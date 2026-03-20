@@ -15,9 +15,10 @@ public sealed class Supply : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1300,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

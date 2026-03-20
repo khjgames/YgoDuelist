@@ -15,9 +15,10 @@ public sealed class Pixie_Knight : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1300,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

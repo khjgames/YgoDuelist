@@ -15,9 +15,10 @@ public sealed class Dark_Driceratops : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2400,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dinosaur)
     {
     }
 

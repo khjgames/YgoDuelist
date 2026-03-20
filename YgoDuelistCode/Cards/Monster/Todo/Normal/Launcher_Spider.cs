@@ -15,9 +15,10 @@ public sealed class Launcher_Spider : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 2200,
-            baseDef: 2500,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 25,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

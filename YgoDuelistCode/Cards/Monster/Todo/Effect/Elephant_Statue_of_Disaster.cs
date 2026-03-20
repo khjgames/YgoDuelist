@@ -15,9 +15,10 @@ public sealed class Elephant_Statue_of_Disaster : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1500,
+            baseAtk: 15,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

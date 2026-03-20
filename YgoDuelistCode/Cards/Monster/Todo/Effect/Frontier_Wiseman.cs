@@ -15,9 +15,10 @@ public sealed class Frontier_Wiseman : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1600,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

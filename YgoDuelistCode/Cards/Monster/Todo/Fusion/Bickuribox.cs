@@ -15,9 +15,10 @@ public sealed class Bickuribox : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2300,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 23,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Kazejin : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 2400,
-            baseDef: 2200,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 22,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

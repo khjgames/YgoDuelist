@@ -15,9 +15,10 @@ public sealed class Outstanding_Dog_Marron : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 100,
-            baseDef: 100,
-            baseMgc: 0)
+            baseAtk: 1,
+            baseDef: 1,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

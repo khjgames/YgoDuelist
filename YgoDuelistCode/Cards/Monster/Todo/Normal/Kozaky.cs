@@ -15,9 +15,10 @@ public sealed class Kozaky : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 400,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

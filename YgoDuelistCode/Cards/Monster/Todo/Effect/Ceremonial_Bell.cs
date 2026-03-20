@@ -16,8 +16,9 @@ public sealed class Ceremonial_Bell : EffectMonsterCard
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 0,
-            baseDef: 1850,
-            baseMgc: 0)
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Manga_Ryu_Ran : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 2200,
-            baseDef: 2600,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 26,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

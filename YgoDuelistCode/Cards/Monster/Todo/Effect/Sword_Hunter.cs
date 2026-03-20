@@ -15,9 +15,10 @@ public sealed class Sword_Hunter : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2450,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

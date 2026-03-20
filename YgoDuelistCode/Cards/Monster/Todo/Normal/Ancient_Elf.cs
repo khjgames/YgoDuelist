@@ -15,9 +15,10 @@ public sealed class Ancient_Elf : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1450,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

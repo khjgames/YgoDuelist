@@ -15,9 +15,10 @@ public sealed class Dimension_Jar : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 200,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

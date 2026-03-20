@@ -3,13 +3,14 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Self_Destruct_Button : BaseTrapCard
 {
     public Self_Destruct_Button()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Blue_Winged_Crown : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1600,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

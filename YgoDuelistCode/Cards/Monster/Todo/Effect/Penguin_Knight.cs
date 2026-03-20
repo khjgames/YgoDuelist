@@ -15,9 +15,10 @@ public sealed class Penguin_Knight : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 900,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

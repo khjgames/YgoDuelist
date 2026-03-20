@@ -15,9 +15,10 @@ public sealed class Exodia_the_Forbidden_One : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1000,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

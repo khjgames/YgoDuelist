@@ -15,9 +15,10 @@ public sealed class Girochin_Kuwagata : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1700,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

@@ -16,8 +16,9 @@ public sealed class Cocoon_of_Evolution : EffectMonsterCard
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 0,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

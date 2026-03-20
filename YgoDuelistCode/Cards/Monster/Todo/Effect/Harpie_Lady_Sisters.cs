@@ -15,9 +15,10 @@ public sealed class Harpie_Lady_Sisters : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1950,
-            baseDef: 2100,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 21,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

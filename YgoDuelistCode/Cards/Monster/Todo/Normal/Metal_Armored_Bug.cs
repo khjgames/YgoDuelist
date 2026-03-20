@@ -15,9 +15,10 @@ public sealed class Metal_Armored_Bug : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2800,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Guardian_Elma : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1300,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

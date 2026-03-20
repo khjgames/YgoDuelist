@@ -15,9 +15,10 @@ public sealed class Tornado_Bird : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1100,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

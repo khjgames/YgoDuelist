@@ -15,9 +15,10 @@ public sealed class Des_Lacooda : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 500,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

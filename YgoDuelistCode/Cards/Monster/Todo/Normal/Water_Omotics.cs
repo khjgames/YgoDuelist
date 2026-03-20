@@ -15,9 +15,10 @@ public sealed class Water_Omotics : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1400,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

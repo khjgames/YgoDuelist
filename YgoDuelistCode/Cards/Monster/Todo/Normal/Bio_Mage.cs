@@ -15,9 +15,10 @@ public sealed class Bio_Mage : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1150,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -11,9 +12,12 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
 {
     public YgoCardType YgoCardType => YgoCardType.Trap;
 
-    protected BaseTrapCard(int cost, CardRarity rarity, TargetType target)
+    public DuelMonsterRace DuelMonsterRace { get; }
+
+    protected BaseTrapCard(int cost, CardRarity rarity, TargetType target, DuelMonsterRace duelMonsterRace)
         : base(cost, CardType.Skill, rarity, target)
     {
+        DuelMonsterRace = duelMonsterRace;
     }
 
     protected abstract Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay);

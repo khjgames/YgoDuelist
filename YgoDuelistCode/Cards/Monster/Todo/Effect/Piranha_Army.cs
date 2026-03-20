@@ -15,9 +15,10 @@ public sealed class Piranha_Army : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 800,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

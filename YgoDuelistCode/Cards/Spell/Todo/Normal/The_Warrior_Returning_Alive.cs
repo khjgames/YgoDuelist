@@ -3,13 +3,14 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class The_Warrior_Returning_Alive : BaseSpellCard
 {
     public The_Warrior_Returning_Alive()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 

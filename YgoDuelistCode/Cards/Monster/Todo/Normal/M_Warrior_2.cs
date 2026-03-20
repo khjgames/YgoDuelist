@@ -15,9 +15,10 @@ public sealed class M_Warrior_2 : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 500,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

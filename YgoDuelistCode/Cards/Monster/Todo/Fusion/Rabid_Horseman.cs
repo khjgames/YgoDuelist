@@ -15,9 +15,10 @@ public sealed class Rabid_Horseman : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2000,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

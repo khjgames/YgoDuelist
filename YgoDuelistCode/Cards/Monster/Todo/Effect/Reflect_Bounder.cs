@@ -15,9 +15,10 @@ public sealed class Reflect_Bounder : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1700,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

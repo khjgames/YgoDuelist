@@ -15,9 +15,10 @@ public sealed class Liquid_Beast : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 950,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

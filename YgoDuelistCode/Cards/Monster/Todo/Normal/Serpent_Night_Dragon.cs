@@ -15,9 +15,10 @@ public sealed class Serpent_Night_Dragon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2350,
-            baseDef: 2400,
-            baseMgc: 0)
+            baseAtk: 23,
+            baseDef: 24,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

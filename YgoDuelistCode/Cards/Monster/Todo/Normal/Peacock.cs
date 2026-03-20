@@ -15,9 +15,10 @@ public sealed class Peacock : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1700,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

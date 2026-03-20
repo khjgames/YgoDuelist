@@ -3,13 +3,14 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
 public sealed class Blind_Destruction : BaseTrapCard
 {
     public Blind_Destruction()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapContinuous)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Prickle_Fairy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 300,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Plant)
     {
     }
 

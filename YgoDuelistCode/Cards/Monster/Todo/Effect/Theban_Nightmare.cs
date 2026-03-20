@@ -15,9 +15,10 @@ public sealed class Theban_Nightmare : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1500,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

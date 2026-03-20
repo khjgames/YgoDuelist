@@ -15,9 +15,10 @@ public sealed class Kryuel : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1000,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

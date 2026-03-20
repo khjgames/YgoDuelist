@@ -15,9 +15,10 @@ public sealed class Magical_Plant_Mandragola : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 500,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

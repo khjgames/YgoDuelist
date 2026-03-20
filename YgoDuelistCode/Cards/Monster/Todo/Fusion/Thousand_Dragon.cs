@@ -15,9 +15,10 @@ public sealed class Thousand_Dragon : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 2400,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

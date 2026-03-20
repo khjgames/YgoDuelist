@@ -15,9 +15,10 @@ public sealed class Rocket_Jumper : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1000,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

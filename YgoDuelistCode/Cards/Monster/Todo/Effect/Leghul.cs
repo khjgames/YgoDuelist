@@ -15,9 +15,10 @@ public sealed class Leghul : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 300,
-            baseDef: 350,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 3,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

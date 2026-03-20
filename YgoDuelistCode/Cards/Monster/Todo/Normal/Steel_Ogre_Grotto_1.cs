@@ -15,9 +15,10 @@ public sealed class Steel_Ogre_Grotto_1 : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1400,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

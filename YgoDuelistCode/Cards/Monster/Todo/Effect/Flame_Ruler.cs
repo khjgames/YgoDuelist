@@ -15,9 +15,10 @@ public sealed class Flame_Ruler : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1500,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

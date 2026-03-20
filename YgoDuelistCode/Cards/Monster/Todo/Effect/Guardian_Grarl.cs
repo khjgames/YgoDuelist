@@ -15,9 +15,10 @@ public sealed class Guardian_Grarl : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2500,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 25,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dinosaur)
     {
     }
 

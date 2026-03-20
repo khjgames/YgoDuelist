@@ -15,9 +15,10 @@ public sealed class Winged_Minion : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 700,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

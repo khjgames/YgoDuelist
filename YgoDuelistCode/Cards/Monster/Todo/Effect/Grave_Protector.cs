@@ -16,8 +16,9 @@ public sealed class Grave_Protector : EffectMonsterCard
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 0,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

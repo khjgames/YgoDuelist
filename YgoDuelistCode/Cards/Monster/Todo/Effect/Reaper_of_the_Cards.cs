@@ -15,9 +15,10 @@ public sealed class Reaper_of_the_Cards : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1380,
-            baseDef: 1930,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

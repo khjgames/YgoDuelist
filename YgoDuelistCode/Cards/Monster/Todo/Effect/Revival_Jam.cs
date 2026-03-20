@@ -15,9 +15,10 @@ public sealed class Revival_Jam : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1500,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Shinato_King_of_a_Higher_Plane : RitualMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 3300,
-            baseDef: 3000,
-            baseMgc: 0)
+            baseAtk: 33,
+            baseDef: 30,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

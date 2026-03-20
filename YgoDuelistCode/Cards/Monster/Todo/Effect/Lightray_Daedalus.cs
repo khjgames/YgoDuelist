@@ -15,9 +15,10 @@ public sealed class Lightray_Daedalus : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2600,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.SeaSerpent)
     {
     }
 

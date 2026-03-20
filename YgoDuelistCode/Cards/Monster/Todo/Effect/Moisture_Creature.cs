@@ -15,9 +15,10 @@ public sealed class Moisture_Creature : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 9,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2800,
-            baseDef: 2900,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 29,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Berserk_Gorilla : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2000,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Mad_Dog_of_Darkness : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1900,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

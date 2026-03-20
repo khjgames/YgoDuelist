@@ -15,9 +15,10 @@ public sealed class Hungry_Burger : RitualMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2000,
-            baseDef: 1850,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

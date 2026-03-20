@@ -15,9 +15,10 @@ public sealed class Gravekeeper_s_Assailant : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1500,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -17,7 +17,8 @@ public sealed class Chaos_Necromancer : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 0,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

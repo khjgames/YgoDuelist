@@ -15,9 +15,10 @@ public sealed class Time_Wizard : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 500,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Insect_Princess : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1900,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

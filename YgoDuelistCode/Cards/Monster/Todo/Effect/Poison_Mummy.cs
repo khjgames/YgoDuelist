@@ -15,9 +15,10 @@ public sealed class Poison_Mummy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1000,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

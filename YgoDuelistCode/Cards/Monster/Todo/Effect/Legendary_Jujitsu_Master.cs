@@ -15,9 +15,10 @@ public sealed class Legendary_Jujitsu_Master : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1300,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Helpoemer : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2000,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

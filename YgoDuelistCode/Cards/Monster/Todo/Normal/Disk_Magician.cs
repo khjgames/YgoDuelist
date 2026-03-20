@@ -15,9 +15,10 @@ public sealed class Disk_Magician : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1350,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

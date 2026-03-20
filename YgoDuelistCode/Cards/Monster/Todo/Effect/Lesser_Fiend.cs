@@ -15,9 +15,10 @@ public sealed class Lesser_Fiend : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2100,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 21,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

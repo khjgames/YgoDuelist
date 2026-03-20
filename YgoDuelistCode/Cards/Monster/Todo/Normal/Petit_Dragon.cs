@@ -15,9 +15,10 @@ public sealed class Petit_Dragon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 600,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 6,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

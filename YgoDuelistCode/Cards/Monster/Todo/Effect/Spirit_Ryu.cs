@@ -15,9 +15,10 @@ public sealed class Spirit_Ryu : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1000,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

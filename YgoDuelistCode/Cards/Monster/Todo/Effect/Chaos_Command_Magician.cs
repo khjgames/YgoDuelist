@@ -15,9 +15,10 @@ public sealed class Chaos_Command_Magician : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2400,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

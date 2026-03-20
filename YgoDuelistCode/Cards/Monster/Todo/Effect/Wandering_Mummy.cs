@@ -15,9 +15,10 @@ public sealed class Wandering_Mummy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1500,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

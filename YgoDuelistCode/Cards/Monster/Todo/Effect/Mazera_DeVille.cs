@@ -15,9 +15,10 @@ public sealed class Mazera_DeVille : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2800,
-            baseDef: 2300,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 23,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

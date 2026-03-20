@@ -15,9 +15,10 @@ public sealed class Crab_Turtle : RitualMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2550,
-            baseDef: 2500,
-            baseMgc: 0)
+            baseAtk: 25,
+            baseDef: 25,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

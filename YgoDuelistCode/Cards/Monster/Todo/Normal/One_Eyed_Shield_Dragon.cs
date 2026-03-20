@@ -15,9 +15,10 @@ public sealed class One_Eyed_Shield_Dragon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 700,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

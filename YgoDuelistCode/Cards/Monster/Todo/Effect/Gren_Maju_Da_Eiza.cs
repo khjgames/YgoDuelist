@@ -17,7 +17,8 @@ public sealed class Gren_Maju_Da_Eiza : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
             baseAtk: -1,
             baseDef: -1,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

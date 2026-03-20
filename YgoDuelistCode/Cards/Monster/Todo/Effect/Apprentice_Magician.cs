@@ -15,9 +15,10 @@ public sealed class Apprentice_Magician : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 400,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

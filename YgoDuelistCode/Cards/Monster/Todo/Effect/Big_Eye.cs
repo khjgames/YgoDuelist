@@ -15,9 +15,10 @@ public sealed class Big_Eye : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1200,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

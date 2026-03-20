@@ -15,9 +15,10 @@ public sealed class Spirit_Caller : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1000,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

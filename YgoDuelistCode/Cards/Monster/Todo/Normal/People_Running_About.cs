@@ -15,9 +15,10 @@ public sealed class People_Running_About : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 600,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 6,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

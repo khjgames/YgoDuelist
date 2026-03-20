@@ -15,9 +15,10 @@ public sealed class Kabazauls : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1700,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dinosaur)
     {
     }
 

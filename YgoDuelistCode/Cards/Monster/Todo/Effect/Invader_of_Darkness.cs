@@ -15,9 +15,10 @@ public sealed class Invader_of_Darkness : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2900,
-            baseDef: 2500,
-            baseMgc: 0)
+            baseAtk: 29,
+            baseDef: 25,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

@@ -16,8 +16,9 @@ public sealed class Ojama_Yellow : NormalMonsterCard
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 0,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

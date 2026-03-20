@@ -15,9 +15,10 @@ public sealed class Worm_Drake : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1400,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
 

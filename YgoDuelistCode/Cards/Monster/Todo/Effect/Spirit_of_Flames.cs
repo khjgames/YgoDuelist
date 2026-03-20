@@ -15,9 +15,10 @@ public sealed class Spirit_of_Flames : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1700,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

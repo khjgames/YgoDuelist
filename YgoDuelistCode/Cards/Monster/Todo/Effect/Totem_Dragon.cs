@@ -15,9 +15,10 @@ public sealed class Totem_Dragon : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 400,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

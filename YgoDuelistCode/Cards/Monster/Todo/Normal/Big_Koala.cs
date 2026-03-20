@@ -15,9 +15,10 @@ public sealed class Big_Koala : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2700,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 27,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

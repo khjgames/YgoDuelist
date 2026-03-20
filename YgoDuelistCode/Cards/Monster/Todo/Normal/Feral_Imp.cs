@@ -15,9 +15,10 @@ public sealed class Feral_Imp : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1300,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

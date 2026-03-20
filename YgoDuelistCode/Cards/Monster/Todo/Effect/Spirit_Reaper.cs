@@ -15,9 +15,10 @@ public sealed class Spirit_Reaper : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 300,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

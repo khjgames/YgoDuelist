@@ -15,9 +15,10 @@ public sealed class Dark_Magician_Girl : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2000,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -17,7 +17,8 @@ public sealed class Maju_Garzett : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: -1,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Kiryu : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2000,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

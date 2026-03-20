@@ -1,3 +1,5 @@
+using YgoDuelist.YgoDuelistCode.Models;
+
 namespace YgoDuelist.YgoDuelistCode.Cards;
 
 /// <summary>
@@ -19,4 +21,7 @@ public enum YgoCardType
 public interface IYgoCard
 {
     YgoCardType YgoCardType { get; }
+
+    /// <summary>Monster type / spell subtype / trap subtype for YGO frame data (from card JSON <c>race</c>).</summary>
+    DuelMonsterRace DuelMonsterRace { get; }
 }

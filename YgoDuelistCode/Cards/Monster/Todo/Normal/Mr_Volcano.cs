@@ -15,9 +15,10 @@ public sealed class Mr_Volcano : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 2100,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 21,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

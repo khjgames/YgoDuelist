@@ -15,9 +15,10 @@ public sealed class Gravekeeper_s_Guard : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1000,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

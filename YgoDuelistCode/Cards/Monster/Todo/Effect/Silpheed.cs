@@ -15,9 +15,10 @@ public sealed class Silpheed : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1700,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

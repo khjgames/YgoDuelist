@@ -15,9 +15,10 @@ public sealed class Skilled_Dark_Magician : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1900,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

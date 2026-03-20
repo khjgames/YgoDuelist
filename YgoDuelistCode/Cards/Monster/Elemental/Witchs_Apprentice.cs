@@ -17,7 +17,8 @@ public sealed class Witchs_Apprentice : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 6,
             baseDef: 5,
-            baseMgc: 5)
+            baseMgc: 5,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

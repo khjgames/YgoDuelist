@@ -15,9 +15,10 @@ public sealed class White_Magical_Hat : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1000,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

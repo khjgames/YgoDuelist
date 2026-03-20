@@ -15,9 +15,10 @@ public sealed class Bazoo_the_Soul_Eater : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1600,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

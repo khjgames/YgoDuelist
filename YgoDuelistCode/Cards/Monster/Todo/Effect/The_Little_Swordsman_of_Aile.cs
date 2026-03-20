@@ -15,9 +15,10 @@ public sealed class The_Little_Swordsman_of_Aile : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 800,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

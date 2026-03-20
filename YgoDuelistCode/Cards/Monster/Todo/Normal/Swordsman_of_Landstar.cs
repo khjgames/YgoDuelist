@@ -15,9 +15,10 @@ public sealed class Swordsman_of_Landstar : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 500,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

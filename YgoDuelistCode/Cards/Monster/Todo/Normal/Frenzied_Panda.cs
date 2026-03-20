@@ -15,9 +15,10 @@ public sealed class Frenzied_Panda : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1200,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

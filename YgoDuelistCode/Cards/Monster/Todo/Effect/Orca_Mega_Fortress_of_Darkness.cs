@@ -15,9 +15,10 @@ public sealed class Orca_Mega_Fortress_of_Darkness : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2100,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 21,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.SeaSerpent)
     {
     }
 

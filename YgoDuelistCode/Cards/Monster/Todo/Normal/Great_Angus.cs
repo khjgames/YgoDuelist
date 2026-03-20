@@ -15,9 +15,10 @@ public sealed class Great_Angus : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1800,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

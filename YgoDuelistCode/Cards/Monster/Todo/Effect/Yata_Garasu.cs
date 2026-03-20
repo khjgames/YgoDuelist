@@ -15,9 +15,10 @@ public sealed class Yata_Garasu : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 200,
-            baseDef: 100,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 1,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

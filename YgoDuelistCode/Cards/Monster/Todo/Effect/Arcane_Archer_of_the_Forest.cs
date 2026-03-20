@@ -15,9 +15,10 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 900,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

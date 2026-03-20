@@ -15,9 +15,10 @@ public sealed class Gilasaurus : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1400,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dinosaur)
     {
     }
 

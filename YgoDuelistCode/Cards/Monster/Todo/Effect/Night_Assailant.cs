@@ -15,9 +15,10 @@ public sealed class Night_Assailant : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 200,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

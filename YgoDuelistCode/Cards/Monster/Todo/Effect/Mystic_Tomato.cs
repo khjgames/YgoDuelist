@@ -15,9 +15,10 @@ public sealed class Mystic_Tomato : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1400,
-            baseDef: 1100,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 11,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Plant)
     {
     }
 

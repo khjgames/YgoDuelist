@@ -15,9 +15,10 @@ public sealed class Des_Kangaroo : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1500,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

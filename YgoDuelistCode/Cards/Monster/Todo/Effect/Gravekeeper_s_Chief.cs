@@ -15,9 +15,10 @@ public sealed class Gravekeeper_s_Chief : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1900,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

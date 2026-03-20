@@ -15,9 +15,10 @@ public sealed class Don_Turtle : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1100,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Master_Kyonshee : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1750,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

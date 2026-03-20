@@ -15,9 +15,10 @@ public sealed class Masked_Sorcerer : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 900,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

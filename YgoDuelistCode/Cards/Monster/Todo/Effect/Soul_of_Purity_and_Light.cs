@@ -15,9 +15,10 @@ public sealed class Soul_of_Purity_and_Light : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2000,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

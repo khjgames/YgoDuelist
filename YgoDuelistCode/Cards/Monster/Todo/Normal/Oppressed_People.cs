@@ -15,9 +15,10 @@ public sealed class Oppressed_People : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 400,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

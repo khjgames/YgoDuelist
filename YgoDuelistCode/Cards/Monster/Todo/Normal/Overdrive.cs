@@ -15,9 +15,10 @@ public sealed class Overdrive : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1600,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

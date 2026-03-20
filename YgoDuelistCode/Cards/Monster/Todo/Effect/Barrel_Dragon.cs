@@ -15,9 +15,10 @@ public sealed class Barrel_Dragon : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2600,
-            baseDef: 2200,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 22,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

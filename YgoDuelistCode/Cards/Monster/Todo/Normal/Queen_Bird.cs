@@ -15,9 +15,10 @@ public sealed class Queen_Bird : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1200,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

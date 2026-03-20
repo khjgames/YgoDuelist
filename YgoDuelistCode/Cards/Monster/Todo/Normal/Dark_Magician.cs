@@ -15,9 +15,10 @@ public sealed class Dark_Magician : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2500,
-            baseDef: 2100,
-            baseMgc: 0)
+            baseAtk: 25,
+            baseDef: 21,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class The_Fiend_Megacyber : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2200,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Earth_Effigy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 100,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 1,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

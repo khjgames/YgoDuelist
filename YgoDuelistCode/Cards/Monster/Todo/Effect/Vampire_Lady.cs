@@ -15,9 +15,10 @@ public sealed class Vampire_Lady : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1550,
-            baseDef: 1550,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

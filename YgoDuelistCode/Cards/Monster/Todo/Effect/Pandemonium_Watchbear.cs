@@ -15,9 +15,10 @@ public sealed class Pandemonium_Watchbear : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1300,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

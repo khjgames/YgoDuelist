@@ -15,9 +15,10 @@ public sealed class Dokuroyaiba : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1000,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

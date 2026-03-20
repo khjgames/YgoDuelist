@@ -15,9 +15,10 @@ public sealed class Two_Mouth_Darkruler : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 900,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dinosaur)
     {
     }
 

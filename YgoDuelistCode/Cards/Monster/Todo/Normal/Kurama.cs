@@ -15,9 +15,10 @@ public sealed class Kurama : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 800,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

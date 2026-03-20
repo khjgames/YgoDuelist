@@ -15,9 +15,10 @@ public sealed class Turtle_Tiger : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1000,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

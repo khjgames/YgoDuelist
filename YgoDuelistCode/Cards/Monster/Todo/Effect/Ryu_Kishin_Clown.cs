@@ -15,9 +15,10 @@ public sealed class Ryu_Kishin_Clown : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 800,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

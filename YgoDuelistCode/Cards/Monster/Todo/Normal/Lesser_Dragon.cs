@@ -15,9 +15,10 @@ public sealed class Lesser_Dragon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1200,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

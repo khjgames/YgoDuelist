@@ -15,9 +15,10 @@ public sealed class Shadow_Ghoul : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1600,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

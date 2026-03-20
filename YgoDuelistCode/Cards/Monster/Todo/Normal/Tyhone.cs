@@ -15,9 +15,10 @@ public sealed class Tyhone : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1200,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

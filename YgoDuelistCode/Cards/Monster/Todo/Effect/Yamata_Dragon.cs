@@ -15,9 +15,10 @@ public sealed class Yamata_Dragon : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 2600,
-            baseDef: 3100,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 31,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

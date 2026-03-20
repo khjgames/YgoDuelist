@@ -15,9 +15,10 @@ public sealed class Absorbing_Kid_from_the_Sky : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1300,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

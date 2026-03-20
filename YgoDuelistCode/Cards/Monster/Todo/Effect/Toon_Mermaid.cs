@@ -15,9 +15,10 @@ public sealed class Toon_Mermaid : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1400,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Skilled_White_Magician : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1700,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

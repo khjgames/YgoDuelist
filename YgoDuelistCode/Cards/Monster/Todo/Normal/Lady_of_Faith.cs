@@ -15,9 +15,10 @@ public sealed class Lady_of_Faith : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1100,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

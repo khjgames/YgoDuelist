@@ -15,9 +15,10 @@ public sealed class The_Kick_Man : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1300,
-            baseDef: 300,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 3,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Tongyo : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1350,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

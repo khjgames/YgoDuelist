@@ -15,9 +15,10 @@ public sealed class Servant_of_Catabolism : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 700,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

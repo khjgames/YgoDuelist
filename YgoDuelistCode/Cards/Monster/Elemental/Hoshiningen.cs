@@ -17,7 +17,8 @@ public sealed class Hoshiningen : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 5,
             baseDef: 7,
-            baseMgc: 5)
+            baseMgc: 5,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

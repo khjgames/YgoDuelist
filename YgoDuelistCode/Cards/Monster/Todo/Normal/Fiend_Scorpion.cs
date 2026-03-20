@@ -15,9 +15,10 @@ public sealed class Fiend_Scorpion : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 900,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

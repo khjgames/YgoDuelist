@@ -15,9 +15,10 @@ public sealed class The_Legendary_Fisherman : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1850,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

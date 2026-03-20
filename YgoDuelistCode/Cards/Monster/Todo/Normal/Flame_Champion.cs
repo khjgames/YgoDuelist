@@ -15,9 +15,10 @@ public sealed class Flame_Champion : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1900,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

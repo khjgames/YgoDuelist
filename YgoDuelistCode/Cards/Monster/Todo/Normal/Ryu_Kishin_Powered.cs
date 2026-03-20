@@ -15,9 +15,10 @@ public sealed class Ryu_Kishin_Powered : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1600,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

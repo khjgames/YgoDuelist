@@ -15,9 +15,10 @@ public sealed class Ground_Attacker_Bugroth : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1500,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

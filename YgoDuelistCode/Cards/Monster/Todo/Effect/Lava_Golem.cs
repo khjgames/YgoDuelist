@@ -15,9 +15,10 @@ public sealed class Lava_Golem : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 3000,
-            baseDef: 2500,
-            baseMgc: 0)
+            baseAtk: 30,
+            baseDef: 25,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

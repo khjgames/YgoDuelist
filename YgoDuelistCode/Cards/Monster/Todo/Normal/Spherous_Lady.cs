@@ -15,9 +15,10 @@ public sealed class Spherous_Lady : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 400,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

@@ -16,8 +16,9 @@ public sealed class Royal_Magical_Library : EffectMonsterCard
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 0,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

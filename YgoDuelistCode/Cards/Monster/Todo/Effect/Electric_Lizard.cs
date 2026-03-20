@@ -15,9 +15,10 @@ public sealed class Electric_Lizard : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 850,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

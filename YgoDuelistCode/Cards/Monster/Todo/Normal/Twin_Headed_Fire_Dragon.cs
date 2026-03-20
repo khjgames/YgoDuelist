@@ -15,9 +15,10 @@ public sealed class Twin_Headed_Fire_Dragon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 2200,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

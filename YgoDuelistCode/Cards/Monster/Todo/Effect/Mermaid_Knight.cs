@@ -15,9 +15,10 @@ public sealed class Mermaid_Knight : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1500,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

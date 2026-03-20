@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell;
 
@@ -15,7 +16,7 @@ public sealed class Pot_Of_Greed : BaseSpellCard
         new[] { new CardsVar(2) };
 
     public Pot_Of_Greed()
-        : base(0, CardRarity.Uncommon, TargetType.Self)
+        : base(0, CardRarity.Uncommon, TargetType.Self, DuelMonsterRace.SpellNormal)
     {
     }
 

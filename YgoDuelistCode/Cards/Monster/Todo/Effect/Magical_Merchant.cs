@@ -15,9 +15,10 @@ public sealed class Magical_Merchant : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 200,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

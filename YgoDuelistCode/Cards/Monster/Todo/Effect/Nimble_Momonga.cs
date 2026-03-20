@@ -15,9 +15,10 @@ public sealed class Nimble_Momonga : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1000,
-            baseDef: 100,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 1,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

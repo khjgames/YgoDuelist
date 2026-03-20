@@ -15,9 +15,10 @@ public sealed class Giant_Axe_Mummy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1700,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

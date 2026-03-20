@@ -15,9 +15,10 @@ public sealed class Amphibian_Beast : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2400,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

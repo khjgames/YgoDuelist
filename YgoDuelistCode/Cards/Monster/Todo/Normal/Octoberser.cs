@@ -15,9 +15,10 @@ public sealed class Octoberser : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1600,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

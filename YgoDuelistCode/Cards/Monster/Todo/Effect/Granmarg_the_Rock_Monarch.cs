@@ -15,9 +15,10 @@ public sealed class Granmarg_the_Rock_Monarch : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2400,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

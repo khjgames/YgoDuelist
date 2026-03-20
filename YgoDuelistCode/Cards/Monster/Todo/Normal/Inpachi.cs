@@ -15,9 +15,10 @@ public sealed class Inpachi : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1600,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

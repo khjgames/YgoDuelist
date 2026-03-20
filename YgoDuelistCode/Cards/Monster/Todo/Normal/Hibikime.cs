@@ -15,9 +15,10 @@ public sealed class Hibikime : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1450,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

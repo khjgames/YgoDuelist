@@ -15,9 +15,10 @@ public sealed class Tripwire_Beast : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1200,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

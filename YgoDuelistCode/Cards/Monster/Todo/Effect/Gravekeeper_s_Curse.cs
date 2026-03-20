@@ -15,9 +15,10 @@ public sealed class Gravekeeper_s_Curse : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 800,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

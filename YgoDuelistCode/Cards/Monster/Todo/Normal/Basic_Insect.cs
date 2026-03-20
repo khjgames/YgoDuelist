@@ -15,9 +15,10 @@ public sealed class Basic_Insect : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 500,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

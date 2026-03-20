@@ -15,9 +15,10 @@ public sealed class Man_Eater : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 800,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Plant)
     {
     }
 

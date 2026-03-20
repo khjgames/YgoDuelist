@@ -15,9 +15,10 @@ public sealed class Two_Thousand_Needles : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2000,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 20,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

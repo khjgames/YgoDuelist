@@ -15,9 +15,10 @@ public sealed class Needle_Burrower : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1700,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

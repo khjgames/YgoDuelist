@@ -15,9 +15,10 @@ public sealed class Black_Skull_Dragon : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 9,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 3200,
-            baseDef: 2500,
-            baseMgc: 0)
+            baseAtk: 32,
+            baseDef: 25,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

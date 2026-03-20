@@ -15,9 +15,10 @@ public sealed class D_D_Trainer : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 100,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 1,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

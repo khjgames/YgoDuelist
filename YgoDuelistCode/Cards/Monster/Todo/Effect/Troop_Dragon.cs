@@ -15,9 +15,10 @@ public sealed class Troop_Dragon : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 700,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

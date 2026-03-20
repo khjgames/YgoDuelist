@@ -15,9 +15,10 @@ public sealed class Soul_Absorbing_Bone_Tower : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 400,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

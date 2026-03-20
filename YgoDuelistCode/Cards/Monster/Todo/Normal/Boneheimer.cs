@@ -15,9 +15,10 @@ public sealed class Boneheimer : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 850,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

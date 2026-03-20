@@ -15,9 +15,10 @@ public sealed class Melchid_the_Four_Face_Beast : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1500,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

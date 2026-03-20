@@ -15,9 +15,10 @@ public sealed class Swarm_of_Scarabs : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 500,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

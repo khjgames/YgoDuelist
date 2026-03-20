@@ -15,9 +15,10 @@ public sealed class Roulette_Barrel : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1000,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

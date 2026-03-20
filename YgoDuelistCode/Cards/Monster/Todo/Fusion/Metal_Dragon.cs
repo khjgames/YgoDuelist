@@ -15,9 +15,10 @@ public sealed class Metal_Dragon : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1850,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Tri_Horned_Dragon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2850,
-            baseDef: 2350,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 23,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

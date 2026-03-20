@@ -15,9 +15,10 @@ public sealed class Cat_s_Ear_Tribe : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 200,
-            baseDef: 100,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 1,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

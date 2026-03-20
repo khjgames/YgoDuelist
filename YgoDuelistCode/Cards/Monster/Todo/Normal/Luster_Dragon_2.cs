@@ -15,9 +15,10 @@ public sealed class Luster_Dragon_2 : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 2400,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

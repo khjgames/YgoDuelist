@@ -15,9 +15,10 @@ public sealed class Cyber_Jar : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 900,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

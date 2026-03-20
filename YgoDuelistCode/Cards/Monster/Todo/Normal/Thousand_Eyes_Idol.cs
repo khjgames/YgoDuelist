@@ -17,7 +17,8 @@ public sealed class Thousand_Eyes_Idol : NormalMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 0,
             baseDef: 0,
-            baseMgc: 0)
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

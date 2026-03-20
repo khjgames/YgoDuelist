@@ -15,9 +15,10 @@ public sealed class Man_Eater_Bug : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 450,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

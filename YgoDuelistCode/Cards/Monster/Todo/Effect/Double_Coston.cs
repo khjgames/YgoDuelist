@@ -15,9 +15,10 @@ public sealed class Double_Coston : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1700,
-            baseDef: 1650,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

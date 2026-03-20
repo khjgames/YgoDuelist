@@ -15,9 +15,10 @@ public sealed class Maharaghi : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1200,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

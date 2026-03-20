@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell;
@@ -26,7 +27,7 @@ public sealed class Foolish_Burial : BaseSpellCard
     protected override IEnumerable<DynamicVar> CanonicalVars => Enumerable.Empty<DynamicVar>();
     
     public Foolish_Burial()
-        : base(1, CardRarity.Rare, TargetType.Self)
+        : base(1, CardRarity.Rare, TargetType.Self, DuelMonsterRace.SpellNormal)
     {
     }
 

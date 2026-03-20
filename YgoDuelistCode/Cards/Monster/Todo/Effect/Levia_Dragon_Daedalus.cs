@@ -15,9 +15,10 @@ public sealed class Levia_Dragon_Daedalus : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2600,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.SeaSerpent)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Ancient_One_of_the_Deep_Forest : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1800,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

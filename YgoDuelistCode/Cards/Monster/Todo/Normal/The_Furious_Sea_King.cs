@@ -15,9 +15,10 @@ public sealed class The_Furious_Sea_King : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 800,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

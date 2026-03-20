@@ -15,9 +15,10 @@ public sealed class Drillago : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1600,
-            baseDef: 1100,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 11,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Mystical_Shine_Ball : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 500,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

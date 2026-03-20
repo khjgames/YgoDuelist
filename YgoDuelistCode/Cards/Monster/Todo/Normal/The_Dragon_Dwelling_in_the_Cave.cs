@@ -15,9 +15,10 @@ public sealed class The_Dragon_Dwelling_in_the_Cave : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1300,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

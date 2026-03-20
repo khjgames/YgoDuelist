@@ -15,9 +15,10 @@ public sealed class Green_Phantom_King : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 500,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Plant)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Lizard_Soldier : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1100,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Jowls_of_Dark_Demise : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 200,
-            baseDef: 100,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 1,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

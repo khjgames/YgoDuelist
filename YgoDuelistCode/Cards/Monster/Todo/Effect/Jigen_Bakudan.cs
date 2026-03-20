@@ -15,9 +15,10 @@ public sealed class Jigen_Bakudan : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 200,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

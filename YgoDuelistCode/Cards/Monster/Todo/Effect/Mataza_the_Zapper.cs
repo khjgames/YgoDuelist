@@ -15,9 +15,10 @@ public sealed class Mataza_the_Zapper : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1300,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

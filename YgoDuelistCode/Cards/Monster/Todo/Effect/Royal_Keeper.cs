@@ -15,9 +15,10 @@ public sealed class Royal_Keeper : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1600,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

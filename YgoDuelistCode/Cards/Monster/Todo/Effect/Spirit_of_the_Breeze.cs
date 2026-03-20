@@ -16,8 +16,9 @@ public sealed class Spirit_of_the_Breeze : EffectMonsterCard
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
             baseAtk: 0,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

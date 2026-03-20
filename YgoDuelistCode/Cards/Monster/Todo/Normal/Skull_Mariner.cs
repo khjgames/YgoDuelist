@@ -15,9 +15,10 @@ public sealed class Skull_Mariner : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1600,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Dark_Necrofear : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2200,
-            baseDef: 2800,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 28,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

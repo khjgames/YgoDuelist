@@ -15,9 +15,10 @@ public sealed class The_Thing_in_the_Crater : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1000,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

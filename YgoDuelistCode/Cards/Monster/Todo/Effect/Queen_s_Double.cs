@@ -15,9 +15,10 @@ public sealed class Queen_s_Double : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 350,
-            baseDef: 300,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 3,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

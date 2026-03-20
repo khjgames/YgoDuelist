@@ -25,7 +25,8 @@ public sealed class Enraged_Muka_Muka : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 12,
             baseDef: 6,
-            baseMgc: 3)
+            baseMgc: 3,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

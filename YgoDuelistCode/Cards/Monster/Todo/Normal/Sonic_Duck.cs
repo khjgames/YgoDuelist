@@ -15,9 +15,10 @@ public sealed class Sonic_Duck : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1700,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

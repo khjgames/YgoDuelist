@@ -15,9 +15,10 @@ public sealed class Fiend_Reflection_2 : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1100,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

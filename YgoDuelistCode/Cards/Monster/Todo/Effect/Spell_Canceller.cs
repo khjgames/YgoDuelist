@@ -15,9 +15,10 @@ public sealed class Spell_Canceller : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1800,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

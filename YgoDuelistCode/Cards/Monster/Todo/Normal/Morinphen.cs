@@ -15,9 +15,10 @@ public sealed class Morinphen : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1550,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

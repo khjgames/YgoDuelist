@@ -15,9 +15,10 @@ public sealed class Winged_Sage_Falcos : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1700,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Despair_from_the_Dark : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2800,
-            baseDef: 3000,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 30,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

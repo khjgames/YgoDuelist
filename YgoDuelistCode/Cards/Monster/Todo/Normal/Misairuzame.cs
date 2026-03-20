@@ -15,9 +15,10 @@ public sealed class Misairuzame : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1400,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

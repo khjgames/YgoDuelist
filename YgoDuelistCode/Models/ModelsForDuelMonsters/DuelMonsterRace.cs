@@ -28,4 +28,24 @@ public enum DuelMonsterRace
     WingedBeast,
     Wyrm,
     Zombie,
+
+    /// <summary>Spell Card (race Normal in card data).</summary>
+    SpellNormal,
+    /// <summary>Spell Card — Continuous.</summary>
+    SpellContinuous,
+    /// <summary>Spell Card — Quick-Play.</summary>
+    SpellQuickPlay,
+    /// <summary>Spell Card — Equip.</summary>
+    SpellEquip,
+    /// <summary>Spell Card — Field.</summary>
+    SpellField,
+    /// <summary>Spell Card — Ritual.</summary>
+    SpellRitual,
+
+    /// <summary>Trap Card (race Normal in card data).</summary>
+    TrapNormal,
+    /// <summary>Trap Card — Continuous.</summary>
+    TrapContinuous,
+    /// <summary>Trap Card — Counter.</summary>
+    TrapCounter,
 }

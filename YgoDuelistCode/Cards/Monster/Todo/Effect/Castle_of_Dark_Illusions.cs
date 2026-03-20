@@ -15,9 +15,10 @@ public sealed class Castle_of_Dark_Illusions : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 920,
-            baseDef: 1930,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

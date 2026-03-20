@@ -15,9 +15,10 @@ public sealed class Metal_Fish : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1600,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

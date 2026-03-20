@@ -15,9 +15,10 @@ public sealed class Robolady : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 450,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

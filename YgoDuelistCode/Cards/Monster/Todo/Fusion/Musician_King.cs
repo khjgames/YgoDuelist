@@ -15,9 +15,10 @@ public sealed class Musician_King : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1750,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

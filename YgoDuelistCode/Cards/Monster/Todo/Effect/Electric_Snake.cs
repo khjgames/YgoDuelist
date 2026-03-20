@@ -15,9 +15,10 @@ public sealed class Electric_Snake : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 800,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

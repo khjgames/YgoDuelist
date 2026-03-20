@@ -15,9 +15,10 @@ public sealed class Suijin : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 2500,
-            baseDef: 2400,
-            baseMgc: 0)
+            baseAtk: 25,
+            baseDef: 24,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

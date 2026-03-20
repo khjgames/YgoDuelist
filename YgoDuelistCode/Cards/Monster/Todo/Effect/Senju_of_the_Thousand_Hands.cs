@@ -15,9 +15,10 @@ public sealed class Senju_of_the_Thousand_Hands : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1400,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

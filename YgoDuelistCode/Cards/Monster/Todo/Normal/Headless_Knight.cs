@@ -15,9 +15,10 @@ public sealed class Headless_Knight : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1450,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 14,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

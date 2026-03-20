@@ -15,9 +15,10 @@ public sealed class Flying_Fish : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 800,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

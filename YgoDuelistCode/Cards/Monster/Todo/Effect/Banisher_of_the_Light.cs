@@ -15,9 +15,10 @@ public sealed class Banisher_of_the_Light : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 100,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 1,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Gora_Turtle_of_Illusion : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1200,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

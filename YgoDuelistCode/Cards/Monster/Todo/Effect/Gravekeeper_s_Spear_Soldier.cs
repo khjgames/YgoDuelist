@@ -15,9 +15,10 @@ public sealed class Gravekeeper_s_Spear_Soldier : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1500,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

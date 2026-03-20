@@ -15,9 +15,10 @@ public sealed class Skull_Archfiend_of_Lightning : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2500,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 25,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

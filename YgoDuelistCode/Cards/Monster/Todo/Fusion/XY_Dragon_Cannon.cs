@@ -15,9 +15,10 @@ public sealed class XY_Dragon_Cannon : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2200,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

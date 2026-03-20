@@ -15,9 +15,10 @@ public sealed class The_Bistro_Butcher : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1800,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

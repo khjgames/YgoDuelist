@@ -15,9 +15,10 @@ public sealed class United_Resistance : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1000,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

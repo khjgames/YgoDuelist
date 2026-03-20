@@ -15,9 +15,10 @@ public sealed class Dark_Paladin : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2900,
-            baseDef: 2400,
-            baseMgc: 0)
+            baseAtk: 29,
+            baseDef: 24,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

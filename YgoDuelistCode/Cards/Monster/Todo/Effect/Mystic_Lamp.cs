@@ -15,9 +15,10 @@ public sealed class Mystic_Lamp : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 400,
-            baseDef: 300,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 3,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

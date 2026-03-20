@@ -15,9 +15,10 @@ public sealed class Fushioh_Richie : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2600,
-            baseDef: 2900,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 29,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class An_Owl_of_Luck : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 300,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

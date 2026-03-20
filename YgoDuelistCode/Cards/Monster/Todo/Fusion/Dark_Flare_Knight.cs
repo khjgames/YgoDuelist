@@ -15,9 +15,10 @@ public sealed class Dark_Flare_Knight : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2200,
-            baseDef: 800,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 8,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

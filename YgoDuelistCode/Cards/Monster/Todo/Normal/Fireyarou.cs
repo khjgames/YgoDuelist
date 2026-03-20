@@ -15,9 +15,10 @@ public sealed class Fireyarou : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1300,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

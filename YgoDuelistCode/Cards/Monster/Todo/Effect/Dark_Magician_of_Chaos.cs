@@ -15,9 +15,10 @@ public sealed class Dark_Magician_of_Chaos : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2800,
-            baseDef: 2600,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 26,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

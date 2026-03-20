@@ -15,9 +15,10 @@ public sealed class Protector_of_the_Sanctuary : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1100,
-            baseDef: 1900,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 19,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

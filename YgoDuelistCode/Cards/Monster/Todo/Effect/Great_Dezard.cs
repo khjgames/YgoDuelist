@@ -15,9 +15,10 @@ public sealed class Great_Dezard : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1900,
-            baseDef: 2300,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 23,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Tyrant_Dragon : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 2900,
-            baseDef: 2500,
-            baseMgc: 0)
+            baseAtk: 29,
+            baseDef: 25,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

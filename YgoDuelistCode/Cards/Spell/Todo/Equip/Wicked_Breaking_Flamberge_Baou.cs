@@ -3,13 +3,14 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
 public sealed class Wicked_Breaking_Flamberge_Baou : BaseSpellCard
 {
     public Wicked_Breaking_Flamberge_Baou()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellEquip)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Lekunga : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1700,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Plant)
     {
     }
 

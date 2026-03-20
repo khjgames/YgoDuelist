@@ -15,9 +15,10 @@ public sealed class Lady_Ninja_Yae : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1100,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

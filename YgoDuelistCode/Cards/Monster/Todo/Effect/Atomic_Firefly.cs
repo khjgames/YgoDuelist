@@ -15,9 +15,10 @@ public sealed class Atomic_Firefly : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 100,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 1,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

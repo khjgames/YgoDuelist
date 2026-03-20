@@ -15,9 +15,10 @@ public sealed class Amazoness_Tiger : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1100,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

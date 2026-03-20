@@ -15,9 +15,10 @@ public sealed class Shining_Abyss : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1600,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

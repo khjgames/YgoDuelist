@@ -15,9 +15,10 @@ public sealed class Witch_of_the_Black_Forest : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1100,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

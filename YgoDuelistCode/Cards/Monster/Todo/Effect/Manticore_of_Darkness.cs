@@ -15,9 +15,10 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 2300,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 23,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
 

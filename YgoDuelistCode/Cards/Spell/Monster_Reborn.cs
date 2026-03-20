@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -24,7 +25,7 @@ public sealed class Monster_Reborn : BaseSpellCard
 {
 
     public Monster_Reborn()
-        : base(1, CardRarity.Rare, TargetType.Self)
+        : base(1, CardRarity.Rare, TargetType.Self, DuelMonsterRace.SpellNormal)
     {
     }
 

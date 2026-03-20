@@ -15,9 +15,10 @@ public sealed class Gaia_the_Dragon_Champion : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 2600,
-            baseDef: 2100,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 21,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

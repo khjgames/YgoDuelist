@@ -15,9 +15,10 @@ public sealed class Gearfried_the_Iron_Knight : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1800,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

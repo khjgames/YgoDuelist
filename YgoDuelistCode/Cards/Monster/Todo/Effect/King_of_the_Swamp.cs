@@ -15,9 +15,10 @@ public sealed class King_of_the_Swamp : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 500,
-            baseDef: 1100,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 11,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

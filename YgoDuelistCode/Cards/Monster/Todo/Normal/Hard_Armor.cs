@@ -15,9 +15,10 @@ public sealed class Hard_Armor : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 300,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

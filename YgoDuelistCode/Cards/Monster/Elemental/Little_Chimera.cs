@@ -16,8 +16,9 @@ public sealed class Little_Chimera : EffectMonsterCard
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
             baseAtk: 6,
-            baseDef: 6,
-            baseMgc: 5)
+            baseDef: 5,
+            baseMgc: 5,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

@@ -17,7 +17,8 @@ public sealed class Bladefly : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
             baseAtk: 6,
             baseDef: 7,
-            baseMgc: 5)
+            baseMgc: 5,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

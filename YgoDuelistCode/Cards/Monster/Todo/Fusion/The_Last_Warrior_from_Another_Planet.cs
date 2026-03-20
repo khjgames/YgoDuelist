@@ -15,9 +15,10 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2350,
-            baseDef: 2300,
-            baseMgc: 0)
+            baseAtk: 23,
+            baseDef: 23,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

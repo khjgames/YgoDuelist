@@ -15,9 +15,10 @@ public sealed class The_Gross_Ghost_of_Fled_Dreams : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1300,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Guardian_Ceal : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1700,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

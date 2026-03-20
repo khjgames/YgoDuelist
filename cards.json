@@ -1027,19 +1027,6 @@
     "image_downloaded": true
   },
   {
-    "id": 28470714,
-    "name": "Bladefly",
-    "type": "Effect Monster",
-    "desc": "As long as this card remains face-up on the field, increase the ATK of all WIND monsters by 500 points and decrease the ATK of all EARTH monsters by 400 points.",
-    "attribute": "WIND",
-    "race": "Insect",
-    "atk": 600,
-    "def": 700,
-    "level": 2,
-    "image_filename": "bladefly.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 89041555,
     "name": "Blast Held by a Tribute",
     "type": "Trap Card",
@@ -6201,19 +6188,6 @@
     "image_downloaded": true
   },
   {
-    "id": 68658728,
-    "name": "Little Chimera",
-    "type": "Effect Monster",
-    "desc": "All FIRE monsters on the field gain 500 ATK. All WATER monsters on the field lose 400 ATK.",
-    "attribute": "FIRE",
-    "race": "Beast",
-    "atk": 600,
-    "def": 550,
-    "level": 2,
-    "image_filename": "little_chimera.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 90790253,
     "name": "Little-Winguard",
     "type": "Effect Monster",
@@ -6848,19 +6822,6 @@
     "def": null,
     "level": null,
     "image_filename": "mega_ton_magical_cannon.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 22046459,
-    "name": "Megamorph",
-    "type": "Spell Card",
-    "desc": "While your LP is lower than your opponent's, the equipped monster's ATK becomes double its original ATK. While your LP is higher, the equipped monster's ATK becomes half its original ATK.",
-    "attribute": null,
-    "race": "Equip",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "megamorph.jpg",
     "image_downloaded": true
   },
   {
@@ -8343,19 +8304,6 @@
     "def": null,
     "level": null,
     "image_filename": "polymerization.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 55144522,
-    "name": "Pot of Greed",
-    "type": "Spell Card",
-    "desc": "Draw 2 cards.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "pot_of_greed.jpg",
     "image_downloaded": true
   },
   {

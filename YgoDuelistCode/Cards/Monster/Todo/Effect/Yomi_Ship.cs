@@ -15,9 +15,10 @@ public sealed class Yomi_Ship : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 800,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

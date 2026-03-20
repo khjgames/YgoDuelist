@@ -15,9 +15,10 @@ public sealed class Sacred_Crane : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1600,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

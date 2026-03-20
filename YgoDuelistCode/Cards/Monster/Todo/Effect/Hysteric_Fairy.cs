@@ -15,9 +15,10 @@ public sealed class Hysteric_Fairy : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1800,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

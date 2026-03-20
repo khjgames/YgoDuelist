@@ -15,9 +15,10 @@ public sealed class YZ_Tank_Dragon : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2100,
-            baseDef: 2200,
-            baseMgc: 0)
+            baseAtk: 21,
+            baseDef: 22,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

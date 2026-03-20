@@ -15,9 +15,10 @@ public sealed class Labyrinth_Tank : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2400,
-            baseDef: 2400,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 24,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

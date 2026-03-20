@@ -15,9 +15,10 @@ public sealed class Performance_of_Sword : RitualMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1950,
-            baseDef: 1850,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

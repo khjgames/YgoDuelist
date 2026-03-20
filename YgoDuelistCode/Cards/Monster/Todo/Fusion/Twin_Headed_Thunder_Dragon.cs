@@ -15,9 +15,10 @@ public sealed class Twin_Headed_Thunder_Dragon : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2800,
-            baseDef: 2100,
-            baseMgc: 0)
+            baseAtk: 28,
+            baseDef: 21,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

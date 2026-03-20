@@ -15,9 +15,10 @@ public sealed class Aswan_Apparition : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 500,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

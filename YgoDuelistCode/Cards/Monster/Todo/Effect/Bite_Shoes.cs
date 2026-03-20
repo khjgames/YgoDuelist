@@ -15,9 +15,10 @@ public sealed class Bite_Shoes : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 500,
-            baseDef: 300,
-            baseMgc: 0)
+            baseAtk: 5,
+            baseDef: 3,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

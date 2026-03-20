@@ -15,9 +15,10 @@ public sealed class Archfiend_Soldier : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1900,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 19,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

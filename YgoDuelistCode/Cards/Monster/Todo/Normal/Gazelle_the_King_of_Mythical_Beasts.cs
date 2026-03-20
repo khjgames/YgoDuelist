@@ -15,9 +15,10 @@ public sealed class Gazelle_the_King_of_Mythical_Beasts : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1500,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

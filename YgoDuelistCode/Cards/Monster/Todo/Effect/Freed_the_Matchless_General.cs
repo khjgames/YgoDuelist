@@ -15,9 +15,10 @@ public sealed class Freed_the_Matchless_General : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2300,
-            baseDef: 1700,
-            baseMgc: 0)
+            baseAtk: 23,
+            baseDef: 17,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

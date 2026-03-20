@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -13,9 +14,12 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
 {
     public YgoCardType YgoCardType => YgoCardType.Spell;
 
-    protected BaseSpellCard(int cost, CardRarity rarity, TargetType target)
+    public DuelMonsterRace DuelMonsterRace { get; }
+
+    protected BaseSpellCard(int cost, CardRarity rarity, TargetType target, DuelMonsterRace duelMonsterRace)
         : base(cost, CardType.Skill, rarity, target)
     {
+        DuelMonsterRace = duelMonsterRace;
     }
 
     /// <summary>

@@ -15,9 +15,10 @@ public sealed class Maha_Vailo : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1550,
-            baseDef: 1400,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 14,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

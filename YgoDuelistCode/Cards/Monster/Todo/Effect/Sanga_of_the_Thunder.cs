@@ -15,9 +15,10 @@ public sealed class Sanga_of_the_Thunder : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2600,
-            baseDef: 2200,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 22,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

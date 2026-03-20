@@ -15,9 +15,10 @@ public sealed class Wall_Shadow : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1600,
-            baseDef: 3000,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 30,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Chaos_Sorcerer : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2300,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 23,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Leogun : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1750,
-            baseDef: 1550,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

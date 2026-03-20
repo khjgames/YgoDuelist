@@ -15,9 +15,10 @@ public sealed class Twin_Long_Rods_2 : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 850,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

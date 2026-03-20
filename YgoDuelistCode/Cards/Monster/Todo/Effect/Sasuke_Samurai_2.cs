@@ -15,9 +15,10 @@ public sealed class Sasuke_Samurai_2 : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 200,
-            baseDef: 300,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 3,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

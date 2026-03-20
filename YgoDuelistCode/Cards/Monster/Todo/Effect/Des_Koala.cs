@@ -15,9 +15,10 @@ public sealed class Des_Koala : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1100,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Skull_Red_Bird : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1550,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 15,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Lightning_Conger : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 350,
-            baseDef: 750,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

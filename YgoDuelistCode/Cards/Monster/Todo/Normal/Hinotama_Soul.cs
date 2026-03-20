@@ -15,9 +15,10 @@ public sealed class Hinotama_Soul : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 600,
-            baseDef: 500,
-            baseMgc: 0)
+            baseAtk: 6,
+            baseDef: 5,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
 

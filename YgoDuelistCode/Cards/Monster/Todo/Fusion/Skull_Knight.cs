@@ -15,9 +15,10 @@ public sealed class Skull_Knight : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2650,
-            baseDef: 2250,
-            baseMgc: 0)
+            baseAtk: 26,
+            baseDef: 22,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

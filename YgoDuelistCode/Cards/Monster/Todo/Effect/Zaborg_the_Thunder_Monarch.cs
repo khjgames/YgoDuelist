@@ -15,9 +15,10 @@ public sealed class Zaborg_the_Thunder_Monarch : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 2400,
-            baseDef: 1000,
-            baseMgc: 0)
+            baseAtk: 24,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 

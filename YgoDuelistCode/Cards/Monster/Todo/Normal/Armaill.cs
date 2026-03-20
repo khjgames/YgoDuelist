@@ -15,9 +15,10 @@ public sealed class Armaill : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 700,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Jirai_Gumo : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 2200,
-            baseDef: 100,
-            baseMgc: 0)
+            baseAtk: 22,
+            baseDef: 1,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

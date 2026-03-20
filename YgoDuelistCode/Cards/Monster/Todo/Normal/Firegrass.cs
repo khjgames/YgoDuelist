@@ -15,9 +15,10 @@ public sealed class Firegrass : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 700,
-            baseDef: 600,
-            baseMgc: 0)
+            baseAtk: 7,
+            baseDef: 6,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Plant)
     {
     }
 

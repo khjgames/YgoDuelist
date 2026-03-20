@@ -15,9 +15,10 @@ public sealed class Island_Turtle : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1100,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Blowback_Dragon : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 2300,
-            baseDef: 1200,
-            baseMgc: 0)
+            baseAtk: 23,
+            baseDef: 12,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

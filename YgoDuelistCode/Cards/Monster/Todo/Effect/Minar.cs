@@ -15,9 +15,10 @@ public sealed class Minar : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 850,
-            baseDef: 750,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

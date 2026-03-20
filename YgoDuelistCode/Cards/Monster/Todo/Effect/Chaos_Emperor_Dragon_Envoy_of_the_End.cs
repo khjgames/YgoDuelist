@@ -15,9 +15,10 @@ public sealed class Chaos_Emperor_Dragon_Envoy_of_the_End : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 3000,
-            baseDef: 2500,
-            baseMgc: 0)
+            baseAtk: 30,
+            baseDef: 25,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

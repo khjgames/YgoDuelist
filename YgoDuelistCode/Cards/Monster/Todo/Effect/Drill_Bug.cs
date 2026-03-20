@@ -15,9 +15,10 @@ public sealed class Drill_Bug : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1100,
-            baseDef: 200,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
 

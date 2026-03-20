@@ -15,9 +15,10 @@ public sealed class X_Head_Cannon : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 1800,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
 

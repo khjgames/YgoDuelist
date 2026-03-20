@@ -15,9 +15,10 @@ public sealed class Enchanting_Mermaid : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 1200,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 12,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
 

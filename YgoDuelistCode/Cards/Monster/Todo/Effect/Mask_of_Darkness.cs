@@ -15,9 +15,10 @@ public sealed class Mask_of_Darkness : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 900,
-            baseDef: 400,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 4,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
 

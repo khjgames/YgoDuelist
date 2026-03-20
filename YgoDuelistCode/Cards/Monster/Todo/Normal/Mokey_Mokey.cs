@@ -15,9 +15,10 @@ public sealed class Mokey_Mokey : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 1,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 300,
-            baseDef: 100,
-            baseMgc: 0)
+            baseAtk: 3,
+            baseDef: 1,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
 

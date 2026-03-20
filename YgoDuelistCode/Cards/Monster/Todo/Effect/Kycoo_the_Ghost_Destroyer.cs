@@ -15,9 +15,10 @@ public sealed class Kycoo_the_Ghost_Destroyer : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 1800,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

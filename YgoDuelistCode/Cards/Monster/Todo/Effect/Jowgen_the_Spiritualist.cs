@@ -15,9 +15,10 @@ public sealed class Jowgen_the_Spiritualist : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
-            baseAtk: 200,
-            baseDef: 1300,
-            baseMgc: 0)
+            baseAtk: 2,
+            baseDef: 13,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

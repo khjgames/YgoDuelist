@@ -15,9 +15,10 @@ public sealed class Masaki_the_Legendary_Swordsman : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1100,
-            baseDef: 1100,
-            baseMgc: 0)
+            baseAtk: 11,
+            baseDef: 11,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

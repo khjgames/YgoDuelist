@@ -15,9 +15,10 @@ public sealed class Maryokutai : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 900,
-            baseDef: 900,
-            baseMgc: 0)
+            baseAtk: 9,
+            baseDef: 9,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

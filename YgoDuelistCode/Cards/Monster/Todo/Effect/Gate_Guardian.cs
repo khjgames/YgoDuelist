@@ -15,9 +15,10 @@ public sealed class Gate_Guardian : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 11,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 3750,
-            baseDef: 3400,
-            baseMgc: 0)
+            baseAtk: 37,
+            baseDef: 34,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

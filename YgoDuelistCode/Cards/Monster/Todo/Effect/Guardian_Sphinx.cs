@@ -15,9 +15,10 @@ public sealed class Guardian_Sphinx : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1700,
-            baseDef: 2400,
-            baseMgc: 0)
+            baseAtk: 17,
+            baseDef: 24,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Rock)
     {
     }
 

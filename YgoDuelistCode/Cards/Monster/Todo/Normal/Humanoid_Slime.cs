@@ -15,9 +15,10 @@ public sealed class Humanoid_Slime : NormalMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
-            baseAtk: 800,
-            baseDef: 2000,
-            baseMgc: 0)
+            baseAtk: 8,
+            baseDef: 20,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
 

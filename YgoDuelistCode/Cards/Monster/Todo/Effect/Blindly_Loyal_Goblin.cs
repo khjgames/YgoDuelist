@@ -15,9 +15,10 @@ public sealed class Blindly_Loyal_Goblin : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 1800,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 18,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

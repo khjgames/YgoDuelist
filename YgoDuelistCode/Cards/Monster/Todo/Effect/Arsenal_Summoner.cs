@@ -15,9 +15,10 @@ public sealed class Arsenal_Summoner : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1600,
-            baseDef: 1600,
-            baseMgc: 0)
+            baseAtk: 16,
+            baseDef: 16,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

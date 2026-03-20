@@ -15,9 +15,10 @@ public sealed class Injection_Fairy_Lily : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 400,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 4,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 

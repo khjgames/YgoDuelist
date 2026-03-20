@@ -15,9 +15,10 @@ public sealed class Gray_Wing : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 1300,
-            baseDef: 700,
-            baseMgc: 0)
+            baseAtk: 13,
+            baseDef: 7,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Punished_Eagle : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
-            baseAtk: 2100,
-            baseDef: 1800,
-            baseMgc: 0)
+            baseAtk: 21,
+            baseDef: 18,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.WingedBeast)
     {
     }
 

@@ -15,9 +15,10 @@ public sealed class Fire_Sorcerer : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
-            baseAtk: 1000,
-            baseDef: 1500,
-            baseMgc: 0)
+            baseAtk: 10,
+            baseDef: 15,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 
