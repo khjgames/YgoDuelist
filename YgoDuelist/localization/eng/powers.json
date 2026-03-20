@@ -1,13 +1,18 @@
 {
   "STIFF_POWER.title": "Stiff",
   "STIFF_POWER.description": "This monster cannot change its battle position.",
+  "YGODUELIST-STIFF_POWER.smartDescription": "This monster cannot change its battle position.",
   "FATIGUE_POWER.title": "Fatigue",
   "FATIGUE_POWER.description": "This monster cannot take any more combat actions this turn.",
+  "YGODUELIST-FATIGUE_POWER.smartDescription": "This monster cannot take any more combat actions this turn.",
   "DIE_FOR_YOU_POWER.smartDescription": "[gold]{OwnerName}[/gold] absorbs all unblocked attack damage.",
   "ATTACK_POSITION_POWER.title": "Attack Position",
   "ATTACK_POSITION_POWER.description": "Currently in attack position.",
+  "YGODUELIST-ATTACK_POSITION_POWER.smartDescription": "Currently in attack position.",
   "DEFENSE_POSITION_POWER.title": "Defense Position",
   "DEFENSE_POSITION_POWER.description": "Currently in defense position.",
+  "YGODUELIST-DEFENSE_POSITION_POWER.smartDescription": "Currently in defense position.",
   "FACE_DOWN_STANCE_POWER.title": "Face Down",
-  "FACE_DOWN_STANCE_POWER.description": "Currently Face Down."
+  "FACE_DOWN_STANCE_POWER.description": "Currently Face Down.",
+  "YGODUELIST-FACE_DOWN_STANCE_POWER.smartDescription": "Currently Face Down."
 }

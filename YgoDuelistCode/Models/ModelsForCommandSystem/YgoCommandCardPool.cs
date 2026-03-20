@@ -42,6 +42,7 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
     {
         ModelDb.Card<Exit_Monster_Options>(),
         ModelDb.Card<Toggle_Die_For_You>(),
+        ModelDb.Card<Command_Change_Battle_Position>(),
         ModelDb.Card<Command_Attack>(),
         ModelDb.Card<Command_Defend>(),
     };

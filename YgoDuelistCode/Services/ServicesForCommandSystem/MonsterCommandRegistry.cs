@@ -46,6 +46,15 @@ public static class MonsterCommandRegistry
         await PowerCmd.Remove<FatiguePower>(pet);
     }
 
+    /// <summary>
+    /// <see cref="StiffPower"/> only: does not apply <see cref="FatiguePower"/> and does not change
+    /// <see cref="MonsterCommandState.HasUsedCommandThisTurn"/>. Used for the battle-position command menu action.
+    /// </summary>
+    public static async Task ApplyStiffFromBattlePositionChangeOnly(Creature pet, Creature? applier = null, CardModel? sourceCard = null)
+    {
+        await PowerCmd.Apply<StiffPower>(pet, 1m, applier, sourceCard);
+    }
+
     public static void Clear(Creature pet)
     {
         _states.Remove(pet);

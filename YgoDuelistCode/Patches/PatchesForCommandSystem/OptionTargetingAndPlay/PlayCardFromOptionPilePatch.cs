@@ -99,13 +99,18 @@ public static class PlayCardFromOptionPilePatch
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Exit_Monster_Options.OnClickedOption()");
                     TaskHelper.RunSafely(exit.OnClickedOption());
                 }
+                else if (card is Command_Change_Battle_Position changePos)
+                {
+                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Command_Change_Battle_Position.OnClickedOption()");
+                    TaskHelper.RunSafely(changePos.OnClickedOption());
+                }
                 else if (card is Toggle_Die_For_You toggle)
                 {
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Toggle_Die_For_You.OnClickedOption()");
                     TaskHelper.RunSafely(toggle.OnClickedOption());
                 }
                 else
-                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is not Exit_Monster_Options or Toggle_Die_For_You, skipping OnClickedOption");
+                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is not a known option-pile click handler, skipping OnClickedOption");
                 GD.Print("[YgoDuelist] PlayCardFromOptionPile: calling action.Cancel() and returning");
                 action.Cancel();
                 return;

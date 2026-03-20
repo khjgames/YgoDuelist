@@ -77,6 +77,27 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         SetDisplayAttackSkill(attackPosition);
     }
 
+    /// <summary>
+    /// Monster command menu only: switches battle position.
+    /// Defense → attack: face-up and <see cref="WillSet"/> = false (no automatic set).
+    /// Attack → defense: position only; <see cref="FaceDown"/> and <see cref="WillSet"/> unchanged.
+    /// </summary>
+    public void ApplyBattlePositionChangeFromCommandMenu()
+    {
+        if (Type == CardType.Skill)
+        {
+            _displayAsAttack = true;
+            FaceDown = false;
+            WillSet = false;
+        }
+        else
+        {
+            _displayAsAttack = false;
+        }
+
+        UpdateFaceDownKeywordFromBool();
+    }
+
     /// <summary>Swaps between Attack and Skill (attack position / defense position). Called by right-click in hand.</summary>
     public void ToggleAttackSkill()
     {

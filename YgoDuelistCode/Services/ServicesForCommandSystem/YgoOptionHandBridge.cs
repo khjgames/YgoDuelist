@@ -5,6 +5,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Piles;
 
@@ -42,7 +43,7 @@ public static class YgoOptionHandBridge
 
     /// <summary>
     /// Sort key for option command cards so second hand order is always:
-    /// Command_Defend, Command_Attack, Toggle_Die_For_You, Exit_Monster_Options.
+    /// Command_Defend, Command_Attack, Command_Change_Battle_Position, Toggle_Die_For_You, Exit_Monster_Options.
     /// Public so callers can insert cards at the correct index when modifying the pile.
     /// </summary>
     public static int GetOptionCardSortKey(CardModel c)
@@ -51,13 +52,33 @@ public static class YgoOptionHandBridge
         {
             Command_Defend => 0,
             Command_Attack => 1,
-            Toggle_Die_For_You => 2,
-            Exit_Monster_Options => 3,
-            _ => 4
+            Command_Change_Battle_Position => 2,
+            Toggle_Die_For_You => 3,
+            Exit_Monster_Options => 4,
+            _ => 5
         };
     }
 
     private static int OptionCardSortKey(CardModel c) => GetOptionCardSortKey(c);
+
+    /// <summary>
+    /// Runs <see cref="SyncFromOptionPile"/> after the current frame so the option-hand UI rebuild happens when
+    /// <see cref="NPlayerHand.InCardPlay"/> is false. Calling <see cref="SyncFromOptionPile"/> synchronously from
+    /// unplayable option handlers (while the clicked holder is still the active play holder) prevents
+    /// the option-hand UI rebuild from removing that holder cleanly and leaves extra
+    /// <c>NYgoOptionCardHolder</c> instances in <see cref="NPlayerHand.ActiveHolders"/>.
+    /// </summary>
+    public static void RequestDeferredSyncFromOptionPile(Player player)
+    {
+        if (player == null)
+            return;
+        var tree = NPlayerHand.Instance?.GetTree();
+        if (tree == null)
+            return;
+        var p = player;
+        var timer = tree.CreateTimer(0.0);
+        timer.Timeout += () => SyncFromOptionPile(p);
+    }
 
     /// <summary>
     /// Returns the current logical option cards for the given player.
@@ -104,7 +125,7 @@ public static class YgoOptionHandBridge
 
         // Clamp to the requested cap and materialise so subscribers get a
         // stable snapshot even if the underlying pile mutates later.
-        // Sort so display order is always: Defend > Attack > Toggle > Exit.
+        // Sort so display order is always: Defend > Attack > Change position > Toggle > Exit.
         List<CardModel> cards = pile.Cards
             .Take(Math.Max(0, maxCount))
             .OrderBy(OptionCardSortKey)

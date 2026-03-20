@@ -34,6 +34,8 @@ public static class NCardPlayCannotPlayOptionPilePatch
 
         if (card is Exit_Monster_Options exit)
             TaskHelper.RunSafely(exit.OnClickedOption());
+        else if (card is Command_Change_Battle_Position changePos)
+            TaskHelper.RunSafely(changePos.OnClickedOption());
         else if (card is Toggle_Die_For_You toggle)
             TaskHelper.RunSafely(toggle.OnClickedOption());
     }

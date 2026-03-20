@@ -157,7 +157,7 @@ public static class DuelMonsterRightClickUiPatch
         if (combatState == null)
             return;
 
-        // Order: Defend > Attack > Toggle > Exit (same as second-hand display order).
+        // Order: Defend > Attack > Change position > Toggle > Exit (same as second-hand display order).
         var commands = new List<CardModel>();
 
         Command_Defend cmdDefend = combatState.CreateCard<Command_Defend>(player);
@@ -167,6 +167,10 @@ public static class DuelMonsterRightClickUiPatch
         Command_Attack cmdAttack = combatState.CreateCard<Command_Attack>(player);
         cmdAttack.InitializeSource(monsterCard);
         commands.Add(cmdAttack);
+
+        Command_Change_Battle_Position changePos = combatState.CreateCard<Command_Change_Battle_Position>(player);
+        changePos.InitializeSource(monsterCard);
+        commands.Add(changePos);
 
         Toggle_Die_For_You toggle = combatState.CreateCard<Toggle_Die_For_You>(player);
         toggle.InitializeSource(monsterCard);
