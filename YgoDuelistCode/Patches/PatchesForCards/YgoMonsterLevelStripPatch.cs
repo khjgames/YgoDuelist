@@ -40,16 +40,16 @@ public static class YgoMonsterLevelStripPatch
     private const float AttributeGapBelowLevelStripPx = 2f;
 
     /// <summary>Attribute and race icon row height (width follows texture aspect).</summary>
-    private const float IconRowHeightPx = 24f;
+    private const float IconRowHeightPx = 26f;
 
     /// <summary>Extra vertical offset after gap below level strip (negative = further up).</summary>
-    private const float IconRowExtraVerticalNudgePx = 0f;
+    private const float IconRowExtraVerticalNudgePx = 2f;
 
     /// <summary>Race icon: horizontal nudge from card/banner right (positive = move left), same sense as <see cref="StripHorizontalNudgePx"/>.</summary>
     private const float RaceHorizontalNudgePx = 48f;
 
     /// <summary>Attribute sits to the left of the race; its right edge is this many px left of the race’s right edge.</summary>
-    private const float AttributeRightEdgeLeftOfRaceRightPx = 30f;
+    private const float AttributeRightEdgeLeftOfRaceRightPx = 31f;
 
     private static Texture2D? _stripTexture;
     private static AtlasTexture[]? _atlasesByLevel;
