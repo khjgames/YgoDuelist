@@ -39,6 +39,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// <summary>Duel monster attribute (EARTH/WATER/FIRE/WIND/LIGHT/DARK). Override per card.</summary>
     public virtual DuelMonsterAttribute DuelMonsterAttribute => DuelMonsterAttribute.Earth;
 
+    /// <summary>Duel monster race / type icon. <see cref="BaseMonsterCard"/> supplies the real value.</summary>
+    public virtual DuelMonsterRace DuelMonsterRace => DuelMonsterRace.Warrior;
+
     /// <summary>If true, playing this monster card can summon a duel monster in a zone (max 5 per player).</summary>
     public virtual bool CanSummonDuelMonster => true;
 

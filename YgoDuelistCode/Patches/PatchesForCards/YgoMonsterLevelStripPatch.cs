@@ -10,15 +10,17 @@ using YgoDuelist.YgoDuelistCode.Models;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Renders YGO level stars and attribute icon on monster cards (under title banner, right-aligned).
+/// Renders YGO level stars, attribute icon, and race icon on monster cards (under title banner, right-aligned).
 /// </summary>
 [HarmonyPatch(typeof(NCard), "Reload")]
 public static class YgoMonsterLevelStripPatch
 {
     private const string StarsStripPath = "YgoDuelist/images/card_frames/12_stars.png";
     private const string AttributeIconFolder = "YgoDuelist/images/card_frames/Attribute";
+    private const string RaceIconFolder = "YgoDuelist/images/card_frames/Race";
     private const string StripNodeName = "YgoLevelStarsStrip";
     private const string AttributeNodeName = "YgoAttributeIcon";
+    private const string RaceNodeName = "YgoRaceIcon";
 
     /// <summary>Vertical strip height in card-local space (same anchor mode as title banner).</summary>
     private const float StripHeightPx = 20f;
@@ -34,21 +36,25 @@ public static class YgoMonsterLevelStripPatch
     /// </summary>
     private const float StripHorizontalNudgePx = 48f;
 
-    /// <summary>Gap between the bottom of the level strip and the top of the attribute icon.</summary>
+    /// <summary>Gap between the bottom of the level strip and the top of the attribute/race icon row.</summary>
     private const float AttributeGapBelowLevelStripPx = 2f;
 
-    /// <summary>Attribute icon box height (width follows texture aspect).</summary>
-    private const float AttributeIconHeightPx = 24f;
+    /// <summary>Attribute and race icon row height (width follows texture aspect).</summary>
+    private const float IconRowHeightPx = 24f;
 
     /// <summary>Extra vertical offset after gap below level strip (negative = further up).</summary>
-    private const float AttributeExtraVerticalNudgePx = 0f;
+    private const float IconRowExtraVerticalNudgePx = 0f;
 
-    /// <summary>Horizontal nudge for attribute (positive = move left), same sense as <see cref="StripHorizontalNudgePx"/>.</summary>
-    private const float AttributeHorizontalNudgePx = 48f;
+    /// <summary>Race icon: horizontal nudge from card/banner right (positive = move left), same sense as <see cref="StripHorizontalNudgePx"/>.</summary>
+    private const float RaceHorizontalNudgePx = 48f;
+
+    /// <summary>Attribute sits to the left of the race; its right edge is this many px left of the race’s right edge.</summary>
+    private const float AttributeRightEdgeLeftOfRaceRightPx = 30f;
 
     private static Texture2D? _stripTexture;
     private static AtlasTexture[]? _atlasesByLevel;
     private static readonly Dictionary<DuelMonsterAttribute, Texture2D?> _attributeTextures = new();
+    private static readonly Dictionary<DuelMonsterRace, Texture2D?> _raceTextures = new();
 
     [HarmonyPostfix]
     [HarmonyPriority(Priority.Last)]
@@ -60,12 +66,14 @@ public static class YgoMonsterLevelStripPatch
         Control body = __instance.Body;
         var strip = body.GetNodeOrNull<TextureRect>(StripNodeName);
         var attributeIcon = body.GetNodeOrNull<TextureRect>(AttributeNodeName);
+        var raceIcon = body.GetNodeOrNull<TextureRect>(RaceNodeName);
 
         CardModel? model = __instance.Model;
         if (model == null || model.Rarity == CardRarity.Ancient || model is not AbstractMonsterCard monster)
         {
             strip?.Hide();
             attributeIcon?.Hide();
+            raceIcon?.Hide();
             return;
         }
 
@@ -84,6 +92,7 @@ public static class YgoMonsterLevelStripPatch
         {
             strip?.Hide();
             attributeIcon?.Hide();
+            raceIcon?.Hide();
             return;
         }
 
@@ -117,7 +126,9 @@ public static class YgoMonsterLevelStripPatch
         }
 
         TextureRect attrNode = EnsureAttributeIconNode(body, banner, strip);
+        TextureRect raceNode = EnsureRaceIconNode(body, attrNode);
         UpdateAttributeIcon(attrNode, monster, banner);
+        UpdateRaceIcon(raceNode, monster, banner);
     }
 
     private static TextureRect EnsureAttributeIconNode(Control body, TextureRect banner, TextureRect? strip)
@@ -141,6 +152,64 @@ public static class YgoMonsterLevelStripPatch
         return attr;
     }
 
+    private static TextureRect EnsureRaceIconNode(Control body, TextureRect attributeNode)
+    {
+        var race = body.GetNodeOrNull<TextureRect>(RaceNodeName);
+        if (race != null)
+            return race;
+
+        race = new TextureRect
+        {
+            Name = RaceNodeName,
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.Scale,
+            GrowHorizontal = Control.GrowDirection.Both,
+            GrowVertical = Control.GrowDirection.Both,
+        };
+        body.AddChild(race);
+        int insertAt = attributeNode.GetIndex() + 1;
+        body.MoveChild(race, insertAt);
+        return race;
+    }
+
+    private static float GetIconRowTop(TextureRect banner)
+    {
+        float levelStripTop = banner.OffsetBottom + StripVerticalNudgePx;
+        return levelStripTop + StripHeightPx + AttributeGapBelowLevelStripPx + IconRowExtraVerticalNudgePx;
+    }
+
+    private static void ApplyIconRowAnchors(TextureRect rect, TextureRect banner)
+    {
+        rect.AnchorLeft = 0.5f;
+        rect.AnchorRight = 0.5f;
+        rect.AnchorTop = banner.AnchorTop;
+        rect.AnchorBottom = banner.AnchorBottom;
+        float top = GetIconRowTop(banner);
+        rect.OffsetTop = top;
+        rect.OffsetBottom = top + IconRowHeightPx;
+    }
+
+    private static void LayoutIconInRow(TextureRect rect, TextureRect banner, Texture2D tex, float rightEdgeOffsetFromBannerRight)
+    {
+        ApplyIconRowAnchors(rect, banner);
+
+        Vector2 szf = tex.GetSize();
+        int tw = (int)szf.X;
+        int th = (int)szf.Y;
+        if (tw <= 0 || th <= 0)
+            return;
+
+        float displayW = IconRowHeightPx * (tw / (float)th);
+        float bannerW = banner.OffsetRight - banner.OffsetLeft;
+        if (displayW > bannerW)
+            displayW = bannerW;
+
+        float right = banner.OffsetRight - rightEdgeOffsetFromBannerRight;
+        rect.OffsetRight = right;
+        rect.OffsetLeft = right - displayW;
+    }
+
     private static void UpdateAttributeIcon(TextureRect attr, AbstractMonsterCard monster, TextureRect banner)
     {
         Texture2D? tex = GetAttributeTexture(monster.DuelMonsterAttribute);
@@ -154,34 +223,25 @@ public static class YgoMonsterLevelStripPatch
         attr.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
         attr.StretchMode = TextureRect.StretchModeEnum.Scale;
 
-        attr.AnchorLeft = 0.5f;
-        attr.AnchorRight = 0.5f;
-        attr.AnchorTop = banner.AnchorTop;
-        attr.AnchorBottom = banner.AnchorBottom;
+        LayoutIconInRow(attr, banner, tex, RaceHorizontalNudgePx + AttributeRightEdgeLeftOfRaceRightPx);
+        attr.Show();
+    }
 
-        float levelStripTop = banner.OffsetBottom + StripVerticalNudgePx;
-        float top = levelStripTop + StripHeightPx + AttributeGapBelowLevelStripPx + AttributeExtraVerticalNudgePx;
-        attr.OffsetTop = top;
-        attr.OffsetBottom = top + AttributeIconHeightPx;
-
-        Vector2 szf = tex.GetSize();
-        int tw = (int)szf.X;
-        int th = (int)szf.Y;
-        if (tw <= 0 || th <= 0)
+    private static void UpdateRaceIcon(TextureRect race, AbstractMonsterCard monster, TextureRect banner)
+    {
+        Texture2D? tex = GetRaceTexture(monster.DuelMonsterRace);
+        if (tex == null)
         {
-            attr.Hide();
+            race.Hide();
             return;
         }
 
-        float displayW = AttributeIconHeightPx * (tw / (float)th);
-        float bannerW = banner.OffsetRight - banner.OffsetLeft;
-        if (displayW > bannerW)
-            displayW = bannerW;
+        race.Texture = tex;
+        race.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+        race.StretchMode = TextureRect.StretchModeEnum.Scale;
 
-        float right = banner.OffsetRight - AttributeHorizontalNudgePx;
-        attr.OffsetRight = right;
-        attr.OffsetLeft = right - displayW;
-        attr.Show();
+        LayoutIconInRow(race, banner, tex, RaceHorizontalNudgePx);
+        race.Show();
     }
 
     private static Texture2D? GetAttributeTexture(DuelMonsterAttribute attribute)
@@ -192,6 +252,27 @@ public static class YgoMonsterLevelStripPatch
         string path = $"{AttributeIconFolder}/{attribute.ToString().ToLowerInvariant()}.png";
         Texture2D? loaded = ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
         _attributeTextures[attribute] = loaded;
+        return loaded;
+    }
+
+    private static string GetRaceIconFileName(DuelMonsterRace race) =>
+        race switch
+        {
+            DuelMonsterRace.BeastWarrior => "Beast-Warrior.png",
+            DuelMonsterRace.DivineBeast => "Divine-Beast.png",
+            DuelMonsterRace.SeaSerpent => "Sea Serpent.png",
+            DuelMonsterRace.WingedBeast => "Winged Beast.png",
+            _ => $"{race}.png",
+        };
+
+    private static Texture2D? GetRaceTexture(DuelMonsterRace race)
+    {
+        if (_raceTextures.TryGetValue(race, out Texture2D? cached))
+            return cached;
+
+        string path = $"{RaceIconFolder}/{GetRaceIconFileName(race)}";
+        Texture2D? loaded = ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
+        _raceTextures[race] = loaded;
         return loaded;
     }
 

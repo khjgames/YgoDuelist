@@ -23,6 +23,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Duel monster attribute (EARTH/WATER/FIRE/WIND/LIGHT/DARK) from the original YgoDuelist card.</summary>
     public override DuelMonsterAttribute DuelMonsterAttribute { get; }
 
+    /// <summary>Duel monster race / type for the card frame icon.</summary>
+    public override DuelMonsterRace DuelMonsterRace { get; }
+
     /// <summary>
     /// Support effect this monster applies to a target duel monster based on its attribute (e.g. +MGC ATK to same-attribute, -4 to the opposing attribute).
     /// Default: no effect.
@@ -44,11 +47,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         DuelMonsterAttribute duelMonsterAttribute,
         int baseAtk,
         int baseDef,
-        int baseMgc)
+        int baseMgc,
+        DuelMonsterRace duelMonsterRace = DuelMonsterRace.Warrior)
         : base(cost, type, rarity, target)
     {
         DuelMonsterLevel = duelMonsterLevel;
         DuelMonsterAttribute = duelMonsterAttribute;
+        DuelMonsterRace = duelMonsterRace;
         BaseAtk = baseAtk;
         BaseDef = baseDef;
         BaseMgc = baseMgc;

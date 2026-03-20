@@ -18,8 +18,9 @@ public abstract class EffectMonsterCard : NormalMonsterCard
         DuelMonsterAttribute duelMonsterAttribute,
         int baseAtk,
         int baseDef,
-        int baseMgc)
-        : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc)
+        int baseMgc,
+        DuelMonsterRace duelMonsterRace = DuelMonsterRace.Warrior)
+        : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace)
     {
     }
 
