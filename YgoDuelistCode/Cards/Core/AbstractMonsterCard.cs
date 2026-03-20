@@ -27,17 +27,21 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         => (CardKeyword)(RaceKeywordBase + (int)race);
 
     private static CardKeyword SpecialSummonKeyword => (CardKeyword)20033;
+    private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
     private static CardKeyword TributeSummon1Keyword => (CardKeyword)20034;
     private static CardKeyword TributeSummon2Keyword => (CardKeyword)20035;
     private static CardKeyword FusionMonsterKeyword => (CardKeyword)20036;
     private static CardKeyword RitualMonsterKeyword => (CardKeyword)20037;
 
     public abstract YgoCardType YgoCardType { get; }
+    public bool FaceDown { get; set; } = false;
+    public bool WillSet { get; set; } = true;
 
     /// <summary>True = attack position (Attack card), false = defense position (Skill card). Toggle via right-click in hand.</summary>
     private bool _displayAsAttack;
 
     public override CardType Type => _displayAsAttack ? CardType.Attack : CardType.Skill;
+    public override TargetType TargetType => _displayAsAttack ? TargetType.AnyEnemy : TargetType.Self;
 
     public new LocString Description => GetDescriptionLocString();
 
@@ -54,12 +58,26 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     protected void SetDisplayAttackSkill(bool displayAsAttack)
     {
         _displayAsAttack = displayAsAttack;
+        if (Type == CardType.Attack && FaceDown == true){
+            FaceDown = false; 
+        }
+        else if (Type == CardType.Skill && FaceDown == false && WillSet == true){
+            FaceDown = true;
+        }
+        UpdateFaceDownKeywordFromBool();
     }
 
     /// <summary>Swaps between Attack and Skill (attack position / defense position). Called by right-click in hand.</summary>
     public void ToggleAttackSkill()
     {
         _displayAsAttack = !_displayAsAttack;
+        if (Type == CardType.Attack && FaceDown == true){
+            FaceDown = false; 
+        }
+        else if (Type == CardType.Skill && FaceDown == false && WillSet == true){
+            FaceDown = true;
+        }
+        UpdateFaceDownKeywordFromBool();
     }
 
     /// <summary>Level (star count) 1-9+ for summon HP. Override per card.</summary>
@@ -118,6 +136,12 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         }
     }
 
+    private IEnumerable<CardKeyword> GetFaceDownKeywordsFromBool()
+    {
+        if (FaceDown)
+            yield return FaceDownKeyword;
+    }
+
     public override IEnumerable<CardKeyword> CanonicalKeywords
     {
         get
@@ -126,6 +150,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             keywords.Add(AttributeToKeyword(DuelMonsterAttribute));
             keywords.Add(RaceToKeyword(DuelMonsterRace));
             keywords.AddRange(GetFusionAndRitualKeywords());
+            keywords.AddRange(GetFaceDownKeywordsFromBool());
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
             return keywords;
@@ -141,10 +166,23 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             tips.Add(HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)));
             foreach (CardKeyword kw in GetFusionAndRitualKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             return tips;
         }
+    }
+
+    public void UpdateFaceDownKeywordFromBool()
+    {
+        if (!IsMutable)
+            return;
+
+        _ = Keywords;
+        RemoveKeyword(FaceDownKeyword);
+        foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
+            AddKeyword(kw);
     }
 
     /// <summary>

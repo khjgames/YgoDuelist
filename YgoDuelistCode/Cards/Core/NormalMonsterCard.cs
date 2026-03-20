@@ -76,6 +76,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         if (Type == CardType.Attack && cardPlay.Target != null)
         {
+            WillSet = false;
             await DamageCmd.Attack((decimal)atk)
                 .FromCard(this)
                 .Targeting(cardPlay.Target)
@@ -86,6 +87,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         {
             if (Owner != null && Owner.Creature != null)
             {
+                WillSet = false;
                 await CreatureCmd.GainBlock(
                     Owner.Creature,
                     (decimal)def,
@@ -101,7 +103,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         {
             bool summoned = await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);
             //if (summoned)
-                //NormalSummonTracker.MarkUsed(Owner);
+            //NormalSummonTracker.MarkUsed(Owner);
         }
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);

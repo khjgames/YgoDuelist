@@ -20,6 +20,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         => (CardKeyword)(RaceKeywordBase + (int)race);
 
     public YgoCardType YgoCardType => YgoCardType.Trap;
+    public bool FaceDown { get; set; } = false;
 
     public DuelMonsterRace DuelMonsterRace { get; }
 

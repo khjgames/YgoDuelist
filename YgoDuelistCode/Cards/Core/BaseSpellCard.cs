@@ -21,6 +21,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         => (CardKeyword)(RaceKeywordBase + (int)race);
 
     public YgoCardType YgoCardType => YgoCardType.Spell;
+    public bool FaceDown { get; set; } = false;
 
     public DuelMonsterRace DuelMonsterRace { get; }
 
