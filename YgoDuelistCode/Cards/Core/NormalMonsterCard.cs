@@ -65,10 +65,12 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 return false;
             if (!CanSummonDuelMonster || Owner == null)
                 return true;
+
             int tribute = TributeReleaseCount;
-            if (tribute <= 0)
-                return true;
-            return TributeMaterialMarkTracker.CanSatisfyTribute(Owner, tribute);
+            if (tribute > 0 && !TributeMaterialMarkTracker.CanSatisfyTribute(Owner, tribute))
+                return false;
+
+            return DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tribute);
         }
     }
 

@@ -39,7 +39,8 @@ public sealed class Monster_Reborn : BaseSpellCard
     protected override bool IsPlayable =>
         base.IsPlayable &&
         Owner != null &&
-        GraveyardRelic.GetGraveyardCards(Owner).Any(c => c is BaseMonsterCard);
+        GraveyardRelic.GetGraveyardCards(Owner).Any(c => c is BaseMonsterCard) &&
+        DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tributeReleaseCount: 0);
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

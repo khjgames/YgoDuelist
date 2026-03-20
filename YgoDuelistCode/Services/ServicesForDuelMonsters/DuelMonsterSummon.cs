@@ -21,6 +21,36 @@ namespace YgoDuelist.YgoDuelistCode.Services;
     /// <summary>Scale for duel monster summons (tiny gremlin size) so 5 fit without clutter.</summary>
     public const float DuelMonsterScale = 0.4f;
 
+    /// <summary>Living <see cref="DuelMonsterModel"/> pets for this player (same rule as <see cref="TrySummonDuelMonster"/>).</summary>
+    public static int CountLiveDuelMonsters(Player? player)
+    {
+        if (player?.PlayerCombatState == null)
+            return 0;
+
+        int n = 0;
+        foreach (Creature pet in player.PlayerCombatState.Pets)
+        {
+            if (pet.Monster is DuelMonsterModel && pet.IsAlive)
+                n++;
+        }
+
+        return n;
+    }
+
+    /// <summary>
+    /// True if, after this play releases <paramref name="tributeReleaseCount"/> field monsters then summons one,
+    /// the total would not exceed <see cref="MaxDuelMonstersPerPlayer"/>.
+    /// </summary>
+    public static bool HasRoomForDuelSummonAfterReleasing(Player? player, int tributeReleaseCount)
+    {
+        if (player?.PlayerCombatState == null)
+            return false;
+
+        int live = CountLiveDuelMonsters(player);
+        int after = live - tributeReleaseCount + 1;
+        return after <= MaxDuelMonstersPerPlayer;
+    }
+
     /// <summary>
     /// If the player has fewer than 5 duel monster summons, creates a summon from the card's DuelMonsterData
     /// and adds it as a pet. Returns true if a summon was added.
@@ -31,14 +61,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         if (player?.Creature?.CombatState == null || !card.CanSummonDuelMonster)
             return false;
 
-        int duelMonsterCount = 0;
-        foreach (Creature pet in player.PlayerCombatState.Pets)
-        {
-            // Only living duel monsters should occupy a zone.
-            if (pet.Monster is DuelMonsterModel && pet.IsAlive)
-                duelMonsterCount++;
-        }
-        if (duelMonsterCount >= MaxDuelMonstersPerPlayer)
+        if (CountLiveDuelMonsters(player) >= MaxDuelMonstersPerPlayer)
             return false;
 
         DuelMonsterData data = card.GetDuelMonsterData();
