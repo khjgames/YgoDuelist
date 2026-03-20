@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1774025270
-YgoDuelist.deps.json::JSON::-1::1774025270::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1774028517
+YgoDuelist.deps.json::JSON::-1::1774028517::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
 ::res://packages/alchyr.sts2.baselib/::1773960954
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
@@ -1671,7 +1671,7 @@ Toggle_Die_For_You.cs::CSharpScript::777169850227679302::1773607139::0::1::::<><
 AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774022486::0::1::::<><><>0<>0<><>::
 BaseMonsterCard.cs::CSharpScript::9102026597318480692::1774020019::0::1::::<><><>0<>0<><>::
 BaseSpellCard.cs::CSharpScript::4032814977770574970::1774025170::0::1::::<><><>0<>0<><>::
-BaseTrapCard.cs::CSharpScript::3408567566577426753::1774025174::0::1::::<><><>0<>0<><>::
+BaseTrapCard.cs::CSharpScript::3408567566577426753::1774025441::0::1::::<><><>0<>0<><>::
 EffectMonsterCard.cs::CSharpScript::77330584343275516::1773969488::0::1::::<><><>0<>0<><>::
 FusionMonsterCard.cs::CSharpScript::3901646410333081308::1773969488::0::1::::<><><>0<>0<><>::
 NormalMonsterCard.cs::CSharpScript::4082555643496497167::1773969486::0::1::::<><><>0<>0<><>::
@@ -2732,7 +2732,7 @@ YgoSecondHandHoverPatch.cs::CSharpScript::1942219829415802498::1773596484::0::1:
 YgoSecondHandLayoutPatch.cs::CSharpScript::4658086067426577905::1773596410::0::1::::<><><>0<>0<><>::
 YgoSecondHandMegaLabelPatch.cs::CSharpScript::7942584016787520207::1773596500::0::1::::<><><>0<>0<><>::
 YgoSecondHandSetDefaultTargetsPatch.cs::CSharpScript::8120262947674375770::1773596498::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Patches/PatchesForCommandSystem/OptionTargetingAndPlay/::1773606529
+::res://YgoDuelistCode/Patches/PatchesForCommandSystem/OptionTargetingAndPlay/::1774028387
 CardPileCmdOptionPilePlayPatch.cs::CSharpScript::3149760398821341642::1773596554::0::1::::<><><>0<>0<><>::
 NCardPlayCannotPlayOptionPilePatch.cs::CSharpScript::2734584302577708205::1773596557::0::1::::<><><>0<>0<><>::
 NCardPlayTryPlayCardOptionLogPatch.cs::CSharpScript::7466886796757391347::1773596552::0::1::::<><><>0<>0<><>::
@@ -2741,7 +2741,7 @@ NMouseCardPlayOptionHolderPlayZonePatch.cs::CSharpScript::341351866402792766::17
 NMouseCardPlayStartAsyncOptionPilePatch.cs::CSharpScript::7576962468033659374::1773596546::0::1::::<><><>0<>0<><>::
 NPlayerHandOnHolderPressedOptionPatch.cs::CSharpScript::8750335843396317802::1773596544::0::1::::<><><>0<>0<><>::
 NPlayerHandReturnHolderToHandPatch.cs::CSharpScript::270088193864952777::1773596544::0::1::::<><><>0<>0<><>::
-NPlayerHandStartCardPlayOptionPatch.cs::CSharpScript::7350597213650635372::1773596537::0::1::::<><><>0<>0<><>::
+NPlayerHandStartCardPlayOptionPatch.cs::CSharpScript::7350597213650635372::1774028506::0::1::::<><><>0<>0<><>::
 NTargetManagerOptionHolderArrowPatch.cs::CSharpScript::7712165606581877004::1773596535::0::1::::<><><>0<>0<><>::
 NTargetManagerOptionHolderFirstClickPatch.cs::CSharpScript::8157949045158077271::1773596534::0::1::::<><><>0<>0<><>::
 NTargetManagerProcessOptionHolderPatch.cs::CSharpScript::6483855799662870782::1773596528::0::1::::<><><>0<>0<><>::
