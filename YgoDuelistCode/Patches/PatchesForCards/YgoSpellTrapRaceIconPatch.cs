@@ -20,10 +20,10 @@ public static class YgoSpellTrapRaceIconPatch
     private const string RaceIconFolder = "YgoDuelist/images/card_frames/Race";
     private const string RaceNodeName = "YgoRaceIcon";
 
-    private const float IconRowHeightPx = 26f;
+    private const float IconRowHeightPx = 30f;
     private const float RaceHorizontalNudgePx = 48f;
 
-    private const float RaceTopGapBelowBannerPx = 2f;
+    private const float RaceTopGapBelowBannerPx = -26f;
 
     private static readonly Dictionary<DuelMonsterRace, Texture2D?> _raceTextures = new();
 
@@ -49,9 +49,16 @@ public static class YgoSpellTrapRaceIconPatch
         if (model is not IYgoCard ygo)
             return;
 
-        // Default/no-icon race.
-        if (ygo.DuelMonsterRace == DuelMonsterRace.Warrior)
+        // Default/no-icon races for which we intentionally do not render an icon.
+        // (Normal spells/traps have their own styling already and would look redundant.)
+        if (ygo.DuelMonsterRace == DuelMonsterRace.Warrior ||
+            ygo.DuelMonsterRace == DuelMonsterRace.SpellNormal ||
+            ygo.DuelMonsterRace == DuelMonsterRace.TrapNormal)
+        {
+            TextureRect? existingRaceIcon = body.GetNodeOrNull<TextureRect>(RaceNodeName);
+            existingRaceIcon?.Hide();
             return;
+        }
 
         var banner = body.GetNodeOrNull<TextureRect>("%TitleBanner");
         if (banner == null)
@@ -140,17 +147,11 @@ public static class YgoSpellTrapRaceIconPatch
     private static string GetRaceIconFileName(DuelMonsterRace race) =>
         race switch
         {
-            DuelMonsterRace.BeastWarrior => "Beast-Warrior.png",
-            DuelMonsterRace.DivineBeast => "Divine-Beast.png",
-            DuelMonsterRace.SeaSerpent => "Sea Serpent.png",
-            DuelMonsterRace.WingedBeast => "Winged Beast.png",
-            DuelMonsterRace.SpellNormal => "Spellcaster.png",
             DuelMonsterRace.SpellContinuous => "Continuous.png",
             DuelMonsterRace.SpellQuickPlay => "Quick-Play.png",
             DuelMonsterRace.SpellEquip => "Equip.png",
             DuelMonsterRace.SpellField => "Field.png",
             DuelMonsterRace.SpellRitual => "Ritual.png",
-            DuelMonsterRace.TrapNormal => "Spellcaster.png",
             DuelMonsterRace.TrapContinuous => "Continuous.png",
             DuelMonsterRace.TrapCounter => "Counter.png",
             _ => $"{race}.png",
