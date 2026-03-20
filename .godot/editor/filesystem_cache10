@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1774009795
-YgoDuelist.deps.json::JSON::-1::1774009795::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1774012542
+YgoDuelist.deps.json::JSON::-1::1774012542::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
 ::res://packages/alchyr.sts2.baselib/::1773960954
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
@@ -550,7 +550,7 @@ ygo_monster.png::CompressedTexture2D::939642081870468112::1773589494::1773589494
 ygo_ritual_monster.png::CompressedTexture2D::3738392658650352723::1773589494::1773589494::1::::<><><>0<>0<>a9a557581531ebe2dd2889982e2a1284<>res://.godot/imported/ygo_ritual_monster.png-9bfcec93a8bdf384012ff3c5255055e8.ctex::
 ygo_spell.png::CompressedTexture2D::4917199153211322717::1773589494::1773589494::1::::<><><>0<>0<>6b81ef3e6ad45f0afeb8ee8c6cc4a14e<>res://.godot/imported/ygo_spell.png-da0442121db71e9007bde1e75f39c9d8.ctex::
 ygo_trap.png::CompressedTexture2D::8600442666743163993::1773589494::1773589494::1::::<><><>0<>0<>ba7d710aeafb8bbaa719d76e7c21fae8<>res://.godot/imported/ygo_trap.png-14bff1ef8b68794d53371ba0b5516333.ctex::
-::res://YgoDuelist/images/card_frames/Attribute/::1774009232
+::res://YgoDuelist/images/card_frames/Attribute/::1774009805
 dark.png::CompressedTexture2D::107222535037858388::1774009211::1774009805::1::::<><><>0<>0<>d5fdb5a8a601ccbc501d015f5c490aa9<>res://.godot/imported/dark.png-990f6bfc81eca79844af8f9e7c2a874f.ctex::
 divine.png::CompressedTexture2D::6000702615722155081::1774009223::1774009805::1::::<><><>0<>0<>2ea7fcb872e4fea7933e6600834f01e4<>res://.godot/imported/divine.png-ed1cd901e824eb7c7e7dbd50885bebd4.ctex::
 earth.png::CompressedTexture2D::246217832527626798::1774009226::1774009805::1::::<><><>0<>0<>52bc0a7cad144b8a9fb050bf41bbbae9<>res://.godot/imported/earth.png-ca492bba33ab54cb88747263ea44d1b8.ctex::
@@ -558,7 +558,7 @@ fire.png::CompressedTexture2D::8710832592340209124::1774009227::1774009805::1:::
 light.png::CompressedTexture2D::6078605349396541746::1774009229::1774009805::1::::<><><>0<>0<>2bd144acad1128aab2af452779a07d5b<>res://.godot/imported/light.png-839a9e7f741447f4bf5dac6997afcc7a.ctex::
 water.png::CompressedTexture2D::1845174290863390962::1774009230::1774009805::1::::<><><>0<>0<>d4e49056b152b4bda38ac5ab84eaa2de<>res://.godot/imported/water.png-5a98763bb3fbdcaa9b77ede0d2f5ed9e.ctex::
 wind.png::CompressedTexture2D::7871497635105544254::1774009232::1774009805::1::::<><><>0<>0<>2679300286d0b5e45ad2e6597dd5afdc<>res://.godot/imported/wind.png-8d0f0ecebc1669d017ab24dfb2eb659d.ctex::
-::res://YgoDuelist/images/card_frames/Attribute/High_Res/::1774008980
+::res://YgoDuelist/images/card_frames/Attribute/High_Res/::1774009805
 dark.png::CompressedTexture2D::2013646671055699257::1773965494::1774009805::1::::<><><>0<>0<>376a80791193ad1b35f83f63c11dc437<>res://.godot/imported/dark.png-925bdc61d652c318d09d6f8a00521d77.ctex::
 divine.png::CompressedTexture2D::2811620901498282999::1773965594::1774009805::1::::<><><>0<>0<>376f90fa368e601ca6f9c5c32f996b13<>res://.godot/imported/divine.png-f96f6edf11c7e73454aaeaeaea5256ec.ctex::
 earth.png::CompressedTexture2D::8789010751638533494::1773965542::1774009805::1::::<><><>0<>0<>42d8ac9e91f6cf171da28adae5497f0c<>res://.godot/imported/earth.png-2ab5e795eff5571361b946544358eb7d.ctex::
@@ -566,7 +566,7 @@ fire.png::CompressedTexture2D::4815727752688760688::1773965566::1774009805::1:::
 light.png::CompressedTexture2D::7541460854702655503::1773965508::1774009805::1::::<><><>0<>0<>4567514967316186990be892cb79e4ef<>res://.godot/imported/light.png-4bf048a6cacb417055387f97bd47c466.ctex::
 water.png::CompressedTexture2D::6728728599323546032::1773965579::1774009805::1::::<><><>0<>0<>697983d22a2ceaf9e945a4c48160a184<>res://.godot/imported/water.png-a50cc4bbd4170d3509bc8c798196837a.ctex::
 wind.png::CompressedTexture2D::1629298506937650837::1773965524::1774009805::1::::<><><>0<>0<>0e18e3dff34cebd31e7cddb6482108bc<>res://.godot/imported/wind.png-ae99c31d5a404d0d531206129daa5a98.ctex::
-::res://YgoDuelist/images/card_frames/Race/::1774009772
+::res://YgoDuelist/images/card_frames/Race/::1774009805
 Aqua.png::CompressedTexture2D::649480944785790636::1774009725::1774009805::1::::<><><>0<>0<>9f9ce18971d85e8ad13f6689d2222f6c<>res://.godot/imported/Aqua.png-e99df214fe9fc4171dd739d688167cef.ctex::
 Beast-Warrior.png::CompressedTexture2D::1333680353868964289::1774009729::1774009805::1::::<><><>0<>0<>eb2b0ed8adc22da231e164b67afec03b<>res://.godot/imported/Beast-Warrior.png-5e7e16fd0801a1b675b80250a9f50beb.ctex::
 Beast.png::CompressedTexture2D::7870495815947123683::1774009728::1774009805::1::::<><><>0<>0<>2fc2054c11c46bb3c9431fa7df2f9287<>res://.godot/imported/Beast.png-a3c681beb6f93b57bed266ce10400b93.ctex::
@@ -596,7 +596,7 @@ Warrior.png::CompressedTexture2D::793141171494087293::1774009767::1774009805::1:
 Winged Beast.png::CompressedTexture2D::2971449852391442684::1774009769::1774009805::1::::<><><>0<>0<>a47dbfa8ea7705bb4e7684ce7cfdc84e<>res://.godot/imported/Winged Beast.png-20050aff364ad79dd20552ce45ce9af8.ctex::
 Wyrm.png::CompressedTexture2D::3112354241485788463::1774009771::1774009805::1::::<><><>0<>0<>06dbe97b3c352f74c677f503c8e17a27<>res://.godot/imported/Wyrm.png-ed763951dec23f59ad0401be65fc94f2.ctex::
 Zombie.png::CompressedTexture2D::993484226751673673::1774009772::1774009805::1::::<><><>0<>0<>49eb6f4e1e5838e6f472f45e74dafa92<>res://.godot/imported/Zombie.png-0682ba650d51ae66c461252a04d1e09c.ctex::
-::res://YgoDuelist/images/card_frames/Race/High_Res/::1774009606
+::res://YgoDuelist/images/card_frames/Race/High_Res/::1774009805
 Aqua.png::CompressedTexture2D::3523068364750506636::1773965773::1774009805::1::::<><><>0<>0<>ecb11b6dc8d512273b887aafe62591fc<>res://.godot/imported/Aqua.png-6cc89edf197eef8190a22cf364874535.ctex::
 Beast-Warrior.png::CompressedTexture2D::4127291458664016544::1773965815::1774009805::1::::<><><>0<>0<>ef5ce106edfca3ab9e9e2d2fb317e735<>res://.godot/imported/Beast-Warrior.png-a6e2be7009f4fc0ac79f2f3dbcc3faca.ctex::
 Beast.png::CompressedTexture2D::3377655107054607579::1773965793::1774009805::1::::<><><>0<>0<>ad80839b56adf3c974ebc5533f0c605d<>res://.godot/imported/Beast.png-ed60c51f8b64f8039eda63e915dc6c64.ctex::
@@ -626,7 +626,7 @@ Warrior.png::CompressedTexture2D::1320042563740864243::1773966378::1774009805::1
 Winged Beast.png::CompressedTexture2D::3578172987481161524::1773966406::1774009805::1::::<><><>0<>0<>3dcbe033fc8b2e7586e9eea0039f9e15<>res://.godot/imported/Winged Beast.png-6676e9cd63fe24e2c91e51feda2bf730.ctex::
 Wyrm.png::CompressedTexture2D::1384564222810432908::1773966428::1774009805::1::::<><><>0<>0<>1b59c52305442a33123f9d3cc8225b9e<>res://.godot/imported/Wyrm.png-f0baf332787cba3c620fde035cbd0503.ctex::
 Zombie.png::CompressedTexture2D::2314931981114014436::1773966438::1774009805::1::::<><><>0<>0<>7d68f38d0e5210f4349b39e61b1a0a21<>res://.godot/imported/Zombie.png-b24b1ddc81fba0c9239fbc3857fc9249.ctex::
-::res://YgoDuelist/images/card_portraits/::1773943464
+::res://YgoDuelist/images/card_portraits/::1774012508
 7_colored_fish.png::CompressedTexture2D::554846949395499864::1773876213::1773899473::1::::<><><>0<>0<>b211895b871ee2cd9921892e1df31143<>res://.godot/imported/7_colored_fish.png-c3416b70d1e084fe5f3340888b4de049.ctex::
 7_completed.png::CompressedTexture2D::8546886690255400429::1773589494::1773899473::1::::<><><>0<>0<>043798570e6f9be4e2ea0d6bfa5f9d2c<>res://.godot/imported/7_completed.png-114ded153ab6fef5acca33476eb54a4f.ctex::
 12_stars.png::CompressedTexture2D::4334101375567056248::1773925464::1773943464::1::::<><><>0<>0<>5157b18896c469cbb58655e51ce90a27<>res://.godot/imported/12_stars.png-c0bb9aa79aaaafa28dc7365ae87fa253.ctex::
@@ -708,7 +708,7 @@ black_luster_soldier_envoy_of_the_beginning.png::CompressedTexture2D::7598507866
 black_pendant.png::CompressedTexture2D::5884229796258517756::1773589494::1773899473::1::::<><><>0<>0<>9afeeaca2c6d55c331b1f962a13338f2<>res://.godot/imported/black_pendant.png-e1e80451653cce4e7bbbdfd12b5038fb.ctex::
 black_skull_dragon.png::CompressedTexture2D::5991295446447070631::1773876215::1773899474::1::::<><><>0<>0<>b9ebc34548b26a3b3f0cfd9df009a788<>res://.godot/imported/black_skull_dragon.png-45eeb3659d23a90663836fded2403ce7.ctex::
 black_tyranno.png::CompressedTexture2D::2370584032591194330::1773876215::1773899474::1::::<><><>0<>0<>fbf1c14642abd775fc4bfa94b5e9139e<>res://.godot/imported/black_tyranno.png-a6f701b84d9f19051a9cede6fd58a432.ctex::
-bladefly.png::CompressedTexture2D::2784333806265328197::1773589494::1773899474::1::::<><><>0<>0<>922384c005a1eac36294a3655cc9a764<>res://.godot/imported/bladefly.png-9e097495cb9290a93d83215682b8eff7.ctex::
+bladefly.png::CompressedTexture2D::2784333806265328197::1774012332::1774012549::1::::<><><>0<>0<>922384c005a1eac36294a3655cc9a764<>res://.godot/imported/bladefly.png-9e097495cb9290a93d83215682b8eff7.ctex::
 blasting_the_ruins.png::CompressedTexture2D::4058592803289203084::1773876215::1773899474::1::::<><><>0<>0<>54523c56bfec8c4950df28cc940adc95<>res://.godot/imported/blasting_the_ruins.png-623a0a3a3ba3edc7dfbc240b09e5ac4e.ctex::
 blast_held_by_a_tribute.png::CompressedTexture2D::371217164378858294::1773876215::1773899474::1::::<><><>0<>0<>bd01a1dbdc583ce0f7bc04befd45eddd<>res://.godot/imported/blast_held_by_a_tribute.png-37a3f5b73a47abf796fc40697644f519.ctex::
 blast_juggler.png::CompressedTexture2D::5118789851524809483::1773876215::1773899474::1::::<><><>0<>0<>ffd856cd7b7013935ea2b4757111b6e8<>res://.godot/imported/blast_juggler.png-d362a046a1ed4cafb6c163ddd96e620c.ctex::
@@ -890,7 +890,7 @@ enchanting_mermaid.png::CompressedTexture2D::3250131530451631383::1773876220::17
 enemy_controller.png::CompressedTexture2D::460231841693264710::1773876220::1773899475::1::::<><><>0<>0<>3952238fb86a0628cd827c2fe203f705<>res://.godot/imported/enemy_controller.png-050fdbe8e022a5a5f4ca7755d25c7a93.ctex::
 energy_drain.png::CompressedTexture2D::3984331348565054603::1773876220::1773899475::1::::<><><>0<>0<>06ac6000585536654c82879ccd033b73<>res://.godot/imported/energy_drain.png-28345a0a11195161ca01ae77727f9f95.ctex::
 enraged_battle_ox.png::CompressedTexture2D::7318083718409264397::1773876220::1773899475::1::::<><><>0<>0<>df2d03924bbbdd7bd4b5b054b4f9f549<>res://.godot/imported/enraged_battle_ox.png-72a87c865cdfa1fe2a3aec8b2c5af060.ctex::
-enraged_muka_muka.png::CompressedTexture2D::1655971944625843440::1773589494::1773899475::1::::<><><>0<>0<>c1709f9f473125fd192643934e80aa96<>res://.godot/imported/enraged_muka_muka.png-b23e09aa890bfac04f971d0c5e0a55ed.ctex::
+enraged_muka_muka.png::CompressedTexture2D::1655971944625843440::1774011994::1774012549::1::::<><><>0<>0<>c1709f9f473125fd192643934e80aa96<>res://.godot/imported/enraged_muka_muka.png-b23e09aa890bfac04f971d0c5e0a55ed.ctex::
 escalation_of_the_monarchs.png::CompressedTexture2D::4842982398247666875::1773876220::1773899475::1::::<><><>0<>0<>4cf0604fbdf73d6233961c040a435957<>res://.godot/imported/escalation_of_the_monarchs.png-cb9c2596e52351aee0241e7a81631a97.ctex::
 exiled_force.png::CompressedTexture2D::6799639346586719652::1773876220::1773899475::1::::<><><>0<>0<>0acd29bb1cf72c5913566e23ce61cedd<>res://.godot/imported/exiled_force.png-b5a1f7a7d263a7b9694a32f269b56c5d.ctex::
 exodia_necross.png::CompressedTexture2D::7062782732664383432::1773876220::1773899475::1::::<><><>0<>0<>7706b9ddd0595680f8bf75c45affadec<>res://.godot/imported/exodia_necross.png-fcb19cbbedefea5861282f2da514fc84.ctex::
@@ -1025,7 +1025,7 @@ hinotama_soul.png::CompressedTexture2D::1373563098555249268::1773876224::1773899
 hitotsu_me_giant.png::CompressedTexture2D::3475840318256833013::1773876224::1773899474::1::::<><><>0<>0<>3176321eed747392cb21319975f56473<>res://.godot/imported/hitotsu_me_giant.png-15787a657416642ac2e8a525e98b13d9.ctex::
 horn_of_light.png::CompressedTexture2D::7468124237702388289::1773589494::1773899474::1::::<><><>0<>0<>962da1f0b2b399131b891cf7cc47334c<>res://.godot/imported/horn_of_light.png-4099ff4ad55891dcacbdc0a0cae31575.ctex::
 horn_of_the_unicorn.png::CompressedTexture2D::9085847871811484719::1773876224::1773899474::1::::<><><>0<>0<>5b046c2f809d18be146a76267d0b1f29<>res://.godot/imported/horn_of_the_unicorn.png-32eb30aea67275faa47d2b3b35f196dc.ctex::
-hoshiningen.png::CompressedTexture2D::3525920612080364576::1773589494::1773899474::1::::<><><>0<>0<>2cbdb0c1998bf8714b73413e644969b8<>res://.godot/imported/hoshiningen.png-584abe044ac408c4803a3f0b1459e563.ctex::
+hoshiningen.png::CompressedTexture2D::3525920612080364576::1774012417::1774012549::1::::<><><>0<>0<>2cbdb0c1998bf8714b73413e644969b8<>res://.godot/imported/hoshiningen.png-584abe044ac408c4803a3f0b1459e563.ctex::
 humanoid_slime.png::CompressedTexture2D::8190292524116024002::1773876224::1773899474::1::::<><><>0<>0<>58302dc6ce2532a6f1ee0885e9c92a38<>res://.godot/imported/humanoid_slime.png-3f3e4f4b9e5d56d5bfb8d4f7dfedca80.ctex::
 human_wave_tactics.png::CompressedTexture2D::8570131317292282655::1773876224::1773899474::1::::<><><>0<>0<>2b1b1a702eddc10f79412951e0f9ee32<>res://.godot/imported/human_wave_tactics.png-551273bb291561ff0f277aa76ddf5eda.ctex::
 hungry_burger.png::CompressedTexture2D::7243027543319884768::1773876224::1773899474::1::::<><><>0<>0<>af72bc28fd57c026953464e725c7e5d2<>res://.godot/imported/hungry_burger.png-7e76517a8c1b62d1db95683457360991.ctex::
@@ -1114,7 +1114,7 @@ lightray_daedalus.png::CompressedTexture2D::7967123784942946054::1773876227::177
 light_of_judgment.png::CompressedTexture2D::4038579158030911680::1773876227::1773899474::1::::<><><>0<>0<>8bab1107c556b8ba83c01530fd8cf226<>res://.godot/imported/light_of_judgment.png-d253112e34f7ecfc9edebfcf9bdeef8f.ctex::
 limiter_removal.png::CompressedTexture2D::182771207336290158::1773589494::1773899474::1::::<><><>0<>0<>552d8b388cd80572d8bd70d84b6678f7<>res://.godot/imported/limiter_removal.png-4296174e512d4ff1eefc6db9e1713d4c.ctex::
 liquid_beast.png::CompressedTexture2D::7410799777000012700::1773876227::1773899474::1::::<><><>0<>0<>001cbea0e5119cb51c15837a40565a15<>res://.godot/imported/liquid_beast.png-f37a8eb9244027fd9899ecfc04659a6a.ctex::
-little_chimera.png::CompressedTexture2D::7595457225716915877::1773589494::1773899474::1::::<><><>0<>0<>9bbb01392afc648325f5cfbe1845a1d0<>res://.godot/imported/little_chimera.png-0e90e83fac4751a04e0eab4e140ccb07.ctex::
+little_chimera.png::CompressedTexture2D::7595457225716915877::1774012449::1774012549::1::::<><><>0<>0<>9bbb01392afc648325f5cfbe1845a1d0<>res://.godot/imported/little_chimera.png-0e90e83fac4751a04e0eab4e140ccb07.ctex::
 little_winguard.png::CompressedTexture2D::961077887392425860::1773876227::1773899474::1::::<><><>0<>0<>55a630d8293f78a8131d9e802318216e<>res://.godot/imported/little_winguard.png-d3e6fa6e21fc335688cfcef391c81d5c.ctex::
 lizard_soldier.png::CompressedTexture2D::3285753686326882755::1773876227::1773899474::1::::<><><>0<>0<>09773b53e413d505a43fb6ccd2caae32<>res://.godot/imported/lizard_soldier.png-98538feedfc539cd28c52bba8cfb1207.ctex::
 lord_poison.png::CompressedTexture2D::8450417017567993130::1773876227::1773899474::1::::<><><>0<>0<>8975945703727467f3797e379a0c5140<>res://.godot/imported/lord_poison.png-2a40edeba7169cc8b0fdff99baec7efb.ctex::
@@ -1171,7 +1171,7 @@ metal_fish.png::CompressedTexture2D::39218794542308342::1773876229::1773899467::
 metamorphosis.png::CompressedTexture2D::3727278571297798441::1773876229::1773899467::1::::<><><>0<>0<>32de54834038a1bd8018bf76734fcfe9<>res://.godot/imported/metamorphosis.png-e2ada85e20f08c728a995b6530513b2c.ctex::
 michizure.png::CompressedTexture2D::6098327361827191404::1773876229::1773899467::1::::<><><>0<>0<>abe84bc2da73237044358c7a85b4f5db<>res://.godot/imported/michizure.png-e574cda8eb7b99d67bba7bb83051ecd3.ctex::
 micro_ray.png::CompressedTexture2D::5721617021631106473::1773876229::1773899468::1::::<><><>0<>0<>3020bb873a17765fbe47cc4cefbad04b<>res://.godot/imported/micro_ray.png-561d11dd156873dd050e7ca4ca5de0d4.ctex::
-milus_radiant.png::CompressedTexture2D::5441875221202964144::1773589494::1773899467::1::::<><><>0<>0<>66cb23aeed283f241737d56e95feea89<>res://.godot/imported/milus_radiant.png-4a9687e5c8540a7d322f9e1476847db7.ctex::
+milus_radiant.png::CompressedTexture2D::5441875221202964144::1774012478::1774012549::1::::<><><>0<>0<>66cb23aeed283f241737d56e95feea89<>res://.godot/imported/milus_radiant.png-4a9687e5c8540a7d322f9e1476847db7.ctex::
 minar.png::CompressedTexture2D::90038759336548549::1773876229::1773899467::1::::<><><>0<>0<>e6d5bb512efae6b6eb9de3da10bd29c8<>res://.godot/imported/minar.png-e246fa1372719ab34b9e1a6fda26230f.ctex::
 miracle_dig.png::CompressedTexture2D::2507330388311189051::1773876229::1773899467::1::::<><><>0<>0<>a881997f79fb35459720be177637450c<>res://.godot/imported/miracle_dig.png-a2155825ab53cd358b7bb0c9eab6c234.ctex::
 mirage_knight.png::CompressedTexture2D::4339703294771592110::1773876230::1773899468::1::::<><><>0<>0<>3abc5d8a3dafc4fcf3e99716e99bd494<>res://.godot/imported/mirage_knight.png-534caf933aa1908fe574a8c1d51625c5.ctex::
@@ -1198,7 +1198,7 @@ mountain.png::CompressedTexture2D::2784265501514598571::1773876230::1773899468::
 mr_volcano.png::CompressedTexture2D::7134730451096686541::1773876230::1773899468::1::::<><><>0<>0<>81422eb7e97d5ccac79cee86e41950e4<>res://.godot/imported/mr_volcano.png-9b45f8048b8dafa2254f548821508212.ctex::
 mucus_yolk.png::CompressedTexture2D::2291424183586592807::1773876230::1773899468::1::::<><><>0<>0<>b096e250b2cb9301b0998ffd43110021<>res://.godot/imported/mucus_yolk.png-b1b47545a725beac92cdf5f0fddda350.ctex::
 mudora.png::CompressedTexture2D::1685998238882027604::1773876230::1773899468::1::::<><><>0<>0<>6b0495158a5c4a68c34b89af8c3f9a53<>res://.godot/imported/mudora.png-95088d9561ca2e264eb332c938ff7b4f.ctex::
-muka_muka.png::CompressedTexture2D::1638960361010728250::1773589494::1773899468::1::::<><><>0<>0<>6c9fdaa6e83bebeccef919c6b5e3e066<>res://.godot/imported/muka_muka.png-1a0886a380e8101f799ae7bb9abf24b8.ctex::
+muka_muka.png::CompressedTexture2D::1638960361010728250::1774011794::1774012549::1::::<><><>0<>0<>6c9fdaa6e83bebeccef919c6b5e3e066<>res://.godot/imported/muka_muka.png-1a0886a380e8101f799ae7bb9abf24b8.ctex::
 multiplication_of_ants.png::CompressedTexture2D::7718875562502816815::1773876230::1773899468::1::::<><><>0<>0<>3dd1413082e9a9ff4d607306d156f131<>res://.godot/imported/multiplication_of_ants.png-6d89fc59972c214f9a7b7b0ce4a06d0a.ctex::
 musician_king.png::CompressedTexture2D::2273142724327708846::1773876230::1773899468::1::::<><><>0<>0<>6bfebd73e13cd5ae0ff3997f0e1e6c1c<>res://.godot/imported/musician_king.png-1db9d46d4adb17ae06b3197cdc63e033.ctex::
 mystical_elf.png::CompressedTexture2D::823458260153572967::1773876231::1773899468::1::::<><><>0<>0<>63efedb01989e82fc2b50325eed1b372<>res://.godot/imported/mystical_elf.png-14b8924994b86775b87b04731efb97e8.ctex::
@@ -1448,7 +1448,7 @@ spirit_of_the_pharaoh.png::CompressedTexture2D::5743947015136593280::1773876240:
 spirit_reaper.png::CompressedTexture2D::229341502714825396::1773876240::1773899471::1::::<><><>0<>0<>cae56f39b6eb177b655b3203b8cf88bf<>res://.godot/imported/spirit_reaper.png-7f5c77646e125aa237b429affbff9f1e.ctex::
 spirit_ryu.png::CompressedTexture2D::4888820751301983161::1773876240::1773899471::1::::<><><>0<>0<>06994911f03611e80a1e73f9daf41b72<>res://.godot/imported/spirit_ryu.png-96a4c4a178c182ab1390b58a130825f7.ctex::
 stamping_destruction.png::CompressedTexture2D::9183501478736112045::1773876240::1773899471::1::::<><><>0<>0<>871574f4f157f2155f193e9e9ddf6893<>res://.godot/imported/stamping_destruction.png-85daf2bb5d65996a104c50b84dde6604.ctex::
-star_boy.png::CompressedTexture2D::5651932877840270489::1773589494::1773899471::1::::<><><>0<>0<>da430331466837d407caa9403ce895a8<>res://.godot/imported/star_boy.png-b30b74e03042f202bee24e2d33d253ab.ctex::
+star_boy.png::CompressedTexture2D::5651932877840270489::1774012359::1774012549::1::::<><><>0<>0<>da430331466837d407caa9403ce895a8<>res://.godot/imported/star_boy.png-b30b74e03042f202bee24e2d33d253ab.ctex::
 statue_of_the_wicked.png::CompressedTexture2D::5098957812529725511::1773876240::1773899471::1::::<><><>0<>0<>86f784fd4dd0640b022fd8791cc86387<>res://.godot/imported/statue_of_the_wicked.png-6296be5f11f2755d844b6f9b871c23f4.ctex::
 stealth_bird.png::CompressedTexture2D::8835354580143633782::1773876240::1773899471::1::::<><><>0<>0<>b0e931a4d8f310609bc02a800ff46a32<>res://.godot/imported/stealth_bird.png-f8a63cb9e198383b7690b84da8410193.ctex::
 steel_ogre_grotto_1.png::CompressedTexture2D::7333726117636580471::1773876240::1773899986::1::::<><><>0<>0<>0dad4dae7d7495b91c0eadef75839048<>res://.godot/imported/steel_ogre_grotto_1.png-149ba250f6ce900fc19ef28ccdc5bb5e.ctex::
@@ -1602,7 +1602,7 @@ winged_dragon,_guardian_of_the_fortress_1.png::CompressedTexture2D::309131385622
 winged_minion.png::CompressedTexture2D::1548666261763645408::1773876245::1773899469::1::::<><><>0<>0<>f8af7b078a0067a95e09839e735f7504<>res://.godot/imported/winged_minion.png-3af48a8685e4fbe4ad7b04362bcf073f.ctex::
 winged_sage_falcos.png::CompressedTexture2D::376313619366146529::1773876245::1773899469::1::::<><><>0<>0<>d96582408249fe826e64c1ecc5a87cd9<>res://.godot/imported/winged_sage_falcos.png-ae76205bc82dcd2bb37a904381c9aeb5.ctex::
 wingweaver.png::CompressedTexture2D::250965173220719709::1773876245::1773899469::1::::<><><>0<>0<>56df8541e8466f9e397e58f1e646129c<>res://.godot/imported/wingweaver.png-cc53b7d9ac542275f87b0f9167a159ab.ctex::
-witchs_apprentice.png::CompressedTexture2D::5293462506030106441::1773589494::1773899469::1::::<><><>0<>0<>f80ce42872f851169a3ccb76635c72db<>res://.godot/imported/witchs_apprentice.png-9445a9a6963b76b37134519ac9b3cd5f.ctex::
+witchs_apprentice.png::CompressedTexture2D::5293462506030106441::1774012508::1774012549::1::::<><><>0<>0<>f80ce42872f851169a3ccb76635c72db<>res://.godot/imported/witchs_apprentice.png-9445a9a6963b76b37134519ac9b3cd5f.ctex::
 witch_doctor_of_chaos.png::CompressedTexture2D::6148232555587411557::1773876245::1773899469::1::::<><><>0<>0<>da62f84c4b2e505462e374e52e464873<>res://.godot/imported/witch_doctor_of_chaos.png-768396751853d30885de81e646f0c260.ctex::
 witch_of_the_black_forest.png::CompressedTexture2D::262483946417920565::1773876245::1773899469::1::::<><><>0<>0<>d7c4b7b3df6b13877d4d6b79f6437e86<>res://.godot/imported/witch_of_the_black_forest.png-54cf8955a72ca0ad34a8eb3a7b41f6d0.ctex::
 witty_phantom.png::CompressedTexture2D::8713375099228728854::1773876245::1773899469::1::::<><><>0<>0<>693f096c2964e1c8bb156d560cb9f967<>res://.godot/imported/witty_phantom.png-fb09908cad9bdcd7efe070bec0e818bc.ctex::
@@ -1668,8 +1668,8 @@ Exit_Monster_Options.cs::CSharpScript::889353100451011932::1773607145::0::1::::<
 MonsterCommandCard.cs::CSharpScript::2141012884981456081::1773970500::0::1::::<><><>0<>0<><>::
 Toggle_Die_For_You.cs::CSharpScript::777169850227679302::1773607139::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Core/::1773898451
-AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1773969484::0::1::::<><><>0<>0<><>::
-BaseMonsterCard.cs::CSharpScript::9102026597318480692::1773969488::0::1::::<><><>0<>0<><>::
+AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774010243::0::1::::<><><>0<>0<><>::
+BaseMonsterCard.cs::CSharpScript::9102026597318480692::1774010247::0::1::::<><><>0<>0<><>::
 BaseSpellCard.cs::CSharpScript::4032814977770574970::1773970500::0::1::::<><><>0<>0<><>::
 BaseTrapCard.cs::CSharpScript::3408567566577426753::1773970500::0::1::::<><><>0<>0<><>::
 EffectMonsterCard.cs::CSharpScript::77330584343275516::1773969488::0::1::::<><><>0<>0<><>::
@@ -2704,13 +2704,14 @@ StatEffectTotal.cs::CSharpScript::780836345608928495::1773605637::0::1::::<><><>
 ::res://YgoDuelistCode/Nodes/::1773606725
 NYgoOptionCardHolder.cs::CSharpScript::4837965220185115671::1773591005::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/::1773960104
-::res://YgoDuelistCode/Patches/PatchesForCards/::1773963419
+::res://YgoDuelistCode/Patches/PatchesForCards/::1774010522
 MonsterCardRightClickPatch.cs::CSharpScript::669769566589866861::1773605181::0::1::::<><><>0<>0<><>::
 MonsterCommandHolderClickPatch.cs::CSharpScript::7053841009714087622::1773590146::0::1::::<><><>0<>0<><>::
 YgoCardFramePatch.cs::CSharpScript::1728927591157531662::1773944339::0::1::::<><><>0<>0<><>::
 YgoEnergyIconNodePatch.cs::CSharpScript::6863008430028289781::1773956307::0::1::::<><><>0<>0<><>::
-YgoMonsterLevelStripPatch.cs::CSharpScript::6666624347756030588::1773970507::0::1::::<><><>0<>0<><>::
+YgoMonsterLevelStripPatch.cs::CSharpScript::6666624347756030588::1774010220::0::1::::<><><>0<>0<><>::
 YgoMonsterStarIconPatch.cs::CSharpScript::803589814039354809::1773959313::0::1::::<><><>0<>0<><>::
+YgoSpellTrapRaceIconPatch.cs::CSharpScript::8607086363000490058::1774010853::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForCombat/::1773962389
 YgoDuelistNotEnoughStarsDialoguePatch.cs::CSharpScript::4979423919460884073::1773962359::0::1::::<><><>0<>0<><>::
 YgoDuelistStarCounterHoverTipPatch.cs::CSharpScript::6371366861748363303::1773960948::0::1::::<><><>0<>0<><>::

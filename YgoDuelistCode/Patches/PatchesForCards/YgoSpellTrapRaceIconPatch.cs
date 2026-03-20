@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -95,6 +97,7 @@ public static class YgoSpellTrapRaceIconPatch
         ApplyIconRowAnchors(raceIcon, banner);
         LayoutIconInRow(raceIcon, banner, tex, RaceHorizontalNudgePx);
         raceIcon.Show();
+        TrySetHoverTip(raceIcon, GetRaceHoverTipKey(ygo.DuelMonsterRace));
     }
 
     private static void ApplyIconRowAnchors(TextureRect rect, TextureRect banner)
@@ -156,5 +159,51 @@ public static class YgoSpellTrapRaceIconPatch
             DuelMonsterRace.TrapCounter => "Counter.png",
             _ => $"{race}.png",
         };
+
+    private static void TrySetHoverTip(TextureRect icon, string hoverTipKey)
+    {
+        try
+        {
+            var title = new LocString("static_hover_tips", hoverTipKey + ".title");
+            var description = new LocString("static_hover_tips", hoverTipKey + ".description");
+            var tip = new HoverTip(title, description);
+            Traverse.Create(icon).Field("_hoverTip").SetValue(tip);
+        }
+        catch
+        {
+            // If the STS node doesn't expose a hover tip field, skip tooltips.
+        }
+    }
+
+    private static string GetRaceHoverTipKey(DuelMonsterRace race) =>
+        $"YGO_RACE_{ToScreamingSnake(race.ToString())}";
+
+    private static string ToScreamingSnake(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return value;
+
+        var chars = value.ToCharArray();
+        var outChars = new List<char>(chars.Length * 2);
+
+        for (int i = 0; i < chars.Length; i++)
+        {
+            char c = chars[i];
+            if (char.IsUpper(c))
+            {
+                bool prevIsLowerOrDigit = i > 0 && (char.IsLower(chars[i - 1]) || char.IsDigit(chars[i - 1]));
+                if (prevIsLowerOrDigit)
+                    outChars.Add('_');
+
+                outChars.Add(char.ToUpperInvariant(c));
+            }
+            else
+            {
+                outChars.Add(char.ToUpperInvariant(c));
+            }
+        }
+
+        return new string(outChars.ToArray());
+    }
 }
 

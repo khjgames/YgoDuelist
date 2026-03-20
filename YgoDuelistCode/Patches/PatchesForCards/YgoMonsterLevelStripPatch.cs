@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -225,6 +227,7 @@ public static class YgoMonsterLevelStripPatch
 
         LayoutIconInRow(attr, banner, tex, RaceHorizontalNudgePx + AttributeRightEdgeLeftOfRaceRightPx);
         attr.Show();
+        TrySetHoverTip(attr, GetAttributeHoverTipKey(monster.DuelMonsterAttribute));
     }
 
     private static void UpdateRaceIcon(TextureRect race, AbstractMonsterCard monster, TextureRect banner)
@@ -242,6 +245,7 @@ public static class YgoMonsterLevelStripPatch
 
         LayoutIconInRow(race, banner, tex, RaceHorizontalNudgePx);
         race.Show();
+        TrySetHoverTip(race, GetRaceHoverTipKey(monster.DuelMonsterRace));
     }
 
     private static Texture2D? GetAttributeTexture(DuelMonsterAttribute attribute)
@@ -253,6 +257,56 @@ public static class YgoMonsterLevelStripPatch
         Texture2D? loaded = ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
         _attributeTextures[attribute] = loaded;
         return loaded;
+    }
+
+    private static void TrySetHoverTip(TextureRect icon, string hoverTipKey)
+    {
+        try
+        {
+            var title = new LocString("static_hover_tips", hoverTipKey + ".title");
+            var description = new LocString("static_hover_tips", hoverTipKey + ".description");
+            var tip = new HoverTip(title, description);
+            Traverse.Create(icon).Field("_hoverTip").SetValue(tip);
+        }
+        catch
+        {
+            // If the underlying STS node doesn't expose a hover tip field,
+            // simply skip tooltips instead of crashing the game.
+        }
+    }
+
+    private static string GetAttributeHoverTipKey(DuelMonsterAttribute attribute) =>
+        $"YGO_ATTRIBUTE_{attribute.ToString().ToUpperInvariant()}";
+
+    private static string GetRaceHoverTipKey(DuelMonsterRace race) =>
+        $"YGO_RACE_{ToScreamingSnake(race.ToString())}";
+
+    private static string ToScreamingSnake(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return value;
+
+        var chars = value.ToCharArray();
+        var outChars = new List<char>(chars.Length * 2);
+
+        for (int i = 0; i < chars.Length; i++)
+        {
+            char c = chars[i];
+            if (char.IsUpper(c))
+            {
+                bool prevIsLowerOrDigit = i > 0 && (char.IsLower(chars[i - 1]) || char.IsDigit(chars[i - 1]));
+                if (prevIsLowerOrDigit)
+                    outChars.Add('_');
+
+                outChars.Add(char.ToUpperInvariant(c));
+            }
+            else
+            {
+                outChars.Add(char.ToUpperInvariant(c));
+            }
+        }
+
+        return new string(outChars.ToArray());
     }
 
     private static string GetRaceIconFileName(DuelMonsterRace race) =>
