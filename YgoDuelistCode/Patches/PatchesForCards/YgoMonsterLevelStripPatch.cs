@@ -17,6 +17,8 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch(typeof(NCard), "Reload")]
 public static class YgoMonsterLevelStripPatch
 {
+    private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
+
     private const string StarsStripPath = "YgoDuelist/images/card_frames/12_stars.png";
     private const string AttributeIconFolder = "YgoDuelist/images/card_frames/Attribute";
     private const string RaceIconFolder = "YgoDuelist/images/card_frames/Race";
@@ -57,6 +59,7 @@ public static class YgoMonsterLevelStripPatch
     private static AtlasTexture[]? _atlasesByLevel;
     private static readonly Dictionary<DuelMonsterAttribute, Texture2D?> _attributeTextures = new();
     private static readonly Dictionary<DuelMonsterRace, Texture2D?> _raceTextures = new();
+    private static bool _hoverTipLogOnce;
 
     [HarmonyPostfix]
     [HarmonyPriority(Priority.Last)]
@@ -142,7 +145,8 @@ public static class YgoMonsterLevelStripPatch
         attr = new TextureRect
         {
             Name = AttributeNodeName,
-            MouseFilter = Control.MouseFilterEnum.Ignore,
+            // Must be Stop to receive hover events.
+            MouseFilter = Control.MouseFilterEnum.Stop,
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
             GrowHorizontal = Control.GrowDirection.Both,
@@ -163,7 +167,8 @@ public static class YgoMonsterLevelStripPatch
         race = new TextureRect
         {
             Name = RaceNodeName,
-            MouseFilter = Control.MouseFilterEnum.Ignore,
+            // Must be Stop to receive hover events.
+            MouseFilter = Control.MouseFilterEnum.Stop,
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
             GrowHorizontal = Control.GrowDirection.Both,
@@ -263,15 +268,22 @@ public static class YgoMonsterLevelStripPatch
     {
         try
         {
+            // Allow hover detection on the icon node itself.
+            icon.MouseFilter = Control.MouseFilterEnum.Stop;
+
             var title = new LocString("static_hover_tips", hoverTipKey + ".title");
             var description = new LocString("static_hover_tips", hoverTipKey + ".description");
+            description.Add("conduitIcon", ConduitImgBbcode);
             var tip = new HoverTip(title, description);
             Traverse.Create(icon).Field("_hoverTip").SetValue(tip);
         }
-        catch
+        catch (System.Exception e)
         {
-            // If the underlying STS node doesn't expose a hover tip field,
-            // simply skip tooltips instead of crashing the game.
+            if (!_hoverTipLogOnce)
+            {
+                _hoverTipLogOnce = true;
+                GD.Print($"[YgoDuelist] Failed to set hover tip for '{hoverTipKey}': {e.Message}");
+            }
         }
     }
 

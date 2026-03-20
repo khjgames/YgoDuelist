@@ -13,12 +13,14 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 {
     public override YgoCardType YgoCardType => YgoCardType.Monster;
 
+    private int _duelMonsterLevel;
+
     public int BaseAtk { get; }
     public int BaseDef { get; }
     public int BaseMgc { get; }
 
     /// <summary>Level (star count) for the duel monster this card summons.</summary>
-    public override int DuelMonsterLevel { get; }
+    public override int DuelMonsterLevel => _duelMonsterLevel;
 
     /// <summary>Duel monster attribute (EARTH/WATER/FIRE/WIND/LIGHT/DARK) from the original YgoDuelist card.</summary>
     public override DuelMonsterAttribute DuelMonsterAttribute { get; }
@@ -51,16 +53,27 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         DuelMonsterRace duelMonsterRace = DuelMonsterRace.Warrior)
         : base(cost, type, rarity, target)
     {
-        DuelMonsterLevel = duelMonsterLevel;
         DuelMonsterAttribute = duelMonsterAttribute;
         DuelMonsterRace = duelMonsterRace;
         BaseAtk = baseAtk;
         BaseDef = baseDef;
         BaseMgc = baseMgc;
 
+        _duelMonsterLevel = duelMonsterLevel;
+
         // Start in defense position (Skill card) when DEF > ATK.
         // Equal stats keep the existing Attack default.
         SetDisplayAttackSkill(baseAtk >= baseDef);
+    }
+
+    /// <summary>
+    /// Update the card's duel monster level, and refresh summon-type keywords (Normal vs Tribute)
+    /// so hover tooltips and keyword UI stay correct.
+    /// </summary>
+    public void SetDuelMonsterLevel(int duelMonsterLevel)
+    {
+        _duelMonsterLevel = duelMonsterLevel;
+        RefreshSummonKeywordsForMonsterLevel();
     }
 
     /// <summary>

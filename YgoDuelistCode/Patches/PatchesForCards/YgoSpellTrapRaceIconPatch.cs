@@ -22,12 +22,15 @@ public static class YgoSpellTrapRaceIconPatch
     private const string RaceIconFolder = "YgoDuelist/images/card_frames/Race";
     private const string RaceNodeName = "YgoRaceIcon";
 
+    private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
+
     private const float IconRowHeightPx = 30f;
     private const float RaceHorizontalNudgePx = 48f;
 
     private const float RaceTopGapBelowBannerPx = -26f;
 
     private static readonly Dictionary<DuelMonsterRace, Texture2D?> _raceTextures = new();
+    private static bool _hoverTipLogOnce;
 
     [HarmonyPostfix]
     [HarmonyPriority(Priority.Last)]
@@ -72,7 +75,8 @@ public static class YgoSpellTrapRaceIconPatch
             raceIcon = new TextureRect
             {
                 Name = RaceNodeName,
-                MouseFilter = Control.MouseFilterEnum.Ignore,
+                // Must be Stop to receive hover events.
+                MouseFilter = Control.MouseFilterEnum.Stop,
                 ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
                 StretchMode = TextureRect.StretchModeEnum.Scale,
                 GrowHorizontal = Control.GrowDirection.Both,
@@ -164,14 +168,21 @@ public static class YgoSpellTrapRaceIconPatch
     {
         try
         {
+            icon.MouseFilter = Control.MouseFilterEnum.Stop;
+
             var title = new LocString("static_hover_tips", hoverTipKey + ".title");
             var description = new LocString("static_hover_tips", hoverTipKey + ".description");
+            description.Add("conduitIcon", ConduitImgBbcode);
             var tip = new HoverTip(title, description);
             Traverse.Create(icon).Field("_hoverTip").SetValue(tip);
         }
-        catch
+        catch (System.Exception e)
         {
-            // If the STS node doesn't expose a hover tip field, skip tooltips.
+            if (!_hoverTipLogOnce)
+            {
+                _hoverTipLogOnce = true;
+                GD.Print($"[YgoDuelist] Failed to set hover tip for '{hoverTipKey}': {e.Message}");
+            }
         }
     }
 

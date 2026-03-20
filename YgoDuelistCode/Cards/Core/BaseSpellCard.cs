@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
@@ -12,6 +14,12 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
 public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
 {
+    private const int RaceKeywordBase = 20000;
+    private static CardKeyword SetKeyword => (CardKeyword)10009;
+
+    private static CardKeyword RaceToKeyword(DuelMonsterRace race)
+        => (CardKeyword)(RaceKeywordBase + (int)race);
+
     public YgoCardType YgoCardType => YgoCardType.Spell;
 
     public DuelMonsterRace DuelMonsterRace { get; }
@@ -53,4 +61,18 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             this,
             false);
     }
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        new[]
+        {
+            RaceToKeyword(DuelMonsterRace),
+            SetKeyword,
+        };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        new IHoverTip[]
+        {
+            HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)),
+            HoverTipFactory.FromKeyword(SetKeyword),
+        };
 }
