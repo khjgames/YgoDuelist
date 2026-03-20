@@ -27,6 +27,15 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         _displayAsAttack = (type == CardType.Attack);
     }
 
+    /// <summary>
+    /// Sets whether this monster starts in attack position (Attack card) or defense position (Skill card).
+    /// Called by derived classes once their stats (e.g. base ATK/DEF) are known.
+    /// </summary>
+    protected void SetDisplayAttackSkill(bool displayAsAttack)
+    {
+        _displayAsAttack = displayAsAttack;
+    }
+
     /// <summary>Swaps between Attack and Skill (attack position / defense position). Called by right-click in hand.</summary>
     public void ToggleAttackSkill()
     {

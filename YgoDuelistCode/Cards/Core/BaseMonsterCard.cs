@@ -57,6 +57,10 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         BaseAtk = baseAtk;
         BaseDef = baseDef;
         BaseMgc = baseMgc;
+
+        // Start in defense position (Skill card) when DEF > ATK.
+        // Equal stats keep the existing Attack default.
+        SetDisplayAttackSkill(baseAtk >= baseDef);
     }
 
     /// <summary>
