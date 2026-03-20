@@ -66,8 +66,7 @@ public sealed class Command_Defend : MonsterCommandCard
         GD.Print("[ZGO Command_Defend] Pet found: ", pet != null);
         if (pet != null)
         {
-            var state = MonsterCommandRegistry.GetOrCreate(pet);
-            state.HasUsedCommandThisTurn = true;
+            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, true, player.Creature, SourceMonster);
         }
 
         bool swapped = SourceMonster.Type != CardType.Skill;

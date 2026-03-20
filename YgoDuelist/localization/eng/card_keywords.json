@@ -69,6 +69,13 @@
   "10012.title": "Face down",
   "10012.description": "This card is currently set face down.",
 
+  "10013.title": "Attack Position",
+  "10013.description": "This card is currently in attack position.",
+
+  "10014.title": "Defense Position",
+  "10014.description": "This card is currently in defense position.",
+
+  
 
   "20023.title": "Graveyard",
   "20023.description": "When cards are destroyed, they are sent to the [blue]Graveyard[/blue].",

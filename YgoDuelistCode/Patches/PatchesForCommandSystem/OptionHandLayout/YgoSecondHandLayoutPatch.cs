@@ -154,8 +154,7 @@ public static class YgoSecondHandLayoutPatch
                     holder.Hitbox.Visible = true;
                     holder.Hitbox.SetEnabled(true);
                 }
-                // Ensure option row is on top so it receives clicks instead of main hand.
-                holder.ZIndex = 10;
+                holder.ZIndex = 0;
 
                 GD.Print("[YgoDuelist] YgoSecondHandLayoutPatch: AFTER holder.Position.Y = ", holder.Position.Y);
                 GD.Print("[YgoDuelist] YgoSecondHandLayoutPatch: AFTER holder.TargetPosition.Y = ", holder.TargetPosition.Y);

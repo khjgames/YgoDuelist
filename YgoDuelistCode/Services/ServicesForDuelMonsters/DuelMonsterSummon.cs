@@ -55,7 +55,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
         // Normal summons cannot use Command Attack or Defend this turn; Monster Reborn summons can (caller passes canAttackThisTurn: false).
         if (canAttackThisTurn == false)
-            MonsterCommandRegistry.GetOrCreate(petCreature).HasUsedCommandThisTurn = true;
+            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(petCreature, true, player.Creature, card);
 
         // After the summon completes, move the monster card into the MonsterPile
         // so it is no longer in Hand/Discard/etc.

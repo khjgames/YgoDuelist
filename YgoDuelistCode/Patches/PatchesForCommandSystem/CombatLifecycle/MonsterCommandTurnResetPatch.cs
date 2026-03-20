@@ -26,9 +26,9 @@ public static class MonsterCommandTurnResetPatch
 
         foreach (Creature pet in combatPlayer.PlayerCombatState.Pets)
         {
-            if (MonsterCommandRegistry.TryGet(pet, out var state))
+            if (MonsterCommandRegistry.TryGet(pet, out _))
             {
-                state.HasUsedCommandThisTurn = false;
+                await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, false, combatPlayer.Creature, null);
             }
         }
 

@@ -1,3 +1,7 @@
 {
-  
+  "STIFF_POWER.title": "Stiff",
+  "STIFF_POWER.description": "This monster cannot change its battle position.",
+  "FATIGUE_POWER.title": "Fatigue",
+  "FATIGUE_POWER.description": "This monster cannot take any more combat actions this turn.",
+  "DIE_FOR_YOU_POWER.smartDescription": "[gold]{OwnerName}[/gold] absorbs all unblocked attack damage."
 }

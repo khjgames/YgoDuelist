@@ -1,5 +1,9 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -25,6 +29,22 @@ public static class MonsterCommandRegistry
 
     public static bool TryGet(Creature pet, out MonsterCommandState state)
         => _states.TryGetValue(pet, out state!);
+
+    public static async Task SetHasUsedCommandThisTurn(Creature pet, bool hasUsedCommandThisTurn, Creature? applier = null, CardModel? sourceCard = null)
+    {
+        var state = GetOrCreate(pet);
+        state.HasUsedCommandThisTurn = hasUsedCommandThisTurn;
+
+        if (hasUsedCommandThisTurn)
+        {
+            await PowerCmd.Apply<StiffPower>(pet, 1m, applier, sourceCard);
+            await PowerCmd.Apply<FatiguePower>(pet, 1m, applier, sourceCard);
+            return;
+        }
+
+        await PowerCmd.Remove<StiffPower>(pet);
+        await PowerCmd.Remove<FatiguePower>(pet);
+    }
 
     public static void Clear(Creature pet)
     {

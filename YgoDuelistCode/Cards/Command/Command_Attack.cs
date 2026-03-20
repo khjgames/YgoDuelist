@@ -65,8 +65,7 @@ public sealed class Command_Attack : MonsterCommandCard
         var pet = FindPetForMonster(SourceMonster);
         if (pet != null)
         {
-            var state = MonsterCommandRegistry.GetOrCreate(pet);
-            state.HasUsedCommandThisTurn = true;
+            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, true, player.Creature, SourceMonster);
         }
 
         bool swapped = SourceMonster.Type != CardType.Attack;
