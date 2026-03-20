@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1774032207
-YgoDuelist.deps.json::JSON::-1::1774032207::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1774032544
+YgoDuelist.deps.json::JSON::-1::1774032544::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
 ::res://packages/alchyr.sts2.baselib/::1773960954
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
@@ -1668,7 +1668,7 @@ Exit_Monster_Options.cs::CSharpScript::889353100451011932::1773607145::0::1::::<
 MonsterCommandCard.cs::CSharpScript::2141012884981456081::1773970500::0::1::::<><><>0<>0<><>::
 Toggle_Die_For_You.cs::CSharpScript::777169850227679302::1773607139::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Core/::1774030615
-AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774032011::0::1::::<><><>0<>0<><>::
+AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774032535::0::1::::<><><>0<>0<><>::
 BaseMonsterCard.cs::CSharpScript::9102026597318480692::1774020019::0::1::::<><><>0<>0<><>::
 BaseSpellCard.cs::CSharpScript::4032814977770574970::1774030971::0::1::::<><><>0<>0<><>::
 BaseTrapCard.cs::CSharpScript::3408567566577426753::1774030976::0::1::::<><><>0<>0<><>::

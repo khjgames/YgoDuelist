@@ -67,7 +67,7 @@
   "10011.description": "You must first [blue]Set[/blue] this card before it can be activated.",
 
   "10012.title": "Face down",
-  "10012.description": "This card is set face down. It must be flipped face up before its effect can be activated.",
+  "10012.description": "This card is currently set face down.",
 
 
   "20023.title": "Graveyard",
