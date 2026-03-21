@@ -7,7 +7,9 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 using YgoDuelist.YgoDuelistCode.Cards.Monster;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Spell;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Character;
@@ -39,6 +41,10 @@ public class YgoDuelist : PlaceholderCharacterModel
         ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Foolish_Burial>(),
+        ModelDb.Card<Hamburger_Recipe>(),
+        ModelDb.Card<Turtle_Oath>(),
+        ModelDb.Card<Hungry_Burger>(),
+        ModelDb.Card<Crab_Turtle>(),
         ModelDb.Card<Monster_Reborn>(),
         ModelDb.Card<Muka_Muka>(),
         ModelDb.Card<Enraged_Muka_Muka>(),
