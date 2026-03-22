@@ -130,6 +130,19 @@
     "image_downloaded": true
   },
   {
+    "id": 17968114,
+    "name": "Amazon of the Seas",
+    "type": "Normal Monster",
+    "desc": "A mermaid who serves as a herald to the Ocean Lord. She protects the sacred domain of Atlantis.",
+    "attribute": "WATER",
+    "race": "Fish",
+    "atk": 1300,
+    "def": 1400,
+    "level": 4,
+    "image_filename": "amazon_of_the_seas.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 67987611,
     "name": "Amazoness Archers",
     "type": "Trap Card",
@@ -206,6 +219,19 @@
     "level": 6,
     "image_filename": "amphibian_beast.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 40173854,
+    "name": "Amphibious Bugroth",
+    "type": "Fusion Monster",
+    "desc": "\"Ground Attacker Bugroth\" + \"Sentinel of the Seas\"",
+    "attribute": "WATER",
+    "race": "Aqua",
+    "atk": 1850,
+    "def": 1300,
+    "level": 5,
+    "image_filename": "amphibious_bugroth.jpg",
+    "image_downloaded": false
   },
   {
     "id": 64342551,
@@ -336,6 +362,19 @@
     "level": null,
     "image_filename": "appropriate.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 86164529,
+    "name": "Aqua Dragon",
+    "type": "Fusion Monster",
+    "desc": "\"Fairy Dragon\" + \"Amazon of the Seas\" + \"Zone Eater\"",
+    "attribute": "WATER",
+    "race": "Sea Serpent",
+    "atk": 2250,
+    "def": 1900,
+    "level": 6,
+    "image_filename": "aqua_dragon.jpg",
+    "image_downloaded": false
   },
   {
     "id": 85639257,
@@ -728,6 +767,19 @@
     "image_downloaded": true
   },
   {
+    "id": 5053103,
+    "name": "Battle Ox",
+    "type": "Normal Monster",
+    "desc": "A monster with tremendous power, it destroys enemies with a swing of its axe.",
+    "attribute": "EARTH",
+    "race": "Beast-Warrior",
+    "atk": 1700,
+    "def": 1000,
+    "level": 4,
+    "image_filename": "battle_ox.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 94463200,
     "name": "Battle-Scarred",
     "type": "Trap Card",
@@ -778,6 +830,19 @@
     "level": 6,
     "image_filename": "beast_of_talwar.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 16899564,
+    "name": "Beautiful Headhuntress",
+    "type": "Normal Monster",
+    "desc": "A vicious creature that has decapitated numerous enemy monsters.",
+    "attribute": "EARTH",
+    "race": "Warrior",
+    "atk": 1600,
+    "def": 800,
+    "level": 4,
+    "image_filename": "beautiful_headhuntress.jpg",
+    "image_downloaded": false
   },
   {
     "id": 32452818,
@@ -962,6 +1027,32 @@
     "image_downloaded": true
   },
   {
+    "id": 55761792,
+    "name": "Black Luster Ritual",
+    "type": "Spell Card",
+    "desc": "This card is used to Ritual Summon \"Black Luster Soldier\". You must also Tribute monsters from your hand or field whose total Levels equal 8 or more.",
+    "attribute": null,
+    "race": "Ritual",
+    "atk": null,
+    "def": null,
+    "level": null,
+    "image_filename": "black_luster_ritual.jpg",
+    "image_downloaded": false
+  },
+  {
+    "id": 5405694,
+    "name": "Black Luster Soldier",
+    "type": "Ritual Monster",
+    "desc": "You can Ritual Summon this card with \"Black Luster Ritual\".",
+    "attribute": "EARTH",
+    "race": "Warrior",
+    "atk": 3000,
+    "def": 2500,
+    "level": 8,
+    "image_filename": "black_luster_soldier.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 72989439,
     "name": "Black Luster Soldier - Envoy of the Beginning",
     "type": "Effect Monster",
@@ -1144,6 +1235,19 @@
     "image_downloaded": true
   },
   {
+    "id": 23995346,
+    "name": "Blue-Eyes Ultimate Dragon",
+    "type": "Fusion Monster",
+    "desc": "\"Blue-Eyes White Dragon\" + \"Blue-Eyes White Dragon\" + \"Blue-Eyes White Dragon\"",
+    "attribute": "LIGHT",
+    "race": "Dragon",
+    "atk": 4500,
+    "def": 3800,
+    "level": 12,
+    "image_filename": "blue-eyes_ultimate_dragon.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 89631139,
     "name": "Blue-Eyes White Dragon",
     "type": "Normal Monster",
@@ -1298,6 +1402,19 @@
     "level": 3,
     "image_filename": "bowganian.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 16507828,
+    "name": "Bracchio-raidus",
+    "type": "Fusion Monster",
+    "desc": "\"Two-Headed King Rex\" + \"Crawling Dragon #2\"",
+    "attribute": "WATER",
+    "race": "Dinosaur",
+    "atk": 2200,
+    "def": 2000,
+    "level": 6,
+    "image_filename": "bracchio-raidus.jpg",
+    "image_downloaded": false
   },
   {
     "id": 71413901,
@@ -1755,6 +1872,19 @@
     "image_downloaded": true
   },
   {
+    "id": 37421579,
+    "name": "Charubin the Fire Knight",
+    "type": "Fusion Monster",
+    "desc": "\"Monster Egg\" + \"Hinotama Soul\"",
+    "attribute": "FIRE",
+    "race": "Pyro",
+    "atk": 1100,
+    "def": 800,
+    "level": 3,
+    "image_filename": "charubin_the_fire_knight.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 40884383,
     "name": "Chopman the Desperate Outlaw",
     "type": "Effect Monster",
@@ -1950,6 +2080,19 @@
     "image_downloaded": true
   },
   {
+    "id": 38289717,
+    "name": "Crawling Dragon #2",
+    "type": "Normal Monster",
+    "desc": "A powerful dragon with teeth that can grind almost anything to dust.",
+    "attribute": "EARTH",
+    "race": "Dinosaur",
+    "atk": 1600,
+    "def": 1200,
+    "level": 4,
+    "image_filename": "crawling_dragon_#2.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 85802526,
     "name": "Cure Mermaid",
     "type": "Effect Monster",
@@ -2067,6 +2210,19 @@
     "image_downloaded": true
   },
   {
+    "id": 89112729,
+    "name": "Cyber Saurus",
+    "type": "Fusion Monster",
+    "desc": "\"Blast Juggler\" + \"Two-Headed King Rex\"",
+    "attribute": "EARTH",
+    "race": "Machine",
+    "atk": 1800,
+    "def": 1400,
+    "level": 5,
+    "image_filename": "cyber_saurus.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 69015963,
     "name": "Cyber-Stein",
     "type": "Effect Monster",
@@ -2171,6 +2327,19 @@
     "image_downloaded": true
   },
   {
+    "id": 80071763,
+    "name": "Dark Balter the Terrible",
+    "type": "Fusion Monster",
+    "desc": "\"Possessed Dark Soul\" + \"Frontier Wiseman\"\nA Fusion Summon of this monster can only be conducted with the above Fusion Material Monsters. When a Normal Spell Card is activated, negate the effect by paying 1000 Life Points. The effect of an Effect Monster that this monster destroys as a result of battle is negated.",
+    "attribute": "DARK",
+    "race": "Fiend",
+    "atk": 2000,
+    "def": 1200,
+    "level": 5,
+    "image_filename": "dark_balter_the_terrible.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 67049542,
     "name": "Dark Bat",
     "type": "Normal Monster",
@@ -2195,6 +2364,19 @@
     "level": 4,
     "image_filename": "dark_blade.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 86805855,
+    "name": "Dark Blade the Dragon Knight",
+    "type": "Fusion Monster",
+    "desc": "\"Dark Blade\" + \"Pitch-Dark Dragon\"\nEach time this card inflicts Battle Damage to your opponent, you can select up to 3 Monster Cards from your opponent's Graveyard and remove them from play.",
+    "attribute": "DARK",
+    "race": "Warrior",
+    "atk": 2200,
+    "def": 1500,
+    "level": 6,
+    "image_filename": "dark_blade_the_dragon_knight.jpg",
+    "image_downloaded": false
   },
   {
     "id": 8634636,
@@ -2496,6 +2678,19 @@
     "image_downloaded": true
   },
   {
+    "id": 17881964,
+    "name": "Darkfire Dragon",
+    "type": "Fusion Monster",
+    "desc": "\"Firegrass\" + \"Petit Dragon\"",
+    "attribute": "DARK",
+    "race": "Dragon",
+    "atk": 1500,
+    "def": 1250,
+    "level": 4,
+    "image_filename": "darkfire_dragon.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 5388481,
     "name": "Darkfire Soldier #1",
     "type": "Normal Monster",
@@ -2585,6 +2780,19 @@
     "level": null,
     "image_filename": "dedication_through_light_and_darkness.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 28593363,
+    "name": "Deepsea Shark",
+    "type": "Fusion Monster",
+    "desc": "\"Bottom Dweller\" + \"Tongyo\"",
+    "attribute": "WATER",
+    "race": "Fish",
+    "atk": 1900,
+    "def": 1600,
+    "level": 5,
+    "image_filename": "deepsea_shark.jpg",
+    "image_downloaded": false
   },
   {
     "id": 85718645,
@@ -2821,6 +3029,19 @@
     "image_downloaded": true
   },
   {
+    "id": 62113340,
+    "name": "Divine Dragon Ragnarok",
+    "type": "Normal Monster",
+    "desc": "A legendary dragon sent by the gods as their instrument. Legends say that if provoked, the whole world will sink beneath the sea.",
+    "attribute": "LIGHT",
+    "race": "Dragon",
+    "atk": 1500,
+    "def": 1000,
+    "level": 4,
+    "image_filename": "divine_dragon_ragnarok.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 74701381,
     "name": "DNA Surgery",
     "type": "Trap Card",
@@ -2925,6 +3146,19 @@
     "image_downloaded": true
   },
   {
+    "id": 62873545,
+    "name": "Dragon Master Knight",
+    "type": "Fusion Monster",
+    "desc": "\"Black Luster Soldier\" + \"Blue-Eyes Ultimate Dragon\"\r\nMust be Fusion Summoned. This card gains 500 ATK for each Dragon monster you control, except this card.",
+    "attribute": "LIGHT",
+    "race": "Dragon",
+    "atk": 5000,
+    "def": 5000,
+    "level": 12,
+    "image_filename": "dragon_master_knight.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 1435851,
     "name": "Dragon Treasure",
     "type": "Spell Card",
@@ -2962,6 +3196,19 @@
     "level": null,
     "image_filename": "dragon_s_rage.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 70681994,
+    "name": "Dragoness the Wicked Knight",
+    "type": "Fusion Monster",
+    "desc": "\"Armaill\" + \"One-Eyed Shield Dragon\"",
+    "attribute": "WIND",
+    "race": "Warrior",
+    "atk": 1200,
+    "def": 900,
+    "level": 3,
+    "image_filename": "dragoness_the_wicked_knight.jpg",
+    "image_downloaded": false
   },
   {
     "id": 32437102,
@@ -3224,6 +3471,19 @@
     "image_downloaded": true
   },
   {
+    "id": 15237615,
+    "name": "Empress Judge",
+    "type": "Fusion Monster",
+    "desc": "\"Queen's Double\" + \"Hibikime\"",
+    "attribute": "EARTH",
+    "race": "Warrior",
+    "atk": 2100,
+    "def": 1700,
+    "level": 6,
+    "image_filename": "empress_judge.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 58818411,
     "name": "Empress Mantis",
     "type": "Normal Monster",
@@ -3391,6 +3651,19 @@
     "level": null,
     "image_filename": "fairy_box.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 20315854,
+    "name": "Fairy Dragon",
+    "type": "Normal Monster",
+    "desc": "This beautiful Dragon spirit harbors hidden strength.",
+    "attribute": "WIND",
+    "race": "Dragon",
+    "atk": 1100,
+    "def": 1200,
+    "level": 4,
+    "image_filename": "fairy_dragon.jpg",
+    "image_downloaded": false
   },
   {
     "id": 22419772,
@@ -3679,6 +3952,19 @@
     "image_downloaded": true
   },
   {
+    "id": 58528964,
+    "name": "Flame Ghost",
+    "type": "Fusion Monster",
+    "desc": "\"Skull Servant\" + \"Dissolverock\"",
+    "attribute": "DARK",
+    "race": "Zombie",
+    "atk": 1000,
+    "def": 800,
+    "level": 3,
+    "image_filename": "flame_ghost.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 34460851,
     "name": "Flame Manipulator",
     "type": "Normal Monster",
@@ -3716,6 +4002,32 @@
     "level": 5,
     "image_filename": "flame_swordsman.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 2830619,
+    "name": "Flame Viper",
+    "type": "Normal Monster",
+    "desc": "A fire-breathing snake whose speed makes it a difficult target.",
+    "attribute": "EARTH",
+    "race": "Pyro",
+    "atk": 400,
+    "def": 450,
+    "level": 2,
+    "image_filename": "flame_viper.jpg",
+    "image_downloaded": false
+  },
+  {
+    "id": 95952802,
+    "name": "Flower Wolf",
+    "type": "Fusion Monster",
+    "desc": "\"Silver Fang\" + \"Darkworld Thorns\"",
+    "attribute": "EARTH",
+    "race": "Beast",
+    "atk": 1800,
+    "def": 1400,
+    "level": 5,
+    "image_filename": "flower_wolf.jpg",
+    "image_downloaded": false
   },
   {
     "id": 31987274,
@@ -3887,6 +4199,19 @@
     "image_downloaded": true
   },
   {
+    "id": 1641882,
+    "name": "Fusionist",
+    "type": "Fusion Monster",
+    "desc": "\"Petit Angel\" + \"Mystical Sheep #2\"",
+    "attribute": "EARTH",
+    "race": "Beast",
+    "atk": 900,
+    "def": 700,
+    "level": 3,
+    "image_filename": "fusionist.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 49003308,
     "name": "Gagagigo",
     "type": "Normal Monster",
@@ -3989,6 +4314,19 @@
     "level": 11,
     "image_filename": "gate_guardian.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 87751584,
+    "name": "Gatling Dragon",
+    "type": "Fusion Monster",
+    "desc": "\"Barrel Dragon\" + \"Blowback Dragon\"\r\nOnce per turn: You can toss a coin 3 times and destroy as many monsters on the field as possible, but not more than the number of heads.",
+    "attribute": "DARK",
+    "race": "Machine",
+    "atk": 2600,
+    "def": 1200,
+    "level": 8,
+    "image_filename": "gatling_dragon.jpg",
+    "image_downloaded": false
   },
   {
     "id": 5818798,
@@ -4223,6 +4561,19 @@
     "level": 3,
     "image_filename": "gilasaurus.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 51828629,
+    "name": "Giltia the D. Knight",
+    "type": "Fusion Monster",
+    "desc": "\"Guardian of the Labyrinth\" + \"Protector of the Throne\"",
+    "attribute": "LIGHT",
+    "race": "Warrior",
+    "atk": 1850,
+    "def": 1500,
+    "level": 5,
+    "image_filename": "giltia_the_d._knight.jpg",
+    "image_downloaded": false
   },
   {
     "id": 84620194,
@@ -4940,6 +5291,19 @@
     "image_downloaded": true
   },
   {
+    "id": 52584282,
+    "name": "Hercules Beetle",
+    "type": "Normal Monster",
+    "desc": "A massive beetle with a tough carapace and a dangerous horn.",
+    "attribute": "EARTH",
+    "race": "Insect",
+    "atk": 1500,
+    "def": 2000,
+    "level": 5,
+    "image_filename": "hercules_beetle.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 64501875,
     "name": "Hibikime",
     "type": "Normal Monster",
@@ -5068,6 +5432,19 @@
     "level": 4,
     "image_filename": "humanoid_slime.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 5600127,
+    "name": "Humanoid Worm Drake",
+    "type": "Fusion Monster",
+    "desc": "\"Worm Drake\" + \"Humanoid Slime\"",
+    "attribute": "WATER",
+    "race": "Aqua",
+    "atk": 2200,
+    "def": 2000,
+    "level": 7,
+    "image_filename": "humanoid_worm_drake.jpg",
+    "image_downloaded": false
   },
   {
     "id": 30243636,
@@ -5499,6 +5876,19 @@
     "image_downloaded": true
   },
   {
+    "id": 94566432,
+    "name": "Kaiser Dragon",
+    "type": "Fusion Monster",
+    "desc": "\"Winged Dragon, Guardian of the Fortress #1\" + \"Fairy Dragon\"",
+    "attribute": "LIGHT",
+    "race": "Dragon",
+    "atk": 2300,
+    "def": 2000,
+    "level": 7,
+    "image_filename": "kaiser_dragon.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 52824910,
     "name": "Kaiser Glider",
     "type": "Effect Monster",
@@ -5525,6 +5915,19 @@
     "image_downloaded": true
   },
   {
+    "id": 9653271,
+    "name": "Kaminari Attack",
+    "type": "Fusion Monster",
+    "desc": "\"Ocubeam\" + \"Mega Thunderball\"",
+    "attribute": "WIND",
+    "race": "Thunder",
+    "atk": 1900,
+    "def": 1400,
+    "level": 5,
+    "image_filename": "kaminari_attack.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 23289281,
     "name": "Karate Man",
     "type": "Effect Monster",
@@ -5536,6 +5939,19 @@
     "level": 3,
     "image_filename": "karate_man.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 54541900,
+    "name": "Karbonala Warrior",
+    "type": "Fusion Monster",
+    "desc": "\"M-Warrior #1\" + \"M-Warrior #2\"",
+    "attribute": "EARTH",
+    "race": "Warrior",
+    "atk": 1500,
+    "def": 1200,
+    "level": 4,
+    "image_filename": "karbonala_warrior.jpg",
+    "image_downloaded": false
   },
   {
     "id": 62340868,
@@ -5588,6 +6004,19 @@
     "level": 4,
     "image_filename": "killer_needle.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 13756293,
+    "name": "King Dragun",
+    "type": "Fusion Monster",
+    "desc": "\"Lord of D.\" + \"Divine Dragon Ragnarok\"\nYour opponent cannot target Dragon monsters with card effects. Once per turn: You can Special Summon 1 Dragon monster from your hand.",
+    "attribute": "DARK",
+    "race": "Dragon",
+    "atk": 2400,
+    "def": 1100,
+    "level": 7,
+    "image_filename": "king_dragun.jpg",
+    "image_downloaded": false
   },
   {
     "id": 84686841,
@@ -5770,6 +6199,32 @@
     "level": 1,
     "image_filename": "kuriboh.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 60802233,
+    "name": "Kuwagata α",
+    "type": "Normal Monster",
+    "desc": "A very vicious stag beetle that goes for the head.",
+    "attribute": "EARTH",
+    "race": "Insect",
+    "atk": 1250,
+    "def": 1000,
+    "level": 4,
+    "image_filename": "kuwagata_α.jpg",
+    "image_downloaded": false
+  },
+  {
+    "id": 95144193,
+    "name": "Kwagar Hercules",
+    "type": "Fusion Monster",
+    "desc": "\"Kuwagata α\" + \"Hercules Beetle\"",
+    "attribute": "EARTH",
+    "race": "Insect",
+    "atk": 1900,
+    "def": 1700,
+    "level": 6,
+    "image_filename": "kwagar_hercules.jpg",
+    "image_downloaded": false
   },
   {
     "id": 88240808,
@@ -6212,6 +6667,19 @@
     "level": 3,
     "image_filename": "lizard_soldier.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 17985575,
+    "name": "Lord of D.",
+    "type": "Effect Monster",
+    "desc": "Neither player can target Dragon monsters on the field with card effects.",
+    "attribute": "DARK",
+    "race": "Spellcaster",
+    "atk": 1200,
+    "def": 1100,
+    "level": 4,
+    "image_filename": "lord_of_d..jpg",
+    "image_downloaded": false
   },
   {
     "id": 40320754,
@@ -6734,6 +7202,19 @@
     "image_downloaded": true
   },
   {
+    "id": 27134689,
+    "name": "Master of Oz",
+    "type": "Fusion Monster",
+    "desc": "\"Big Koala\" + \"Des Kangaroo\"",
+    "attribute": "EARTH",
+    "race": "Beast",
+    "atk": 4200,
+    "def": 3700,
+    "level": 9,
+    "image_filename": "master_of_oz.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 22609617,
     "name": "Mataza the Zapper",
     "type": "Effect Monster",
@@ -7070,6 +7551,19 @@
     "level": 1,
     "image_filename": "mokey_mokey.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 13803864,
+    "name": "Mokey Mokey King",
+    "type": "Fusion Monster",
+    "desc": "\"Mokey Mokey\" + \"Mokey Mokey\" + \"Mokey Mokey\"\nWhen this card is removed from the field, you can Special Summon as many \"Mokey Mokey\" as possible from your Graveyard.",
+    "attribute": "LIGHT",
+    "race": "Fairy",
+    "atk": 300,
+    "def": 100,
+    "level": 6,
+    "image_filename": "mokey_mokey_king.jpg",
+    "image_downloaded": false
   },
   {
     "id": 17192817,
@@ -7761,6 +8255,19 @@
     "image_downloaded": true
   },
   {
+    "id": 90140980,
+    "name": "Ojama King",
+    "type": "Fusion Monster",
+    "desc": "\"Ojama Green\" + \"Ojama Yellow\" + \"Ojama Black\"\nSelect up to 3 of your opponent's Monster Card Zones. The selected zones cannot be used.",
+    "attribute": "LIGHT",
+    "race": "Beast",
+    "atk": 0,
+    "def": 3000,
+    "level": 6,
+    "image_filename": "ojama_king.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 29843091,
     "name": "Ojama Trio",
     "type": "Trap Card",
@@ -8255,6 +8762,19 @@
     "image_downloaded": true
   },
   {
+    "id": 47415292,
+    "name": "Pitch-Dark Dragon",
+    "type": "Union Effect Monster",
+    "desc": "Once per turn, during your Main Phase, if you control this card on the field, you can equip it to your \"Dark Blade\" as an Equip Spell Card, OR unequip the Union equipment and Special Summon this card in face-up Attack Position. While equipped to a monster by this card's effect, increase the ATK/DEF of the equipped monster by 400 points. When it attacks with an ATK that is higher than the DEF of a Defense Position monster, inflict the difference as Battle Damage to your opponent's Life Points. (1 monster can only be equipped with 1 Union Monster at a time. If the equipped monster is destroyed as a result of battle, destroy this card instead.)",
+    "attribute": "DARK",
+    "race": "Dragon",
+    "atk": 900,
+    "def": 600,
+    "level": 3,
+    "image_filename": "pitch-dark_dragon.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 35429292,
     "name": "Pixie Knight",
     "type": "Effect Monster",
@@ -8307,6 +8827,19 @@
     "image_downloaded": true
   },
   {
+    "id": 52860176,
+    "name": "Possessed Dark Soul",
+    "type": "Effect Monster",
+    "desc": "You can Tribute this face-up card; take control of all face-up Level 3 or lower monsters your opponent currently controls.",
+    "attribute": "DARK",
+    "race": "Fiend",
+    "atk": 1200,
+    "def": 800,
+    "level": 3,
+    "image_filename": "possessed_dark_soul.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 77027445,
     "name": "Power of Kaishin",
     "type": "Spell Card",
@@ -8318,6 +8851,19 @@
     "level": null,
     "image_filename": "power_of_kaishin.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 33691040,
+    "name": "Pragtical",
+    "type": "Fusion Monster",
+    "desc": "\"Trakodon\" + \"Flame Viper\"",
+    "attribute": "EARTH",
+    "race": "Dinosaur",
+    "atk": 1900,
+    "def": 1500,
+    "level": 5,
+    "image_filename": "pragtical.jpg",
+    "image_downloaded": false
   },
   {
     "id": 68304813,
@@ -9282,6 +9828,19 @@
     "image_downloaded": true
   },
   {
+    "id": 53539634,
+    "name": "Sanwitch",
+    "type": "Fusion Monster",
+    "desc": "\"Sangan\" + \"Witch of the Black Forest\"",
+    "attribute": "DARK",
+    "race": "Spellcaster",
+    "atk": 2100,
+    "def": 1800,
+    "level": 6,
+    "image_filename": "sanwitch.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 16222645,
     "name": "Sasuke Samurai",
     "type": "Effect Monster",
@@ -9475,6 +10034,19 @@
     "level": null,
     "image_filename": "senri_eye.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 85448931,
+    "name": "Sentinel of the Seas",
+    "type": "Normal Monster",
+    "desc": "A merman warrior that relentlessly attacks those who pollute the seas with their presence.",
+    "attribute": "WATER",
+    "race": "Aqua",
+    "atk": 1300,
+    "def": 1000,
+    "level": 4,
+    "image_filename": "sentinel_of_the_seas.jpg",
+    "image_downloaded": false
   },
   {
     "id": 66516792,
@@ -9982,6 +10554,19 @@
     "level": 2,
     "image_filename": "sonic_jammer.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 38942059,
+    "name": "Sonic Maid",
+    "type": "Normal Monster",
+    "desc": "A maiden that uses sound to her advantage, she wields a scythe that's shaped like a musical note.",
+    "attribute": "EARTH",
+    "race": "Warrior",
+    "atk": 1200,
+    "def": 900,
+    "level": 3,
+    "image_filename": "sonic_maid.jpg",
+    "image_downloaded": false
   },
   {
     "id": 68073522,
@@ -11011,6 +11596,19 @@
     "image_downloaded": true
   },
   {
+    "id": 43973174,
+    "name": "The Flute of Summoning Dragon",
+    "type": "Spell Card",
+    "desc": "Special Summon up to 2 Dragon monsters from your hand. \"Lord of D.\" must be on the field to activate and to resolve this effect.",
+    "attribute": null,
+    "race": "Normal",
+    "atk": null,
+    "def": null,
+    "level": null,
+    "image_filename": "the_flute_of_summoning_dragon.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 84080939,
     "name": "The Forgiving Maiden",
     "type": "Effect Monster",
@@ -11635,6 +12233,19 @@
     "image_downloaded": true
   },
   {
+    "id": 42348802,
+    "name": "Trakodon",
+    "type": "Normal Monster",
+    "desc": "A tiger-striped dragon that is often seen racing across the wasteland at tremendous speeds.",
+    "attribute": "EARTH",
+    "race": "Dinosaur",
+    "atk": 1300,
+    "def": 800,
+    "level": 3,
+    "image_filename": "trakodon.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 4206964,
     "name": "Trap Hole",
     "type": "Trap Card",
@@ -11921,6 +12532,19 @@
     "image_downloaded": true
   },
   {
+    "id": 94119974,
+    "name": "Two-Headed King Rex",
+    "type": "Normal Monster",
+    "desc": "A powerful monster whose two heads attack as one.",
+    "attribute": "EARTH",
+    "race": "Dinosaur",
+    "atk": 1600,
+    "def": 1200,
+    "level": 4,
+    "image_filename": "two-headed_king_rex.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 57305373,
     "name": "Two-Mouth Darkruler",
     "type": "Normal Monster",
@@ -12116,6 +12740,19 @@
     "image_downloaded": true
   },
   {
+    "id": 51638941,
+    "name": "V-Tiger Jet",
+    "type": "Normal Monster",
+    "desc": "This ace fighter is unbeatable in a dogfight. It combines with other monsters to launch an array of encircling attacks.",
+    "attribute": "LIGHT",
+    "race": "Machine",
+    "atk": 1600,
+    "def": 1800,
+    "level": 4,
+    "image_filename": "v-tiger_jet.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 26495087,
     "name": "Vampire Lady",
     "type": "Effect Monster",
@@ -12181,6 +12818,45 @@
     "image_downloaded": true
   },
   {
+    "id": 58859575,
+    "name": "VW-Tiger Catapult",
+    "type": "Fusion Monster",
+    "desc": "\"V-Tiger Jet\" + \"W-Wing Catapult\"\r\nMust first be Special Summoned (from your Extra Deck) by banishing the above cards you control. (You do not use \"Polymerization\".) You can discard 1 card, then target 1 monster your opponent controls; change that target's battle position. (Flip Effects are not activated.)",
+    "attribute": "LIGHT",
+    "race": "Machine",
+    "atk": 2000,
+    "def": 2100,
+    "level": 6,
+    "image_filename": "vw-tiger_catapult.jpg",
+    "image_downloaded": false
+  },
+  {
+    "id": 84243274,
+    "name": "VWXYZ-Dragon Catapult Cannon",
+    "type": "Fusion Monster",
+    "desc": "\"VW-Tiger Catapult\" + \"XYZ-Dragon Cannon\"\r\nMust first be Special Summoned (from your Extra Deck) by banishing the above cards you control. (You do not use \"Polymerization\".) Once per turn: You can target 1 card your opponent controls; banish that target. When this card declares an attack on an opponent's monster: You can target the attack target; change that attack target's battle position. (Flip Effects are not activated.)",
+    "attribute": "LIGHT",
+    "race": "Machine",
+    "atk": 3000,
+    "def": 2800,
+    "level": 8,
+    "image_filename": "vwxyz-dragon_catapult_cannon.jpg",
+    "image_downloaded": false
+  },
+  {
+    "id": 96300057,
+    "name": "W-Wing Catapult",
+    "type": "Union Effect Monster",
+    "desc": "Once per turn, you can either: Target 1 \"V-Tiger Jet\" you control; equip this card to that target, OR: Unequip this card and Special Summon it. A monster equipped with this card gains 400 ATK/DEF, also if the equipped monster would be destroyed by battle or card effect, destroy this card instead.",
+    "attribute": "LIGHT",
+    "race": "Machine",
+    "atk": 1300,
+    "def": 1500,
+    "level": 4,
+    "image_filename": "w-wing_catapult.jpg",
+    "image_downloaded": false
+  },
+  {
     "id": 63162310,
     "name": "Wall Shadow",
     "type": "Effect Monster",
@@ -12218,6 +12894,19 @@
     "level": 4,
     "image_filename": "warrior_dai_grepher.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 56413937,
+    "name": "Warrior of Tradition",
+    "type": "Fusion Monster",
+    "desc": "\"Sonic Maid\" + \"Beautiful Headhuntress\"",
+    "attribute": "EARTH",
+    "race": "Warrior",
+    "atk": 1900,
+    "def": 1700,
+    "level": 6,
+    "image_filename": "warrior_of_tradition.jpg",
+    "image_downloaded": false
   },
   {
     "id": 66073051,
@@ -12686,5 +13375,18 @@
     "level": 4,
     "image_filename": "zolga.jpg",
     "image_downloaded": true
+  },
+  {
+    "id": 86100785,
+    "name": "Zone Eater",
+    "type": "Effect Monster",
+    "desc": "A monster attacked by this card will be destroyed during the End Phase of the 5th turn after the attack.",
+    "attribute": "WATER",
+    "race": "Aqua",
+    "atk": 250,
+    "def": 200,
+    "level": 1,
+    "image_filename": "zone_eater.jpg",
+    "image_downloaded": false
   }
 ]

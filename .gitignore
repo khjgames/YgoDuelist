@@ -1,5 +1,7 @@
 bin/
 obj/
+tools/card_entry_slugify/bin/
+tools/card_entry_slugify/obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
