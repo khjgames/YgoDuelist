@@ -1,4 +1,4 @@
 {
   "NOT_ENOUGH_CONDUIT": "I don't have enough [red]Conduit[/red].",
-  "TRIBUTE_SUMMON_SELECT": "Select #@MinCount@# to #@MaxCount@# monsters on the field to release as tribute."
+  "TRIBUTE_SUMMON_SELECT": "Select {Amount:plural:a monster on the field|[blue]{}[/blue] monsters on the field} to sacrifice as tribute."
 }

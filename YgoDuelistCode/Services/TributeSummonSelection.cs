@@ -86,7 +86,8 @@ public static class TributeSummonSelection
 
         var prefs = new CardSelectorPrefs(TributePrompt, tributeCount, tributeCount)
         {
-            RequireManualConfirmation = true
+            RequireManualConfirmation = true,
+            Cancelable = true
         };
 
         IEnumerable<CardModel> selected;
