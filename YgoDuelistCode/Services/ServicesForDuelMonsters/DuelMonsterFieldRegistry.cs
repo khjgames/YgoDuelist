@@ -28,8 +28,6 @@ public static class DuelMonsterFieldRegistry
         set.Add(card);
         if (pet != null)
             _petToCard[pet] = card;
-
-        DuelMonsterMonsterOptionsMenu.RequestDeferredTryRefresh(player);
     }
 
     public static IReadOnlyCollection<BaseMonsterCard> GetFieldMonsters(Player? player)
@@ -68,8 +66,6 @@ public static class DuelMonsterFieldRegistry
             if (set.Count == 0)
                 _byPlayer.Remove(owner);
         }
-
-        DuelMonsterMonsterOptionsMenu.RequestDeferredTryRefresh(owner);
     }
 
     /// <summary>

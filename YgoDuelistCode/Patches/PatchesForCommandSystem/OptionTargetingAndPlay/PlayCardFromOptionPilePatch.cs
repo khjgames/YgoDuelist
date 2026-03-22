@@ -104,11 +104,6 @@ public static class PlayCardFromOptionPilePatch
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Command_Change_Battle_Position.OnClickedOption()");
                     TaskHelper.RunSafely(changePos.OnClickedOption());
                 }
-                else if (card is Command_Toggle_Tribute_Sacrifice tributeToggle)
-                {
-                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Command_Toggle_Tribute_Sacrifice.OnClickedOption()");
-                    TaskHelper.RunSafely(tributeToggle.OnClickedOption());
-                }
                 else if (card is Toggle_Die_For_You toggle)
                 {
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Toggle_Die_For_You.OnClickedOption()");

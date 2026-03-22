@@ -67,7 +67,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 return true;
 
             int tribute = TributeReleaseCount;
-            if (tribute > 0 && !TributeMaterialMarkTracker.CanSatisfyTribute(Owner, tribute))
+            if (tribute > 0 && TributeSummonSelection.CountTributableFieldMonsters(Owner) < tribute)
                 return false;
 
             return DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tribute);
@@ -120,8 +120,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                IReadOnlyList<Creature> mats = await TributeMaterialMarkTracker.ConsumeTributeMaterialsAsync(Owner, tribute);
-                if (mats.Count < tribute)
+                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null || mats.Count < tribute)
                 {
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
                     await CombatAction(choiceContext, cardPlay);

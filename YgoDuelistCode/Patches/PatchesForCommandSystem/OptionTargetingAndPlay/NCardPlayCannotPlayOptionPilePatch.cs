@@ -36,8 +36,6 @@ public static class NCardPlayCannotPlayOptionPilePatch
             TaskHelper.RunSafely(exit.OnClickedOption());
         else if (card is Command_Change_Battle_Position changePos)
             TaskHelper.RunSafely(changePos.OnClickedOption());
-        else if (card is Command_Toggle_Tribute_Sacrifice tributeToggle)
-            TaskHelper.RunSafely(tributeToggle.OnClickedOption());
         else if (card is Toggle_Die_For_You toggle)
             TaskHelper.RunSafely(toggle.OnClickedOption());
     }

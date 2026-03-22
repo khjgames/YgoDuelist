@@ -24,7 +24,7 @@ public static class YgoCombatEndClearPatch
         DuelMonsterFieldRegistry.ClearAll();
         MonsterCommandRegistry.ClearAll();
         NormalSummonTracker.ClearAll();
-        TributeMaterialMarkTracker.ClearAll();
+        TributeSummonPlayPayload.ClearAll();
         await Task.CompletedTask;
     }
 }
