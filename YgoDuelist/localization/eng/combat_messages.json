@@ -1,4 +1,7 @@
 {
   "NOT_ENOUGH_CONDUIT": "I don't have enough [red]Conduit[/red].",
-  "TRIBUTE_SUMMON_SELECT": "Select {Amount:plural:a monster on the field|[blue]{}[/blue] monsters on the field} to sacrifice as tribute."
+  "TRIBUTE_SUMMON_SELECT": "Select {Amount:plural:a monster on the field|[blue]{}[/blue] monsters on the field} to sacrifice as tribute.",
+  "RITUAL_SUMMON_PICK_TARGET": "Select the [gold]Ritual Monster[/gold] to Ritual Summon from your hand.",
+  "RITUAL_SUMMON_MATERIALS_AT_LEAST": "Select 1 to {Amount} monsters from your hand and/or field. Total level must be at least [blue]{Requirement}[/blue].",
+  "RITUAL_SUMMON_MATERIALS_EXACT": "Select 1 to {Amount} monsters from your hand and/or field. Total level must be exactly [blue]{Requirement}[/blue]."
 }

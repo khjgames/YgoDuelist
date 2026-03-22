@@ -74,7 +74,7 @@ public sealed class Monster_Reborn : BaseSpellCard
         // Summon the chosen monster for 0 energy cost; DuelMonsterSummon will also
         // move the card into the MonsterPile and out of Graveyard via CardPileCmd.Add.
         // Monster Reborn summons can use Attack/Defend the turn they are summoned.
-        await DuelMonsterSummon.TrySummonDuelMonster(player, chosen, choiceContext, canAttackThisTurn: true);
+        await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, choiceContext);
     }
 }
 

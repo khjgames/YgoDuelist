@@ -22,11 +22,22 @@ public static class YgoEnergyIconNodePatch
         if (model == null)
             return;
 
+        var icon = __instance.GetNodeOrNull<TextureRect>("%EnergyIcon");
+        if (icon == null)
+            return;
+
         string? energyPrefix = null;
         string? customTexturePath = null;
 
-        if (model is MonsterCommandCard)
+        if (model is MonsterCommandCard mcc)
         {
+            if (!mcc.ShowsEnergyCostIcon)
+            {
+                icon.Visible = false;
+                return;
+            }
+
+            icon.Visible = true;
             if (model.Type == CardType.Attack)
                 customTexturePath = AttackMonsterEnergyPath;
             else
@@ -34,6 +45,7 @@ public static class YgoEnergyIconNodePatch
         }
         else if (model is IYgoCard ygo)
         {
+            icon.Visible = true;
             energyPrefix = ygo.YgoCardType switch
             {
                 YgoCardType.Spell => "silent",
@@ -56,10 +68,6 @@ public static class YgoEnergyIconNodePatch
         }
 
         if (string.IsNullOrEmpty(energyPrefix) && string.IsNullOrEmpty(customTexturePath))
-            return;
-
-        var icon = __instance.GetNodeOrNull<TextureRect>("%EnergyIcon");
-        if (icon == null)
             return;
 
         string path = !string.IsNullOrEmpty(customTexturePath)

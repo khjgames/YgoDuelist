@@ -20,6 +20,11 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
 {
     public NormalMonsterCard? SourceMonster { get; private set; }
 
+    /// <summary>
+    /// When false, <see cref="Patches.YgoEnergyIconNodePatch"/> hides the energy orb (menu-only options, not paid with energy).
+    /// </summary>
+    protected internal virtual bool ShowsEnergyCostIcon => true;
+
     // Parameterless ctor for reflection / scanners – never used at runtime for real commands.
     protected MonsterCommandCard()
         : base(0, CardType.Skill, CardRarity.Event, TargetType.Self)

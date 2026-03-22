@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Cards;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -232,7 +233,7 @@ public static class YgoMonsterLevelStripPatch
 
         LayoutIconInRow(attr, banner, tex, RaceHorizontalNudgePx + AttributeRightEdgeLeftOfRaceRightPx);
         attr.Show();
-        TrySetHoverTip(attr, GetAttributeHoverTipKey(monster.DuelMonsterAttribute));
+        TrySetHoverTip(attr, GetAttributeHoverTipKey(monster.DuelMonsterAttribute), monster);
     }
 
     private static void UpdateRaceIcon(TextureRect race, AbstractMonsterCard monster, TextureRect banner)
@@ -250,7 +251,7 @@ public static class YgoMonsterLevelStripPatch
 
         LayoutIconInRow(race, banner, tex, RaceHorizontalNudgePx);
         race.Show();
-        TrySetHoverTip(race, GetRaceHoverTipKey(monster.DuelMonsterRace));
+        TrySetHoverTip(race, GetRaceHoverTipKey(monster.DuelMonsterRace), monster);
     }
 
     private static Texture2D? GetAttributeTexture(DuelMonsterAttribute attribute)
@@ -264,7 +265,7 @@ public static class YgoMonsterLevelStripPatch
         return loaded;
     }
 
-    private static void TrySetHoverTip(TextureRect icon, string hoverTipKey)
+    private static void TrySetHoverTip(TextureRect icon, string hoverTipKey, AbstractMonsterCard monster)
     {
         try
         {
@@ -273,7 +274,8 @@ public static class YgoMonsterLevelStripPatch
 
             var title = new LocString("static_hover_tips", hoverTipKey + ".title");
             var description = new LocString("static_hover_tips", hoverTipKey + ".description");
-            description.Add("conduitIcon", ConduitImgBbcode);
+            bool useConduitIcon = monster.YgoCardType != YgoCardType.FusionMonster && monster.YgoCardType != YgoCardType.RitualMonster;
+            description.Add("conduitIcon", useConduitIcon ? ConduitImgBbcode : string.Empty);
             var tip = new HoverTip(title, description);
             Traverse.Create(icon).Field("_hoverTip").SetValue(tip);
         }

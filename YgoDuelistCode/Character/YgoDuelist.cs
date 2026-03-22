@@ -10,6 +10,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Spell;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Character;

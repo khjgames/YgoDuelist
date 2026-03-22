@@ -39,7 +39,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new StarsVar(1),
+        new StarsVar(MonsterConduitStarCost),
         new DamageVar((decimal)BaseAtk, ValueProp.Move),
         new BlockVar((decimal)BaseDef, ValueProp.Move),
         new DynamicVar("Def", (decimal)BaseDef),
@@ -54,7 +54,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     //base.IsPlayable &&
     //(Owner == null || !NormalSummonTracker.HasUsedThisTurn(Owner));
     
-    /// <summary>Star cost for display and payment; matches StarsVar in CanonicalVars.</summary>
+    /// <summary>Star cost for display and payment; matches StarsVar base (<see cref="AbstractMonsterCard.MonsterConduitStarCost"/>) in CanonicalVars.</summary>
     public override int CanonicalStarCost => (int)DynamicVars.Stars.BaseValue;
 
     protected override bool IsPlayable

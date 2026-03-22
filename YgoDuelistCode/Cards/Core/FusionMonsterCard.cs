@@ -21,5 +21,7 @@ public abstract class FusionMonsterCard : EffectMonsterCard
     {
     }
 
+    protected override int MonsterConduitStarCost => 0;
+
     public override YgoCardType YgoCardType => YgoCardType.FusionMonster;
 }

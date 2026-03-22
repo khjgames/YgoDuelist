@@ -31,6 +31,8 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
 
     protected override bool IsPlayable => false;
 
+    protected internal override bool ShowsEnergyCostIcon => false;
+
     public async Task OnClickedOption()
     {
         GD.Print("[ZGO] Toggle_Die_For_You.OnClickedOption() entered");

@@ -111,6 +111,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         UpdateFaceDownKeywordFromBool();
     }
 
+    /// <summary>Conduit star cost via StarsVar on monster cards. Fusion and ritual overrides use 0.</summary>
+    protected virtual int MonsterConduitStarCost => 1;
+
     /// <summary>Level (star count) 1-9+ for summon HP. Override per card.</summary>
     public virtual int DuelMonsterLevel => 4;
 

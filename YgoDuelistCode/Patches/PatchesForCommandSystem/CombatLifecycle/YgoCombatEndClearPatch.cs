@@ -25,6 +25,7 @@ public static class YgoCombatEndClearPatch
         MonsterCommandRegistry.ClearAll();
         NormalSummonTracker.ClearAll();
         TributeSummonPlayPayload.ClearAll();
+        RitualSpellPlayPayload.ClearAll();
         await Task.CompletedTask;
     }
 }

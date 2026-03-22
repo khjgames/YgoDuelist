@@ -52,10 +52,16 @@ namespace YgoDuelist.YgoDuelistCode.Services;
     }
 
     /// <summary>
+    /// Ritual, fusion, Monster Reborn, and similar: the pet is not marked as having used Command this turn, so Attack/Defend are allowed.
+    /// </summary>
+    public static Task<bool> TrySummonDuelMonsterSpecial(Player player, BaseMonsterCard card, PlayerChoiceContext ctx) =>
+        TrySummonDuelMonster(player, card, ctx, canAttackThisTurn: true);
+
+    /// <summary>
     /// If the player has fewer than 5 duel monster summons, creates a summon from the card's DuelMonsterData
     /// and adds it as a pet. Returns true if a summon was added.
     /// </summary>
-    /// <param name="canAttackThisTurn">If true (default), the summon cannot use Command Attack/Defend this turn. If false (e.g. Monster Reborn), they can.</param>
+    /// <param name="canAttackThisTurn">If <c>true</c>, Command Attack/Defend may be used this turn. If <c>false</c> (normal/tribute default), they are exhausted (stiff/fatigued) this turn.</param>
     public static async Task<bool> TrySummonDuelMonster(Player player, BaseMonsterCard card, PlayerChoiceContext _, bool canAttackThisTurn = false)
     {
         if (player?.Creature?.CombatState == null || !card.CanSummonDuelMonster)
@@ -76,8 +82,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         // Track this card as an active field monster for aura/stat calculations and menu commands.
         DuelMonsterFieldRegistry.RegisterSummon(player, card, petCreature);
 
-        // Normal summons cannot use Command Attack or Defend this turn; Monster Reborn summons can (caller passes canAttackThisTurn: false).
-        if (canAttackThisTurn == false)
+        // Normal/tribute summons: mark Command as used this turn. Special summons pass canAttackThisTurn: true.
+        if (!canAttackThisTurn)
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(petCreature, true, player.Creature, card);
 
         await DuelMonsterStancePowerSync.SyncForPetAsync(petCreature, card, player.Creature, card);

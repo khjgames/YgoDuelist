@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -21,5 +22,18 @@ public abstract class RitualMonsterCard : EffectMonsterCard
     {
     }
 
+    protected override int MonsterConduitStarCost => 0;
+
     public override YgoCardType YgoCardType => YgoCardType.RitualMonster;
+
+    /// <summary>Ritual monsters are only summoned via ritual spells, not played from the hand.</summary>
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (CombatManager.Instance?.IsInProgress == true && Pile?.Type == PileType.Hand)
+                return false;
+            return base.IsPlayable;
+        }
+    }
 }
