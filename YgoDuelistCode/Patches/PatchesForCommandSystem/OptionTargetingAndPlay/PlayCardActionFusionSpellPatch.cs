@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -40,7 +41,9 @@ public static class PlayCardActionFusionSpellPatch
         if (card is not FusionSpellCard)
             return true;
 
-        if (card.Pile?.Type != PileType.Hand)
+        bool fromHand = card.Pile?.Type == PileType.Hand;
+        bool fromSpellTrapZone = card.Pile?.Type == SpellTrapZonePile.CustomType;
+        if (!fromHand && !fromSpellTrapZone)
             return true;
 
         __result = ExecuteWithFusionAsync(__instance);
@@ -80,7 +83,7 @@ public static class PlayCardActionFusionSpellPatch
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
         CardPile? pile = card.Pile;
-        if (pile == null || pile.Type != PileType.Hand)
+        if (pile == null || (pile.Type != PileType.Hand && pile.Type != SpellTrapZonePile.CustomType))
         {
             NCardPlayQueue.Instance?.RemoveCardFromQueueForCancellation(action);
             return;

@@ -38,6 +38,7 @@ public sealed class Thunder_Dragon : EffectMonsterCard
     }
 
     protected override bool SupportsHandEffectForm => true;
+    protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     public override bool CanSummonDuelMonster => !IsHandEffectFormActive;
 

@@ -28,6 +28,7 @@ public static class YgoSpellTrapRaceIconPatch
     private const float RaceHorizontalNudgePx = 48f;
 
     private const float RaceTopGapBelowBannerPx = -26f;
+    private const float RaceSetAlpha = 0.9f;
 
     private static readonly Dictionary<DuelMonsterRace, Texture2D?> _raceTextures = new();
     private static bool _hoverTipLogOnce;
@@ -46,6 +47,7 @@ public static class YgoSpellTrapRaceIconPatch
         CardModel? model = __instance.Model;
         if (model == null)
             return;
+        bool useSetTransparency = YgoSetCardVisualHelper.ShouldUseSetFrame(model);
 
         // Monsters are handled by YgoMonsterLevelStripPatch.
         if (model is AbstractMonsterCard)
@@ -96,6 +98,7 @@ public static class YgoSpellTrapRaceIconPatch
         raceIcon.Texture = tex;
         raceIcon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
         raceIcon.StretchMode = TextureRect.StretchModeEnum.Scale;
+        raceIcon.Modulate = new Color(1f, 1f, 1f, useSetTransparency ? RaceSetAlpha : 1f);
 
         // Anchor + offsets in card-local space, similar to YgoMonsterLevelStripPatch.
         ApplyIconRowAnchors(raceIcon, banner);

@@ -1,10 +1,46 @@
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Extensions;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
+
+internal static class YgoSetCardVisualHelper
+{
+    public static readonly Color SetOrFaceDownTint = new(0.7f, 0.43f, 0.37f, 1f);
+
+    public static bool ShouldUseSetFrame(CardModel model)
+    {
+        if (model is AbstractMonsterCard monster)
+        {
+            if (monster.FaceDown)
+                return true;
+            if (monster.Pile?.Type == PileType.Hand && monster.WillSet)
+                return true;
+        }
+
+        if (model is BaseSpellCard spell)
+        {
+            if (spell.FaceDown || spell.WasSetIntoSpellTrapZone)
+                return true;
+            if (spell.Pile?.Type == PileType.Hand && spell.IsSetModeInHand)
+                return true;
+        }
+
+        if (model is BaseTrapCard trap)
+        {
+            if (trap.FaceDown || trap.WasSetIntoSpellTrapZone)
+                return true;
+            if (trap.Pile?.Type == PileType.Hand)
+                return true;
+        }
+
+        return false;
+    }
+}
 
 [HarmonyPatch(typeof(CardModel), "get_Frame")]
 public static class YgoCardFramePatch
@@ -39,4 +75,30 @@ public static class YgoCardFramePatch
 
         __result = ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
     }
+}
+
+[HarmonyPatch(typeof(CardModel), "get_PortraitBorder")]
+public static class YgoSetModePortraitBorderPatch
+{
+    private const string SetFrameFile = "Inverted_Lip_Set.png";
+    private const string FrameFolder = "card_frames";
+
+    // IMPORTANT: do NOT apply this set-frame swap to CardModel.get_Frame.
+    // get_Frame is the full frame layer and replacing it changes the whole card background.
+    // The set lip visual belongs on PortraitBorder (the layer around portrait/type plaque).
+    [HarmonyPriority(Priority.Last)]
+    public static void Postfix(CardModel __instance, ref Texture2D __result)
+    {
+        if (__instance.Type != CardType.Skill || !YgoSetCardVisualHelper.ShouldUseSetFrame(__instance))
+            return;
+
+        string setPath = $"{FrameFolder}/{SetFrameFile}".ImagePath();
+        if (!ResourceLoader.Exists(setPath))
+            return;
+
+        Texture2D? setFrame = ResourceLoader.Load<Texture2D>(setPath, null, ResourceLoader.CacheMode.Reuse);
+        if (setFrame != null)
+            __result = setFrame;
+    }
+
 }

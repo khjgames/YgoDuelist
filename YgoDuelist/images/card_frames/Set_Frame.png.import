@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dt1f8fgi2cl1n"
-path="res://.godot/imported/7_completed.png-114ded153ab6fef5acca33476eb54a4f.ctex"
+uid="uid://caq20b8isxkub"
+path="res://.godot/imported/Set_Frame.png-a88c04f6c026e8f1f4860d3b0065c118.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://YgoDuelist/images/card_portraits/7_completed.png"
-dest_files=["res://.godot/imported/7_completed.png-114ded153ab6fef5acca33476eb54a4f.ctex"]
+source_file="res://YgoDuelist/images/card_frames/Set_Frame.png"
+dest_files=["res://.godot/imported/Set_Frame.png-a88c04f6c026e8f1f4860d3b0065c118.ctex"]
 
 [params]
 

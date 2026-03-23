@@ -21,6 +21,7 @@ public static class YgoMonsterLevelStripPatch
     private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
 
     private const string StarsStripPath = "YgoDuelist/images/card_frames/12_stars.png";
+    private const string StarsStripFaceDownPath = "YgoDuelist/images/card_frames/12_stars_facedown.png";
     private const string AttributeIconFolder = "YgoDuelist/images/card_frames/Attribute";
     private const string RaceIconFolder = "YgoDuelist/images/card_frames/Race";
     private const string StripNodeName = "YgoLevelStarsStrip";
@@ -55,9 +56,13 @@ public static class YgoMonsterLevelStripPatch
 
     /// <summary>Attribute sits to the left of the race; its right edge is this many px left of the race’s right edge.</summary>
     private const float AttributeRightEdgeLeftOfRaceRightPx = 31f;
+    private const float AttributeSetAlpha = 0.75f;
+    private const float RaceSetAlpha = 0.9f;
 
-    private static Texture2D? _stripTexture;
-    private static AtlasTexture[]? _atlasesByLevel;
+    private static Texture2D? _stripTextureFaceUp;
+    private static Texture2D? _stripTextureFaceDown;
+    private static AtlasTexture[]? _atlasesByLevelFaceUp;
+    private static AtlasTexture[]? _atlasesByLevelFaceDown;
     private static readonly Dictionary<DuelMonsterAttribute, Texture2D?> _attributeTextures = new();
     private static readonly Dictionary<DuelMonsterRace, Texture2D?> _raceTextures = new();
     private static bool _hoverTipLogOnce;
@@ -83,14 +88,13 @@ public static class YgoMonsterLevelStripPatch
             return;
         }
 
-        _stripTexture ??= ResourceLoader.Load<Texture2D>(StarsStripPath, null, ResourceLoader.CacheMode.Reuse);
-        if (_stripTexture == null)
+        bool useFaceDownStrip = monster.FaceDown || (monster.Pile?.Type == PileType.Hand && monster.WillSet);
+        Texture2D? stripTexture = GetStripTexture(useFaceDownStrip);
+        AtlasTexture[]? atlasesByLevel = EnsureAtlases(stripTexture, useFaceDownStrip);
+
+        if (stripTexture == null || atlasesByLevel == null)
         {
             strip?.Hide();
-        }
-        else
-        {
-            EnsureAtlases(_stripTexture);
         }
 
         var banner = body.GetNodeOrNull<TextureRect>("%TitleBanner");
@@ -118,23 +122,23 @@ public static class YgoMonsterLevelStripPatch
         }
 
         int level = Mathf.Clamp(monster.DuelMonsterLevel, 1, 12);
-        if (_stripTexture == null || _atlasesByLevel == null || level < 1 || level > 12)
+        if (level < 1 || level > 12 || atlasesByLevel == null || stripTexture == null)
         {
             strip?.Hide();
         }
         else
         {
-            strip!.Texture = _atlasesByLevel[level - 1];
+            strip!.Texture = atlasesByLevel[level - 1];
             strip.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
             strip.StretchMode = TextureRect.StretchModeEnum.Scale;
-            ApplyLayoutRightAnchoredBelowBanner(strip, banner, level);
+            ApplyLayoutRightAnchoredBelowBanner(strip, banner, stripTexture, level);
             strip.Show();
         }
 
         TextureRect attrNode = EnsureAttributeIconNode(body, banner, strip);
         TextureRect raceNode = EnsureRaceIconNode(body, attrNode);
-        UpdateAttributeIcon(attrNode, monster, banner);
-        UpdateRaceIcon(raceNode, monster, banner);
+        UpdateAttributeIcon(attrNode, monster, banner, useFaceDownStrip);
+        UpdateRaceIcon(raceNode, monster, banner, useFaceDownStrip);
     }
 
     private static TextureRect EnsureAttributeIconNode(Control body, TextureRect banner, TextureRect? strip)
@@ -218,7 +222,7 @@ public static class YgoMonsterLevelStripPatch
         rect.OffsetLeft = right - displayW;
     }
 
-    private static void UpdateAttributeIcon(TextureRect attr, AbstractMonsterCard monster, TextureRect banner)
+    private static void UpdateAttributeIcon(TextureRect attr, AbstractMonsterCard monster, TextureRect banner, bool useSetTransparency)
     {
         Texture2D? tex = GetAttributeTexture(monster.DuelMonsterAttribute);
         if (tex == null)
@@ -230,13 +234,14 @@ public static class YgoMonsterLevelStripPatch
         attr.Texture = tex;
         attr.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
         attr.StretchMode = TextureRect.StretchModeEnum.Scale;
+        attr.Modulate = new Color(1f, 1f, 1f, useSetTransparency ? AttributeSetAlpha : 1f);
 
         LayoutIconInRow(attr, banner, tex, RaceHorizontalNudgePx + AttributeRightEdgeLeftOfRaceRightPx);
         attr.Show();
         TrySetHoverTip(attr, GetAttributeHoverTipKey(monster.DuelMonsterAttribute), monster);
     }
 
-    private static void UpdateRaceIcon(TextureRect race, AbstractMonsterCard monster, TextureRect banner)
+    private static void UpdateRaceIcon(TextureRect race, AbstractMonsterCard monster, TextureRect banner, bool useSetTransparency)
     {
         Texture2D? tex = GetRaceTexture(monster.DuelMonsterRace);
         if (tex == null)
@@ -248,6 +253,7 @@ public static class YgoMonsterLevelStripPatch
         race.Texture = tex;
         race.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
         race.StretchMode = TextureRect.StretchModeEnum.Scale;
+        race.Modulate = new Color(1f, 1f, 1f, useSetTransparency ? RaceSetAlpha : 1f);
 
         LayoutIconInRow(race, banner, tex, RaceHorizontalNudgePx);
         race.Show();
@@ -353,22 +359,38 @@ public static class YgoMonsterLevelStripPatch
         return loaded;
     }
 
-    private static void EnsureAtlases(Texture2D strip)
+    private static Texture2D? GetStripTexture(bool useFaceDownStrip)
     {
-        if (_atlasesByLevel != null)
-            return;
+        if (useFaceDownStrip)
+        {
+            _stripTextureFaceDown ??= ResourceLoader.Load<Texture2D>(StarsStripFaceDownPath, null, ResourceLoader.CacheMode.Reuse);
+            return _stripTextureFaceDown;
+        }
+
+        _stripTextureFaceUp ??= ResourceLoader.Load<Texture2D>(StarsStripPath, null, ResourceLoader.CacheMode.Reuse);
+        return _stripTextureFaceUp;
+    }
+
+    private static AtlasTexture[]? EnsureAtlases(Texture2D? strip, bool useFaceDownStrip)
+    {
+        if (strip == null)
+            return null;
+
+        AtlasTexture[]? current = useFaceDownStrip ? _atlasesByLevelFaceDown : _atlasesByLevelFaceUp;
+        if (current != null)
+            return current;
 
         Vector2 szf = strip.GetSize();
         int tw = (int)szf.X;
         int th = (int)szf.Y;
         if (tw <= 0 || th <= 0)
-            return;
+            return null;
 
         int cellW = tw / 12;
         if (cellW <= 0)
-            return;
+            return null;
 
-        _atlasesByLevel = new AtlasTexture[12];
+        var atlases = new AtlasTexture[12];
         for (int i = 0; i < 12; i++)
         {
             int regionW = cellW * (i + 1);
@@ -377,15 +399,22 @@ public static class YgoMonsterLevelStripPatch
                 Atlas = strip,
                 Region = new Rect2I(0, 0, regionW, th),
             };
-            _atlasesByLevel[i] = atlas;
+            atlases[i] = atlas;
         }
+
+        if (useFaceDownStrip)
+            _atlasesByLevelFaceDown = atlases;
+        else
+            _atlasesByLevelFaceUp = atlases;
+
+        return atlases;
     }
 
     /// <summary>
     /// Same vertical band as the title banner; horizontal strip is width = aspect-fit for current level,
     /// right edge aligned with the banner’s right edge (YGO-style).
     /// </summary>
-    private static void ApplyLayoutRightAnchoredBelowBanner(TextureRect strip, TextureRect banner, int level)
+    private static void ApplyLayoutRightAnchoredBelowBanner(TextureRect strip, TextureRect banner, Texture2D stripTexture, int level)
     {
         strip.AnchorLeft = 0.5f;
         strip.AnchorRight = 0.5f;
@@ -396,10 +425,7 @@ public static class YgoMonsterLevelStripPatch
         strip.OffsetTop = top;
         strip.OffsetBottom = top + StripHeightPx;
 
-        if (_stripTexture == null)
-            return;
-
-        Vector2 szf = _stripTexture.GetSize();
+        Vector2 szf = stripTexture.GetSize();
         int tw = (int)szf.X;
         int th = (int)szf.Y;
         if (tw <= 0 || th <= 0)

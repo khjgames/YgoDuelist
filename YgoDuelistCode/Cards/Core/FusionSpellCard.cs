@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -41,7 +42,8 @@ public abstract class FusionSpellCard : BaseSpellCard
         {
             if (!base.IsPlayable)
                 return false;
-            if (Owner == null || CombatManager.Instance?.IsInProgress != true || Pile?.Type != PileType.Hand)
+            bool inPlayablePile = Pile?.Type == PileType.Hand || Pile?.Type == SpellTrapZonePile.CustomType;
+            if (Owner == null || CombatManager.Instance?.IsInProgress != true || !inPlayablePile)
                 return true;
             if (FusionSummonSelection.IsCompletingFusionSpellPlay)
                 return true;
