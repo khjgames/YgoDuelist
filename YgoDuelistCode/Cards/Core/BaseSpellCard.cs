@@ -19,6 +19,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
     private const int RaceKeywordBase = 20000;
     private static CardKeyword SetKeyword => (CardKeyword)10009;
     private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
+    private static CardKeyword CycleSpellKeyword => (CardKeyword)20040;
 
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);
@@ -107,12 +108,18 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         {
             RaceToKeyword(DuelMonsterRace),
             SetKeyword,
-        }.Concat(GetFaceDownKeyword());
+        }.Concat(GetFaceDownKeyword()).Concat(GetCycleSpellKeywordWhenEligible());
 
     private IEnumerable<CardKeyword> GetFaceDownKeyword()
     {
         if (WasSetIntoSpellTrapZone)
             yield return FaceDownKeyword;
+    }
+
+    private IEnumerable<CardKeyword> GetCycleSpellKeywordWhenEligible()
+    {
+        if (Pile != null && YgoCycleKeywordPileHelper.AllowsCycleKeywordHints(Pile.Type))
+            yield return CycleSpellKeyword;
     }
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
@@ -126,6 +133,8 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             };
             if (WasSetIntoSpellTrapZone)
                 tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
+            foreach (CardKeyword kw in GetCycleSpellKeywordWhenEligible())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
             return tips;
         }
     }

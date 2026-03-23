@@ -115,6 +115,12 @@
   "20037.description": "This card must be [gold]Special Summoned[/gold] with a [blue]Ritual[/blue] Spell Card.",
 
   "20038.title": "Hand Effect",
-  "20038.description": "In your hand, [blue]right-click[/blue] this card to cycle [gold]attack[/gold], [gold]defense[/gold], and [gold]Hand Effect[/gold]. Hand Effect is a [blue]Skill[/blue] with the silent cost icon; playing it resolves only that effect and sends this card to the [blue]Graveyard[/blue]."
+  "20038.description": "[blue]right-click[/blue] this card to cycle between [gold]attack[/gold], [gold]defense[/gold], and [gold]Hand Effect[/gold]. Hand Effect is a [blue]Monster Skill[/blue] with a silent cast; playing it resolves only that effect.",
+  
+  "20039.title": "Cycle Monster",
+  "20039.description": "[blue]right-click[/blue] this card to cycle between [gold]attack[/gold] & [gold]defense[/gold].",
+
+  "20040.title": "Cycle Spell",
+  "20040.description": "[blue]right-click[/blue] this card to cycle between [gold]playing[/gold] & [gold]setting in your spell/trap card zone[/gold]."
 
 }

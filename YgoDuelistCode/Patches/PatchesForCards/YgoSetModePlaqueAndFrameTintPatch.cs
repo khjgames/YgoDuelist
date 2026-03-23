@@ -18,7 +18,6 @@ public static class YgoSetModePlaqueAndFrameTintPatch
     private const string FaceDownPortraitPath = "YgoDuelist/images/card_portraits/Face_Down_2.png";
     private const string FaceDownPortraitOverlayNodeName = "YgoFaceDownPortraitOverlay";
 
-    private static readonly StringName DefaultBannerTintMeta = new("YgoDefaultBannerTint");
     private static readonly StringName DefaultPortraitBorderTintMeta = new("YgoDefaultPortraitBorderTint");
     private static readonly StringName DefaultTypePlaqueTintMeta = new("YgoDefaultTypePlaqueTint");
     private static readonly StringName BaseTypePlaqueYMeta = new("YgoBaseTypePlaqueY");
@@ -56,10 +55,9 @@ public static class YgoSetModePlaqueAndFrameTintPatch
         TextureRect? titleBanner = body.GetNodeOrNull<TextureRect>("%TitleBanner");
         if (titleBanner != null)
         {
-            if (!titleBanner.HasMeta(DefaultBannerTintMeta))
-                titleBanner.SetMeta(DefaultBannerTintMeta, titleBanner.Modulate);
-            Color defaultBannerTint = ExtractColor(titleBanner.GetMeta(DefaultBannerTintMeta, titleBanner.Modulate), titleBanner.Modulate);
-            titleBanner.Modulate = useSetVisual ? YgoSetCardVisualHelper.SetOrFaceDownTint : defaultBannerTint;
+            titleBanner.Modulate = useSetVisual
+                ? YgoSetCardVisualHelper.SetOrFaceDownTint
+                : GetDefaultBannerTintForRarity(model.Rarity);
         }
 
         TextureRect? portraitBorder = body.GetNodeOrNull<TextureRect>("%PortraitBorder");
@@ -130,6 +128,18 @@ public static class YgoSetModePlaqueAndFrameTintPatch
     private static float ExtractFloat(Variant variant, float fallback)
     {
         return variant.VariantType == Variant.Type.Float ? (float)variant : fallback;
+    }
+
+    private static Color GetDefaultBannerTintForRarity(MegaCrit.Sts2.Core.Entities.Cards.CardRarity rarity)
+    {
+        // Keep vanilla banner behavior by rarity when leaving set mode.
+        return rarity switch
+        {
+            MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Uncommon => Colors.White,
+            MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Rare => Colors.White,
+            MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Curse => Colors.White,
+            _ => Colors.White
+        };
     }
 
     private static TextureRect? EnsurePortraitOverlayNode(Control body, TextureRect portrait)

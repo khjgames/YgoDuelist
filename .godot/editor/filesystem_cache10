@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1774294731
-YgoDuelist.deps.json::JSON::-1::1774294731::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1774296719
+YgoDuelist.deps.json::JSON::-1::1774296719::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
 ::res://packages/alchyr.sts2.baselib/::1774202292
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
@@ -643,7 +643,7 @@ Warrior.png::CompressedTexture2D::1320042563740864243::1773966378::1774009805::1
 Winged Beast.png::CompressedTexture2D::3578172987481161524::1773966406::1774009805::1::::<><><>0<>0<>3dcbe033fc8b2e7586e9eea0039f9e15<>res://.godot/imported/Winged Beast.png-6676e9cd63fe24e2c91e51feda2bf730.ctex::
 Wyrm.png::CompressedTexture2D::1384564222810432908::1773966428::1774009805::1::::<><><>0<>0<>1b59c52305442a33123f9d3cc8225b9e<>res://.godot/imported/Wyrm.png-f0baf332787cba3c620fde035cbd0503.ctex::
 Zombie.png::CompressedTexture2D::2314931981114014436::1773966438::1774009805::1::::<><><>0<>0<>7d68f38d0e5210f4349b39e61b1a0a21<>res://.godot/imported/Zombie.png-b24b1ddc81fba0c9239fbc3857fc9249.ctex::
-::res://YgoDuelist/images/card_portraits/::1774294701
+::res://YgoDuelist/images/card_portraits/::1774294735
 12_stars.png::CompressedTexture2D::4334101375567056248::1773925464::1773943464::1::::<><><>0<>0<>5157b18896c469cbb58655e51ce90a27<>res://.godot/imported/12_stars.png-c0bb9aa79aaaafa28dc7365ae87fa253.ctex::
 absorbing_kid_from_the_sky.png::CompressedTexture2D::8203255757943500442::1773876213::1773899473::1::::<><><>0<>0<>4b5bd05e6963aec252976092ff40bac8<>res://.godot/imported/absorbing_kid_from_the_sky.png-13be31a7b13d399137ef72f99cd1da05.ctex::
 acrobat_monkey.png::CompressedTexture2D::6453590923838373611::1773876213::1773899473::1::::<><><>0<>0<>26ff0ced53e9b14541dce89732f508de<>res://.godot/imported/acrobat_monkey.png-f9714e874be22af7397da85bcb674b25.ctex::
@@ -1729,7 +1729,7 @@ relic.png::CompressedTexture2D::2946342146000448801::1773513086::1773589494::1::
 ::res://YgoDuelist/localization/eng/::1773962336
 ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
 cards.json::JSON::-1::1774235060::0::1::::<><><>0<>0<><>::
-card_keywords.json::JSON::-1::1774235065::0::1::::<><><>0<>0<><>::
+card_keywords.json::JSON::-1::1774296385::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 combat_messages.json::JSON::-1::1774235065::0::1::::<><><>0<>0<><>::
 monsters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
@@ -1740,8 +1740,9 @@ static_hover_tips.json::JSON::-1::1774021232::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelist/monsters/duel_monster/::1773589494
 duel_monster.tscn::PackedScene::-1::1773589494::0::1::::<><><>0<>0<><>::res://src/Core/Nodes/Combat/NCreatureVisuals.cs
 ::res://YgoDuelistCode/::1773589494
-::res://YgoDuelistCode/Cards/::1773897211
+::res://YgoDuelistCode/Cards/::1774296650
 YgoCardTypes.cs::CSharpScript::8470661758287105871::1773970500::0::1::::<><><>0<>0<><>::
+YgoCycleKeywordPileHelper.cs::CSharpScript::5117249336157152713::1774296650::0::1::::<><><>0<>0<><>::
 YgoDuelistCard.cs::CSharpScript::1750447615170480644::1773589494::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Command/::1774202276
 Command_Attack.cs::CSharpScript::6230304481939202254::1774107073::0::1::::<><><>0<>0<><>::
@@ -1751,9 +1752,9 @@ Exit_Monster_Options.cs::CSharpScript::889353100451011932::1774278300::0::1::::<
 MonsterCommandCard.cs::CSharpScript::2141012884981456081::1774211437::0::1::::<><><>0<>0<><>::
 Toggle_Die_For_You.cs::CSharpScript::777169850227679302::1774211438::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Core/::1774229956
-AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774235020::0::1::::<><><>0<>0<><>::
+AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774296655::0::1::::<><><>0<>0<><>::
 BaseMonsterCard.cs::CSharpScript::9102026597318480692::1774020019::0::1::::<><><>0<>0<><>::
-BaseSpellCard.cs::CSharpScript::4032814977770574970::1774278398::0::1::::<><><>0<>0<><>::
+BaseSpellCard.cs::CSharpScript::4032814977770574970::1774296670::0::1::::<><><>0<>0<><>::
 BaseTrapCard.cs::CSharpScript::3408567566577426753::1774278388::0::1::::<><><>0<>0<><>::
 EffectMonsterCard.cs::CSharpScript::77330584343275516::1773969488::0::1::::<><><>0<>0<><>::
 FusionMonsterCard.cs::CSharpScript::3901646410333081308::1774231519::0::1::::<><><>0<>0<><>::
@@ -2856,10 +2857,10 @@ PlayCardFromSpellTrapZonePatch.cs::CSharpScript::1190364242816708041::1774278487
 SpellTrapCardRightClickPatch.cs::CSharpScript::1835909605611185779::1774278974::0::1::::<><><>0<>0<><>::
 YgoCardFramePatch.cs::CSharpScript::1728927591157531662::1774290869::0::1::::<><><>0<>0<><>::
 YgoEnergyIconNodePatch.cs::CSharpScript::6863008430028289781::1774235038::0::1::::<><><>0<>0<><>::
-YgoMonsterLevelStripPatch.cs::CSharpScript::6666624347756030588::1774293750::0::1::::<><><>0<>0<><>::
+YgoMonsterLevelStripPatch.cs::CSharpScript::6666624347756030588::1774295323::0::1::::<><><>0<>0<><>::
 YgoMonsterStarIconPatch.cs::CSharpScript::803589814039354809::1773959313::0::1::::<><><>0<>0<><>::
-YgoSetModePlaqueAndFrameTintPatch.cs::CSharpScript::3379541632289860124::1774294657::0::1::::<><><>0<>0<><>::
-YgoSpellTrapRaceIconPatch.cs::CSharpScript::8607086363000490058::1774016514::0::1::::<><><>0<>0<><>::
+YgoSetModePlaqueAndFrameTintPatch.cs::CSharpScript::3379541632289860124::1774294978::0::1::::<><><>0<>0<><>::
+YgoSpellTrapRaceIconPatch.cs::CSharpScript::8607086363000490058::1774295327::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForCardSelection/::1774203273
 SimpleCardSelectScreenCancelBackButtonPatch.cs::CSharpScript::1802082996828080799::1774203391::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForCombat/::1774041173

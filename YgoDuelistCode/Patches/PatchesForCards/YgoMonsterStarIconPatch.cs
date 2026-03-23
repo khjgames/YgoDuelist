@@ -20,8 +20,20 @@ public static class YgoMonsterStarIconPatch
     [HarmonyPriority(Priority.Last)]
     public static void Postfix(NCard __instance)
     {
-        if (__instance?.Model is not AbstractMonsterCard)
+        if (__instance?.Model is not AbstractMonsterCard monster)
             return;
+
+        if (monster.IsHandEffectFormActive)
+        {
+            var starInHandEffect = __instance.GetNodeOrNull<TextureRect>("%StarIcon");
+            if (starInHandEffect != null)
+                starInHandEffect.Visible = false;
+
+            var unplayableStarInHandEffect = __instance.GetNodeOrNull<TextureRect>("%UnplayableStarIcon");
+            if (unplayableStarInHandEffect != null)
+                unplayableStarInHandEffect.Visible = false;
+            return;
+        }
 
         _conduitTexture ??= ResourceLoader.Load<Texture2D>(ConduitTexturePath, null, ResourceLoader.CacheMode.Reuse);
         if (_conduitTexture == null)
@@ -29,10 +41,16 @@ public static class YgoMonsterStarIconPatch
 
         var starIcon = __instance.GetNodeOrNull<TextureRect>("%StarIcon");
         if (starIcon != null)
+        {
+            starIcon.Visible = true;
             starIcon.Texture = _conduitTexture;
+        }
 
         var unplayableStar = __instance.GetNodeOrNull<TextureRect>("%UnplayableStarIcon");
         if (unplayableStar != null)
+        {
+            unplayableStar.Visible = true;
             unplayableStar.Texture = _conduitTexture;
+        }
     }
 }

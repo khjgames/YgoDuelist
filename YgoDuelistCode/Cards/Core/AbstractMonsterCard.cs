@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -42,6 +43,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword FusionMonsterKeyword => (CardKeyword)20036;
     private static CardKeyword RitualMonsterKeyword => (CardKeyword)20037;
     private static CardKeyword HandEffectMonsterKeyword => (CardKeyword)20038;
+    private static CardKeyword CycleMonsterKeyword => (CardKeyword)20039;
 
     public abstract YgoCardType YgoCardType { get; }
     public bool FaceDown { get; set; } = false;
@@ -211,6 +213,19 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return HandEffectMonsterKeyword;
     }
 
+    /// <summary>
+    /// Hint for attack/defense cycling when the card does not use the Hand Effect (20038) keyword.
+    /// Only in main-deck flow piles — not monster zone, extra deck, graveyard browse as field pile, etc.
+    /// </summary>
+    private IEnumerable<CardKeyword> GetCycleMonsterKeywordWhenEligible()
+    {
+        if (SupportsHandEffectForm)
+            yield break;
+        if (Pile == null || !YgoCycleKeywordPileHelper.AllowsCycleKeywordHints(Pile.Type))
+            yield break;
+        yield return CycleMonsterKeyword;
+    }
+
     private int ComputeTributeReleaseCount()
     {
         if (IsRitualOrFusionMonster)
@@ -248,6 +263,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             keywords.Add(RaceToKeyword(DuelMonsterRace));
             keywords.AddRange(GetFusionAndRitualKeywords());
             keywords.AddRange(GetHandEffectMonsterKeywords());
+            keywords.AddRange(GetCycleMonsterKeywordWhenEligible());
             keywords.AddRange(GetFaceDownKeywordsFromBool());
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
@@ -265,6 +281,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             foreach (CardKeyword kw in GetFusionAndRitualKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetHandEffectMonsterKeywords())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (CardKeyword kw in GetCycleMonsterKeywordWhenEligible())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
