@@ -18,7 +18,9 @@ public sealed class Charubin_the_Fire_Knight : FusionMonsterCard
             baseAtk: 11,
             baseDef: 8,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Pyro)
+            duelMonsterRace: DuelMonsterRace.Pyro,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Monster_Egg),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Hinotama_Soul))
     {
     }
 

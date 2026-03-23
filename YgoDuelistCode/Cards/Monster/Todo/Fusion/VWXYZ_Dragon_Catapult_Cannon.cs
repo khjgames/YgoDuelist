@@ -18,7 +18,9 @@ public sealed class VWXYZ_Dragon_Catapult_Cannon : FusionMonsterCard
             baseAtk: 30,
             baseDef: 28,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.VW_Tiger_Catapult),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.XYZ_Dragon_Cannon))
     {
     }
 

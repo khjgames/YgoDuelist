@@ -18,7 +18,9 @@ public sealed class King_Dragun : FusionMonsterCard
             baseAtk: 24,
             baseDef: 11,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Dragon)
+            duelMonsterRace: DuelMonsterRace.Dragon,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Lord_of_D),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Divine_Dragon_Ragnarok))
     {
     }
 

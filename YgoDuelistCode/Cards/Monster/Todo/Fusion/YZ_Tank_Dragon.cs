@@ -18,7 +18,9 @@ public sealed class YZ_Tank_Dragon : FusionMonsterCard
             baseAtk: 21,
             baseDef: 22,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Y_Dragon_Head),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Z_Metal_Tank))
     {
     }
 

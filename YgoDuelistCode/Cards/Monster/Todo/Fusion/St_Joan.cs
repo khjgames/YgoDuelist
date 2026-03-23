@@ -18,7 +18,9 @@ public sealed class St_Joan : FusionMonsterCard
             baseAtk: 28,
             baseDef: 20,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fairy)
+            duelMonsterRace: DuelMonsterRace.Fairy,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.The_Forgiving_Maiden),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Darklord_Marie))
     {
     }
 

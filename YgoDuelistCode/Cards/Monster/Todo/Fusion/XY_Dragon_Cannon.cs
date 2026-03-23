@@ -18,7 +18,9 @@ public sealed class XY_Dragon_Cannon : FusionMonsterCard
             baseAtk: 22,
             baseDef: 19,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.X_Head_Cannon),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Y_Dragon_Head))
     {
     }
 

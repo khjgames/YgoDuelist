@@ -3,6 +3,11 @@
   "YGODUELIST-GRAVEYARD_RELIC.description": "A special combat-only card zone. Cards are temporarily added during combat; the zone is empty outside of combat. Click to view graveyard cards when at least one is in it.",
   "YGODUELIST-GRAVEYARD_RELIC.flavor": "Cards laid to rest await their return.",
   "YGODUELIST-GRAVEYARD_RELIC.selectionScreenPrompt": "Cards in the Graveyard",
+
+  "YGODUELIST-EXTRA_DECK_RELIC.title": "Extra Deck",
+  "YGODUELIST-EXTRA_DECK_RELIC.description": "Fusion monsters never stay in your main deck: they move here on the map and in combat. Click to view your Extra Deck when it has at least one card.",
+  "YGODUELIST-EXTRA_DECK_RELIC.flavor": "Where impossible combinations wait to be made real.",
+  "YGODUELIST-EXTRA_DECK_RELIC.selectionScreenPrompt": "Cards in the Extra Deck",
   
   "YGODUELIST-CARD_OPTIONS_RELIC.title": "Card Options",
   "YGODUELIST-CARD_OPTIONS_RELIC.description": "Debug relic. Click to view whatever cards are currently in the card options pile during combat.",

@@ -18,7 +18,9 @@ public sealed class Twin_Headed_Thunder_Dragon : FusionMonsterCard
             baseAtk: 28,
             baseDef: 21,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Thunder)
+            duelMonsterRace: DuelMonsterRace.Thunder,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Thunder_Dragon),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Thunder_Dragon))
     {
     }
 

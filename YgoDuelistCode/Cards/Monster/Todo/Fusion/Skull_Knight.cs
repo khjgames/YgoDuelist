@@ -18,7 +18,9 @@ public sealed class Skull_Knight : FusionMonsterCard
             baseAtk: 26,
             baseDef: 22,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Spellcaster)
+            duelMonsterRace: DuelMonsterRace.Spellcaster,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Tainted_Wisdom),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ancient_Brain))
     {
     }
 

@@ -26,6 +26,7 @@ public static class YgoCombatEndClearPatch
         NormalSummonTracker.ClearAll();
         TributeSummonPlayPayload.ClearAll();
         RitualSpellPlayPayload.ClearAll();
+        FusionSpellPlayPayload.ClearAll();
         await Task.CompletedTask;
     }
 }

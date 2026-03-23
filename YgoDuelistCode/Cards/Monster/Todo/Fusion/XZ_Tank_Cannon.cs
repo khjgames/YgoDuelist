@@ -18,7 +18,9 @@ public sealed class XZ_Tank_Cannon : FusionMonsterCard
             baseAtk: 24,
             baseDef: 21,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.X_Head_Cannon),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Z_Metal_Tank))
     {
     }
 

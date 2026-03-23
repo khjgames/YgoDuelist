@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 using YgoDuelist.YgoDuelistCode.Cards.Monster;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Spell;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
@@ -54,12 +55,15 @@ public class YgoDuelist : PlaceholderCharacterModel
         ModelDb.Card<Bladefly>(),
         ModelDb.Card<Hoshiningen>(),
         ModelDb.Card<Little_Chimera>(),
-        ModelDb.Card<Star_Boy>()
+        ModelDb.Card<Star_Boy>(),
+        ModelDb.Card<Polymerization>(),
+        ModelDb.Card<Karbonala_Warrior>()
     ];
 
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
         ModelDb.Relic<GraveyardRelic>(),
+        ModelDb.Relic<ExtraDeckRelic>(),
         ModelDb.Relic<CardOptionsRelic>()
     ];
 

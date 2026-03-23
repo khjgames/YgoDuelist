@@ -18,7 +18,9 @@ public sealed class Bracchio_raidus : FusionMonsterCard
             baseAtk: 22,
             baseDef: 20,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Dinosaur)
+            duelMonsterRace: DuelMonsterRace.Dinosaur,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Two_Headed_King_Rex),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Crawling_Dragon_2))
     {
     }
 

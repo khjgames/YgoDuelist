@@ -18,7 +18,9 @@ public sealed class Roaring_Ocean_Snake : FusionMonsterCard
             baseAtk: 21,
             baseDef: 18,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Aqua)
+            duelMonsterRace: DuelMonsterRace.Aqua,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Mystic_Lamp),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Hyosube))
     {
     }
 

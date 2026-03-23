@@ -18,7 +18,9 @@ public sealed class Metal_Dragon : FusionMonsterCard
             baseAtk: 18,
             baseDef: 17,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Steel_Ogre_Grotto_1),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Lesser_Dragon))
     {
     }
 

@@ -18,7 +18,9 @@ public sealed class VW_Tiger_Catapult : FusionMonsterCard
             baseAtk: 20,
             baseDef: 21,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.V_Tiger_Jet),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.W_Wing_Catapult))
     {
     }
 

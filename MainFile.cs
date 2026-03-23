@@ -27,6 +27,7 @@ public partial class MainFile : Node
         harmony.PatchAll();
 
         ModHelper.AddModelToPool<YgoDuelistRelicPool, GraveyardRelic>();
+        ModHelper.AddModelToPool<YgoDuelistRelicPool, ExtraDeckRelic>();
         ModHelper.AddModelToPool<YgoDuelistRelicPool, CardOptionsRelic>();
 
         RegisterAllYgoCards();

@@ -18,7 +18,9 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
             baseAtk: 23,
             baseDef: 23,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Warrior)
+            duelMonsterRace: DuelMonsterRace.Warrior,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Zombyra_the_Dark),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Maryokutai))
     {
     }
 

@@ -18,7 +18,9 @@ public sealed class Giltia_the_D_Knight : FusionMonsterCard
             baseAtk: 18,
             baseDef: 15,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Warrior)
+            duelMonsterRace: DuelMonsterRace.Warrior,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Guardian_of_the_Labyrinth),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Protector_of_the_Throne))
     {
     }
 

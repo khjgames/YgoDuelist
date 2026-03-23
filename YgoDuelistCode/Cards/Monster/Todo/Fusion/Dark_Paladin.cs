@@ -18,7 +18,9 @@ public sealed class Dark_Paladin : FusionMonsterCard
             baseAtk: 29,
             baseDef: 24,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Spellcaster)
+            duelMonsterRace: DuelMonsterRace.Spellcaster,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dark_Magician),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Buster_Blader))
     {
     }
 

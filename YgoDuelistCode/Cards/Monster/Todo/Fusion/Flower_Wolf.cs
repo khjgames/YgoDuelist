@@ -18,7 +18,9 @@ public sealed class Flower_Wolf : FusionMonsterCard
             baseAtk: 18,
             baseDef: 14,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Beast)
+            duelMonsterRace: DuelMonsterRace.Beast,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Silver_Fang),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Darkworld_Thorns))
     {
     }
 

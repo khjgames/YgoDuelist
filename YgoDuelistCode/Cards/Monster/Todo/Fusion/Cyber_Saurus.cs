@@ -18,7 +18,9 @@ public sealed class Cyber_Saurus : FusionMonsterCard
             baseAtk: 18,
             baseDef: 14,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Blast_Juggler),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Two_Headed_King_Rex))
     {
     }
 

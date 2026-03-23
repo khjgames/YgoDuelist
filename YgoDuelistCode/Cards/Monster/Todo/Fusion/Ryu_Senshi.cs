@@ -18,7 +18,9 @@ public sealed class Ryu_Senshi : FusionMonsterCard
             baseAtk: 20,
             baseDef: 12,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Warrior)
+            duelMonsterRace: DuelMonsterRace.Warrior,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Warrior_Dai_Grepher),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Spirit_Ryu))
     {
     }
 

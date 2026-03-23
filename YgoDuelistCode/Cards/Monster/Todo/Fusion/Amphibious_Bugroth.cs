@@ -18,7 +18,9 @@ public sealed class Amphibious_Bugroth : FusionMonsterCard
             baseAtk: 18,
             baseDef: 13,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Aqua)
+            duelMonsterRace: DuelMonsterRace.Aqua,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ground_Attacker_Bugroth),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Sentinel_of_the_Seas))
     {
     }
 

@@ -18,7 +18,10 @@ public sealed class Ojama_King : FusionMonsterCard
             baseAtk: 0,
             baseDef: 30,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Beast)
+            duelMonsterRace: DuelMonsterRace.Beast,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Green),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Yellow),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Black))
     {
     }
 

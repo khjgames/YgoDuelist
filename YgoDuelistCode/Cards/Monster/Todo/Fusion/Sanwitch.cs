@@ -18,7 +18,9 @@ public sealed class Sanwitch : FusionMonsterCard
             baseAtk: 21,
             baseDef: 18,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Spellcaster)
+            duelMonsterRace: DuelMonsterRace.Spellcaster,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Sangan),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Witch_of_the_Black_Forest))
     {
     }
 

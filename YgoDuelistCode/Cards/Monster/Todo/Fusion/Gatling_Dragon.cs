@@ -18,7 +18,9 @@ public sealed class Gatling_Dragon : FusionMonsterCard
             baseAtk: 26,
             baseDef: 12,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Barrel_Dragon),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Blowback_Dragon))
     {
     }
 

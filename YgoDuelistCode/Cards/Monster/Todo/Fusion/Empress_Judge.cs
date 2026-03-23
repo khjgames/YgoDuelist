@@ -18,7 +18,9 @@ public sealed class Empress_Judge : FusionMonsterCard
             baseAtk: 21,
             baseDef: 17,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Warrior)
+            duelMonsterRace: DuelMonsterRace.Warrior,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Queen_s_Double),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Hibikime))
     {
     }
 

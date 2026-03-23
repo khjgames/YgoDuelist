@@ -5,7 +5,7 @@ Run: python tools/sync_normal_monster_locales.py
   --write     patch YgoDuelist/localization/eng/cards.json
   --skip-normals-and-fusions   only apply normal Ritual Monster strings (DB type exactly Ritual Monster)
 
-Default run updates: Normal Monster, vanilla Fusion Monster, and normal Ritual Monster entries.
+Default run updates: Normal Monster, vanilla Fusion Monster (materials as ("A" + "B")), and normal Ritual Monster entries.
 Ritual Effect Monster / wrong DB type are skipped for the ritual template.
 """
 from __future__ import annotations
@@ -13,7 +13,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -79,23 +78,7 @@ def ritual_summon_line(spell_name: str) -> str:
 def fusion_summon_line(names: list[str]) -> str:
     if not names:
         return ""
-    counts = Counter(names)
-    ordered: list[tuple[str, int]] = []
-    seen: set[str] = set()
-    for n in names:
-        if n not in seen:
-            seen.add(n)
-            ordered.append((n, counts[n]))
-    parts: list[str] = []
-    for n, c in ordered:
-        parts.append(f'{c} "{n}"' if c != 1 else f'"{n}"')
-    if len(parts) == 1:
-        inner = parts[0]
-    elif len(parts) == 2:
-        inner = f"{parts[0]} and {parts[1]}"
-    else:
-        inner = ", ".join(parts[:-1]) + f", and {parts[-1]}"
-    return f"Can be summoned with {inner} as materials."
+    return "(" + " + ".join(f'"{n}"' for n in names) + ")"
 
 
 RITUAL_CLASS_RE = re.compile(r"public sealed class (\w+) : RitualMonsterCard")

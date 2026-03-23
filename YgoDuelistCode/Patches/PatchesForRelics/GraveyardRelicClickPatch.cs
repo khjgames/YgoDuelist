@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
@@ -21,38 +22,70 @@ public static class GraveyardRelicClickPatch
     [HarmonyPrefix]
     public static bool Prefix(NRelicInventory __instance, RelicModel model)
     {
-        if (!GraveyardRelic.IsGraveyardRelic(model))
-            return true;
+        if (GraveyardRelic.IsGraveyardRelic(model))
+            return !TryOpenGraveyardGrid(model);
 
-        var graveyard = GraveyardRelic.AsGraveyard(model);
+        if (ExtraDeckRelic.IsExtraDeckRelic(model))
+            return !TryOpenExtraDeckGrid(model);
+
+        return true;
+    }
+
+    private static bool TryOpenGraveyardGrid(RelicModel model)
+    {
+        GraveyardRelic? graveyard = GraveyardRelic.AsGraveyard(model);
         if (graveyard == null)
-            return true;
+            return false;
 
-        var runState = RunManager.Instance.DebugOnlyGetState();
+        IRunState? runState = RunManager.Instance.DebugOnlyGetState();
         if (runState == null)
-            return true;
+            return false;
 
-        var player = LocalContext.GetMe((IPlayerCollection)runState);
+        Player? player = LocalContext.GetMe((IPlayerCollection)runState);
         if (player == null)
-            return true;
+            return false;
 
-        var cards = GraveyardRelic.GetGraveyardCards(player);
+        IReadOnlyList<CardModel> cards = GraveyardRelic.GetGraveyardCards(player);
         if (cards.Count == 0)
-            return true;
+            return false;
 
-        // Use the relic's own (non-public) SelectionScreenPrompt so localization
-        // still comes from the game JSON instead of a hardcoded string.
+        return TryOpenRelicCardGrid(model, player, cards);
+    }
+
+    private static bool TryOpenExtraDeckGrid(RelicModel model)
+    {
+        ExtraDeckRelic? extra = ExtraDeckRelic.AsExtraDeck(model);
+        if (extra == null)
+            return false;
+
+        IRunState? runState = RunManager.Instance.DebugOnlyGetState();
+        if (runState == null)
+            return false;
+
+        Player? player = LocalContext.GetMe((IPlayerCollection)runState);
+        if (player == null)
+            return false;
+
+        IReadOnlyList<CardModel> cards = ExtraDeckRelic.GetExtraDeckCards(player);
+        if (cards.Count == 0)
+            return false;
+
+        return TryOpenRelicCardGrid(model, player, cards);
+    }
+
+    private static bool TryOpenRelicCardGrid(RelicModel model, Player player, IReadOnlyList<CardModel> cards)
+    {
         var selectionPromptProp = AccessTools.Property(typeof(RelicModel), "SelectionScreenPrompt");
-        var selectionPrompt = selectionPromptProp.GetValue(model);
+        object? selectionPrompt = selectionPromptProp.GetValue(model);
 
         var prefs = new CardSelectorPrefs(
-            (dynamic)selectionPrompt,
+            (dynamic)selectionPrompt!,
             0,
             0);
 
-        TaskHelper.RunSafely(ShowGraveyardCardsAsync());
+        TaskHelper.RunSafely(ShowAsync());
 
-        async Task ShowGraveyardCardsAsync()
+        async Task ShowAsync()
         {
             await CardSelectCmd.FromSimpleGrid(
                 new BlockingPlayerChoiceContext(),
@@ -61,6 +94,6 @@ public static class GraveyardRelicClickPatch
                 prefs);
         }
 
-        return false;
+        return true;
     }
 }
