@@ -11,10 +11,18 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
 /// <summary>
-/// Base type for all YgoDuelist monster cards. Right-click toggles Attack (attack position) vs Skill (defense position).
+/// Base type for all YgoDuelist monster cards. Right-click toggles attack vs defense (Skill);
+/// monsters with <see cref="SupportsHandEffectForm"/> also cycle a third Hand Effect form (still Skill type).
 /// </summary>
 public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
 {
+    private enum MonsterDisplayForm
+    {
+        Attack,
+        Defense,
+        HandEffect
+    }
+
     // We don't have real STS CardKeyword entries for Yu-Gi-Oh! attributes/races,
     // so we map our enums into "virtual" CardKeyword ids by using stable numeric values.
     // HoverTipFactory.FromKeyword then looks these up in localization table `card_keywords`.
@@ -33,23 +41,31 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword TributeSummon2Keyword => (CardKeyword)20035;
     private static CardKeyword FusionMonsterKeyword => (CardKeyword)20036;
     private static CardKeyword RitualMonsterKeyword => (CardKeyword)20037;
+    private static CardKeyword HandEffectMonsterKeyword => (CardKeyword)20038;
 
     public abstract YgoCardType YgoCardType { get; }
     public bool FaceDown { get; set; } = false;
     public bool WillSet { get; set; } = true;
 
-    /// <summary>True = attack position (Attack card), false = defense position (Skill card). Toggle via right-click in hand.</summary>
-    private bool _displayAsAttack;
+    /// <summary>Attack, defense (Skill), or optional Hand Effect (Skill). Toggle via right-click in hand.</summary>
+    private MonsterDisplayForm _displayForm;
 
-    public override CardType Type => _displayAsAttack ? CardType.Attack : CardType.Skill;
-    public override TargetType TargetType => _displayAsAttack ? TargetType.AnyEnemy : TargetType.Self;
+    /// <summary>Monsters that expose a third right-click mode with <c>.description_hand_effect</c> locale keys.</summary>
+    protected virtual bool SupportsHandEffectForm => false;
+
+    /// <summary>True while in Hand Effect form (plays as Skill with that effect only).</summary>
+    public bool IsHandEffectFormActive => SupportsHandEffectForm && _displayForm == MonsterDisplayForm.HandEffect;
+
+    public override CardType Type => _displayForm == MonsterDisplayForm.Attack ? CardType.Attack : CardType.Skill;
+    public override TargetType TargetType =>
+        _displayForm == MonsterDisplayForm.Attack ? TargetType.AnyEnemy : TargetType.Self;
 
     public new LocString Description => GetDescriptionLocString();
 
     protected AbstractMonsterCard(int cost, CardType type, CardRarity rarity, TargetType target)
         : base(cost, type, rarity, target)
     {
-        _displayAsAttack = (type == CardType.Attack);
+        _displayForm = type == CardType.Attack ? MonsterDisplayForm.Attack : MonsterDisplayForm.Defense;
     }
 
     /// <summary>
@@ -58,13 +74,11 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// </summary>
     protected void SetDisplayAttackSkill(bool displayAsAttack)
     {
-        _displayAsAttack = displayAsAttack;
-        if (Type == CardType.Attack && FaceDown == true){
-            FaceDown = false; 
-        }
-        else if (Type == CardType.Skill && FaceDown == false && WillSet == true){
+        _displayForm = displayAsAttack ? MonsterDisplayForm.Attack : MonsterDisplayForm.Defense;
+        if (_displayForm == MonsterDisplayForm.Attack && FaceDown)
+            FaceDown = false;
+        else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet)
             FaceDown = true;
-        }
         UpdateFaceDownKeywordFromBool();
     }
 
@@ -84,30 +98,50 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// </summary>
     public void ApplyBattlePositionChangeFromCommandMenu()
     {
-        if (Type == CardType.Skill)
+        if (SupportsHandEffectForm && _displayForm == MonsterDisplayForm.HandEffect)
+            _displayForm = MonsterDisplayForm.Defense;
+
+        if (_displayForm == MonsterDisplayForm.Defense)
         {
-            _displayAsAttack = true;
+            _displayForm = MonsterDisplayForm.Attack;
             FaceDown = false;
             WillSet = false;
         }
         else
         {
-            _displayAsAttack = false;
+            _displayForm = MonsterDisplayForm.Defense;
         }
 
         UpdateFaceDownKeywordFromBool();
     }
 
-    /// <summary>Swaps between Attack and Skill (attack position / defense position). Called by right-click in hand.</summary>
+    /// <summary>Cycles attack / defense, or attack / defense / hand effect when supported. Right-click in hand.</summary>
     public void ToggleAttackSkill()
     {
-        _displayAsAttack = !_displayAsAttack;
-        if (Type == CardType.Attack && FaceDown == true){
-            FaceDown = false; 
+        if (!SupportsHandEffectForm)
+        {
+            _displayForm = _displayForm == MonsterDisplayForm.Attack
+                ? MonsterDisplayForm.Defense
+                : MonsterDisplayForm.Attack;
         }
-        else if (Type == CardType.Skill && FaceDown == false && WillSet == true){
+        else
+        {
+            _displayForm = _displayForm switch
+            {
+                MonsterDisplayForm.Attack => MonsterDisplayForm.Defense,
+                MonsterDisplayForm.Defense => MonsterDisplayForm.HandEffect,
+                MonsterDisplayForm.HandEffect => MonsterDisplayForm.Attack,
+                _ => MonsterDisplayForm.Attack
+            };
+        }
+
+        if (_displayForm == MonsterDisplayForm.Attack && FaceDown)
+            FaceDown = false;
+        else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet)
             FaceDown = true;
-        }
+        else if (_displayForm == MonsterDisplayForm.HandEffect)
+            FaceDown = false;
+
         UpdateFaceDownKeywordFromBool();
     }
 
@@ -135,9 +169,20 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// <summary>Returns the correct description LocString for attack vs skill form. Used by description patch.</summary>
     public LocString GetDescriptionLocString()
     {
-        string suffix = _displayAsAttack ? ".description" : ".description_skill";
-        if (IsInHand())
-            suffix += "_combat";
+        string suffix;
+        if (SupportsHandEffectForm && _displayForm == MonsterDisplayForm.HandEffect)
+        {
+            suffix = ".description_hand_effect";
+            if (IsInHand())
+                suffix += "_combat";
+        }
+        else
+        {
+            suffix = _displayForm == MonsterDisplayForm.Attack ? ".description" : ".description_skill";
+            if (IsInHand())
+                suffix += "_combat";
+        }
+
         return new LocString("cards", Id.Entry + suffix);
     }
 
@@ -158,6 +203,12 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return FusionMonsterKeyword;
         else if (YgoCardType == YgoCardType.RitualMonster)
             yield return RitualMonsterKeyword;
+    }
+
+    private IEnumerable<CardKeyword> GetHandEffectMonsterKeywords()
+    {
+        if (SupportsHandEffectForm)
+            yield return HandEffectMonsterKeyword;
     }
 
     private int ComputeTributeReleaseCount()
@@ -196,6 +247,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             keywords.Add(AttributeToKeyword(DuelMonsterAttribute));
             keywords.Add(RaceToKeyword(DuelMonsterRace));
             keywords.AddRange(GetFusionAndRitualKeywords());
+            keywords.AddRange(GetHandEffectMonsterKeywords());
             keywords.AddRange(GetFaceDownKeywordsFromBool());
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
@@ -211,6 +263,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             tips.Add(HoverTipFactory.FromKeyword(AttributeToKeyword(DuelMonsterAttribute)));
             tips.Add(HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)));
             foreach (CardKeyword kw in GetFusionAndRitualKeywords())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (CardKeyword kw in GetHandEffectMonsterKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
                 tips.Add(HoverTipFactory.FromKeyword(kw));

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -42,6 +43,11 @@ public static class YgoEnergyIconNodePatch
                 customTexturePath = AttackMonsterEnergyPath;
             else
                 energyPrefix = "defect";
+        }
+        else if (model is AbstractMonsterCard handEffectMonster && handEffectMonster.IsHandEffectFormActive)
+        {
+            icon.Visible = true;
+            energyPrefix = "silent";
         }
         else if (model is IYgoCard ygo)
         {

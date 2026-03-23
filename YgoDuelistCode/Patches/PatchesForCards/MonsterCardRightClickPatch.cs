@@ -17,7 +17,7 @@ using YgoDuelist.YgoDuelistCode.Nodes;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Monster attack/skill form swap on right-click (same basis as Java).
+/// Monster attack / defense / hand-effect form cycle on right-click (same basis as Java; third mode when supported).
 /// Uses the game's existing AltPressed signal (right-click release on card holder).
 /// - Hand: we subscribe to AltPressed in AddCardHolder and toggle + refresh.
 /// - Compendium/grid: we run before grid emits HolderAltPressed, toggle + refresh grid card, then detail view shows toggled form.

@@ -9,7 +9,9 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Any fusion monster that would sit on the master <see cref="Player.Deck"/> is moved immediately to the run Extra Deck pile.
+/// Fusion monsters added to <see cref="Player.Deck"/> after the player has an owner (e.g. rewards, upgrades) go to the run Extra Deck.
+/// Starter/save deck fills use <see cref="RunStateCreateSharedMoveFusionToExtraDeckPatch"/> because the first <see cref="CardPile.AddInternal"/>
+/// runs before <see cref="CardModel.Owner"/> is set.
 /// </summary>
 [HarmonyPatch(typeof(CardPile), nameof(CardPile.AddInternal))]
 public static class CardPileAddInternalMoveFusionToRunExtraDeckPatch

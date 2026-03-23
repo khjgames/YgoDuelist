@@ -12054,7 +12054,7 @@
     "id": 31786629,
     "name": "Thunder Dragon",
     "type": "Effect Monster",
-    "desc": "You can discard this card; add up to 2 \"Thunder Dragon\" from your Deck to your hand.",
+    "desc": "Hand Effect: Send this card to the Graveyard; add up to 2 \"Thunder Dragon\" from your draw and discard piles to your hand. (Right-click in hand to cycle to Hand Effect.)",
     "attribute": "LIGHT",
     "race": "Thunder",
     "atk": 1600,

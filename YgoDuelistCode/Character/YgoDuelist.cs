@@ -7,6 +7,8 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 using YgoDuelist.YgoDuelistCode.Cards.Monster;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Spell;
@@ -30,12 +32,12 @@ public class YgoDuelist : PlaceholderCharacterModel
 
     public override IEnumerable<CardModel> StartingDeck =>
     [
-        ModelDb.Card<StrikeRegent>(),
-        ModelDb.Card<StrikeRegent>(),
-        ModelDb.Card<StrikeRegent>(),
-        ModelDb.Card<DefendRegent>(),
-        ModelDb.Card<DefendRegent>(),
-        ModelDb.Card<DefendRegent>(),
+        ModelDb.Card<Pot_Of_Greed>(),
+        ModelDb.Card<Pot_Of_Greed>(),
+        ModelDb.Card<Pot_Of_Greed>(),
+        ModelDb.Card<Pot_Of_Greed>(),
+        ModelDb.Card<Pot_Of_Greed>(),
+        ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Pot_Of_Greed>(),
@@ -56,8 +58,19 @@ public class YgoDuelist : PlaceholderCharacterModel
         ModelDb.Card<Hoshiningen>(),
         ModelDb.Card<Little_Chimera>(),
         ModelDb.Card<Star_Boy>(),
+        
         ModelDb.Card<Polymerization>(),
-        ModelDb.Card<Karbonala_Warrior>()
+        ModelDb.Card<Polymerization>(),
+
+        ModelDb.Card<Thunder_Dragon>(),
+        ModelDb.Card<Thunder_Dragon>(),
+        ModelDb.Card<Thunder_Dragon>(),
+        ModelDb.Card<Twin_Headed_Thunder_Dragon>(),
+
+        ModelDb.Card<Blue_Eyes_White_Dragon>(),
+        ModelDb.Card<Blue_Eyes_White_Dragon>(),
+        ModelDb.Card<Blue_Eyes_White_Dragon>(),
+        ModelDb.Card<Blue_Eyes_Ultimate_Dragon>()
     ];
 
     public override IReadOnlyList<RelicModel> StartingRelics =>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -25,6 +26,15 @@ public static class FusionSummonSelection
 
     private static readonly LocString PickTargetPrompt = new LocString("combat_messages", "FUSION_SUMMON_PICK_TARGET");
 
+    private sealed class ReferenceCardComparer : IEqualityComparer<BaseMonsterCard>
+    {
+        internal static readonly ReferenceCardComparer Instance = new();
+
+        public bool Equals(BaseMonsterCard? x, BaseMonsterCard? y) => ReferenceEquals(x, y);
+
+        public int GetHashCode(BaseMonsterCard obj) => RuntimeHelpers.GetHashCode(obj);
+    }
+
     public static bool IsCompletingFusionSpellPlay => CompletingFusionSpellPlay.Value;
 
     public static void BeginCompletingFusionSpellPlay() => CompletingFusionSpellPlay.Value = true;
@@ -40,6 +50,19 @@ public static class FusionSummonSelection
         }
 
         return false;
+    }
+
+    /// <summary>Extra Deck fusion monsters the spell can target and that have at least one legal material set right now.</summary>
+    public static List<FusionMonsterCard> GetFeasibleFusionTargetsInExtraDeck(Player player, FusionSpellCard spell)
+    {
+        var list = new List<FusionMonsterCard>();
+        foreach (FusionMonsterCard target in GetFusionTargetsInExtraDeck(player, spell))
+        {
+            if (HasFeasibleMaterialsForFusion(player, spell, target))
+                list.Add(target);
+        }
+
+        return list;
     }
 
     public static List<FusionMonsterCard> GetFusionTargetsInExtraDeck(Player player, FusionSpellCard spell)
@@ -85,13 +108,44 @@ public static class FusionSummonSelection
         return list;
     }
 
-    private static bool HasFeasibleMaterialsForFusion(Player player, FusionSpellCard spell, FusionMonsterCard fusionTarget)
+    /// <summary>
+    /// Hand + field monsters that can appear in at least one fully legal material combination for this fusion target
+    /// (correct types, enough field space after releases).
+    /// </summary>
+    public static List<BaseMonsterCard> BuildValidMaterialCandidatesForGrid(
+        Player player,
+        FusionSpellCard spell,
+        FusionMonsterCard fusionTarget)
+    {
+        List<BaseMonsterCard> mats = BuildMaterialCandidates(player, spell, fusionTarget);
+        var usable = new HashSet<BaseMonsterCard>(ReferenceCardComparer.Instance);
+        foreach (List<BaseMonsterCard> subset in FeasibleFusionMaterialSubsets(player, spell, fusionTarget, mats))
+        {
+            foreach (BaseMonsterCard c in subset)
+                usable.Add(c);
+        }
+
+        var ordered = new List<BaseMonsterCard>();
+        foreach (BaseMonsterCard c in mats)
+        {
+            if (usable.Contains(c))
+                ordered.Add(c);
+        }
+
+        return ordered;
+    }
+
+    private static IEnumerable<List<BaseMonsterCard>> FeasibleFusionMaterialSubsets(
+        Player player,
+        FusionSpellCard spell,
+        FusionMonsterCard fusionTarget,
+        List<BaseMonsterCard>? mats = null)
     {
         IReadOnlyList<Type> req = fusionTarget.FusionMaterialTypes;
         if (req.Count == 0)
-            return false;
+            yield break;
 
-        List<BaseMonsterCard> mats = BuildMaterialCandidates(player, spell, fusionTarget);
+        mats ??= BuildMaterialCandidates(player, spell, fusionTarget);
         foreach (List<BaseMonsterCard> subset in Combinations(mats, req.Count))
         {
             if (!MaterialsMatchMultiset(req, subset))
@@ -99,11 +153,12 @@ public static class FusionSummonSelection
             int fieldTributes = subset.Count(m => TributeSummonSelection.ResolvePetForFieldCard(player, m) != null);
             if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, fieldTributes))
                 continue;
-            return true;
+            yield return subset;
         }
-
-        return false;
     }
+
+    private static bool HasFeasibleMaterialsForFusion(Player player, FusionSpellCard spell, FusionMonsterCard fusionTarget) =>
+        FeasibleFusionMaterialSubsets(player, spell, fusionTarget).Any();
 
     /// <summary>Assign each required type to a distinct picked monster (multiset).</summary>
     public static bool MaterialsMatchMultiset(IReadOnlyList<Type> requiredTypes, List<BaseMonsterCard> picked)
@@ -160,7 +215,7 @@ public static class FusionSummonSelection
     {
         var ctx = new BlockingPlayerChoiceContext();
 
-        List<FusionMonsterCard> targets = GetFusionTargetsInExtraDeck(player, spell);
+        List<FusionMonsterCard> targets = GetFeasibleFusionTargetsInExtraDeck(player, spell);
         if (targets.Count == 0)
             return false;
 
@@ -194,8 +249,8 @@ public static class FusionSummonSelection
         if (req.Count == 0)
             return false;
 
-        List<BaseMonsterCard> materials = BuildMaterialCandidates(player, spell, fusionCard);
-        if (!HasFeasibleMaterialsForFusion(player, spell, fusionCard))
+        List<BaseMonsterCard> materials = BuildValidMaterialCandidatesForGrid(player, spell, fusionCard);
+        if (materials.Count < req.Count)
             return false;
 
         var matPrompt = new LocString("combat_messages", "FUSION_SUMMON_PICK_MATERIALS");

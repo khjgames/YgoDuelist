@@ -13,9 +13,10 @@ public static class PlayerRunExtraDeck
 {
     private static readonly ConditionalWeakTable<Player, CardPile> Piles = new();
 
+    /// <summary>True when this player is the YgoDuelist character (by runtime type, not <c>Id.Entry</c> — BaseLib uses e.g. YGODUELIST-YGO_DUELIST).</summary>
     public static bool IsYgoDuelistPlayer(Player? player)
     {
-        return player?.Character?.Id.Entry == YgoChar.CharacterId;
+        return player?.Character is YgoChar;
     }
 
     public static CardPile GetOrCreatePile(Player player)

@@ -5,5 +5,6 @@
   "RITUAL_SUMMON_MATERIALS_AT_LEAST": "Select 1 to {Amount} monsters from your hand and/or field. Total level must be at least [blue]{Requirement}[/blue].",
   "RITUAL_SUMMON_MATERIALS_EXACT": "Select 1 to {Amount} monsters from your hand and/or field. Total level must be exactly [blue]{Requirement}[/blue].",
   "FUSION_SUMMON_PICK_TARGET": "Select the [gold]Fusion Monster[/gold] to Fusion Summon from your Extra Deck.",
-  "FUSION_SUMMON_PICK_MATERIALS": "Select exactly [blue]{Count}[/blue] monster(s) from your hand and/or field as Fusion Materials."
+  "FUSION_SUMMON_PICK_MATERIALS": "Select exactly [blue]{Count}[/blue] monster(s) from your hand and/or field as Fusion Materials.",
+  "THUNDER_DRAGON_HAND_EFFECT_SELECT": "Select 1 or 2 [gold]Thunder Dragon[/gold] from your draw and discard piles to add to your hand."
 }
