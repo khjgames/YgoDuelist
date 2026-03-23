@@ -136,6 +136,7 @@ public static class YgoSpellTrapZoneBridge
             false);
 
         SyncFromZonePile(player);
+        YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
         return true;
     }
 }

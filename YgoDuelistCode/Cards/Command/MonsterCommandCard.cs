@@ -21,9 +21,10 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     public NormalMonsterCard? SourceMonster { get; private set; }
 
     /// <summary>
-    /// When false, <see cref="Patches.YgoEnergyIconNodePatch"/> hides the energy orb (menu-only options, not paid with energy).
+    /// When false, <see cref="Patches.YgoEnergyIconNodePatch"/> hides the energy orb.
+    /// Default is false (menu-only / zero-cost commands). Override to true on cards that spend energy (e.g. attack/defend commands).
     /// </summary>
-    protected internal virtual bool ShowsEnergyCostIcon => true;
+    public virtual bool ShowsEnergyCostIcon => false;
 
     // Parameterless ctor for reflection / scanners – never used at runtime for real commands.
     protected MonsterCommandCard()

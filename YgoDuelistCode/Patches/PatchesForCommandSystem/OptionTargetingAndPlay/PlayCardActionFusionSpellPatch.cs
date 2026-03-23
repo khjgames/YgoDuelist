@@ -56,9 +56,13 @@ public static class PlayCardActionFusionSpellPatch
         if (card is not FusionSpellCard fusionSpell)
             return;
 
+        bool activatingFromZone = fusionSpell.Pile?.Type == SpellTrapZonePile.CustomType;
+
         if (!await FusionSummonSelection.TrySelectFusionResolutionAsync(action.Player, fusionSpell))
         {
             action.Cancel();
+            if (activatingFromZone)
+                YgoSpellTrapZoneAfterPlayUi.ScheduleSecondHandRefreshFromZone(action.Player);
             return;
         }
 
@@ -107,6 +111,8 @@ public static class PlayCardActionFusionSpellPatch
         if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
         {
             action.Cancel();
+            if (playedFromSpellTrapZone)
+                YgoSpellTrapZoneAfterPlayUi.ScheduleSecondHandRefreshFromZone(action.Player);
             return;
         }
 

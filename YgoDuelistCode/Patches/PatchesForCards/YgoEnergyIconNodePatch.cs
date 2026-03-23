@@ -10,14 +10,27 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
-[HarmonyPatch(typeof(NCard), "Reload")]
+/// <summary>
+/// Ygo textures for energy orb. Must run after <see cref="NCard.UpdateVisuals"/> — vanilla
+/// <c>UpdateEnergyCostVisuals</c> sets <c>%EnergyIcon.Visible</c> from cost and runs after <c>Reload</c>
+/// (e.g. option-row cards call <c>UpdateVisuals</c> in <see cref="Nodes.NYgoOptionCardHolder.Initialize"/>).
+/// </summary>
 public static class YgoEnergyIconNodePatch
 {
     private const string AttackMonsterEnergyPath = "YgoDuelist/images/card_frames/attack_monster_energy.png";
 
     [HarmonyPostfix]
+    [HarmonyPatch(typeof(NCard), "Reload")]
     [HarmonyPriority(Priority.Last)]
-    public static void Postfix(NCard __instance)
+    public static void AfterReload(NCard __instance) => ApplyYgoEnergyIcon(__instance);
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(NCard), nameof(NCard.UpdateVisuals))]
+    [HarmonyPriority(Priority.Last)]
+    public static void AfterUpdateVisuals(NCard __instance, PileType pileType, CardPreviewMode previewMode) =>
+        ApplyYgoEnergyIcon(__instance);
+
+    private static void ApplyYgoEnergyIcon(NCard __instance)
     {
         var model = __instance?.Model;
         if (model == null)

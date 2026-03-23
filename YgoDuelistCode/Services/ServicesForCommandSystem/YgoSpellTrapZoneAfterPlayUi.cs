@@ -48,6 +48,46 @@ public static class YgoSpellTrapZoneAfterPlayUi
 
             YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.SpellTrapZone);
             YgoSpellTrapZoneBridge.SyncFromZonePile(player);
+            ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
         };
+    }
+
+    /// <summary>
+    /// After canceling a blocking selection (fusion/ritual grids) while viewing the spell/trap second hand,
+    /// resync the zone list and republish so the row rebuilds and NCards match the pile (same frame as other deferred UI).
+    /// </summary>
+    public static void ScheduleSecondHandRefreshFromZone(Player? player)
+    {
+        if (player == null)
+            return;
+
+        SceneTree? tree = NPlayerHand.Instance?.GetTree();
+        if (tree == null)
+            return;
+
+        YgoSpellTrapZoneBridge.SyncFromZonePile(player);
+        ScheduleSpellTrapSecondHandRepublish(player);
+    }
+
+    /// <summary>
+    /// When the spell/trap zone panel is the active second-hand source, republish on the next frame so new set cards get holders/NCards.
+    /// Call after <see cref="YgoSpellTrapZoneBridge.SyncFromZonePile"/> if the cache is already updated.
+    /// </summary>
+    public static void ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(Player? player)
+    {
+        if (player == null || YgoSecondHandSourceBridge.GetSource(player) != YgoSecondHandSource.SpellTrapZone)
+            return;
+        ScheduleSpellTrapSecondHandRepublish(player);
+    }
+
+    private static void ScheduleSpellTrapSecondHandRepublish(Player player)
+    {
+        SceneTree? tree = NPlayerHand.Instance?.GetTree();
+        if (tree == null)
+            return;
+
+        SceneTreeTimer timer = tree.CreateTimer(0.0);
+        timer.Timeout += () =>
+            YgoSecondHandSourceBridge.SetSourceAndPublish(player, YgoSecondHandSource.SpellTrapZone);
     }
 }

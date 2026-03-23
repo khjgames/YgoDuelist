@@ -59,9 +59,13 @@ public static class PlayCardActionRitualSpellPatch
         if (card is not RitualSpellCard ritualSpell)
             return;
 
+        bool activatingFromZone = ritualSpell.Pile?.Type == SpellTrapZonePile.CustomType;
+
         if (!await RitualSummonSelection.TrySelectRitualResolutionAsync(action.Player, ritualSpell))
         {
             action.Cancel();
+            if (activatingFromZone)
+                YgoSpellTrapZoneAfterPlayUi.ScheduleSecondHandRefreshFromZone(action.Player);
             return;
         }
 
@@ -111,6 +115,8 @@ public static class PlayCardActionRitualSpellPatch
         if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
         {
             action.Cancel();
+            if (playedFromSpellTrapZone)
+                YgoSpellTrapZoneAfterPlayUi.ScheduleSecondHandRefreshFromZone(action.Player);
             return;
         }
 

@@ -28,8 +28,6 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
 
     protected override bool IsPlayable => false;
 
-    protected internal override bool ShowsEnergyCostIcon => false;
-
     public async Task OnClickedOption()
     {
         var player = Owner;

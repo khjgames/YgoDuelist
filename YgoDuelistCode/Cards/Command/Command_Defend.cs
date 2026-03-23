@@ -26,6 +26,8 @@ public sealed class Command_Defend : MonsterCommandCard
     {
     }
 
+    public override bool ShowsEnergyCostIcon => true;
+
     protected override int CanonicalEnergyCost => 1;
 
     public new LocString Description
