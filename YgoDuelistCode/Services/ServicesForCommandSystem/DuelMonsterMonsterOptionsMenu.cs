@@ -29,6 +29,7 @@ public static class DuelMonsterMonsterOptionsMenu
         if (optionPile == null)
             return;
 
+        YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.MonsterOptions);
         optionPile.Clear();
 
         var combatState = pet.CombatState;

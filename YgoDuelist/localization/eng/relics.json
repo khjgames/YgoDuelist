@@ -12,5 +12,9 @@
   "YGODUELIST-CARD_OPTIONS_RELIC.title": "Card Options",
   "YGODUELIST-CARD_OPTIONS_RELIC.description": "Debug relic. Click to view whatever cards are currently in the card options pile during combat.",
   "YGODUELIST-CARD_OPTIONS_RELIC.flavor": "A window into hidden choices.",
-  "YGODUELIST-CARD_OPTIONS_RELIC.selectionScreenPrompt": "Viewing option cards"
+  "YGODUELIST-CARD_OPTIONS_RELIC.selectionScreenPrompt": "Viewing option cards",
+
+  "YGODUELIST-SPELL_TRAP_ZONE_RELIC.title": "Spell/Trap Zone",
+  "YGODUELIST-SPELL_TRAP_ZONE_RELIC.description": "The zone supports 5 non-field spell/trap cards plus one dedicated field spell slot.",
+  "YGODUELIST-SPELL_TRAP_ZONE_RELIC.flavor": "You've activated my trap card!"
 }

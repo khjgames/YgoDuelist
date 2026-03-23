@@ -51,7 +51,7 @@ public static class YgoOptionHandUiPatch
             return;
 
         _subscribed = true;
-        YgoOptionHandBridge.OptionsChanged += OnOptionsChanged;
+        YgoSecondHandSourceBridge.SecondHandCardsChanged += OnSecondHandCardsChanged;
     }
 
     [HarmonyPostfix]
@@ -62,15 +62,15 @@ public static class YgoOptionHandUiPatch
             return;
 
         _subscribed = false;
-        YgoOptionHandBridge.OptionsChanged -= OnOptionsChanged;
+        YgoSecondHandSourceBridge.SecondHandCardsChanged -= OnSecondHandCardsChanged;
         ClearAll();
     }
 
-    private static void OnOptionsChanged(Player player, IReadOnlyList<CardModel> cards)
+    private static void OnSecondHandCardsChanged(Player player, IReadOnlyList<CardModel> cards)
     {
         try
         {
-            GD.Print("[YgoDuelist] OnOptionsChanged ENTER player=", player?.GetHashCode() ?? 0, " cardsCount=", cards?.Count ?? 0);
+            GD.Print("[YgoDuelist] OnSecondHandCardsChanged ENTER player=", player?.GetHashCode() ?? 0, " cardsCount=", cards?.Count ?? 0);
             if (cards != null && cards.Count > 0)
             {
                 for (int i = 0; i < cards.Count; i++)
@@ -80,7 +80,7 @@ public static class YgoOptionHandUiPatch
             var ui = room?.Ui;
             if (room == null || ui == null)
             {
-                GD.Print("[YgoDuelist] OnOptionsChanged EXIT room or ui null");
+                GD.Print("[YgoDuelist] OnSecondHandCardsChanged EXIT room or ui null");
                 return;
             }
 
@@ -91,23 +91,23 @@ public static class YgoOptionHandUiPatch
             }
             catch
             {
-                GD.Print("[YgoDuelist] OnOptionsChanged EXIT GetMe threw");
+                GD.Print("[YgoDuelist] OnSecondHandCardsChanged EXIT GetMe threw");
                 return;
             }
 
             if (me != player)
             {
-                GD.Print("[YgoDuelist] OnOptionsChanged EXIT me != player");
+                GD.Print("[YgoDuelist] OnSecondHandCardsChanged EXIT me != player");
                 return;
             }
 
             Vector2 viewportSize = ui.GetViewportRect().Size;
             RebuildForPlayer(player, cards, ui, viewportSize);
-            GD.Print("[YgoDuelist] OnOptionsChanged EXIT RebuildForPlayer done");
+            GD.Print("[YgoDuelist] OnSecondHandCardsChanged EXIT RebuildForPlayer done");
         }
         catch (Exception e)
         {
-            YgoDuelist.MainFile.Logger.Error($"YgoOptionHandUiPatch.OnOptionsChanged error: {e}");
+            YgoDuelist.MainFile.Logger.Error($"YgoOptionHandUiPatch.OnSecondHandCardsChanged error: {e}");
         }
     }
 

@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
@@ -15,12 +16,14 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     private const int RaceKeywordBase = 20000;
     private static CardKeyword SetKeyword => (CardKeyword)10009;
     private static CardKeyword TrapKeyword => (CardKeyword)10011;
+    private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
 
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);
 
     public YgoCardType YgoCardType => YgoCardType.Trap;
     public bool FaceDown { get; set; } = false;
+    public bool WasSetIntoSpellTrapZone { get; private set; } = false;
 
     public DuelMonsterRace DuelMonsterRace { get; }
 
@@ -36,9 +39,34 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        WasSetIntoSpellTrapZone = false;
+        FaceDown = false;
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await OnTrapPlay(choiceContext, cardPlay);
         await SendThisTrapToGraveyard(choiceContext);
+    }
+
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (!base.IsPlayable)
+                return false;
+
+            if (Pile?.Type == PileType.Hand)
+                return false;
+
+            if (Pile?.Type == PileType.Hand && Owner != null && !YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
+                return false;
+
+            return true;
+        }
+    }
+
+    public void EnterSpellTrapZoneAsSetCard()
+    {
+        WasSetIntoSpellTrapZone = true;
+        FaceDown = true;
     }
 
     private async Task SendThisTrapToGraveyard(PlayerChoiceContext choiceContext)
@@ -65,19 +93,25 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         {
             if (ShouldShowRaceKeyword)
             {
-                return new[]
+                var keywords = new List<CardKeyword>
                 {
                     RaceToKeyword(DuelMonsterRace),
                     SetKeyword,
                     TrapKeyword,
                 };
+                if (WasSetIntoSpellTrapZone)
+                    keywords.Add(FaceDownKeyword);
+                return keywords;
             }
 
-            return new[]
+            var fallback = new List<CardKeyword>
             {
                 SetKeyword,
                 TrapKeyword,
             };
+            if (WasSetIntoSpellTrapZone)
+                fallback.Add(FaceDownKeyword);
+            return fallback;
         }
     }
 
@@ -87,19 +121,25 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         {
             if (ShouldShowRaceKeyword)
             {
-                return new IHoverTip[]
+                var tips = new List<IHoverTip>
                 {
                     HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)),
                     HoverTipFactory.FromKeyword(SetKeyword),
                     HoverTipFactory.FromKeyword(TrapKeyword),
                 };
+                if (WasSetIntoSpellTrapZone)
+                    tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
+                return tips;
             }
 
-            return new IHoverTip[]
+            var fallback = new List<IHoverTip>
             {
                 HoverTipFactory.FromKeyword(SetKeyword),
                 HoverTipFactory.FromKeyword(TrapKeyword),
             };
+            if (WasSetIntoSpellTrapZone)
+                fallback.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
+            return fallback;
         }
     }
 }

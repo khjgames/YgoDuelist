@@ -58,6 +58,7 @@ public static class DuelMonsterPetDeathPatch
                 bool pileIsForThisMonster = optionPile.Cards.Any(c => c is MonsterCommandCard mcc && mcc.SourceMonster == card);
                 if (pileIsForThisMonster)
                 {
+                    YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.MonsterOptions);
                     optionPile.Clear();
                     YgoOptionHandBridge.SyncFromOptionPile(player);
                     GD.Print("[ZGO] DuelMonsterPetDeathPatch: cleared option pile (was for dead monster).");

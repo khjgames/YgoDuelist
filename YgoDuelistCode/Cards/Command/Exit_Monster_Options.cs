@@ -47,6 +47,7 @@ public sealed class Exit_Monster_Options : MonsterCommandCard
         }
 
         GD.Print($"[ZGO] Exit_Monster_Options: Clearing YgoCardOptionPile. Previous count={optionPile.Cards.Count}");
+        YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.MonsterOptions);
         optionPile.Clear();
         YgoOptionHandBridge.SyncFromOptionPile(player);
         GD.Print("[ZGO] Exit_Monster_Options.OnClickedOption() done");

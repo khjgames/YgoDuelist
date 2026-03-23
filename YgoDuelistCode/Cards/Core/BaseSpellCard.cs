@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.HoverTips;
@@ -9,6 +10,7 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
@@ -16,12 +18,15 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
 {
     private const int RaceKeywordBase = 20000;
     private static CardKeyword SetKeyword => (CardKeyword)10009;
+    private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
 
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);
 
     public YgoCardType YgoCardType => YgoCardType.Spell;
     public bool FaceDown { get; set; } = false;
+    public bool IsSetModeInHand { get; private set; } = false;
+    public bool WasSetIntoSpellTrapZone { get; private set; } = false;
 
     public DuelMonsterRace DuelMonsterRace { get; }
 
@@ -38,11 +43,45 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        IsSetModeInHand = false;
+        WasSetIntoSpellTrapZone = false;
+        FaceDown = false;
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
 
         await OnSpellPlay(choiceContext, cardPlay);
 
         await SendThisSpellToGraveyard(choiceContext);
+    }
+
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (!base.IsPlayable)
+                return false;
+
+            if (Pile?.Type == PileType.Hand && IsSetModeInHand)
+                return false;
+
+            if (Pile?.Type == PileType.Hand && Owner != null && !YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
+                return false;
+
+            return true;
+        }
+    }
+
+    public void ToggleSetSkillModeInHand()
+    {
+        if (Pile?.Type != PileType.Hand)
+            return;
+        IsSetModeInHand = !IsSetModeInHand;
+    }
+
+    public void EnterSpellTrapZoneAsSetCard()
+    {
+        IsSetModeInHand = false;
+        WasSetIntoSpellTrapZone = true;
+        FaceDown = true;
     }
 
     private async Task SendThisSpellToGraveyard(PlayerChoiceContext choiceContext)
@@ -68,12 +107,26 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         {
             RaceToKeyword(DuelMonsterRace),
             SetKeyword,
-        };
+        }.Concat(GetFaceDownKeyword());
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        new IHoverTip[]
+    private IEnumerable<CardKeyword> GetFaceDownKeyword()
+    {
+        if (WasSetIntoSpellTrapZone)
+            yield return FaceDownKeyword;
+    }
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
         {
-            HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)),
-            HoverTipFactory.FromKeyword(SetKeyword),
-        };
+            var tips = new List<IHoverTip>
+            {
+                HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)),
+                HoverTipFactory.FromKeyword(SetKeyword),
+            };
+            if (WasSetIntoSpellTrapZone)
+                tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
+            return tips;
+        }
+    }
 }

@@ -118,7 +118,9 @@ public static class YgoOptionHandBridge
             bool hadState = _visibleOptions.Remove(player);
             if (hadState)
             {
-                OptionsChanged?.Invoke(player, Array.Empty<CardModel>());
+                var empty = Array.Empty<CardModel>();
+                OptionsChanged?.Invoke(player, empty);
+                YgoSecondHandSourceBridge.NotifyMonsterOptionsChanged(player, empty);
             }
             return;
         }
@@ -133,6 +135,7 @@ public static class YgoOptionHandBridge
 
         _visibleOptions[player] = cards;
         OptionsChanged?.Invoke(player, cards);
+        YgoSecondHandSourceBridge.NotifyMonsterOptionsChanged(player, cards);
     }
 
     /// <summary>
@@ -147,7 +150,9 @@ public static class YgoOptionHandBridge
         bool removed = _visibleOptions.Remove(player);
         if (removed)
         {
-            OptionsChanged?.Invoke(player, Array.Empty<CardModel>());
+            var empty = Array.Empty<CardModel>();
+            OptionsChanged?.Invoke(player, empty);
+            YgoSecondHandSourceBridge.NotifyMonsterOptionsChanged(player, empty);
         }
     }
 }

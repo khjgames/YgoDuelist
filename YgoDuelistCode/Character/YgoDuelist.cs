@@ -28,7 +28,7 @@ public class YgoDuelist : PlaceholderCharacterModel
     public override Color NameColor => Color;
     public override bool ShouldAlwaysShowStarCounter => true;
     public override CharacterGender Gender => CharacterGender.Neutral;
-    public override int StartingHp => 70;
+    public override int StartingHp => 80;
 
     public override IEnumerable<CardModel> StartingDeck =>
     [
@@ -77,7 +77,7 @@ public class YgoDuelist : PlaceholderCharacterModel
     [
         ModelDb.Relic<GraveyardRelic>(),
         ModelDb.Relic<ExtraDeckRelic>(),
-        ModelDb.Relic<CardOptionsRelic>()
+        ModelDb.Relic<SpellTrapZoneRelic>()
     ];
 
     public override CardPoolModel CardPool => ModelDb.CardPool<YgoDuelistCardPool>();
