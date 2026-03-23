@@ -7,9 +7,8 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.Cards;
-using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -29,6 +28,11 @@ public static class PlayCardFromSpellTrapZonePatch
 
         CardModel? card = __instance.NetCombatCard.ToCardModel();
         if (card == null)
+            return true;
+
+        // Harmony aborts later Prefix patches when one returns false. Fusion/ritual use their own
+        // PlayCardAction.ExecuteAction handlers (selection grids, then vanilla body); they must run instead of this path.
+        if (card is FusionSpellCard or RitualSpellCard)
             return true;
 
         CardPile? pile = card.Pile;
@@ -75,39 +79,6 @@ public static class PlayCardFromSpellTrapZonePatch
         PlayerChoiceContextProp?.SetValue(action, context);
         await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
 
-        var player = action.Player;
-        var tree = NPlayerHand.Instance?.GetTree();
-        if (tree != null && player != null)
-        {
-            var timer = tree.CreateTimer(0.0);
-            timer.Timeout += () =>
-            {
-                if (card != null)
-                {
-                    var ncard = NCard.FindOnTable(card);
-                    if (ncard != null && GodotObject.IsInstanceValid(ncard))
-                    {
-                        ncard.Visible = false;
-                        var holder = ncard.GetParent() as NHandCardHolder;
-                        if (holder != null && GodotObject.IsInstanceValid(holder))
-                        {
-                            holder.Visible = false;
-                            if (holder.Hitbox != null)
-                            {
-                                holder.Hitbox.Visible = false;
-                                holder.Hitbox.SetEnabled(false);
-                            }
-                            holder.QueueFree();
-                        }
-                        else
-                        {
-                            ncard.QueueFree();
-                        }
-                    }
-                }
-                YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.SpellTrapZone);
-                YgoSpellTrapZoneBridge.SyncFromZonePile(player);
-            };
-        }
+        YgoSpellTrapZoneAfterPlayUi.ScheduleCleanup(action.Player, card);
     }
 }

@@ -86,6 +86,9 @@ public static class PlayCardActionRitualSpellPatch
 
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
+
+        bool playedFromSpellTrapZone = card.Pile?.Type == SpellTrapZonePile.CustomType;
+
         CardPile? pile = card.Pile;
         if (pile == null || (pile.Type != PileType.Hand && pile.Type != SpellTrapZonePile.CustomType))
         {
@@ -123,5 +126,8 @@ public static class PlayCardActionRitualSpellPatch
         var context = new GameActionPlayerChoiceContext(action);
         PlayerChoiceContextProp?.SetValue(action, context);
         await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
+
+        if (playedFromSpellTrapZone)
+            YgoSpellTrapZoneAfterPlayUi.ScheduleCleanup(action.Player, card);
     }
 }

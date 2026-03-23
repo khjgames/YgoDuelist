@@ -1,13 +1,14 @@
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Applies set/face-down tint to title banner, portrait border, and type plaque; offsets plaque Y when set frame is active.
-/// Banner uses the same default-modulate capture/restore pattern as portrait border and type plaque (metadata set once only).
+/// Applies set/face-down tint to portrait border and type plaque; offsets plaque Y when set frame is active.
+/// Title banner modulate matches the type plaque after each tint apply; <see cref="NCard.UpdateTypePlaqueSizeAndPosition"/> postfix re-syncs banner from plaque (deferred layout) without overwriting plaque modulate.
 /// </summary>
 [HarmonyPatch]
 public static class YgoSetModePlaqueAndFrameTintPatch
@@ -52,38 +53,16 @@ public static class YgoSetModePlaqueAndFrameTintPatch
             overlay.Visible = useSetVisual && portrait.Visible && _faceDownPortraitOverlayTexture != null;
         }
 
-        TextureRect? titleBanner = body.GetNodeOrNull<TextureRect>("%TitleBanner");
-        if (titleBanner != null)
-        {
-            titleBanner.Modulate = useSetVisual
-                ? YgoSetCardVisualHelper.SetOrFaceDownTint
-                : GetDefaultBannerTintForRarity(model.Rarity);
-        }
+        ApplyPortraitBorderTypePlaqueAndBannerModulate(model, body);
 
-        TextureRect? portraitBorder = body.GetNodeOrNull<TextureRect>("%PortraitBorder");
         NinePatchRect? typePlaque = body.GetNodeOrNull<NinePatchRect>("%TypePlaque");
-        if (portraitBorder == null || typePlaque == null)
-            return;
-
-        if (!portraitBorder.HasMeta(DefaultPortraitBorderTintMeta))
-            portraitBorder.SetMeta(DefaultPortraitBorderTintMeta, portraitBorder.Modulate);
-        if (!typePlaque.HasMeta(DefaultTypePlaqueTintMeta))
-            typePlaque.SetMeta(DefaultTypePlaqueTintMeta, typePlaque.Modulate);
-
-        Color defaultPortraitTint = ExtractColor(portraitBorder.GetMeta(DefaultPortraitBorderTintMeta, portraitBorder.Modulate), portraitBorder.Modulate);
-        Color defaultTypePlaqueTint = ExtractColor(typePlaque.GetMeta(DefaultTypePlaqueTintMeta, typePlaque.Modulate), typePlaque.Modulate);
-
-        bool useSetFrame = model.Type == MegaCrit.Sts2.Core.Entities.Cards.CardType.Skill && useSetVisual;
-
-        portraitBorder.Modulate = useSetFrame ? YgoSetCardVisualHelper.SetOrFaceDownTint : defaultPortraitTint;
-        typePlaque.Modulate = useSetFrame ? YgoSetCardVisualHelper.SetOrFaceDownTint : defaultTypePlaqueTint;
-
-        if (!typePlaque.HasMeta(BaseTypePlaqueYMeta))
+        if (typePlaque != null && !typePlaque.HasMeta(BaseTypePlaqueYMeta))
             typePlaque.SetMeta(BaseTypePlaqueYMeta, typePlaque.Position.Y);
     }
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(NCard), "UpdateTypePlaqueSizeAndPosition")]
+    [HarmonyPriority(Priority.Last)]
     public static void TypePlaquePositionPostfix(NCard __instance)
     {
         if (__instance == null || !__instance.IsNodeReady())
@@ -104,7 +83,7 @@ public static class YgoSetModePlaqueAndFrameTintPatch
         if (!typePlaque.HasMeta(BaseTypePlaqueYMeta))
             typePlaque.SetMeta(BaseTypePlaqueYMeta, typePlaque.Position.Y);
 
-        bool useSetFrame = model.Type == MegaCrit.Sts2.Core.Entities.Cards.CardType.Skill
+        bool useSetFrame = model.Type == CardType.Skill
                            && YgoSetCardVisualHelper.ShouldUseSetFrame(model);
 
         // Re-apply vanilla plaque layout math every invocation so positioning is deterministic.
@@ -118,6 +97,46 @@ public static class YgoSetModePlaqueAndFrameTintPatch
         float scaledOffset = TypePlaqueSetFrameYOffset * typePlaque.Scale.Y;
         float newY = useSetFrame ? (baseY - scaledOffset) : baseY;
         typePlaque.Position = new Vector2(newX, newY);
+
+        // Don’t re-apply plaque modulate here — vanilla may have set rarity tint after Reload. Only mirror plaque → banner.
+        SyncTitleBannerModulateFromTypePlaque(body);
+    }
+
+    /// <summary>
+    /// Keeps portrait border + type plaque in sync with set mode; then sets title banner modulate to match the plaque.
+    /// </summary>
+    private static void ApplyPortraitBorderTypePlaqueAndBannerModulate(CardModel model, Control body)
+    {
+        TextureRect? portraitBorder = body.GetNodeOrNull<TextureRect>("%PortraitBorder");
+        NinePatchRect? typePlaque = body.GetNodeOrNull<NinePatchRect>("%TypePlaque");
+        if (portraitBorder == null || typePlaque == null)
+            return;
+
+        bool useSetVisual = YgoSetCardVisualHelper.ShouldUseSetFrame(model);
+
+        if (!portraitBorder.HasMeta(DefaultPortraitBorderTintMeta))
+            portraitBorder.SetMeta(DefaultPortraitBorderTintMeta, portraitBorder.Modulate);
+        if (!typePlaque.HasMeta(DefaultTypePlaqueTintMeta))
+            typePlaque.SetMeta(DefaultTypePlaqueTintMeta, typePlaque.Modulate);
+
+        Color defaultPortraitTint = ExtractColor(portraitBorder.GetMeta(DefaultPortraitBorderTintMeta, portraitBorder.Modulate), portraitBorder.Modulate);
+        Color defaultTypePlaqueTint = ExtractColor(typePlaque.GetMeta(DefaultTypePlaqueTintMeta, typePlaque.Modulate), typePlaque.Modulate);
+
+        bool useSetFrame = model.Type == CardType.Skill && useSetVisual;
+
+        portraitBorder.Modulate = useSetFrame ? YgoSetCardVisualHelper.SetOrFaceDownTint : defaultPortraitTint;
+        typePlaque.Modulate = useSetFrame ? YgoSetCardVisualHelper.SetOrFaceDownTint : defaultTypePlaqueTint;
+
+        SyncTitleBannerModulateFromTypePlaque(body);
+    }
+
+    private static void SyncTitleBannerModulateFromTypePlaque(Control body)
+    {
+        NinePatchRect? typePlaque = body.GetNodeOrNull<NinePatchRect>("%TypePlaque");
+        TextureRect? titleBanner = body.GetNodeOrNull<TextureRect>("%TitleBanner");
+        if (typePlaque == null || titleBanner == null)
+            return;
+        titleBanner.Modulate = typePlaque.Modulate;
     }
 
     private static Color ExtractColor(Variant variant, Color fallback)
@@ -128,18 +147,6 @@ public static class YgoSetModePlaqueAndFrameTintPatch
     private static float ExtractFloat(Variant variant, float fallback)
     {
         return variant.VariantType == Variant.Type.Float ? (float)variant : fallback;
-    }
-
-    private static Color GetDefaultBannerTintForRarity(MegaCrit.Sts2.Core.Entities.Cards.CardRarity rarity)
-    {
-        // Keep vanilla banner behavior by rarity when leaving set mode.
-        return rarity switch
-        {
-            MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Uncommon => Colors.White,
-            MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Rare => Colors.White,
-            MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Curse => Colors.White,
-            _ => Colors.White
-        };
     }
 
     private static TextureRect? EnsurePortraitOverlayNode(Control body, TextureRect portrait)

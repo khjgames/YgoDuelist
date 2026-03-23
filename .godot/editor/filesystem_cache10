@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1774296719
-YgoDuelist.deps.json::JSON::-1::1774296719::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1774298116
+YgoDuelist.deps.json::JSON::-1::1774298116::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
 ::res://packages/alchyr.sts2.baselib/::1774202292
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
@@ -1740,7 +1740,7 @@ static_hover_tips.json::JSON::-1::1774021232::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelist/monsters/duel_monster/::1773589494
 duel_monster.tscn::PackedScene::-1::1773589494::0::1::::<><><>0<>0<><>::res://src/Core/Nodes/Combat/NCreatureVisuals.cs
 ::res://YgoDuelistCode/::1773589494
-::res://YgoDuelistCode/Cards/::1774296650
+::res://YgoDuelistCode/Cards/::1774296725
 YgoCardTypes.cs::CSharpScript::8470661758287105871::1773970500::0::1::::<><><>0<>0<><>::
 YgoCycleKeywordPileHelper.cs::CSharpScript::5117249336157152713::1774296650::0::1::::<><><>0<>0<><>::
 YgoDuelistCard.cs::CSharpScript::1750447615170480644::1773589494::0::1::::<><><>0<>0<><>::
@@ -2856,10 +2856,10 @@ NCardPlayCannotPlaySpellTrapSetPatch.cs::CSharpScript::8163303407989633407::1774
 PlayCardFromSpellTrapZonePatch.cs::CSharpScript::1190364242816708041::1774278487::0::1::::<><><>0<>0<><>::
 SpellTrapCardRightClickPatch.cs::CSharpScript::1835909605611185779::1774278974::0::1::::<><><>0<>0<><>::
 YgoCardFramePatch.cs::CSharpScript::1728927591157531662::1774290869::0::1::::<><><>0<>0<><>::
-YgoEnergyIconNodePatch.cs::CSharpScript::6863008430028289781::1774235038::0::1::::<><><>0<>0<><>::
+YgoEnergyIconNodePatch.cs::CSharpScript::6863008430028289781::1774297368::0::1::::<><><>0<>0<><>::
 YgoMonsterLevelStripPatch.cs::CSharpScript::6666624347756030588::1774295323::0::1::::<><><>0<>0<><>::
-YgoMonsterStarIconPatch.cs::CSharpScript::803589814039354809::1773959313::0::1::::<><><>0<>0<><>::
-YgoSetModePlaqueAndFrameTintPatch.cs::CSharpScript::3379541632289860124::1774294978::0::1::::<><><>0<>0<><>::
+YgoMonsterStarIconPatch.cs::CSharpScript::803589814039354809::1774297287::0::1::::<><><>0<>0<><>::
+YgoSetModePlaqueAndFrameTintPatch.cs::CSharpScript::3379541632289860124::1774297859::0::1::::<><><>0<>0<><>::
 YgoSpellTrapRaceIconPatch.cs::CSharpScript::8607086363000490058::1774295327::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForCardSelection/::1774203273
 SimpleCardSelectScreenCancelBackButtonPatch.cs::CSharpScript::1802082996828080799::1774203391::0::1::::<><><>0<>0<><>::
