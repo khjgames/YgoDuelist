@@ -2,6 +2,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Extensions;
@@ -101,4 +102,40 @@ public static class YgoSetModePortraitBorderPatch
             __result = setFrame;
     }
 
+}
+
+/// <summary>
+/// Vanilla <c>card.tscn</c> lists <c>%Frame</c> after <c>%PortraitCanvasGroup</c>, so the frame draws on top of the
+/// portrait (fine when the frame texture has a transparent portrait window). YGO frames are full-card art and must
+/// paint <em>behind</em> the portrait and other chrome — use sibling order, not negative <c>z_index</c> (which breaks
+/// stacking vs other UI / canvas layers).
+/// </summary>
+[HarmonyPatch(typeof(NCard), "Reload")]
+public static class YgoCardFrameDrawOrderPatch
+{
+    [HarmonyPostfix]
+    [HarmonyPriority(Priority.Last)]
+    public static void Postfix(NCard __instance)
+    {
+        if (__instance == null || !__instance.IsNodeReady())
+            return;
+
+        if (__instance.Model is not IYgoCard)
+            return;
+
+        Control body = __instance.Body;
+        var frame = body.GetNodeOrNull<TextureRect>("%Frame");
+        var portraitGroup = body.GetNodeOrNull<CanvasGroup>("%PortraitCanvasGroup");
+        if (frame == null || portraitGroup == null)
+            return;
+
+        if (frame.GetParent() != body || portraitGroup.GetParent() != body)
+            return;
+
+        // Lower index = drawn first = behind. Frame must be before the portrait group.
+        if (frame.GetIndex() < portraitGroup.GetIndex())
+            return;
+
+        body.MoveChild(frame, portraitGroup.GetIndex());
+    }
 }

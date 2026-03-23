@@ -27,6 +27,10 @@ public static class YgoPortraitMaskResolver
         if (model is BaseTrapCard trap && trap.FaceDown)
             return YgoPortraitMaskKind.Set;
 
+        // Monsters in set / face-down defense use Skill type but need the set mask (not skill portrait shape).
+        if (model is AbstractMonsterCard monster && monster.FaceDown)
+            return YgoPortraitMaskKind.Set;
+
         if (model.Type == CardType.Attack)
             return YgoPortraitMaskKind.Attack;
 
