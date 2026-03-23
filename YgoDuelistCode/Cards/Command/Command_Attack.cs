@@ -25,8 +25,6 @@ public sealed class Command_Attack : MonsterCommandCard
     {
     }
 
-    public override bool ShowsEnergyCostIcon => true;
-
     /// <summary>Always Attack so the card frame is correct when created from canonical (parameterless) instance.</summary>
     public override CardType Type => CardType.Attack;
 

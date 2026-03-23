@@ -37,6 +37,9 @@ public static class GraveyardRelicClickPatch
         if (graveyard == null)
             return false;
 
+        if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.Graveyard))
+            return true;
+
         IRunState? runState = RunManager.Instance.DebugOnlyGetState();
         if (runState == null)
             return false;
@@ -49,7 +52,7 @@ public static class GraveyardRelicClickPatch
         if (cards.Count == 0)
             return false;
 
-        return TryOpenRelicCardGrid(model, player, cards);
+        return TryOpenRelicCardGrid(YgoRelicBrowseGridOverlayPatch.RelicGridKind.Graveyard, model, player, cards);
     }
 
     private static bool TryOpenExtraDeckGrid(RelicModel model)
@@ -57,6 +60,9 @@ public static class GraveyardRelicClickPatch
         ExtraDeckRelic? extra = ExtraDeckRelic.AsExtraDeck(model);
         if (extra == null)
             return false;
+
+        if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ExtraDeck))
+            return true;
 
         IRunState? runState = RunManager.Instance.DebugOnlyGetState();
         if (runState == null)
@@ -70,11 +76,17 @@ public static class GraveyardRelicClickPatch
         if (cards.Count == 0)
             return false;
 
-        return TryOpenRelicCardGrid(model, player, cards);
+        return TryOpenRelicCardGrid(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ExtraDeck, model, player, cards);
     }
 
-    private static bool TryOpenRelicCardGrid(RelicModel model, Player player, IReadOnlyList<CardModel> cards)
+    private static bool TryOpenRelicCardGrid(
+        YgoRelicBrowseGridOverlayPatch.RelicGridKind gridKind,
+        RelicModel model,
+        Player player,
+        IReadOnlyList<CardModel> cards)
     {
+        YgoRelicBrowseGridOverlayPatch.CloseAnyActiveBrowseGrid();
+
         var selectionPromptProp = AccessTools.Property(typeof(RelicModel), "SelectionScreenPrompt");
         object? selectionPrompt = selectionPromptProp.GetValue(model);
 
@@ -87,11 +99,19 @@ public static class GraveyardRelicClickPatch
 
         async Task ShowAsync()
         {
-            await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                cards,
-                player,
-                prefs);
+            YgoRelicBrowseGridOverlayPatch.SetPendingKind(gridKind);
+            try
+            {
+                await CardSelectCmd.FromSimpleGrid(
+                    new BlockingPlayerChoiceContext(),
+                    cards,
+                    player,
+                    prefs);
+            }
+            finally
+            {
+                YgoRelicBrowseGridOverlayPatch.ClearPendingKind();
+            }
         }
 
         return true;

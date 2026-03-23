@@ -61,4 +61,15 @@ public static class YgoSecondHandSourceBridge
         };
         SecondHandCardsChanged?.Invoke(player, cards);
     }
+
+    /// <summary>
+    /// Spell/Trap zone second-hand row is active; switch back to monster options and republish (may be empty).
+    /// </summary>
+    public static void CloseSpellTrapZoneView(Player player)
+    {
+        if (GetSource(player) != YgoSecondHandSource.SpellTrapZone)
+            return;
+        SetSource(player, YgoSecondHandSource.MonsterOptions);
+        PublishCurrentSourceCards(player);
+    }
 }

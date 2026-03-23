@@ -25,6 +25,12 @@ public static class SpellTrapZoneRelicClickPatch
         if (player == null)
             return true;
 
+        if (YgoSecondHandSourceBridge.GetSource(player) == YgoSecondHandSource.SpellTrapZone)
+        {
+            YgoSecondHandSourceBridge.CloseSpellTrapZoneView(player);
+            return false;
+        }
+
         YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.SpellTrapZone);
         YgoSpellTrapZoneBridge.SyncFromZonePile(player);
         return false;

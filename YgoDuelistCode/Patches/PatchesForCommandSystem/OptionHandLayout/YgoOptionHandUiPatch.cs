@@ -111,6 +111,57 @@ public static class YgoOptionHandUiPatch
         }
     }
 
+    /// <summary>Removes all tracked second-hand option holders for this player (spell/trap row, monster options, etc.).</summary>
+    private static void TearDownSecondHandRow(Player player, NPlayerHand hand)
+    {
+        if (!_holdersByPlayer.TryGetValue(player, out var existing) || existing.Count == 0)
+            return;
+
+        var container = hand.CardHolderContainer;
+        var activeOpts = hand.ActiveHolders.Where(h => h is NYgoOptionCardHolder).ToHashSet();
+        var currentPlayHolder = hand.InCardPlay && AccessTools.Field(typeof(NPlayerHand), "_currentCardPlay")?.GetValue(hand) is NCardPlay cp ? cp.Holder : null;
+        bool canPrune(NYgoOptionCardHolder h) => GodotObject.IsInstanceValid(h) && !activeOpts.Contains(h) && h != currentPlayHolder && !OptionHolderCardStillInPile(h, player);
+        var toFree = existing.Where(canPrune).ToList();
+        int pruned = existing.RemoveAll(h => canPrune(h));
+        if (pruned > 0)
+        {
+            GD.Print("[YgoDuelist] TearDownSecondHandRow PRUNED ", pruned, " stale holder(s)");
+            foreach (var h in toFree)
+            {
+                if (GodotObject.IsInstanceValid(h) && h.IsInsideTree())
+                    h.QueueFree();
+            }
+        }
+
+        if (existing.Count == 0)
+            return;
+
+        GD.Print("[YgoDuelist] TearDownSecondHandRow REMOVING ", existing.Count, " holders");
+        for (int i = 0; i < existing.Count; i++)
+        {
+            var h = existing[i];
+            bool stillInHand = GodotObject.IsInstanceValid(h) && h.GetParent() == container;
+            if (hand.FocusedHolder == h)
+            {
+                var focusedProp = AccessTools.Property(typeof(NPlayerHand), "FocusedHolder");
+                var lastIdxField = AccessTools.Field(typeof(NPlayerHand), "_lastFocusedHolderIdx");
+                focusedProp?.SetValue(hand, null);
+                lastIdxField?.SetValue(hand, -1);
+            }
+            if (stillInHand)
+                hand.RemoveCardHolder(h);
+            else
+            {
+                bool isCurrentPlayHolder = currentPlayHolder == h;
+                if (isCurrentPlayHolder)
+                    PendingOptionHolderToFreeAfterReturnToHand = h;
+                else if (GodotObject.IsInstanceValid(h) && h.IsInsideTree())
+                    h.QueueFree();
+            }
+        }
+        existing.Clear();
+    }
+
     private static void RebuildForPlayer(Player player, IReadOnlyList<CardModel> cards, Node uiRoot, Vector2 viewportSize)
     {
         var hand = NPlayerHand.Instance;
@@ -121,68 +172,19 @@ public static class YgoOptionHandUiPatch
         }
         GD.Print("[YgoDuelist] RebuildForPlayer START handId=", hand.GetInstanceId(), " cardsCount=", cards?.Count ?? 0);
 
-        if (_holdersByPlayer.TryGetValue(player, out var existing))
-        {
-            var container = hand.CardHolderContainer;
-            var activeOpts = hand.ActiveHolders.Where(h => h is NYgoOptionCardHolder).ToHashSet();
-            var currentPlayHolder = hand.InCardPlay && AccessTools.Field(typeof(NPlayerHand), "_currentCardPlay")?.GetValue(hand) is NCardPlay cp ? cp.Holder : null;
-            bool canPrune(NYgoOptionCardHolder h) => GodotObject.IsInstanceValid(h) && !activeOpts.Contains(h) && h != currentPlayHolder && !OptionHolderCardStillInPile(h, player);
-            var toFree = existing.Where(canPrune).ToList();
-            int pruned = existing.RemoveAll(h => canPrune(h));
-            if (pruned > 0)
-            {
-                GD.Print("[YgoDuelist] RebuildForPlayer PRUNED ", pruned, " stale holder(s) (no longer in hand, not current play)");
-                foreach (var h in toFree)
-                {
-                    if (GodotObject.IsInstanceValid(h) && h.IsInsideTree())
-                        h.QueueFree();
-                }
-            }
-            if (existing.Count > 0)
-            {
-                GD.Print("[YgoDuelist] RebuildForPlayer REMOVING ", existing.Count, " existing holders. FocusedHolder=", hand.FocusedHolder?.GetInstanceId() ?? 0, " FocusedHolderIsOption=", hand.FocusedHolder is NYgoOptionCardHolder);
-                for (int i = 0; i < existing.Count; i++)
-                {
-                    var h = existing[i];
-                    string modelName = h.CardModel?.GetType().Name ?? "null";
-                    bool stillInHand = GodotObject.IsInstanceValid(h) && h.GetParent() == container;
-                    GD.Print("[YgoDuelist]   remove[", i, "] holderId=", h.GetInstanceId(), " model=", modelName, " IsInsideTree=", h.IsInsideTree(), " isFocused=", (hand.FocusedHolder == h), " stillInHand=", stillInHand);
-                    if (hand.FocusedHolder == h)
-                    {
-                        GD.Print("[YgoDuelist]   >>> clearing FocusedHolder (was option holder being removed)");
-                        var focusedProp = AccessTools.Property(typeof(NPlayerHand), "FocusedHolder");
-                        var lastIdxField = AccessTools.Field(typeof(NPlayerHand), "_lastFocusedHolderIdx");
-                        focusedProp?.SetValue(hand, null);
-                        lastIdxField?.SetValue(hand, -1);
-                    }
-                    if (stillInHand)
-                    {
-                        hand.RemoveCardHolder(h);
-                    }
-                    else
-                    {
-                        bool isCurrentPlayHolder = (currentPlayHolder == h);
-                        if (isCurrentPlayHolder)
-                            PendingOptionHolderToFreeAfterReturnToHand = h;
-                        else if (GodotObject.IsInstanceValid(h) && h.IsInsideTree())
-                            h.QueueFree();
-                    }
-                }
-                GD.Print("[YgoDuelist] RebuildForPlayer REMOVED all. Now FocusedHolder=", hand.FocusedHolder?.GetInstanceId() ?? 0);
-            }
-            existing.Clear();
-        }
-        else
-        {
-            existing = new List<NYgoOptionCardHolder>();
-            _holdersByPlayer[player] = existing;
-            GD.Print("[YgoDuelist] RebuildForPlayer no existing holders");
-        }
+        TearDownSecondHandRow(player, hand);
 
         if (cards == null || cards.Count == 0)
         {
-            GD.Print("[YgoDuelist] RebuildForPlayer EXIT cards null or empty");
+            GD.Print("[YgoDuelist] RebuildForPlayer EXIT cards null or empty (row torn down)");
             return;
+        }
+
+        if (!_holdersByPlayer.TryGetValue(player, out var existing))
+        {
+            existing = new List<NYgoOptionCardHolder>();
+            _holdersByPlayer[player] = existing;
+            GD.Print("[YgoDuelist] RebuildForPlayer new holder list for player");
         }
 
         PendingOptionHolderToFreeAfterReturnToHand = null;

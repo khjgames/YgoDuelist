@@ -26,6 +26,8 @@ public sealed class Exit_Monster_Options : MonsterCommandCard
 
     protected override bool IsPlayable => false;
 
+    protected internal override bool ShowsEnergyCostIcon => false;
+
     public Task OnClickedOption()
     {
         GD.Print("[ZGO] Exit_Monster_Options.OnClickedOption() entered");
