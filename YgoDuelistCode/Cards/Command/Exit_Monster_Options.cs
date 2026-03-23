@@ -26,7 +26,8 @@ public sealed class Exit_Monster_Options : MonsterCommandCard
 
     protected override bool IsPlayable => false;
 
-    protected internal override bool ShowsEnergyCostIcon => false;
+    protected internal override string? CustomCommandEnergyTexturePath =>
+        "YgoDuelist/images/card_frames/Invisible_Energy.png";
 
     public Task OnClickedOption()
     {

@@ -22,8 +22,17 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
 
     /// <summary>
     /// When false, <see cref="Patches.YgoEnergyIconNodePatch"/> hides the energy orb (menu-only options, not paid with energy).
+    /// Ignored when <see cref="CustomCommandEnergyTexturePath"/> is set.
     /// </summary>
     protected internal virtual bool ShowsEnergyCostIcon => true;
+
+    /// <summary>
+    /// Optional mod resource path (e.g. <c>YgoDuelist/images/card_frames/foo.png</c>) for the energy orb texture.
+    /// When non-null, the orb stays visible and uses this texture instead of the default command styling.
+    /// <see cref="Patches.YgoMonsterCommandEnergyCostVisualPatch"/> also applies this texture to the hand unplayable
+    /// energy overlay and can blank the <c>0</c> cost label.
+    /// </summary>
+    protected internal virtual string? CustomCommandEnergyTexturePath => null;
 
     // Parameterless ctor for reflection / scanners – never used at runtime for real commands.
     protected MonsterCommandCard()

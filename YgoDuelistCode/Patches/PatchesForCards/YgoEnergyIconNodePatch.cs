@@ -32,17 +32,25 @@ public static class YgoEnergyIconNodePatch
 
         if (model is MonsterCommandCard mcc)
         {
-            if (!mcc.ShowsEnergyCostIcon)
+            var commandCustom = mcc.CustomCommandEnergyTexturePath;
+            if (!string.IsNullOrEmpty(commandCustom))
+            {
+                icon.Visible = true;
+                customTexturePath = commandCustom;
+            }
+            else if (!mcc.ShowsEnergyCostIcon)
             {
                 icon.Visible = false;
                 return;
             }
-
-            icon.Visible = true;
-            if (model.Type == CardType.Attack)
-                customTexturePath = AttackMonsterEnergyPath;
             else
-                energyPrefix = "defect";
+            {
+                icon.Visible = true;
+                if (model.Type == CardType.Attack)
+                    customTexturePath = AttackMonsterEnergyPath;
+                else
+                    energyPrefix = "defect";
+            }
         }
         else if (model is AbstractMonsterCard handEffectMonster && handEffectMonster.IsHandEffectFormActive)
         {

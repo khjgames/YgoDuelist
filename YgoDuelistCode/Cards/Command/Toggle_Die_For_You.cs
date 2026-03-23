@@ -31,7 +31,8 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
 
     protected override bool IsPlayable => false;
 
-    protected internal override bool ShowsEnergyCostIcon => false;
+    protected internal override string? CustomCommandEnergyTexturePath =>
+        "YgoDuelist/images/card_frames/Invisible_Energy.png";
 
     public async Task OnClickedOption()
     {
