@@ -22,12 +22,4 @@ public sealed class Great_Moth : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

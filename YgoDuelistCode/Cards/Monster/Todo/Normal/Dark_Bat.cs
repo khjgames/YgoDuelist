@@ -22,12 +22,4 @@ public sealed class Dark_Bat : NormalMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

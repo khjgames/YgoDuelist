@@ -22,12 +22,4 @@ public sealed class Guardian_Elma : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

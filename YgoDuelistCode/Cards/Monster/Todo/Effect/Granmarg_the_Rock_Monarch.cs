@@ -22,12 +22,4 @@ public sealed class Granmarg_the_Rock_Monarch : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

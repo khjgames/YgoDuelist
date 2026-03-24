@@ -22,12 +22,4 @@ public sealed class Niwatori : NormalMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

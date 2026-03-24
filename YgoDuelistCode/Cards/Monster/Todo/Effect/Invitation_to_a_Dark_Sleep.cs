@@ -22,12 +22,4 @@ public sealed class Invitation_to_a_Dark_Sleep : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

@@ -22,12 +22,4 @@ public sealed class Two_Mouth_Darkruler : NormalMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

@@ -1,4 +1,7 @@
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -22,12 +25,11 @@ public sealed class Cyber_Jar : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
+    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ApplyCardEffectPlaceholder();
+        if (Owner != null)
+            await CardPileCmd.Draw(choiceContext, 3, Owner);
     }
 
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => base.OnUpgrade();
 }

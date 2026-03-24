@@ -22,12 +22,4 @@ public sealed class Sea_Serpent_Warrior_of_Darkness : NormalMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

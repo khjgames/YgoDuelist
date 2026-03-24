@@ -23,7 +23,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
 
     public YgoCardType YgoCardType => YgoCardType.Trap;
     public bool FaceDown { get; set; } = false;
-    public bool WasSetIntoSpellTrapZone { get; private set; } = false;
+    public bool WasSetIntoSpellTrapZone { get; protected set; } = false;
 
     public DuelMonsterRace DuelMonsterRace { get; }
 

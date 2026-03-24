@@ -22,12 +22,4 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

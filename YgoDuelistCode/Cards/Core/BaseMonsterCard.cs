@@ -21,6 +21,12 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public int BaseDef { get; }
     public int BaseMgc { get; }
 
+    /// <summary>Energy to play from hand / summon in attack stance (Z = BaseAtk).</summary>
+    public int DuelMonsterAttackPlayEnergy { get; }
+
+    /// <summary>Energy to play from hand / summon in defense stance (Z = BaseDef).</summary>
+    public int DuelMonsterDefensePlayEnergy { get; }
+
     /// <summary>Level (star count) for the duel monster this card summons.</summary>
     public override int DuelMonsterLevel => _duelMonsterLevel;
 
@@ -29,6 +35,17 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     /// <summary>Duel monster race / type for the card frame icon.</summary>
     public override DuelMonsterRace DuelMonsterRace { get; }
+
+    /// <summary>Mod keyword Splinter (YGO piercing): unblocked damage to the primary target splashes 50% to other enemies.</summary>
+    public virtual bool AttackDealsSplinterDamage => false;
+
+    /// <summary>Mod keyword Blighted (YGO direct-attack style): 50% of unblocked hit damage applies as Blight stacks on the target.</summary>
+    public virtual bool AttackDealsBlightedDamage => false;
+
+    /// <summary>
+    /// ATK permanently added to <see cref="NormalMonsterCard.DynamicVars"/>.Damage when this card's duel monster kills an enemy with an attack (revised execute effects).
+    /// </summary>
+    public virtual int PermanentAtkDeltaOnEnemyExecute => 0;
 
     /// <summary>
     /// Support effect this monster applies to a target duel monster based on its attribute (e.g. +MGC ATK to same-attribute, -4 to the opposing attribute).
@@ -62,6 +79,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         BaseMgc = baseMgc;
 
         _duelMonsterLevel = duelMonsterLevel;
+
+        DuelMonsterAttackPlayEnergy = MonsterEnergyCostCalculator.Compute(
+            duelMonsterLevel, YgoCardType, baseAtk, DuelMonsterStatsAreUnknown);
+        DuelMonsterDefensePlayEnergy = MonsterEnergyCostCalculator.Compute(
+            duelMonsterLevel, YgoCardType, baseDef, DuelMonsterStatsAreUnknown);
 
         // Start in defense position (Skill card) when DEF > ATK.
         // Equal stats keep the existing Attack default.

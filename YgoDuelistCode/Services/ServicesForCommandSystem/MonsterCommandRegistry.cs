@@ -2,7 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -10,6 +13,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 public sealed class MonsterCommandState
 {
     public bool DieForYouEnabled;
+    public bool DieForYouForced;
     public bool HasUsedCommandThisTurn;
 }
 
@@ -53,6 +57,23 @@ public static class MonsterCommandRegistry
     public static async Task ApplyStiffFromBattlePositionChangeOnly(Creature pet, Creature? applier = null, CardModel? sourceCard = null)
     {
         await PowerCmd.Apply<StiffPower>(pet, 1m, applier, sourceCard);
+    }
+
+    /// <summary>When forced, Die For You stays on and the toggle command is hidden.</summary>
+    public static async Task SetDieForYouForcedAsync(Creature pet, bool forced, Player player, NormalMonsterCard? sourceCard)
+    {
+        var state = GetOrCreate(pet);
+        state.DieForYouForced = forced;
+        if (forced)
+        {
+            state.DieForYouEnabled = true;
+            await PowerCmd.Apply<DieForYouPower>(pet, 1m, player.Creature, sourceCard);
+        }
+        else
+        {
+            state.DieForYouEnabled = false;
+            await PowerCmd.Remove<DieForYouPower>(pet);
+        }
     }
 
     public static void Clear(Creature pet)

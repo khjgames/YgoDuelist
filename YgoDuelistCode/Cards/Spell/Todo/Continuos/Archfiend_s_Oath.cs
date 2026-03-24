@@ -1,35 +1,33 @@
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
-public sealed class Archfiend_s_Oath : BaseSpellCard
+public sealed class Archfiend_s_Oath : BaseContinuousSpellCard
 {
     public Archfiend_s_Oath()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellContinuous)
+        : base(1, CardRarity.Common, TargetType.Self)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
+
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner?.Creature == null)
+            return;
+
+        await CreatureCmd.Damage(choiceContext, Owner.Creature, 5m, ValueProp.Unpowered, null, this);
+        if (Owner != null)
+            await YgoSpellCounterService.Add(Owner, 2, this);
     }
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

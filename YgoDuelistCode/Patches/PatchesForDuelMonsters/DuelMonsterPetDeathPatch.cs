@@ -17,6 +17,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using MegaCrit.Sts2.Core.Helpers;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -52,6 +53,9 @@ public static class DuelMonsterPetDeathPatch
                 GD.Print("[ZGO] DuelMonsterPetDeathPatch: no source card found for pet.");
                 return;
             }
+
+            if (card is BaseMonsterCard bmc && bmc.DuelMonsterRace == DuelMonsterRace.Dragon)
+                GraveyardRelic.RegisterDragonMonsterDestroyed(player);
 
             // If the current option pile is for this monster, clear it so the player can't use options pointing at a dead monster.
             var optionPile = YgoCardOptionPile.CustomType.GetPile(player);

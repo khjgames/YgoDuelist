@@ -22,12 +22,4 @@ public sealed class Winged_Dragon_Guardian_of_the_Fortress_1 : NormalMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

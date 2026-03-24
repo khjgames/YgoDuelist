@@ -260,4 +260,39 @@ public static class YgoSpellTrapZoneBridge
 
         SyncFromZonePile(player);
     }
+
+    /// <summary>
+    /// From hand/play: moves the continuous trap into the Spell/Trap zone. From zone (set): already there—sync only.
+    /// </summary>
+    public static async Task ActivateContinuousTrapAsync(BaseContinuousTrapCard card)
+    {
+        if (card.Owner == null)
+            return;
+
+        Player player = card.Owner;
+        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zonePile == null)
+            return;
+
+        PileType from = card.Pile?.Type ?? PileType.None;
+        if (from != PileType.Hand && from != PileType.Play && from != SpellTrapZonePile.CustomType)
+            return;
+
+        if (from == PileType.Hand || from == PileType.Play)
+        {
+            if (!HasSpaceForSetOrPlay(player, card))
+                return;
+
+            await CardPileCmd.Add(
+                new[] { card },
+                zonePile,
+                CardPilePosition.Top,
+                card,
+                false);
+        }
+        else if (!ReferenceEquals(card.Pile, zonePile))
+            return;
+
+        SyncFromZonePile(player);
+    }
 }

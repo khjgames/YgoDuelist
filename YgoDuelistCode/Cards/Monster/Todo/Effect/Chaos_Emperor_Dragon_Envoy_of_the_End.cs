@@ -22,12 +22,4 @@ public sealed class Chaos_Emperor_Dragon_Envoy_of_the_End : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

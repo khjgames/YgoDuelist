@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
@@ -14,22 +15,11 @@ public sealed class Anti_Spell : BaseTrapCard
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteTrapEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner != null)
+            await YgoSpellCounterService.Add(Owner, 3, this);
     }
 
-    protected override void OnUpgrade()
-    {
-        ExecuteTrapUpgradePlaceholder();
-    }
-
-    private void ExecuteTrapEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteTrapUpgradePlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

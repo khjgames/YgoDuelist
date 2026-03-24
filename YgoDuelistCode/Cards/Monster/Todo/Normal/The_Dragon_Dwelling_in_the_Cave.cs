@@ -22,12 +22,4 @@ public sealed class The_Dragon_Dwelling_in_the_Cave : NormalMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

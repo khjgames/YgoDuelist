@@ -24,12 +24,4 @@ public sealed class VWXYZ_Dragon_Catapult_Cannon : FusionMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

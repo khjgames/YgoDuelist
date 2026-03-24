@@ -1,9 +1,14 @@
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
@@ -14,22 +19,28 @@ public sealed class Burst_Breath : BaseTrapCard
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteTrapEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner?.Creature?.CombatState == null)
+            return;
+
+        bool hasDragon = DuelMonsterFieldRegistry
+            .GetFieldMonsters(Owner)
+            .OfType<BaseMonsterCard>()
+            .Any(m => m.DuelMonsterRace == DuelMonsterRace.Dragon);
+
+        if (!hasDragon)
+            return;
+
+        foreach (Creature e in Owner.Creature.CombatState.HittableEnemies.Where(c => c.IsAlive))
+        {
+            await DamageCmd.Attack(14m)
+                .FromCard(this)
+                .Targeting(e)
+                .WithHitFx("vfx/vfx_attack_slash")
+                .Execute(choiceContext);
+        }
     }
 
-    protected override void OnUpgrade()
-    {
-        ExecuteTrapUpgradePlaceholder();
-    }
-
-    private void ExecuteTrapEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteTrapUpgradePlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

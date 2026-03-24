@@ -22,12 +22,4 @@ public sealed class Gazelle_the_King_of_Mythical_Beasts : NormalMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

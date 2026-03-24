@@ -1,35 +1,31 @@
-using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
-public sealed class Cestus_of_Dagla : BaseSpellCard
+/// <summary>Cestus of Dagla — Spellcaster equip; Splinter on battle damage (mod mapping for piercing burn).</summary>
+public sealed class Cestus_of_Dagla : BaseEquipSpellCard
 {
+    private const int PrintedAtkBonus = 5;
+    private int _bonusAtk = PrintedAtkBonus;
+
     public Cestus_of_Dagla()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellEquip)
+        : base(1, CardRarity.Common, TargetType.Self)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
-    }
+    public override bool GrantsSplinterDamage => true;
+
+    public override bool CanEquipTo(BaseMonsterCard target) => target.DuelMonsterRace == DuelMonsterRace.Spellcaster;
+
+    public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => new StatEffectTotal(_bonusAtk, 0);
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        _bonusAtk = PrintedAtkBonus + YgoStatUpgradeScaling.GetStatUpgradeBonus(PrintedAtkBonus);
+        EnergyCost.UpgradeBy(-1);
     }
 }

@@ -21,7 +21,7 @@ public sealed class Command_Attack : MonsterCommandCard
     }
 
     public Command_Attack(NormalMonsterCard source)
-        : base(source, 1, CardType.Attack, TargetType.AnyEnemy)
+        : base(source, source.DuelMonsterAttackPlayEnergy, CardType.Attack, TargetType.AnyEnemy)
     {
     }
 
@@ -30,8 +30,6 @@ public sealed class Command_Attack : MonsterCommandCard
 
     /// <summary>Always targets an enemy so option-row play gets targeting arrows and does not highlight the player. Parameterless ctor chains to base(Self); this override fixes that.</summary>
     public override TargetType TargetType => TargetType.AnyEnemy;
-
-    protected override int CanonicalEnergyCost => 1;
 
     public new LocString Description
     {

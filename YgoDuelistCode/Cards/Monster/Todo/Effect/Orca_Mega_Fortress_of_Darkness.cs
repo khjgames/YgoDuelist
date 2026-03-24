@@ -22,12 +22,4 @@ public sealed class Orca_Mega_Fortress_of_Darkness : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

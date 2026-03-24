@@ -22,12 +22,4 @@ public sealed class Manju_of_the_Ten_Thousand_Hands : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

@@ -29,6 +29,13 @@ public static class YgoCombatEndClearPatch
         RitualSpellPlayPayload.ClearAll();
         FusionSpellPlayPayload.ClearAll();
         YgoEquipSpellRegistry.ClearAll();
+
+        if (combatState != null)
+        {
+            foreach (var p in combatState.Players)
+                await YgoShadowRealmService.RemoveAllFromCombat(p);
+        }
+
         await Task.CompletedTask;
     }
 }

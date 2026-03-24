@@ -22,12 +22,4 @@ public sealed class The_Gross_Ghost_of_Fled_Dreams : NormalMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

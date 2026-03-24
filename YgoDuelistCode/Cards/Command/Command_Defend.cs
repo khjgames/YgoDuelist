@@ -22,11 +22,9 @@ public sealed class Command_Defend : MonsterCommandCard
     }
 
     public Command_Defend(NormalMonsterCard source)
-        : base(source, 1, CardType.Skill, TargetType.Self)
+        : base(source, source.DuelMonsterDefensePlayEnergy, CardType.Skill, TargetType.Self)
     {
     }
-
-    protected override int CanonicalEnergyCost => 1;
 
     public new LocString Description
     {

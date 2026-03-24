@@ -32,6 +32,9 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
 
     public abstract StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped);
 
+    /// <summary>When true, the equipped monster's attacks also resolve Splinter splash (see <see cref="Relics.GraveyardRelic"/>).</summary>
+    public virtual bool GrantsSplinterDamage => false;
+
     protected override bool IsPlayable
     {
         get

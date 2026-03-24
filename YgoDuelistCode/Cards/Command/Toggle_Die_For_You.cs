@@ -48,6 +48,9 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
         if (pet != null)
         {
             var state = MonsterCommandRegistry.GetOrCreate(pet);
+            if (state.DieForYouForced)
+                return;
+
             state.DieForYouEnabled = !state.DieForYouEnabled;
 
             if (state.DieForYouEnabled)

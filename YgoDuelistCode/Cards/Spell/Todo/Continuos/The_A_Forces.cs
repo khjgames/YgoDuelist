@@ -11,6 +11,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
 public sealed class The_A_Forces : BaseContinuousSpellCard
 {
+    private const int PrintedAtkPerMonster = 2;
+    private int _atkPerMonster = PrintedAtkPerMonster;
+
     public The_A_Forces()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
@@ -22,11 +25,15 @@ public sealed class The_A_Forces : BaseContinuousSpellCard
             return StatEffectTotal.None;
 
         int n = DuelMonsterFieldRegistry.GetFieldMonsters(Owner).OfType<BaseMonsterCard>().Count();
-        return new StatEffectTotal(2 * n, 0);
+        return new StatEffectTotal(_atkPerMonster * n, 0);
     }
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        _atkPerMonster = PrintedAtkPerMonster + YgoStatUpgradeScaling.GetStatUpgradeBonus(PrintedAtkPerMonster);
+        EnergyCost.UpgradeBy(-1);
+    }
 }

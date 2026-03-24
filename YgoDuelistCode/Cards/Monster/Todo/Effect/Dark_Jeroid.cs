@@ -1,5 +1,10 @@
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -22,12 +27,22 @@ public sealed class Dark_Jeroid : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
+    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ApplyCardEffectPlaceholder();
+        if (Owner?.Creature?.CombatState == null)
+            return;
+
+        var cs = Owner.Creature.CombatState;
+        var list = cs.HittableEnemies.Where(c => c.IsAlive).ToList();
+        if (list.Count == 0)
+            return;
+
+        var target = Owner.RunState.Rng.CombatTargets.NextItem(list);
+        if (target == null)
+            return;
+
+        await PowerCmd.Apply<StrengthPower>(target, -8m, Owner.Creature, this);
     }
 
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => base.OnUpgrade();
 }

@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
 
@@ -9,18 +10,27 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
 public abstract class FlatRaceEquipSpell : BaseEquipSpellCard
 {
     private readonly DuelMonsterRace _requiredRace;
-    private readonly int _bonusAtk;
-    private readonly int _bonusDef;
+    private readonly int _printedAtkBonus;
+    private readonly int _printedDefBonus;
+    private int _bonusAtk;
+    private int _bonusDef;
 
     protected FlatRaceEquipSpell(CardRarity rarity, DuelMonsterRace requiredRace, int bonusAtk, int bonusDef)
         : base(1, rarity, TargetType.Self)
     {
         _requiredRace = requiredRace;
+        _printedAtkBonus = bonusAtk;
+        _printedDefBonus = bonusDef;
         _bonusAtk = bonusAtk;
         _bonusDef = bonusDef;
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        _bonusAtk = _printedAtkBonus + YgoStatUpgradeScaling.GetStatUpgradeBonus(_printedAtkBonus);
+        _bonusDef = _printedDefBonus + YgoStatUpgradeScaling.GetStatUpgradeBonus(_printedDefBonus);
+        EnergyCost.UpgradeBy(-1);
+    }
 
     public sealed override bool CanEquipTo(BaseMonsterCard target) => target.DuelMonsterRace == _requiredRace;
 

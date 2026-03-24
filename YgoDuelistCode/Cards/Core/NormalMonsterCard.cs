@@ -137,16 +137,21 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
 
         await CombatAction(choiceContext, cardPlay);
+        await OnAfterMonsterPlayResolved(choiceContext, cardPlay);
     }
+
+    /// <summary>Called after summon + combat action resolves (attack or defend from hand).</summary>
+    protected virtual Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     // Complex: override in effect monsters for calculated damage.
     // public virtual decimal GetDamageAmount(Creature? target) => DynamicVars.Damage.BaseValue;
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(1m);
-        DynamicVars["Def"].UpgradeValueBy(1m);
-        DynamicVars["Mgc"].UpgradeValueBy(1m);
+        DynamicVars.Damage.UpgradeValueBy(YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseAtk));
+        DynamicVars["Def"].UpgradeValueBy(YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseDef));
+        DynamicVars["Mgc"].UpgradeValueBy(YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseMgc));
     }
 
     public static decimal GetTotalAtkForPreview(CardModel card)

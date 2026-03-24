@@ -22,12 +22,4 @@ public sealed class Black_Luster_Soldier_Envoy_of_the_Beginning : EffectMonsterC
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
-
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
 }

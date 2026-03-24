@@ -22,12 +22,7 @@ public sealed class D_D_Crazy_Beast : EffectMonsterCard
     {
     }
 
-    protected override void OnUpgrade()
-    {
-        ApplyCardEffectPlaceholder();
-    }
+    public override bool AttackDealsSplinterDamage => true;
 
-    private void ApplyCardEffectPlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => base.OnUpgrade();
 }

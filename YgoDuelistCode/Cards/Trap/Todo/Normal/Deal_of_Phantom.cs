@@ -1,9 +1,13 @@
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
@@ -14,22 +18,17 @@ public sealed class Deal_of_Phantom : BaseTrapCard
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteTrapEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner?.Creature == null)
+            return;
+
+        var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.OfType<BaseMonsterCard>() ?? Enumerable.Empty<BaseMonsterCard>();
+        if (!field.Any())
+            return;
+
+        await CreatureCmd.GainBlock(Owner.Creature, 18m, default, cardPlay);
     }
 
-    protected override void OnUpgrade()
-    {
-        ExecuteTrapUpgradePlaceholder();
-    }
-
-    private void ExecuteTrapEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteTrapUpgradePlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

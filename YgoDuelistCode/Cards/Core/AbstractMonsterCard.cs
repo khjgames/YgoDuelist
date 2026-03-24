@@ -17,6 +17,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 /// </summary>
 public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
 {
+    private readonly int _handSummonFallbackEnergy;
+
     private enum MonsterDisplayForm
     {
         Attack,
@@ -64,9 +66,33 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
 
     public new LocString Description => GetDescriptionLocString();
 
+    /// <summary>Printed ATK/DEF ? / unknown: energy rule uses flat 1.</summary>
+    public virtual bool DuelMonsterStatsAreUnknown => false;
+
+    /// <summary>Energy for <see cref="SupportsHandEffectForm"/> hand-effect mode (third toggle).</summary>
+    protected virtual int HandEffectMonsterEnergyCost => 0;
+
+    protected override int CanonicalEnergyCost
+    {
+        get
+        {
+            if (this is BaseMonsterCard bm)
+            {
+                if (SupportsHandEffectForm && IsHandEffectFormActive)
+                    return HandEffectMonsterEnergyCost;
+                return Type == CardType.Attack
+                    ? bm.DuelMonsterAttackPlayEnergy
+                    : bm.DuelMonsterDefensePlayEnergy;
+            }
+
+            return _handSummonFallbackEnergy;
+        }
+    }
+
     protected AbstractMonsterCard(int cost, CardType type, CardRarity rarity, TargetType target)
         : base(cost, type, rarity, target)
     {
+        _handSummonFallbackEnergy = cost;
         _displayForm = type == CardType.Attack ? MonsterDisplayForm.Attack : MonsterDisplayForm.Defense;
     }
 
@@ -82,6 +108,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet)
             FaceDown = true;
         UpdateFaceDownKeywordFromBool();
+        CardModelEnergyCache.Invalidate(this);
     }
 
     /// <summary>
@@ -152,6 +179,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// <summary>Called after attack/defense/hand-effect display mode changes (toggle or command menu).</summary>
     protected virtual void AfterDisplayFormChanged()
     {
+        CardModelEnergyCache.Invalidate(this);
     }
 
     /// <summary>Conduit star cost via StarsVar on monster cards. Fusion and ritual overrides use 0.</summary>

@@ -50,9 +50,13 @@ public static class DuelMonsterMonsterOptionsMenu
         changePos.InitializeSource(monsterCard);
         commands.Add(changePos);
 
-        Toggle_Die_For_You toggle = combatState.CreateCard<Toggle_Die_For_You>(player);
-        toggle.InitializeSource(monsterCard);
-        commands.Add(toggle);
+        bool hideDieToggle = MonsterCommandRegistry.TryGet(pet, out var cmdState) && cmdState.DieForYouForced;
+        if (!hideDieToggle)
+        {
+            Toggle_Die_For_You toggle = combatState.CreateCard<Toggle_Die_For_You>(player);
+            toggle.InitializeSource(monsterCard);
+            commands.Add(toggle);
+        }
 
         Exit_Monster_Options exit = combatState.CreateCard<Exit_Monster_Options>(player);
         exit.InitializeSource(monsterCard);
