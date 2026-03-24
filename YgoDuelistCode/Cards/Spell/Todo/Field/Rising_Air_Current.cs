@@ -7,29 +7,23 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 
-public sealed class Rising_Air_Current : BaseSpellCard
+public sealed class Rising_Air_Current : BaseFieldSpellCard
 {
     public Rising_Air_Current()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellField)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
-    }
+    public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
+        target.DuelMonsterAttribute == DuelMonsterAttribute.Wind
+            ? new StatEffectTotal(500, -400)
+            : StatEffectTotal.None;
+
+    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        EnergyCost.UpgradeBy(-1);
     }
 }

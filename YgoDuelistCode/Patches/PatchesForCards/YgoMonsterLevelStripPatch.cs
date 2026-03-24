@@ -121,7 +121,10 @@ public static class YgoMonsterLevelStripPatch
             body.MoveChild(strip, banner.GetIndex() + 1);
         }
 
-        int level = Mathf.Clamp(monster.DuelMonsterLevel, 1, 12);
+        int level = Mathf.Clamp(
+            monster is BaseMonsterCard bm ? bm.GetEffectiveDuelMonsterLevel() : monster.DuelMonsterLevel,
+            1,
+            12);
         if (level < 1 || level > 12 || atlasesByLevel == null || stripTexture == null)
         {
             strip?.Hide();

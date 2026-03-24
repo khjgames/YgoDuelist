@@ -120,6 +120,9 @@ public static class YgoSpellTrapZoneBridge
 
         switch (card)
         {
+            case BaseFieldSpellCard fieldSpell:
+                fieldSpell.MarkAsFaceUpFieldInZone();
+                break;
             case BaseSpellCard s:
                 s.EnterSpellTrapZoneAsSetCard();
                 break;
@@ -136,7 +139,52 @@ public static class YgoSpellTrapZoneBridge
             false);
 
         SyncFromZonePile(player);
+        if (card is BaseFieldSpellCard)
+            YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
         return true;
+    }
+
+    /// <summary>
+    /// Activates a field spell from the hand: replaces any existing field spell (sent to GY), then adds this card face-up to the zone.
+    /// </summary>
+    public static async Task ActivateFieldSpellFromHandAsync(BaseFieldSpellCard card)
+    {
+        if (card.Owner == null)
+            return;
+
+        Player player = card.Owner;
+        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zonePile == null)
+            return;
+
+        if (card.Pile?.Type != PileType.Hand)
+            return;
+
+        card.MarkAsFaceUpFieldInZone();
+
+        CardModel? existingField = zonePile.Cards.FirstOrDefault(IsFieldSpell);
+        if (existingField != null && !ReferenceEquals(existingField, card))
+        {
+            CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+            if (graveyard != null)
+            {
+                await CardPileCmd.Add(
+                    new[] { existingField },
+                    graveyard,
+                    CardPilePosition.Top,
+                    card,
+                    false);
+            }
+        }
+
+        await CardPileCmd.Add(
+            new[] { card },
+            zonePile,
+            CardPilePosition.Top,
+            card,
+            false);
+
+        SyncFromZonePile(player);
     }
 }

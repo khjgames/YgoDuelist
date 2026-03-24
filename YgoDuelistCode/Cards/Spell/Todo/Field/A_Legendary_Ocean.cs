@@ -7,29 +7,25 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 
-public sealed class A_Legendary_Ocean : BaseSpellCard
+public sealed class A_Legendary_Ocean : BaseFieldSpellCard
 {
     public A_Legendary_Ocean()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellField)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (target.DuelMonsterAttribute != DuelMonsterAttribute.Water)
+            return StatEffectTotal.None;
+        return new StatEffectTotal(200, 200, -1);
     }
+
+    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        EnergyCost.UpgradeBy(-1);
     }
 }

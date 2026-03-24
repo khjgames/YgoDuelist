@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
@@ -103,6 +104,16 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             }
         }
 
+        if (Owner != null)
+        {
+            foreach (BaseFieldSpellCard fieldSpell in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))
+            {
+                StatEffectTotal fe = fieldSpell.GetFieldStatEffect(this);
+                atk += fe.BonusAtk;
+                def += fe.BonusDef;
+            }
+        }
+
         // Clamp like the Java version (0..9999).
         if (atk < 0) atk = 0;
         else if (atk > 9999) atk = 9999;
@@ -111,6 +122,28 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         else if (def > 9999) def = 9999;
 
         return new DuelMonsterStats(atk, def);
+    }
+
+    /// <summary>
+    /// Printed level plus face-up field spell level modifiers (e.g. A Legendary Ocean), clamped 1–12 for UI and tribute rules.
+    /// </summary>
+    public int GetEffectiveDuelMonsterLevel()
+    {
+        int lv = DuelMonsterLevel;
+        if (Owner != null)
+        {
+            foreach (BaseFieldSpellCard fieldSpell in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))
+            {
+                StatEffectTotal fe = fieldSpell.GetFieldStatEffect(this);
+                lv += fe.BonusLevel;
+            }
+        }
+
+        if (lv < 1)
+            lv = 1;
+        else if (lv > 12)
+            lv = 12;
+        return lv;
     }
 
     /// <summary>Data for summoning a duel monster from this card (level, ATK, DEF, portrait path, name).</summary>

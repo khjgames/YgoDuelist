@@ -231,7 +231,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         if (IsRitualOrFusionMonster)
             return 0;
 
-        int level = DuelMonsterLevel;
+        int level = this is BaseMonsterCard bm ? bm.GetEffectiveDuelMonsterLevel() : DuelMonsterLevel;
         if (level < 5)
             return 0;
         if (level <= 6)

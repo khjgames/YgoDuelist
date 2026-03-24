@@ -7,29 +7,28 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 
-public sealed class Umi : BaseSpellCard
+public sealed class Umi : BaseFieldSpellCard
 {
     public Umi()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellField)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        DuelMonsterRace r = target.DuelMonsterRace;
+        if (r is DuelMonsterRace.Fish or DuelMonsterRace.SeaSerpent or DuelMonsterRace.Thunder or DuelMonsterRace.Aqua)
+            return new StatEffectTotal(200, 200);
+        if (r is DuelMonsterRace.Machine or DuelMonsterRace.Pyro)
+            return new StatEffectTotal(-200, -200);
+        return StatEffectTotal.None;
     }
+
+    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        EnergyCost.UpgradeBy(-1);
     }
 }

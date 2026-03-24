@@ -44,9 +44,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        IsSetModeInHand = false;
-        WasSetIntoSpellTrapZone = false;
-        FaceDown = false;
+        PrepareSpellForActiveFieldZone();
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
 
         await OnSpellPlay(choiceContext, cardPlay);
@@ -83,6 +81,14 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         IsSetModeInHand = false;
         WasSetIntoSpellTrapZone = true;
         FaceDown = true;
+    }
+
+    /// <summary>Face-up field spell in the zone (not a set card).</summary>
+    protected void PrepareSpellForActiveFieldZone()
+    {
+        IsSetModeInHand = false;
+        WasSetIntoSpellTrapZone = false;
+        FaceDown = false;
     }
 
     private async Task SendThisSpellToGraveyard(PlayerChoiceContext choiceContext)

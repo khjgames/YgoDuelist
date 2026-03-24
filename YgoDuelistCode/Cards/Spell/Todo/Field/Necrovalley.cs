@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -7,29 +8,24 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 
-public sealed class Necrovalley : BaseSpellCard
+public sealed class Necrovalley : BaseFieldSpellCard
 {
     public Necrovalley()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellField)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
-    }
+    public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
+        IsGravekeepersMonster(target) ? new StatEffectTotal(500, 500) : StatEffectTotal.None;
+
+    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
+        EnergyCost.UpgradeBy(-1);
     }
 
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
+    private static bool IsGravekeepersMonster(BaseMonsterCard m) =>
+        m.Id.Entry.Contains("GRAVEKEEPER", StringComparison.OrdinalIgnoreCase);
 }

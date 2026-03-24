@@ -62,7 +62,7 @@ public static class RitualSummonSelection
 
     private static int GetEffectiveMaterialLevelRequirement(RitualSpellCard spell, RitualMonsterCard chosenTarget)
     {
-        return spell.UseRitualTargetLevelAsMaterialRequirement ? chosenTarget.DuelMonsterLevel : spell.LevelRequirement;
+        return spell.UseRitualTargetLevelAsMaterialRequirement ? chosenTarget.GetEffectiveDuelMonsterLevel() : spell.LevelRequirement;
     }
 
     private static RitualMaterialLevelCompare GetEffectiveMaterialLevelCompare(RitualSpellCard spell)
@@ -87,7 +87,7 @@ public static class RitualSummonSelection
         {
             foreach (BaseMonsterCard m in mats)
             {
-                int lv = m.DuelMonsterLevel;
+                int lv = m.GetEffectiveDuelMonsterLevel();
                 if (!LevelSumValid(lv, requirement, mode))
                     continue;
                 int fc = TributeSummonSelection.ResolvePetForFieldCard(player, m) != null ? 1 : 0;
@@ -103,7 +103,7 @@ public static class RitualSummonSelection
 
         foreach (BaseMonsterCard m in mats)
         {
-            int lv = m.DuelMonsterLevel;
+            int lv = m.GetEffectiveDuelMonsterLevel();
             int fc = TributeSummonSelection.ResolvePetForFieldCard(player, m) != null ? 1 : 0;
 
             var next = new HashSet<(int Sum, int FieldTributes)>(states);
@@ -267,7 +267,7 @@ public static class RitualSummonSelection
         if (picked.Any(p => ReferenceEquals(p, ritualCard)))
             return false;
 
-        int sum = picked.Sum(p => p.DuelMonsterLevel);
+        int sum = picked.Sum(p => p.GetEffectiveDuelMonsterLevel());
         if (!LevelSumValid(sum, effectiveReq, effectiveCompare))
             return false;
 
