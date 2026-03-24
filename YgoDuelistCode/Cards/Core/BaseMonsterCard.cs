@@ -123,6 +123,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
                 atk += ee.BonusAtk;
                 def += ee.BonusDef;
             }
+
+            foreach (BaseContinuousSpellCard continuous in YgoFieldSpellStatAggregator.GetActiveFaceUpContinuousSpells(Owner))
+            {
+                StatEffectTotal ce = continuous.GetContinuousStatEffect(this);
+                atk += ce.BonusAtk;
+                def += ce.BonusDef;
+            }
         }
 
         // Clamp like the Java version (0..9999).
@@ -147,6 +154,12 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             {
                 StatEffectTotal fe = fieldSpell.GetFieldStatEffect(this);
                 lv += fe.BonusLevel;
+            }
+
+            foreach (BaseContinuousSpellCard continuous in YgoFieldSpellStatAggregator.GetActiveFaceUpContinuousSpells(Owner))
+            {
+                StatEffectTotal ce = continuous.GetContinuousStatEffect(this);
+                lv += ce.BonusLevel;
             }
         }
 

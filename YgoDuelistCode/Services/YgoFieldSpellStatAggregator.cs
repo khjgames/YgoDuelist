@@ -34,6 +34,25 @@ public static class YgoFieldSpellStatAggregator
         }
     }
 
+    public static IEnumerable<BaseContinuousSpellCard> GetActiveFaceUpContinuousSpells(Player? player)
+    {
+        if (player == null)
+            yield break;
+
+        if (CombatManager.Instance?.IsInProgress != true)
+            yield break;
+
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zone == null)
+            yield break;
+
+        foreach (CardModel c in zone.Cards)
+        {
+            if (c is BaseContinuousSpellCard cs && !cs.FaceDown)
+                yield return cs;
+        }
+    }
+
     public static void RefreshMonsterSummonKeywords(Player? player)
     {
         if (player == null)

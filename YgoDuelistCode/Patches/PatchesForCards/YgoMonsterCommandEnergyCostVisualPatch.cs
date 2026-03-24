@@ -14,7 +14,8 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// After <see cref="NCard"/> energy UI updates: for command cards with <see cref="MonsterCommandCard.CustomCommandEnergyTexturePath"/>,
-/// face-up <see cref="BaseFieldSpellCard"/> in the Spell/Trap zone, and face-up equipped <see cref="BaseEquipSpellCard"/> in that zone,
+/// face-up <see cref="BaseFieldSpellCard"/> in the Spell/Trap zone, face-up <see cref="BaseContinuousSpellCard"/> in that zone,
+/// and face-up equipped <see cref="BaseEquipSpellCard"/> in that zone,
 /// swaps the unplayable overlay to the invisible orb texture
 /// and blanks the cost label (same as Exit_Monster_Options).
 /// Restores the vanilla unplayable texture when pooled <see cref="NCard"/> instances show other cards.
@@ -43,6 +44,11 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
             && model is BaseFieldSpellCard zoneField
             && model.Pile?.Type == SpellTrapZonePile.CustomType
             && !zoneField.FaceDown)
+            customPath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
+        else if (string.IsNullOrEmpty(customPath)
+                 && model is BaseContinuousSpellCard zoneCont
+                 && model.Pile?.Type == SpellTrapZonePile.CustomType
+                 && !zoneCont.FaceDown)
             customPath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
         else if (string.IsNullOrEmpty(customPath)
                  && model is BaseEquipSpellCard zoneEq
@@ -91,6 +97,9 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
         bool zoneHideEnergyLikeFaceUpField = model is BaseFieldSpellCard fs
                                              && model.Pile?.Type == SpellTrapZonePile.CustomType
                                              && !fs.FaceDown
+                                             || model is BaseContinuousSpellCard ct
+                                             && model.Pile?.Type == SpellTrapZonePile.CustomType
+                                             && !ct.FaceDown
                                              || model is BaseEquipSpellCard eq
                                              && model.Pile?.Type == SpellTrapZonePile.CustomType
                                              && !eq.FaceDown
