@@ -1,0 +1,163 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using HarmonyLib;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Logging;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Combat;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
+
+namespace YgoDuelist.YgoDuelistCode.Patches;
+
+/// <summary>
+/// Equip spells: choose a valid field monster before spending resources; cancel is silent.
+/// </summary>
+[HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
+[HarmonyPriority(800)]
+public static class PlayCardActionEquipSpellPatch
+{
+    private static readonly PropertyInfo? PlayerChoiceContextProp =
+        typeof(PlayCardAction).GetProperty("PlayerChoiceContext", BindingFlags.Public | BindingFlags.Instance);
+
+    private static readonly PropertyInfo? SelectionScreenPromptProp =
+        AccessTools.Property(typeof(CardModel), "SelectionScreenPrompt");
+
+    static bool Prefix(PlayCardAction __instance, ref Task __result)
+    {
+        if (!CombatManager.Instance.IsInProgress)
+            return true;
+
+        try
+        {
+            if (!LocalContext.IsMe(__instance.Player))
+                return true;
+        }
+        catch
+        {
+            return true;
+        }
+
+        var card = __instance.NetCombatCard.ToCardModel();
+        if (card is not BaseEquipSpellCard equip || !IsEquipSpellPlayPile(equip, card.Pile))
+            return true;
+
+        __result = ExecuteWithEquipTargetSelectionAsync(__instance);
+        return false;
+    }
+
+    private static bool IsEquipSpellPlayPile(BaseEquipSpellCard equip, CardPile? pile)
+    {
+        if (pile?.Type == PileType.Hand)
+            return true;
+        return pile?.Type == SpellTrapZonePile.CustomType && equip.FaceDown;
+    }
+
+    private static async Task ExecuteWithEquipTargetSelectionAsync(PlayCardAction action)
+    {
+        CardModel? card = null;
+        try
+        {
+            card = action.NetCombatCard.ToCardModel();
+            if (card is not BaseEquipSpellCard equip || !IsEquipSpellPlayPile(equip, card.Pile))
+                return;
+
+            var player = action.Player;
+            var candidates = DuelMonsterFieldRegistry.GetFieldMonsters(player)
+                .OfType<BaseMonsterCard>()
+                .Where(equip.CanEquipTo)
+                .Cast<CardModel>()
+                .ToList();
+
+            if (candidates.Count == 0)
+            {
+                action.Cancel();
+                return;
+            }
+
+            var loc = (LocString)SelectionScreenPromptProp!.GetValue(equip, null)!;
+            var prefs = new CardSelectorPrefs(loc, 1, 1);
+            var selected = await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                candidates,
+                player,
+                prefs);
+
+            var chosen = selected.FirstOrDefault() as BaseMonsterCard;
+            if (chosen == null)
+            {
+                action.Cancel();
+                return;
+            }
+
+            EquipSpellPlayPayload.SetPending(card, chosen);
+            await ExecuteVanillaPlayCardActionBody(action);
+        }
+        finally
+        {
+            if (card != null)
+                EquipSpellPlayPayload.ClearForCard(card);
+        }
+    }
+
+    private static async Task ExecuteVanillaPlayCardActionBody(PlayCardAction action)
+    {
+        CardModel? card = action.NetCombatCard.ToCardModel();
+        if (card == null)
+            return;
+
+        NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
+        Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
+        CardPile? pile = card.Pile;
+        bool pileOk = pile != null && pile.Type == PileType.Hand;
+        if (!pileOk && card is BaseEquipSpellCard eq && pile?.Type == SpellTrapZonePile.CustomType && eq.FaceDown)
+            pileOk = true;
+        if (!pileOk)
+        {
+            NCardPlayQueue.Instance?.RemoveCardFromQueueForCancellation(action);
+            return;
+        }
+
+        bool warnMissingTarget = target == null;
+        if (warnMissingTarget)
+        {
+            TargetType targetType = card.TargetType;
+            warnMissingTarget = targetType == TargetType.AnyEnemy || targetType == TargetType.AnyAlly;
+        }
+
+        if (warnMissingTarget)
+        {
+            Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
+        }
+
+        if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+        {
+            action.Cancel();
+            return;
+        }
+
+        (int energySpent, int starsSpent) = await card.SpendResources();
+        var resources = new ResourceInfo
+        {
+            EnergySpent = energySpent,
+            EnergyValue = energySpent,
+            StarsSpent = starsSpent,
+            StarValue = starsSpent
+        };
+
+        var context = new GameActionPlayerChoiceContext(action);
+        PlayerChoiceContextProp?.SetValue(action, context);
+        await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
+    }
+}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -15,6 +16,11 @@ public static class YgoFieldSpellStatAggregator
     public static IEnumerable<BaseFieldSpellCard> GetActiveFaceUpFieldSpells(Player? player)
     {
         if (player == null)
+            yield break;
+
+        // Custom Spell/Trap zone pile is only registered during combat; CardPile.Get throws for
+        // SpellTrapZonePile.CustomType (e.g. 11) on deck view / map / compendium.
+        if (CombatManager.Instance?.IsInProgress != true)
             yield break;
 
         CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);

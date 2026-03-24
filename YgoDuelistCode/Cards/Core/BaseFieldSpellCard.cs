@@ -16,6 +16,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 /// </summary>
 public abstract class BaseFieldSpellCard : BaseSpellCard
 {
+    /// <summary>Energy orb + unplayable overlay while face-up in the Spell/Trap zone (matches command menu invisible orb).</summary>
+    public const string ActiveFaceUpZoneEnergyOrbPath = "YgoDuelist/images/card_frames/Invisible_Energy.png";
+
     protected BaseFieldSpellCard(int cost, CardRarity rarity, TargetType target)
         : base(cost, rarity, target, DuelMonsterRace.SpellField)
     {

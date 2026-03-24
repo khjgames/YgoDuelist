@@ -50,6 +50,7 @@ public static class DuelMonsterHoverTrackerPatch
                 return;
 
             _hoveredPet = creature;
+            YgoEquipPortraitOverlaySync.RefreshSpellTrapRowEquipOverlays(me);
             GD.Print($"[YgoDuelist] Hover start on duel pet: {creature.Monster?.GetType().Name}");
         }
         catch
@@ -62,10 +63,13 @@ public static class DuelMonsterHoverTrackerPatch
     [HarmonyPatch("OnUnfocus")]
     private static void OnUnfocusPostfix(NCreature __instance)
     {
-        if (_hoveredPet == __instance.Entity)
+        var entity = __instance.Entity;
+        Player? owner = entity?.PetOwner;
+        if (_hoveredPet == entity)
         {
-            GD.Print($"[YgoDuelist] Hover end on duel pet: {__instance.Entity.Monster?.GetType().Name}");
+            GD.Print($"[YgoDuelist] Hover end on duel pet: {entity?.Monster?.GetType().Name}");
             _hoveredPet = null;
+            YgoEquipPortraitOverlaySync.RefreshSpellTrapRowEquipOverlays(owner);
         }
     }
 }

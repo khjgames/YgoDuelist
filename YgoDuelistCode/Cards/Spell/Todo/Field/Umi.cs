@@ -18,9 +18,9 @@ public sealed class Umi : BaseFieldSpellCard
     {
         DuelMonsterRace r = target.DuelMonsterRace;
         if (r is DuelMonsterRace.Fish or DuelMonsterRace.SeaSerpent or DuelMonsterRace.Thunder or DuelMonsterRace.Aqua)
-            return new StatEffectTotal(200, 200);
+            return new StatEffectTotal(2, 2);
         if (r is DuelMonsterRace.Machine or DuelMonsterRace.Pyro)
-            return new StatEffectTotal(-200, -200);
+            return new StatEffectTotal(-2, -2);
         return StatEffectTotal.None;
     }
 

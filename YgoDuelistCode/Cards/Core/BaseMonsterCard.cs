@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -104,13 +105,23 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             }
         }
 
-        if (Owner != null)
+        // Owner getter asserts mutable; canonical/library card templates must not touch it.
+        if (!IsCanonical && Owner != null)
         {
             foreach (BaseFieldSpellCard fieldSpell in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))
             {
                 StatEffectTotal fe = fieldSpell.GetFieldStatEffect(this);
                 atk += fe.BonusAtk;
                 def += fe.BonusDef;
+            }
+
+            foreach (BaseEquipSpellCard equip in YgoEquipSpellRegistry.GetEquipsForMonster(this))
+            {
+                if (equip.Pile?.Type != SpellTrapZonePile.CustomType || equip.FaceDown)
+                    continue;
+                StatEffectTotal ee = equip.GetEquipStatEffect(this);
+                atk += ee.BonusAtk;
+                def += ee.BonusDef;
             }
         }
 
@@ -130,7 +141,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public int GetEffectiveDuelMonsterLevel()
     {
         int lv = DuelMonsterLevel;
-        if (Owner != null)
+        if (!IsCanonical && Owner != null)
         {
             foreach (BaseFieldSpellCard fieldSpell in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))
             {

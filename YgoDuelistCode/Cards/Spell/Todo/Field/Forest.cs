@@ -18,7 +18,7 @@ public sealed class Forest : BaseFieldSpellCard
     {
         DuelMonsterRace r = target.DuelMonsterRace;
         if (r is DuelMonsterRace.Insect or DuelMonsterRace.Beast or DuelMonsterRace.Plant or DuelMonsterRace.BeastWarrior)
-            return new StatEffectTotal(200, 200);
+            return new StatEffectTotal(2, 2);
         return StatEffectTotal.None;
     }
 

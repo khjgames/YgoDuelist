@@ -16,7 +16,7 @@ public sealed class Umiiruka : BaseFieldSpellCard
 
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
         target.DuelMonsterAttribute == DuelMonsterAttribute.Water
-            ? new StatEffectTotal(500, -400)
+            ? new StatEffectTotal(5, -4)
             : StatEffectTotal.None;
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>

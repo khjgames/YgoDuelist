@@ -38,6 +38,9 @@ public static class PlayCardFromSpellTrapZonePatch
         if (card is BaseFieldSpellCard)
             return true;
 
+        if (card is BaseEquipSpellCard)
+            return true;
+
         CardPile? pile = card.Pile;
         CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
         if (pile == null || zonePile == null || !ReferenceEquals(pile, zonePile))

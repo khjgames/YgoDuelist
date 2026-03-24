@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using HarmonyLib;
 using Godot;
 using BaseLib.Patches.Content;
@@ -12,6 +13,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using MegaCrit.Sts2.Core.Helpers;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -65,17 +67,12 @@ public static class DuelMonsterPetDeathPatch
                 }
             }
 
-            // Move the monster card to the graveyard pile if possible.
+            // Send attached equips to the Graveyard, then the monster card.
             var graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
             if (graveyard != null && card.Pile != graveyard)
             {
-                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} from {card.Pile?.Type} to Graveyard.");
-                TaskHelper.RunSafely(CardPileCmd.Add(
-                    new CardModel[] { card },
-                    graveyard,
-                    CardPilePosition.Top,
-                    card,
-                    false));
+                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
+                TaskHelper.RunSafely(MoveEquipsThenMonsterToGraveyardAsync(player, card, graveyard));
             }
 
             // Remove from field/command registries so it no longer affects stats or menus.
@@ -111,6 +108,36 @@ public static class DuelMonsterPetDeathPatch
         catch (Exception e)
         {
             MainFile.Logger.Error($"DuelMonsterPetDeathPatch error: {e}");
+        }
+    }
+
+    private static async Task MoveEquipsThenMonsterToGraveyardAsync(Player player, BaseMonsterCard card, CardPile graveyard)
+    {
+        IReadOnlyList<BaseEquipSpellCard> equips = YgoEquipSpellRegistry.TakeAllEquipsFromMonster(card);
+        foreach (BaseEquipSpellCard eq in equips)
+        {
+            if (eq.Pile?.Type == SpellTrapZonePile.CustomType)
+            {
+                await CardPileCmd.Add(
+                    new CardModel[] { eq },
+                    graveyard,
+                    CardPilePosition.Top,
+                    eq,
+                    false);
+            }
+        }
+
+        YgoSpellTrapZoneBridge.SyncFromZonePile(player);
+        YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
+
+        if (card.Pile != graveyard)
+        {
+            await CardPileCmd.Add(
+                new CardModel[] { card },
+                graveyard,
+                CardPilePosition.Top,
+                card,
+                false);
         }
     }
 }

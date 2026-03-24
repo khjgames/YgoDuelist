@@ -18,7 +18,7 @@ public sealed class Mountain : BaseFieldSpellCard
     {
         DuelMonsterRace r = target.DuelMonsterRace;
         if (r is DuelMonsterRace.Dragon or DuelMonsterRace.WingedBeast or DuelMonsterRace.Thunder)
-            return new StatEffectTotal(200, 200);
+            return new StatEffectTotal(2, 2);
         return StatEffectTotal.None;
     }
 

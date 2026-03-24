@@ -18,7 +18,7 @@ public sealed class Sogen : BaseFieldSpellCard
     {
         DuelMonsterRace r = target.DuelMonsterRace;
         if (r is DuelMonsterRace.Warrior or DuelMonsterRace.BeastWarrior)
-            return new StatEffectTotal(200, 200);
+            return new StatEffectTotal(2, 2);
         return StatEffectTotal.None;
     }
 

@@ -18,7 +18,7 @@ public sealed class Wasteland : BaseFieldSpellCard
     {
         DuelMonsterRace r = target.DuelMonsterRace;
         if (r is DuelMonsterRace.Dinosaur or DuelMonsterRace.Zombie or DuelMonsterRace.Rock)
-            return new StatEffectTotal(200, 200);
+            return new StatEffectTotal(2, 2);
         return StatEffectTotal.None;
     }
 

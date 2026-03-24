@@ -16,7 +16,7 @@ public sealed class Necrovalley : BaseFieldSpellCard
     }
 
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
-        IsGravekeepersMonster(target) ? new StatEffectTotal(500, 500) : StatEffectTotal.None;
+        IsGravekeepersMonster(target) ? new StatEffectTotal(5, 5) : StatEffectTotal.None;
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;

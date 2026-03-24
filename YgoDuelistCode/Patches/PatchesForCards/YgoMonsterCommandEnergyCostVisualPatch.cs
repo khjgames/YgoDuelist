@@ -7,12 +7,15 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// After <see cref="NCard"/> energy UI updates: for command cards with <see cref="MonsterCommandCard.CustomCommandEnergyTexturePath"/>,
-/// swaps the unplayable (not-enough-energy) overlay to that texture and shows a blank cost instead of <c>0</c>.
+/// and face-up <see cref="BaseFieldSpellCard"/> in the Spell/Trap zone, swaps the unplayable overlay to the invisible orb texture
+/// and blanks the cost label (same as Exit_Monster_Options).
 /// Restores the vanilla unplayable texture when pooled <see cref="NCard"/> instances show other cards.
 /// </summary>
 [HarmonyPatch]
@@ -34,7 +37,13 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
         if (model == null)
             return;
 
-        var customPath = model is MonsterCommandCard mccPath ? mccPath.CustomCommandEnergyTexturePath : null;
+        string? customPath = model is MonsterCommandCard mccPath ? mccPath.CustomCommandEnergyTexturePath : null;
+        if (string.IsNullOrEmpty(customPath)
+            && model is BaseFieldSpellCard zoneField
+            && model.Pile?.Type == SpellTrapZonePile.CustomType
+            && !zoneField.FaceDown)
+            customPath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
+
         var useCustomUnplayable = !string.IsNullOrEmpty(customPath);
 
         var unplayable = __instance.GetNodeOrNull<TextureRect>("%UnplayableEnergyIcon");
@@ -64,7 +73,7 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
             }
         }
 
-        if (!useCustomUnplayable || model is not MonsterCommandCard)
+        if (!useCustomUnplayable)
             return;
 
         if (__instance.Visibility != ModelVisibility.Visible)
@@ -72,8 +81,17 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
         if (model.EnergyCost.CostsX)
             return;
 
-        if (model.EnergyCost.GetWithModifiers(CostModifiers.All) != 0)
-            return;
+        bool zoneFaceUpField = model is BaseFieldSpellCard fs
+                               && model.Pile?.Type == SpellTrapZonePile.CustomType
+                               && !fs.FaceDown;
+
+        if (!zoneFaceUpField)
+        {
+            if (model is not MonsterCommandCard)
+                return;
+            if (model.EnergyCost.GetWithModifiers(CostModifiers.All) != 0)
+                return;
+        }
 
         var label = __instance.GetNodeOrNull<MegaLabel>("%EnergyLabel");
         label?.SetTextAutoSize(" ");

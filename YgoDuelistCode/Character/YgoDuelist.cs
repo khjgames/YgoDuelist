@@ -12,6 +12,8 @@ using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Spell;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Relics;
@@ -50,6 +52,13 @@ public class YgoDuelist : PlaceholderCharacterModel
         ModelDb.Card<Hungry_Burger>(),
         ModelDb.Card<Crab_Turtle>(),
         ModelDb.Card<Monster_Reborn>(),
+        ModelDb.Card<Molten_Destruction>(),
+        ModelDb.Card<Mountain>(),
+        ModelDb.Card<Umi>(),
+        ModelDb.Card<Beast_Fangs>(),
+        ModelDb.Card<Dragon_Treasure>(),
+        ModelDb.Card<Electro_Whip>(),
+        ModelDb.Card<Thousand_Needles>(),
         ModelDb.Card<Muka_Muka>(),
         ModelDb.Card<Enraged_Muka_Muka>(),
         ModelDb.Card<Witchs_Apprentice>(),

@@ -115,6 +115,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         }
 
         UpdateFaceDownKeywordFromBool();
+        AfterDisplayFormChanged();
     }
 
     /// <summary>Cycles attack / defense, or attack / defense / hand effect when supported. Right-click in hand.</summary>
@@ -145,6 +146,12 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             FaceDown = false;
 
         UpdateFaceDownKeywordFromBool();
+        AfterDisplayFormChanged();
+    }
+
+    /// <summary>Called after attack/defense/hand-effect display mode changes (toggle or command menu).</summary>
+    protected virtual void AfterDisplayFormChanged()
+    {
     }
 
     /// <summary>Conduit star cost via StarsVar on monster cards. Fusion and ritual overrides use 0.</summary>

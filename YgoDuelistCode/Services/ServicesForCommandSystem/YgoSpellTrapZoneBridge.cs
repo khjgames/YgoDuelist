@@ -121,7 +121,8 @@ public static class YgoSpellTrapZoneBridge
         switch (card)
         {
             case BaseFieldSpellCard fieldSpell:
-                fieldSpell.MarkAsFaceUpFieldInZone();
+                // Set from hand: face-down in the field slot. (Activate/play uses MarkAsFaceUpFieldInZone + ActivateFieldSpellFromHandAsync.)
+                fieldSpell.EnterSpellTrapZoneAsSetCard();
                 break;
             case BaseSpellCard s:
                 s.EnterSpellTrapZoneAsSetCard();
@@ -158,7 +159,10 @@ public static class YgoSpellTrapZoneBridge
         if (zonePile == null)
             return;
 
-        if (card.Pile?.Type != PileType.Hand)
+        // Manual play: OnPlayWrapper moves the card to PileType.Play before OnPlay runs.
+        // Field activation must accept Play as well as Hand, or we no-op and the wrapper sends the card to Discard.
+        PileType from = card.Pile?.Type ?? PileType.None;
+        if (from != PileType.Hand && from != PileType.Play)
             return;
 
         card.MarkAsFaceUpFieldInZone();
@@ -184,6 +188,40 @@ public static class YgoSpellTrapZoneBridge
             CardPilePosition.Top,
             card,
             false);
+
+        SyncFromZonePile(player);
+    }
+
+    /// <summary>
+    /// From hand: moves the card into the Spell/Trap zone then attaches. From zone (set equip): card is already there—attach only.
+    /// </summary>
+    public static async Task ActivateEquipSpellAsync(BaseEquipSpellCard card, BaseMonsterCard targetMonster)
+    {
+        if (card.Owner == null)
+            return;
+
+        Player player = card.Owner;
+        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zonePile == null)
+            return;
+
+        PileType equipFrom = card.Pile?.Type ?? PileType.None;
+        if (equipFrom == PileType.Hand || equipFrom == PileType.Play)
+        {
+            if (!HasSpaceForSetOrPlay(player, card))
+                return;
+
+            await CardPileCmd.Add(
+                new[] { card },
+                zonePile,
+                CardPilePosition.Top,
+                card,
+                false);
+        }
+        else if (!ReferenceEquals(card.Pile, zonePile))
+            return;
+
+        YgoEquipSpellRegistry.Attach(card, targetMonster);
 
         SyncFromZonePile(player);
     }

@@ -67,7 +67,8 @@ public static class YgoSecondHandLayoutPatch
                 {
                     holder.SetAngleInstantly(0f);
                     holder.SetScaleInstantly(Vector2.One);
-                    position.Y = (0f - holder.Hitbox.Size.Y) * 0.5f + 2f;
+                    float hitH = holder.Hitbox?.Size.Y ?? holder.Size.Y;
+                    position.Y = (0f - hitH) * 0.5f + 2f;
                     if (isDisabled)
                     {
                         position -= disablePos;
@@ -82,7 +83,8 @@ public static class YgoSecondHandLayoutPatch
                     holder.SetTargetAngle(HandPosHelper.GetAngle(handSize, cardIndex));
                 }
 
-                holder.Hitbox.MouseFilter = (Control.MouseFilterEnum)(hasDraggedHolder ? 2 : 0);
+                if (holder.Hitbox != null)
+                    holder.Hitbox.MouseFilter = (Control.MouseFilterEnum)(hasDraggedHolder ? 2 : 0);
 
                 // Focus neighbors (left/right) – still based on main-only list.
                 NodePath leftPath;
@@ -158,7 +160,8 @@ public static class YgoSecondHandLayoutPatch
 
                 GD.Print("[YgoDuelist] YgoSecondHandLayoutPatch: AFTER holder.Position.Y = ", holder.Position.Y);
                 GD.Print("[YgoDuelist] YgoSecondHandLayoutPatch: AFTER holder.TargetPosition.Y = ", holder.TargetPosition.Y);
-                GD.Print("[YgoDuelist] YgoSecondHandLayoutPatch: AFTER holder.Hitbox.Position.Y = ", holder.Hitbox.Position.Y);
+                if (holder.Hitbox != null)
+                    GD.Print("[YgoDuelist] YgoSecondHandLayoutPatch: AFTER holder.Hitbox.Position.Y = ", holder.Hitbox.Position.Y);
 
                 if (optFocusedIdx == i)
                 {

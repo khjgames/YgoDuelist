@@ -18,7 +18,7 @@ public sealed class A_Legendary_Ocean : BaseFieldSpellCard
     {
         if (target.DuelMonsterAttribute != DuelMonsterAttribute.Water)
             return StatEffectTotal.None;
-        return new StatEffectTotal(200, 200, -1);
+        return new StatEffectTotal(2, 2, -1);
     }
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>

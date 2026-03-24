@@ -7,9 +7,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -38,9 +38,36 @@ public sealed class Thunder_Dragon : EffectMonsterCard
     }
 
     protected override bool SupportsHandEffectForm => true;
+
+    /// <summary>
+    /// Hand effect must spend no conduit stars: <see cref="BaseStarCost"/> is snapshotted on first read, so this
+    /// overrides the value used for play checks and payment (<see cref="CardModel.GetStarCostWithModifiers"/>).
+    /// </summary>
+    public override int CurrentStarCost => IsHandEffectFormActive ? 0 : base.CurrentStarCost;
+
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     public override bool CanSummonDuelMonster => !IsHandEffectFormActive;
+
+    private int? _energyBaseBeforeHandEffectForm;
+
+    protected override void AfterDisplayFormChanged()
+    {
+        base.AfterDisplayFormChanged();
+        if (!IsMutable)
+            return;
+
+        if (IsHandEffectFormActive)
+        {
+            _energyBaseBeforeHandEffectForm ??= EnergyCost.GetWithModifiers(CostModifiers.Local);
+            EnergyCost.SetCustomBaseCost(0);
+        }
+        else if (_energyBaseBeforeHandEffectForm is int saved)
+        {
+            EnergyCost.SetCustomBaseCost(saved);
+            _energyBaseBeforeHandEffectForm = null;
+        }
+    }
 
     protected override PileType GetResultPileType()
     {

@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -56,6 +57,13 @@ public static class YgoEnergyIconNodePatch
         {
             icon.Visible = true;
             energyPrefix = "silent";
+        }
+        else if (model is BaseFieldSpellCard zoneField
+                 && model.Pile?.Type == SpellTrapZonePile.CustomType
+                 && !zoneField.FaceDown)
+        {
+            icon.Visible = true;
+            customTexturePath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
         }
         else if (model is IYgoCard ygo)
         {
