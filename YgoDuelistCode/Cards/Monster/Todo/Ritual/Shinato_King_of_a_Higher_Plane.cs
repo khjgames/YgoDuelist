@@ -11,14 +11,16 @@ public sealed class Shinato_King_of_a_Higher_Plane : RitualMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 33,
             baseDef: 30,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fairy)
+            duelMonsterRace: DuelMonsterRace.Fairy,
+            duelMonsterAttackPlayEnergyOverride: 2,
+            duelMonsterDefensePlayEnergyOverride: 2)
     {
     }
 

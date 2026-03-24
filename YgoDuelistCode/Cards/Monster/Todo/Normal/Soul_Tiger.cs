@@ -11,14 +11,15 @@ public sealed class Soul_Tiger : NormalMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 0,
             baseDef: 21,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Beast)
+            duelMonsterRace: DuelMonsterRace.Beast,
+            duelMonsterDefensePlayEnergyOverride: 2)
     {
     }
 

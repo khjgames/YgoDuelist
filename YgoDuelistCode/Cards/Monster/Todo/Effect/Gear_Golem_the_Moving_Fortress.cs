@@ -11,14 +11,15 @@ public sealed class Gear_Golem_the_Moving_Fortress : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 8,
             baseDef: 22,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Machine)
+            duelMonsterRace: DuelMonsterRace.Machine,
+            duelMonsterDefensePlayEnergyOverride: 2)
     {
     }
 

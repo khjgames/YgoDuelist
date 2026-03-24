@@ -11,14 +11,15 @@ public sealed class Armor_Exe : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 24,
             baseDef: 14,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Rock)
+            duelMonsterRace: DuelMonsterRace.Rock,
+            duelMonsterAttackPlayEnergyOverride: 1)
     {
     }
 

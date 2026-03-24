@@ -11,14 +11,15 @@ public sealed class Jirai_Gumo : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 22,
             baseDef: 1,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Insect)
+            duelMonsterRace: DuelMonsterRace.Insect,
+            duelMonsterAttackPlayEnergyOverride: 1)
     {
     }
 

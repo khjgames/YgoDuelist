@@ -11,14 +11,15 @@ public sealed class Labyrinth_Wall : NormalMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 0,
             baseDef: 30,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Rock)
+            duelMonsterRace: DuelMonsterRace.Rock,
+            duelMonsterDefensePlayEnergyOverride: 2)
     {
     }
 

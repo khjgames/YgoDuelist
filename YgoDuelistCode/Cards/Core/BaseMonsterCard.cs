@@ -59,6 +59,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// </summary>
     protected virtual (int atk, int def) GetSecondaryStats() => (0, 0);
 
+    /// <param name="duelMonsterAttackPlayEnergyOverride">When set, replaces <see cref="MonsterEnergyCostCalculator"/> for attack stance / Command Attack.</param>
+    /// <param name="duelMonsterDefensePlayEnergyOverride">When set, replaces calculator for defense stance / Command Defend.</param>
     protected BaseMonsterCard(
         int cost,
         CardType type,
@@ -69,7 +71,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         int baseAtk,
         int baseDef,
         int baseMgc,
-        DuelMonsterRace duelMonsterRace = DuelMonsterRace.Warrior)
+        DuelMonsterRace duelMonsterRace = DuelMonsterRace.Warrior,
+        int? duelMonsterAttackPlayEnergyOverride = null,
+        int? duelMonsterDefensePlayEnergyOverride = null)
         : base(cost, type, rarity, target)
     {
         DuelMonsterAttribute = duelMonsterAttribute;
@@ -80,9 +84,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
         _duelMonsterLevel = duelMonsterLevel;
 
-        DuelMonsterAttackPlayEnergy = MonsterEnergyCostCalculator.Compute(
+        DuelMonsterAttackPlayEnergy = duelMonsterAttackPlayEnergyOverride ?? MonsterEnergyCostCalculator.Compute(
             duelMonsterLevel, YgoCardType, baseAtk, DuelMonsterStatsAreUnknown);
-        DuelMonsterDefensePlayEnergy = MonsterEnergyCostCalculator.Compute(
+        DuelMonsterDefensePlayEnergy = duelMonsterDefensePlayEnergyOverride ?? MonsterEnergyCostCalculator.Compute(
             duelMonsterLevel, YgoCardType, baseDef, DuelMonsterStatsAreUnknown);
 
         // Start in defense position (Skill card) when DEF > ATK.

@@ -11,6 +11,7 @@ public abstract class FusionMonsterCard : EffectMonsterCard
 {
     private readonly Type[] _fusionMaterialTypes;
 
+    /// <summary>Use <see cref="FusionMonsterCard"/> with <c>params</c> when no duel energy overrides are needed.</summary>
     protected FusionMonsterCard(
         int cost,
         CardType type,
@@ -21,9 +22,12 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         int baseAtk,
         int baseDef,
         int baseMgc,
-        DuelMonsterRace duelMonsterRace = DuelMonsterRace.Warrior,
-        params Type[] fusionMaterialTypes)
-        : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace)
+        DuelMonsterRace duelMonsterRace,
+        Type[] fusionMaterialTypes,
+        int? duelMonsterAttackPlayEnergyOverride = null,
+        int? duelMonsterDefensePlayEnergyOverride = null)
+        : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace,
+            duelMonsterAttackPlayEnergyOverride, duelMonsterDefensePlayEnergyOverride)
     {
         if (fusionMaterialTypes == null)
             throw new ArgumentNullException(nameof(fusionMaterialTypes));
@@ -36,6 +40,23 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         }
 
         _fusionMaterialTypes = fusionMaterialTypes.Length == 0 ? Array.Empty<Type>() : (Type[])fusionMaterialTypes.Clone();
+    }
+
+    protected FusionMonsterCard(
+        int cost,
+        CardType type,
+        CardRarity rarity,
+        TargetType target,
+        int duelMonsterLevel,
+        DuelMonsterAttribute duelMonsterAttribute,
+        int baseAtk,
+        int baseDef,
+        int baseMgc,
+        DuelMonsterRace duelMonsterRace = DuelMonsterRace.Warrior,
+        params Type[] fusionMaterialTypes)
+        : this(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace,
+            fusionMaterialTypes, null, null)
+    {
     }
 
     /// <summary>Exact material card types (multiset); order does not matter for matching.</summary>

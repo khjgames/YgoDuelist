@@ -1,5 +1,6 @@
 using System.Reflection;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -14,7 +15,11 @@ public static class CardModelEnergyCache
 
     public static void Invalidate(CardModel card)
     {
-        if (card == null || !card.IsMutable)
+        if (card == null)
+            return;
+        // Library / compendium uses immutable canonical instances; attack↔defense toggle still changes
+        // <see cref="AbstractMonsterCard.CanonicalEnergyCost"/> and must drop the cached <see cref="CardModel.EnergyCost"/>.
+        if (!card.IsMutable && card is not AbstractMonsterCard)
             return;
         EnergyCostBacking?.SetValue(card, null);
         card.InvokeEnergyCostChanged();
