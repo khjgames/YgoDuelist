@@ -57,6 +57,8 @@ public static class DuelMonsterStancePowerSync
 
         if (card.FaceDown)
             await PowerCmd.Apply<FaceDownStancePower>(pet, 1m, app, src);
+
+        DuelMonsterPortraitDecorations.RefreshPet(pet);
     }
 
     private static Creature? FindLivePetForCard(Player owner, BaseMonsterCard card)

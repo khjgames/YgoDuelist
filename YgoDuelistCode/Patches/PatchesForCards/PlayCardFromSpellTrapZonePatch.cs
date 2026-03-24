@@ -35,9 +35,6 @@ public static class PlayCardFromSpellTrapZonePatch
         if (card is FusionSpellCard or RitualSpellCard)
             return true;
 
-        if (card is BaseFieldSpellCard)
-            return true;
-
         if (card is BaseEquipSpellCard)
             return true;
 

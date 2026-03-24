@@ -113,6 +113,8 @@ public static class DuelMonsterScalePatch
                         texRect.Texture = texture;
                 }
             }
+
+            DuelMonsterPortraitDecorations.RefreshPet(dn.Entity);
         }
     }
 }

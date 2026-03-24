@@ -31,15 +31,13 @@ public abstract class BaseFieldSpellCard : BaseSpellCard
     public void MarkAsFaceUpFieldInZone() => PrepareSpellForActiveFieldZone();
 
     protected override bool IsPlayable =>
-        base.IsPlayable && Pile?.Type != SpellTrapZonePile.CustomType;
+        base.IsPlayable
+        && (Pile?.Type != SpellTrapZonePile.CustomType || FaceDown);
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         Player? player = Owner;
         if (player == null || player.Creature == null)
-            return;
-
-        if (Pile?.Type == SpellTrapZonePile.CustomType)
             return;
 
         PrepareSpellForActiveFieldZone();

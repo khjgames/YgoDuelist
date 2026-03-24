@@ -5,13 +5,12 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Portrait overlay on equip spells in the spell/trap row when hovering their equipped duel monster (spell/trap view active).
+/// Equip-link portrait overlay on zone equip spells when their attached duel monster is hovered/focused.
 /// </summary>
 [HarmonyPatch(typeof(NCard), "Reload")]
 [HarmonyPriority(Priority.Last)]
@@ -49,7 +48,6 @@ public static class YgoEquipPortraitOverlayPatch
         bool showEquipLink = model is BaseEquipSpellCard eq
                              && YgoSpellTrapZoneBridge.IsInZone(model)
                              && model.Owner != null
-                             && YgoSecondHandSourceBridge.GetSource(model.Owner) == YgoSecondHandSource.SpellTrapZone
                              && ShouldShowEquipLinkOverlay(model.Owner, eq);
 
         overlay.Visible = showEquipLink && portrait.Visible && _equipPortraitOverlayTexture != null;

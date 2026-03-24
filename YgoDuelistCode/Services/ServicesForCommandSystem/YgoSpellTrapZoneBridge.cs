@@ -159,10 +159,10 @@ public static class YgoSpellTrapZoneBridge
         if (zonePile == null)
             return;
 
-        // Manual play: OnPlayWrapper moves the card to PileType.Play before OnPlay runs.
-        // Field activation must accept Play as well as Hand, or we no-op and the wrapper sends the card to Discard.
+        // Manual play from hand: OnPlayWrapper may move the card to PileType.Play before OnPlay runs.
+        // Activation from the Spell/Trap row: card stays on SpellTrapZonePile until this method re-adds it face-up.
         PileType from = card.Pile?.Type ?? PileType.None;
-        if (from != PileType.Hand && from != PileType.Play)
+        if (from != PileType.Hand && from != PileType.Play && from != SpellTrapZonePile.CustomType)
             return;
 
         card.MarkAsFaceUpFieldInZone();
