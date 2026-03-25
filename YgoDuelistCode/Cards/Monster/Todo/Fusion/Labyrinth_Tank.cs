@@ -20,8 +20,7 @@ public sealed class Labyrinth_Tank : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Machine,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Giga_Tech_Wolf),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Cannon_Soldier))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Cannon_Soldier))
     {
     }
-
 }

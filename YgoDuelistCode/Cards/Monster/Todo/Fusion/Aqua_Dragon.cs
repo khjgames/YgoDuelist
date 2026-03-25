@@ -20,9 +20,8 @@ public sealed class Aqua_Dragon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.SeaSerpent,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Fairy_Dragon),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Amazon_of_the_Seas),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Zone_Eater))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Amazon_of_the_Seas),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Zone_Eater))
     {
     }
-
 }

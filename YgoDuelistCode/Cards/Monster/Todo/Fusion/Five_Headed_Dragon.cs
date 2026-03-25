@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Five_Headed_Dragon : FusionMonsterCard
 {
+    // DB fusion recipe not parsed as quoted names: '5 Dragon monsters' — no FusionMaterialTypes.
     public Five_Headed_Dragon()
         : base(
             cost: 1,

@@ -18,7 +18,9 @@ public sealed class Soul_Hunter : FusionMonsterCard
             baseAtk: 22,
             baseDef: 18,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fiend)
+            duelMonsterRace: DuelMonsterRace.Fiend,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Lord_of_the_Lamp),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Invader_from_Another_Dimension))
     {
     }
 }

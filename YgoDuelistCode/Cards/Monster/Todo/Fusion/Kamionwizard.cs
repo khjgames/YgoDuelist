@@ -18,7 +18,9 @@ public sealed class Kamionwizard : FusionMonsterCard
             baseAtk: 13,
             baseDef: 11,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Spellcaster)
+            duelMonsterRace: DuelMonsterRace.Spellcaster,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mystical_Elf),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Curtain_of_the_Dark_Ones))
     {
     }
 }

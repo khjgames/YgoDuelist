@@ -20,8 +20,7 @@ public sealed class Deepsea_Shark : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Fish,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Bottom_Dweller),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Tongyo))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Tongyo))
     {
     }
-
 }

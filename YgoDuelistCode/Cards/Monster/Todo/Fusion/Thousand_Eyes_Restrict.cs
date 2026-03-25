@@ -20,8 +20,7 @@ public sealed class Thousand_Eyes_Restrict : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Spellcaster,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Relinquished),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Thousand_Eyes_Idol))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Thousand_Eyes_Idol))
     {
     }
-
 }

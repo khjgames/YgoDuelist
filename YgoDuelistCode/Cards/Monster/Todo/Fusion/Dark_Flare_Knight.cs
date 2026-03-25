@@ -20,8 +20,7 @@ public sealed class Dark_Flare_Knight : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dark_Magician),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Flame_Swordsman))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Flame_Swordsman))
     {
     }
-
 }

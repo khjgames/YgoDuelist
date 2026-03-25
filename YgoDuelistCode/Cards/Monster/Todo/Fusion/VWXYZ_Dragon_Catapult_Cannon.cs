@@ -5,9 +5,9 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
-public sealed class VWXYZ_Dragon_Catapult_Cannon : FusionMonsterCard
+public sealed class Vwxyz_Dragon_Catapult_Cannon : FusionMonsterCard
 {
-    public VWXYZ_Dragon_Catapult_Cannon()
+    public Vwxyz_Dragon_Catapult_Cannon()
         : base(
             cost: 1,
             type: CardType.Attack,
@@ -19,9 +19,8 @@ public sealed class VWXYZ_Dragon_Catapult_Cannon : FusionMonsterCard
             baseDef: 28,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Machine,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.VW_Tiger_Catapult),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.XYZ_Dragon_Cannon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Vw_Tiger_Catapult),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Xyz_Dragon_Cannon))
     {
     }
-
 }

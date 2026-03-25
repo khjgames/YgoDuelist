@@ -20,8 +20,7 @@ public sealed class Fusionist : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Beast,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Petit_Angel),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mystical_Sheep_2))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mystical_Sheep_2))
     {
     }
-
 }

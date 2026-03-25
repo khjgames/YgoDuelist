@@ -20,8 +20,7 @@ public sealed class Bickuribox : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Fiend,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Crass_Clown),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Dream_Clown))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Dream_Clown))
     {
     }
-
 }

@@ -5,9 +5,9 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
-public sealed class XYZ_Dragon_Cannon : FusionMonsterCard
+public sealed class Xyz_Dragon_Cannon : FusionMonsterCard
 {
-    public XYZ_Dragon_Cannon()
+    public Xyz_Dragon_Cannon()
         : base(
             cost: 1,
             type: CardType.Attack,
@@ -20,9 +20,8 @@ public sealed class XYZ_Dragon_Cannon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Machine,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.X_Head_Cannon),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Y_Dragon_Head),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Z_Metal_Tank))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Y_Dragon_Head),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Z_Metal_Tank))
     {
     }
-
 }

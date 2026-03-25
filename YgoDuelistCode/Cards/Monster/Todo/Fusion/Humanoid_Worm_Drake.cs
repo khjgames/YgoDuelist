@@ -20,8 +20,7 @@ public sealed class Humanoid_Worm_Drake : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Aqua,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Worm_Drake),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Humanoid_Slime))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Humanoid_Slime))
     {
     }
-
 }

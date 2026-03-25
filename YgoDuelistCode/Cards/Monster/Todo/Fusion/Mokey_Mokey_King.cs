@@ -16,13 +16,12 @@ public sealed class Mokey_Mokey_King : FusionMonsterCard
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 3,
-            baseDef: 1,
+            baseDef: 100,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Fairy,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mokey_Mokey),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mokey_Mokey),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mokey_Mokey))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mokey_Mokey),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mokey_Mokey))
     {
     }
-
 }

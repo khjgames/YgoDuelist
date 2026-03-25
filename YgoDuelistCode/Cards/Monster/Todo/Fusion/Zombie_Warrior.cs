@@ -18,7 +18,9 @@ public sealed class Zombie_Warrior : FusionMonsterCard
             baseAtk: 12,
             baseDef: 9,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Zombie)
+            duelMonsterRace: DuelMonsterRace.Zombie,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Servant),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Battle_Warrior))
     {
     }
 }

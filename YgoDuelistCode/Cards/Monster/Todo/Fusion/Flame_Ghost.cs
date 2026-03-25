@@ -20,8 +20,7 @@ public sealed class Flame_Ghost : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Zombie,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Servant),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dissolverock))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dissolverock))
     {
     }
-
 }

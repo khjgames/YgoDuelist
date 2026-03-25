@@ -4,18 +4,27 @@ Create C# card stubs for cards_database.json rows that have no matching sealed c
 Matching: same as sync_normal_monster_locales — normalize image_filename stem and class name with norm_key.
 
 Naming (new classes): lowercase particles of/from/the/...; Card_ prefix when the identifier would start with a digit.
+Acronyms from image stems: MK3 / mk_3 → MK_3, KA2 → KA_2, dna/ufo → DNA/UFO (matches PortraitPath .png slugs).
 
 Stats: YGO ATK/DEF > 100 → divide by 100 (Cards_Revised.md). Otherwise use raw int.
 
 Run from repo root:
   python tools/generate_missing_cards_from_db.py --dry-run
   python tools/generate_missing_cards_from_db.py --write
+
+After adding new Fusion Monsters, run:
+  python tools/sync_fusion_materials_from_db.py --write
+  python tools/seed_card_locales_from_db.py --write --refresh-fusion-locales
+
+New Ritual Spell stubs use RitualSpellCard from tools/ritual_spell_from_db.py; re-sync with:
+  python tools/sync_ritual_spells_from_db.py --write
 """
 from __future__ import annotations
 
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,14 +61,62 @@ def norm_key(s: str) -> str:
     return s.strip("_")
 
 
+_ACRONYM_PARTS = frozenset({"MK", "KA", "DNA", "UFO"})
+
+
+def _expand_acronym_tokens(parts: list[str]) -> list[str]:
+    """Turn mk3 / mk+3 / dna / ufo chunks into C# identifier segments (matches hand-authored cards)."""
+    out: list[str] = []
+    i = 0
+    while i < len(parts):
+        p = parts[i]
+        pl = p.lower()
+        if pl == "dna":
+            out.append("DNA")
+            i += 1
+            continue
+        if pl == "ufo":
+            out.append("UFO")
+            i += 1
+            continue
+        m = re.fullmatch(r"mk(\d+)", pl)
+        if m:
+            out.append("MK")
+            out.append(m.group(1))
+            i += 1
+            continue
+        m = re.fullmatch(r"ka(\d+)", pl)
+        if m:
+            out.append("KA")
+            out.append(m.group(1))
+            i += 1
+            continue
+        if pl == "mk" and i + 1 < len(parts) and parts[i + 1].isdigit():
+            out.append("MK")
+            out.append(parts[i + 1])
+            i += 2
+            continue
+        if pl == "ka" and i + 1 < len(parts) and parts[i + 1].isdigit():
+            out.append("KA")
+            out.append(parts[i + 1])
+            i += 2
+            continue
+        out.append(p)
+        i += 1
+    return out
+
+
 def stem_to_class_name(stem: str) -> str:
     norm = re.sub(r"[^a-zA-Z0-9]+", "_", stem).strip("_").lower()
     parts = [p for p in norm.split("_") if p]
     if not parts:
         return "Invalid_Card"
+    parts = _expand_acronym_tokens(parts)
     out: list[str] = []
     for i, p in enumerate(parts):
         if p.isdigit():
+            out.append(p)
+        elif p in _ACRONYM_PARTS:
             out.append(p)
         elif p in SMALL_WORDS and i > 0:
             out.append(p)
@@ -385,6 +442,15 @@ def main() -> None:
     with open(DB_PATH, "r", encoding="utf-8") as f:
         data: list[dict] = json.load(f)
 
+    sys.path.insert(0, str(ROOT / "tools"))
+    from ritual_spell_from_db import (  # noqa: E402
+        build_card_name_to_class,
+        parse_ritual_spell_spec,
+        render_ritual_spell_cs,
+    )
+
+    name_to_cls = build_card_name_to_class(data)
+
     planned: list[tuple[Path, str]] = []
     seen_stems: set[str] = set()
     skipped_dup: list[str] = []
@@ -413,7 +479,14 @@ def main() -> None:
 
         if ctype == "Spell Card":
             sub, base_c, dr = spell_race_to_folder_and_race(card.get("race"))
-            body = render_spell_base(cls, sub, base_c, dr)
+            if sub == "Ritual":
+                try:
+                    spec = parse_ritual_spell_spec(card.get("desc") or "", name_to_cls)
+                except ValueError as e:
+                    raise SystemExit(f"Ritual spell {cls}: {e}") from e
+                body = render_ritual_spell_cs(cls, spec)
+            else:
+                body = render_spell_base(cls, sub, base_c, dr)
             rel = Path("Spell") / "Todo" / sub / f"{cls}.cs"
         elif ctype == "Trap Card":
             sub, base_c, dr = trap_race_to_folder_and_race(card.get("race"))

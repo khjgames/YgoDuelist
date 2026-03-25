@@ -20,8 +20,7 @@ public sealed class Warrior_of_Tradition : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Sonic_Maid),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Beautiful_Headhuntress))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Beautiful_Headhuntress))
     {
     }
-
 }

@@ -20,8 +20,7 @@ public sealed class Rabid_Horseman : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.BeastWarrior,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Battle_Ox),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mystic_Horseman))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mystic_Horseman))
     {
     }
-
 }

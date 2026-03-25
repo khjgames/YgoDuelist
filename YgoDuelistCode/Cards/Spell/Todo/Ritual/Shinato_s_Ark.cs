@@ -6,9 +6,9 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 
-public sealed class Shinato_s_Ark : RitualSpellCard
+public sealed class Shinato_S_Ark : RitualSpellCard
 {
-    public Shinato_s_Ark()
+    public Shinato_S_Ark()
         : base(
             cost: 1,
             rarity: CardRarity.Common,

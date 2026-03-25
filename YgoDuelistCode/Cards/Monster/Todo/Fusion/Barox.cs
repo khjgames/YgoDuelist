@@ -18,7 +18,9 @@ public sealed class Barox : FusionMonsterCard
             baseAtk: 13,
             baseDef: 15,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fiend)
+            duelMonsterRace: DuelMonsterRace.Fiend,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Frenzied_Panda),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ryu_Kishin))
     {
     }
 }

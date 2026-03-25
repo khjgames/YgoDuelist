@@ -20,8 +20,7 @@ public sealed class Kaiser_Dragon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dragon,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Winged_Dragon_Guardian_of_the_Fortress_1),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Fairy_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Fairy_Dragon))
     {
     }
-
 }

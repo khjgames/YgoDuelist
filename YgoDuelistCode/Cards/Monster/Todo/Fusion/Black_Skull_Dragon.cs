@@ -20,8 +20,7 @@ public sealed class Black_Skull_Dragon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dragon,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Summoned_Skull),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Red_Eyes_Black_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Red_Eyes_Black_Dragon))
     {
     }
-
 }

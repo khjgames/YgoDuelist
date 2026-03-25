@@ -18,7 +18,9 @@ public sealed class Alligator_S_Sword_Dragon : FusionMonsterCard
             baseAtk: 17,
             baseDef: 15,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Dragon)
+            duelMonsterRace: DuelMonsterRace.Dragon,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Baby_Dragon),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Alligator_S_Sword))
     {
     }
 }

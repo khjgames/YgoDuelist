@@ -18,7 +18,9 @@ public sealed class Mavelus : FusionMonsterCard
             baseAtk: 13,
             baseDef: 9,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.WingedBeast)
+            duelMonsterRace: DuelMonsterRace.WingedBeast,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Tyhone),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Wings_of_Wicked_Flame))
     {
     }
 }

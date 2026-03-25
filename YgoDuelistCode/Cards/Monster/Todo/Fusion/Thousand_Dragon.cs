@@ -20,8 +20,7 @@ public sealed class Thousand_Dragon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dragon,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Time_Wizard),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Baby_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Baby_Dragon))
     {
     }
-
 }

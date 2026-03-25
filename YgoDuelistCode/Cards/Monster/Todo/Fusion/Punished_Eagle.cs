@@ -20,8 +20,7 @@ public sealed class Punished_Eagle : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.WingedBeast,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blue_Winged_Crown),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Niwatori))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Niwatori))
     {
     }
-
 }

@@ -20,9 +20,8 @@ public sealed class Blue_Eyes_Ultimate_Dragon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dragon,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon))
     {
     }
-
 }

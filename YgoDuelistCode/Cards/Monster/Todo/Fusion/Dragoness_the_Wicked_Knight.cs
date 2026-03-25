@@ -20,8 +20,7 @@ public sealed class Dragoness_the_Wicked_Knight : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Armaill),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.One_Eyed_Shield_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.One_Eyed_Shield_Dragon))
     {
     }
-
 }

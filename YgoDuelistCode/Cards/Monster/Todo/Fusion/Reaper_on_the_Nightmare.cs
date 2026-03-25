@@ -20,8 +20,7 @@ public sealed class Reaper_on_the_Nightmare : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Zombie,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Spirit_Reaper),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Nightmare_Horse))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Nightmare_Horse))
     {
     }
-
 }

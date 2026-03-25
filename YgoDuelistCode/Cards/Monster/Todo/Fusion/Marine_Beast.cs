@@ -18,7 +18,9 @@ public sealed class Marine_Beast : FusionMonsterCard
             baseAtk: 17,
             baseDef: 16,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fish)
+            duelMonsterRace: DuelMonsterRace.Fish,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Water_Magician),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Behegon))
     {
     }
 }

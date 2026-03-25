@@ -18,7 +18,9 @@ public sealed class Rare_Fish : FusionMonsterCard
             baseAtk: 15,
             baseDef: 12,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fish)
+            duelMonsterRace: DuelMonsterRace.Fish,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Fusionist),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Enchanting_Mermaid))
     {
     }
 }

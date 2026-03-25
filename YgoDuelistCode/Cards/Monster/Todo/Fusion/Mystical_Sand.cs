@@ -18,7 +18,9 @@ public sealed class Mystical_Sand : FusionMonsterCard
             baseAtk: 21,
             baseDef: 17,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Rock)
+            duelMonsterRace: DuelMonsterRace.Rock,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Giant_Soldier_of_Stone),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ancient_Elf))
     {
     }
 }

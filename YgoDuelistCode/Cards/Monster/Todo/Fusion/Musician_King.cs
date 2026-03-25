@@ -20,8 +20,7 @@ public sealed class Musician_King : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Spellcaster,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Witch_of_the_Black_Forest),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Lady_of_Faith))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Lady_of_Faith))
     {
     }
-
 }

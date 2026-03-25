@@ -18,7 +18,9 @@ public sealed class Skullbird : FusionMonsterCard
             baseAtk: 19,
             baseDef: 17,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.WingedBeast)
+            duelMonsterRace: DuelMonsterRace.WingedBeast,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Takuhee),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Temple_of_Skulls))
     {
     }
 }

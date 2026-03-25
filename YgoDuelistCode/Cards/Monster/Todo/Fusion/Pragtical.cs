@@ -20,8 +20,7 @@ public sealed class Pragtical : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dinosaur,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Trakodon),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Flame_Viper))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Flame_Viper))
     {
     }
-
 }

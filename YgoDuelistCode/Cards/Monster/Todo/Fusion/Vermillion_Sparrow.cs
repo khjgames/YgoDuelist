@@ -18,7 +18,9 @@ public sealed class Vermillion_Sparrow : FusionMonsterCard
             baseAtk: 19,
             baseDef: 15,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Pyro)
+            duelMonsterRace: DuelMonsterRace.Pyro,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Rhaimundos_of_the_Red_Sword),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Fireyarou))
     {
     }
 }

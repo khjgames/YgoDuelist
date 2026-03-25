@@ -18,7 +18,9 @@ public sealed class Skelgon : FusionMonsterCard
             baseAtk: 17,
             baseDef: 19,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Zombie)
+            duelMonsterRace: DuelMonsterRace.Zombie,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.The_Snake_Hair),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blackland_Fire_Dragon))
     {
     }
 }

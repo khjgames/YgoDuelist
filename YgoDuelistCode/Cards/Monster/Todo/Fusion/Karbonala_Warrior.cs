@@ -20,8 +20,7 @@ public sealed class Karbonala_Warrior : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.M_Warrior_1),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.M_Warrior_2))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.M_Warrior_2))
     {
     }
-
 }

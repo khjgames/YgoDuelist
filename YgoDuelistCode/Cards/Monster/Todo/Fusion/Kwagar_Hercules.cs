@@ -20,8 +20,7 @@ public sealed class Kwagar_Hercules : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Insect,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Kuwagata),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Hercules_Beetle))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Hercules_Beetle))
     {
     }
-
 }

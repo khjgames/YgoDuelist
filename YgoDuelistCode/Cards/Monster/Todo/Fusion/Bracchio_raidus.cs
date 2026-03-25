@@ -5,9 +5,9 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
-public sealed class Bracchio_raidus : FusionMonsterCard
+public sealed class Bracchio_Raidus : FusionMonsterCard
 {
-    public Bracchio_raidus()
+    public Bracchio_Raidus()
         : base(
             cost: 1,
             type: CardType.Attack,
@@ -20,8 +20,7 @@ public sealed class Bracchio_raidus : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dinosaur,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Two_Headed_King_Rex),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Crawling_Dragon_2))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Crawling_Dragon_2))
     {
     }
-
 }

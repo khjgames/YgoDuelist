@@ -20,8 +20,7 @@ public sealed class Master_of_Oz : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Beast,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Big_Koala),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Des_Kangaroo))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Des_Kangaroo))
     {
     }
-
 }

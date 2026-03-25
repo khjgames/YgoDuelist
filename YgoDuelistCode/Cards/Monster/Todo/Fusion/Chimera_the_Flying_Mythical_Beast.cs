@@ -18,7 +18,9 @@ public sealed class Chimera_the_Flying_Mythical_Beast : FusionMonsterCard
             baseAtk: 21,
             baseDef: 18,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Beast)
+            duelMonsterRace: DuelMonsterRace.Beast,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Gazelle_the_King_of_Mythical_Beasts),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Berfomet))
     {
     }
 }

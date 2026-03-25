@@ -18,7 +18,9 @@ public sealed class Crimson_Sunbird : FusionMonsterCard
             baseAtk: 23,
             baseDef: 18,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.WingedBeast)
+            duelMonsterRace: DuelMonsterRace.WingedBeast,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Faith_Bird),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Red_Bird))
     {
     }
 }

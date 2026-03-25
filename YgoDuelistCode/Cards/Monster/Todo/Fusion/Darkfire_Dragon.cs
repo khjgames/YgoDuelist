@@ -20,8 +20,7 @@ public sealed class Darkfire_Dragon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dragon,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Firegrass),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Petit_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Petit_Dragon))
     {
     }
-
 }

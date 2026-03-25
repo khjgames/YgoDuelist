@@ -20,8 +20,7 @@ public sealed class Kaminari_Attack : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Thunder,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ocubeam),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mega_Thunderball))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mega_Thunderball))
     {
     }
-
 }

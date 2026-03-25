@@ -11,7 +11,7 @@ public sealed class Ojama_King : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Uncommon,
+            rarity: CardRarity.Common,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
@@ -19,14 +19,9 @@ public sealed class Ojama_King : FusionMonsterCard
             baseDef: 30,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Beast,
-            fusionMaterialTypes: new[]
-            {
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Green),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Yellow),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Black)
-            },
-            duelMonsterDefensePlayEnergyOverride: 2)
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Green),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Yellow),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Black))
     {
     }
-
 }

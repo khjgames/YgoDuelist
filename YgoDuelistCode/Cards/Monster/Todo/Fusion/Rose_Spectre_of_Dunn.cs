@@ -18,7 +18,9 @@ public sealed class Rose_Spectre_of_Dunn : FusionMonsterCard
             baseAtk: 20,
             baseDef: 18,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Plant)
+            duelMonsterRace: DuelMonsterRace.Plant,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Feral_Imp),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Snakeyashi))
     {
     }
 }

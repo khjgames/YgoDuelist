@@ -20,8 +20,7 @@ public sealed class Gaia_the_Dragon_Champion : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dragon,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Gaia_The_Fierce_Knight),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Curse_of_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Curse_of_Dragon))
     {
     }
-
 }

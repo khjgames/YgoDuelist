@@ -18,7 +18,9 @@ public sealed class Great_Mammoth_of_Goldfine : FusionMonsterCard
             baseAtk: 22,
             baseDef: 18,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Zombie)
+            duelMonsterRace: DuelMonsterRace.Zombie,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.The_Snake_Hair),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dragon_Zombie))
     {
     }
 }

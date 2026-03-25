@@ -20,8 +20,7 @@ public sealed class Dragon_Master_Knight : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dragon,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Black_Luster_Soldier),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Blue_Eyes_Ultimate_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Blue_Eyes_Ultimate_Dragon))
     {
     }
-
 }

@@ -20,8 +20,7 @@ public sealed class Flame_Swordsman : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Flame_Manipulator),
-                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Masaki_the_Legendary_Swordsman))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Masaki_the_Legendary_Swordsman))
     {
     }
-
 }

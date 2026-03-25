@@ -18,7 +18,10 @@ public sealed class Man_Eating_Black_Shark : FusionMonsterCard
             baseAtk: 21,
             baseDef: 13,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fish)
+            duelMonsterRace: DuelMonsterRace.Fish,
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Sea_Kamen),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Gruesome_Goo),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Amazon_of_the_Seas))
     {
     }
 }
