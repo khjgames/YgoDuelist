@@ -13,19 +13,6 @@
     "image_downloaded": true
   },
   {
-    "id": 83994646,
-    "name": "4-Starred Ladybug of Doom",
-    "type": "Flip Effect Monster",
-    "desc": "FLIP: Destroy all Level 4 monsters your opponent controls.",
-    "attribute": "WIND",
-    "race": "Insect",
-    "atk": 800,
-    "def": 1200,
-    "level": 3,
-    "image_filename": "4-starred_ladybug_of_doom.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 23771716,
     "name": "7 Colored Fish",
     "type": "Normal Monster",
@@ -296,19 +283,6 @@
     "def": 1400,
     "level": 4,
     "image_filename": "amazon_of_the_seas.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 91869203,
-    "name": "Amazoness Archer",
-    "type": "Effect Monster",
-    "desc": "You can Tribute 2 monsters; inflict 1200 damage to your opponent.",
-    "attribute": "EARTH",
-    "race": "Warrior",
-    "atk": 1400,
-    "def": 1000,
-    "level": 4,
-    "image_filename": "amazoness_archer.jpg",
     "image_downloaded": true
   },
   {
@@ -884,19 +858,6 @@
     "image_downloaded": true
   },
   {
-    "id": 36868108,
-    "name": "Armored Glass",
-    "type": "Trap Card",
-    "desc": "You can only activate this card when a monster is equipped with an Equip Card. Negate the effects of all Equip Cards on the field during the turn this card is activated.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "armored_glass.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 15480588,
     "name": "Armored Lizard",
     "type": "Normal Monster",
@@ -1141,19 +1102,6 @@
     "def": null,
     "level": null,
     "image_filename": "bad_reaction_to_simochi.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 7165085,
-    "name": "Bait Doll",
-    "type": "Spell Card",
-    "desc": "Target 1 Set card in the Spell & Trap Card Zone; reveal that target, force its activation if it is a Trap Card, then negate its effect if the activation timing is incorrect, and if you do, destroy it. (If it is not a Trap Card, return it face-down.) When this card resolves, shuffle it into the Deck instead of sending it to the Graveyard.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "bait_doll.jpg",
     "image_downloaded": true
   },
   {
@@ -1771,7 +1719,7 @@
     "id": 72989439,
     "name": "Black Luster Soldier - Envoy of the Beginning",
     "type": "Effect Monster",
-    "desc": "Cannot be Normal Summoned/Set. Must first be Special Summoned (from your hand) by banishing 1 LIGHT and 1 DARK monster from your GY. Once per turn, you can activate 1 of these effects.\r\n● Target 1 monster on the field; banish it. This card cannot attack the turn this effect is activated.\r\n● If this attacking card destroys an opponent's monster by battle: It can make a second attack in a row.",
+    "desc": "Cannot be Normal Summoned/Set. Must first be Special Summoned (from your hand) by banishing 1 LIGHT and 1 DARK monster from your GY. Once per turn, you can activate 1 of these effects.\r\n\u25cf Target 1 monster on the field; banish it. This card cannot attack the turn this effect is activated.\r\n\u25cf If this attacking card destroys an opponent's monster by battle: It can make a second attack in a row.",
     "attribute": "LIGHT",
     "race": "Warrior",
     "atk": 3000,
@@ -1963,19 +1911,6 @@
     "image_downloaded": true
   },
   {
-    "id": 25880422,
-    "name": "Block Attack",
-    "type": "Spell Card",
-    "desc": "Target 1 face-up Attack Position monster your opponent controls; change that target to face-up Defense Position.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "block_attack.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 34743446,
     "name": "Blocker",
     "type": "Normal Monster",
@@ -2116,19 +2051,6 @@
     "def": 800,
     "level": 3,
     "image_filename": "bolt_penguin.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 57409948,
-    "name": "Bombardment Beetle",
-    "type": "Flip Effect Monster",
-    "desc": "FLIP: Pick up and see 1 face-down Defense Position Monster Card on your opponent's side of the field. If it is an Effect Monster, destroy it (its Flip Effect is not activated), and if the card is not, return it to its original position.",
-    "attribute": "WIND",
-    "race": "Insect",
-    "atk": 400,
-    "def": 900,
-    "level": 2,
-    "image_filename": "bombardment_beetle.jpg",
     "image_downloaded": true
   },
   {
@@ -2756,19 +2678,6 @@
     "image_downloaded": true
   },
   {
-    "id": 1248895,
-    "name": "Chain Destruction",
-    "type": "Trap Card",
-    "desc": "When a monster(s) with 2000 or less ATK is Summoned: Target 1 of them; destroy all cards with that name in its controller's hand and Main Deck.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "chain_destruction.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 57139487,
     "name": "Chain Disappearance",
     "type": "Trap Card",
@@ -2779,19 +2688,6 @@
     "def": null,
     "level": null,
     "image_filename": "chain_disappearance.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 79323590,
-    "name": "Chain Energy",
-    "type": "Spell Card",
-    "desc": "Each player must pay 500 Life Points per card to Normal Summon, Special Summon, Set or activate cards from his/her respective hand.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "chain_energy.jpg",
     "image_downloaded": true
   },
   {
@@ -2964,19 +2860,6 @@
     "image_downloaded": true
   },
   {
-    "id": 81380218,
-    "name": "Chorus of Sanctuary",
-    "type": "Spell Card",
-    "desc": "Increase the DEF of all Defense Position monsters by 500 points.",
-    "attribute": null,
-    "race": "Field",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "chorus_of_sanctuary.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 21888494,
     "name": "Chosen One",
     "type": "Spell Card",
@@ -3094,19 +2977,6 @@
     "image_downloaded": true
   },
   {
-    "id": 7565547,
-    "name": "Collected Power",
-    "type": "Trap Card",
-    "desc": "Target 1 face-up monster on the field; equip it with all Equip Cards on the field. If any of those Equip Cards is now equipped to an incorrect target, destroy that Equip Card.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "collected_power.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 10375182,
     "name": "Command Knight",
     "type": "Effect Monster",
@@ -3143,19 +3013,6 @@
     "def": null,
     "level": null,
     "image_filename": "compulsory_evacuation_device.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 17375316,
-    "name": "Confiscation",
-    "type": "Spell Card",
-    "desc": "Pay 1000 Life Points. Look at your opponent's hand, select 1 card in it and discard that card.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "confiscation.jpg",
     "image_downloaded": true
   },
   {
@@ -3328,32 +3185,6 @@
     "image_downloaded": true
   },
   {
-    "id": 31036355,
-    "name": "Creature Swap",
-    "type": "Spell Card",
-    "desc": "Each player chooses 1 monster they control and switches control of those monsters with each other. Those monsters cannot change their battle positions for the rest of this turn.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "creature_swap.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 28358902,
-    "name": "Crimson Sentry",
-    "type": "Effect Monster",
-    "desc": "Tribute this face-up card to return 1 of your monsters destroyed as a result of battle during this turn to the bottom of your Deck.",
-    "attribute": "FIRE",
-    "race": "Warrior",
-    "atk": 1500,
-    "def": 1200,
-    "level": 4,
-    "image_filename": "crimson_sentry.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 46696593,
     "name": "Crimson Sunbird",
     "type": "Fusion Monster",
@@ -3458,19 +3289,6 @@
     "image_downloaded": true
   },
   {
-    "id": 12470447,
-    "name": "Curse of Fiend",
-    "type": "Spell Card",
-    "desc": "Change the battle positions of all Attack Position monsters on the field to Defense Position and vice-versa. These positions cannot be changed during the turn this card is activated except by the effect of a Spell, Trap or Effect Monster Card. You can only activate this card during your Standby Phase.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "curse_of_fiend.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 94377247,
     "name": "Curse of the Masked Beast",
     "type": "Spell Card",
@@ -3562,19 +3380,6 @@
     "image_downloaded": true
   },
   {
-    "id": 39978267,
-    "name": "Cyber Raider",
-    "type": "Effect Monster",
-    "desc": "If this card is Summoned: Activate 1 of these effects.\r\n● Target 1 Equip Card on the field; destroy that target.\r\n● Target 1 Equip Card on the field; equip that target to this card.",
-    "attribute": "DARK",
-    "race": "Machine",
-    "atk": 1400,
-    "def": 1000,
-    "level": 4,
-    "image_filename": "cyber_raider.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 89112729,
     "name": "Cyber Saurus",
     "type": "Fusion Monster",
@@ -3650,19 +3455,6 @@
     "def": 1600,
     "level": 5,
     "image_filename": "cyber-tech_alligator.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 5494820,
-    "name": "Cyclon Laser",
-    "type": "Spell Card",
-    "desc": "You can only equip this card to \"Gradius\". Increase the ATK of \"Gradius\" by 300 points. When the equipped \"Gradius\" attacks with an ATK that is higher than the DEF of a Defense Position monster, inflict the difference as Battle Damage to your opponent's Life Points.",
-    "attribute": null,
-    "race": "Equip",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "cyclon_laser.jpg",
     "image_downloaded": true
   },
   {
@@ -4368,19 +4160,6 @@
     "image_downloaded": true
   },
   {
-    "id": 80168720,
-    "name": "Darkness Approaches",
-    "type": "Spell Card",
-    "desc": "Discard 2 cards from your hand. Select 1 face-up monster and change it to face-down Defense Position.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "darkness_approaches.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 43500484,
     "name": "Darkworld Thorns",
     "type": "Normal Monster",
@@ -4459,19 +4238,6 @@
     "image_downloaded": true
   },
   {
-    "id": 24128274,
-    "name": "Deepsea Warrior",
-    "type": "Effect Monster",
-    "desc": "As long as \"Umi\" is face-up on the field, this card is unaffected by any Spell Cards.",
-    "attribute": "WATER",
-    "race": "Warrior",
-    "atk": 1600,
-    "def": 1800,
-    "level": 5,
-    "image_filename": "deepsea_warrior.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 85718645,
     "name": "Delg the Dark Monarch",
     "type": "Effect Monster",
@@ -4482,19 +4248,6 @@
     "def": 1000,
     "level": 6,
     "image_filename": "delg_the_dark_monarch.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 44763025,
-    "name": "Delinquent Duo",
-    "type": "Spell Card",
-    "desc": "Pay 1000 LP; your opponent discards 1 random card, and if they have any other cards in their hand, discard 1 more card of their choice.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "delinquent_duo.jpg",
     "image_downloaded": true
   },
   {
@@ -4628,19 +4381,6 @@
     "image_downloaded": true
   },
   {
-    "id": 5616412,
-    "name": "Destruction Punch",
-    "type": "Trap Card",
-    "desc": "If the ATK of an attacking monster your opponent controls is lower than the DEF of the attacked Defense Position monster you control, destroy the attacking monster at the end of the Damage Step. (Damage calculation is applied normally.)",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "destruction_punch.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 96967123,
     "name": "Dharma Cannon",
     "type": "Normal Monster",
@@ -4768,19 +4508,6 @@
     "def": 200,
     "level": 2,
     "image_filename": "dimension_jar.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 22959079,
-    "name": "Dimensionhole",
-    "type": "Spell Card",
-    "desc": "Select 1 monster on your side of the field and remove it from play until your next Standby Phase. While the monster is removed from play, the Monster Card Zone of the selected monster cannot be used.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "dimensionhole.jpg",
     "image_downloaded": true
   },
   {
@@ -5018,19 +4745,6 @@
     "image_downloaded": true
   },
   {
-    "id": 50045299,
-    "name": "Dragon Capture Jar",
-    "type": "Trap Card",
-    "desc": "Change all face-up Dragon-Type monsters on the field to Defense Position, also they cannot change their battle positions.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "dragon_capture_jar.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 62873545,
     "name": "Dragon Master Knight",
     "type": "Fusion Monster",
@@ -5054,19 +4768,6 @@
     "def": null,
     "level": null,
     "image_filename": "dragon_nails.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 55763552,
-    "name": "Dragon Piper",
-    "type": "Flip Effect Monster",
-    "desc": "FLIP: Destroy all face-up \"Dragon Capture Jar\"(s) on the field. If you destroy any, change all face-up Dragon-Type monsters on the field to Attack Position.",
-    "attribute": "FIRE",
-    "race": "Pyro",
-    "atk": 200,
-    "def": 1800,
-    "level": 3,
-    "image_filename": "dragon_piper.jpg",
     "image_downloaded": true
   },
   {
@@ -5125,7 +4826,7 @@
     "id": 55991637,
     "name": "Dragon's Gunfire",
     "type": "Spell Card",
-    "desc": "If you control a Dragon monster: Activate 1 of these effects;\r\n● Inflict 800 damage to your opponent.\r\n● Target 1 monster with 800 or less DEF; destroy that target.",
+    "desc": "If you control a Dragon monster: Activate 1 of these effects;\r\n\u25cf Inflict 800 damage to your opponent.\r\n\u25cf Target 1 monster with 800 or less DEF; destroy that target.",
     "attribute": null,
     "race": "Normal",
     "atk": null,
@@ -5200,19 +4901,6 @@
     "image_downloaded": true
   },
   {
-    "id": 8687195,
-    "name": "Dreamsprite",
-    "type": "Effect Monster",
-    "desc": "When attacked by your opponent's monster, select another 1 of your Monster Cards and designate it as the attack's target, then calculate damage.",
-    "attribute": "LIGHT",
-    "race": "Plant",
-    "atk": 300,
-    "def": 200,
-    "level": 2,
-    "image_filename": "dreamsprite.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 88733579,
     "name": "Drill Bug",
     "type": "Effect Monster",
@@ -5236,19 +4924,6 @@
     "def": 1100,
     "level": 4,
     "image_filename": "drillago.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 473469,
-    "name": "Driving Snow",
-    "type": "Trap Card",
-    "desc": "You can only activate this card when 1 or more of your Trap Cards are destroyed and sent from the field to the Graveyard by a card effect your opponent controls. Destroy 1 Spell or Trap Card on the field.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "driving_snow.jpg",
     "image_downloaded": true
   },
   {
@@ -5317,19 +4992,6 @@
     "image_downloaded": true
   },
   {
-    "id": 60082869,
-    "name": "Dust Tornado",
-    "type": "Trap Card",
-    "desc": "Target 1 Spell/Trap your opponent controls; destroy that target, then you can Set 1 Spell/Trap from your hand.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "dust_tornado.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 59820352,
     "name": "Earth Chant",
     "type": "Spell Card",
@@ -5366,45 +5028,6 @@
     "def": 2000,
     "level": 4,
     "image_filename": "earthbound_spirit.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 60866277,
-    "name": "Earthshaker",
-    "type": "Trap Card",
-    "desc": "Select 2 Monster Card Attributes. Your opponent then selects 1 of the 2 Attributes and destroys all face-up monsters with that Attribute on the field.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "earthshaker.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 42578427,
-    "name": "Eatgaboon",
-    "type": "Trap Card",
-    "desc": "If the ATK of a monster summoned by your opponent (excluding Special Summon) is 500 points or less, the monster is destroyed.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "eatgaboon.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 69954399,
-    "name": "Ekibyo Drakmord",
-    "type": "Spell Card",
-    "desc": "The equipped monster cannot attack. Destroy the equipped monster at the end of its controller's 2nd turn after this card is activated. At that time, this card is returned to the owner's hand.",
-    "attribute": null,
-    "race": "Equip",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "ekibyo_drakmord.jpg",
     "image_downloaded": true
   },
   {
@@ -5671,7 +5294,7 @@
     "id": 98045062,
     "name": "Enemy Controller",
     "type": "Spell Card",
-    "desc": "Activate 1 of these effects.\n● Target 1 face-up monster your opponent controls; change that target's battle position.\n● Tribute 1 monster, then target 1 face-up monster your opponent controls; take control of that target until the End Phase.",
+    "desc": "Activate 1 of these effects.\n\u25cf Target 1 face-up monster your opponent controls; change that target's battle position.\n\u25cf Tribute 1 monster, then target 1 face-up monster your opponent controls; take control of that target until the End Phase.",
     "attribute": null,
     "race": "Quick-Play",
     "atk": null,
@@ -5730,19 +5353,6 @@
     "def": null,
     "level": null,
     "image_filename": "escalation_of_the_monarchs.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 95051344,
-    "name": "Eternal Rest",
-    "type": "Spell Card",
-    "desc": "Destroy all monsters equipped with Equip Cards.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "eternal_rest.jpg",
     "image_downloaded": true
   },
   {
@@ -5902,19 +5512,6 @@
     "image_downloaded": true
   },
   {
-    "id": 97687912,
-    "name": "Fairy Meteor Crush",
-    "type": "Spell Card",
-    "desc": "If the equipped monster attacks a Defense Position monster, inflict piercing battle damage to your opponent.",
-    "attribute": null,
-    "race": "Equip",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "fairy_meteor_crush.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 81563416,
     "name": "Fairy of the Fountain",
     "type": "Normal Monster",
@@ -5954,19 +5551,6 @@
     "image_downloaded": true
   },
   {
-    "id": 17653779,
-    "name": "Fairy's Hand Mirror",
-    "type": "Trap Card",
-    "desc": "When your opponent activates a Spell Card that targets exactly 1 monster (and no other cards) on the field: Target another card that would be an appropriate target; that Spell now targets the new target.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "fairy_s_hand_mirror.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 37160778,
     "name": "Fairywitch",
     "type": "Normal Monster",
@@ -5990,19 +5574,6 @@
     "def": 1100,
     "level": 4,
     "image_filename": "faith_bird.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 3027001,
-    "name": "Fake Trap",
-    "type": "Trap Card",
-    "desc": "Activate only when your opponent activates a Spell, Trap, or Effect Monster's effect that would destroy a Trap Card(s) you control. Destroy this card instead. (If the cards that would have been destroyed are face-down, you can look at them to confirm.)",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "fake_trap.jpg",
     "image_downloaded": true
   },
   {
@@ -6331,19 +5902,6 @@
     "image_downloaded": true
   },
   {
-    "id": 66788016,
-    "name": "Fissure",
-    "type": "Spell Card",
-    "desc": "Destroy the 1 face-up monster your opponent controls that has the lowest ATK (your choice, if tied).",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "fissure.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 99267150,
     "name": "Five-Headed Dragon",
     "type": "Fusion Monster",
@@ -6461,19 +6019,6 @@
     "image_downloaded": true
   },
   {
-    "id": 96890582,
-    "name": "Flash Assailant",
-    "type": "Effect Monster",
-    "desc": "Decrease the ATK and DEF of this card by 400 points for each card in your hand.",
-    "attribute": "DARK",
-    "race": "Fiend",
-    "atk": 2000,
-    "def": 2000,
-    "level": 4,
-    "image_filename": "flash_assailant.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 95952802,
     "name": "Flower Wolf",
     "type": "Fusion Monster",
@@ -6549,19 +6094,6 @@
     "def": null,
     "level": null,
     "image_filename": "follow_wind.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 74923978,
-    "name": "Forced Requisition",
-    "type": "Trap Card",
-    "desc": "You can activate this card when you discard from your hand. After that, each time you discard from your hand, your opponent must also discard the same number of cards from his/her hand.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "forced_requisition.jpg",
     "image_downloaded": true
   },
   {
@@ -6838,19 +6370,6 @@
     "image_downloaded": true
   },
   {
-    "id": 37313786,
-    "name": "Gamble",
-    "type": "Trap Card",
-    "desc": "You can only activate this card when your opponent's hand is 6 or more cards and your hand is 2 or less. Toss a coin and call heads or tails. If you call it right, draw until your hand has 5 cards. If you call it wrong, skip your next turn.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "gamble.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 11549357,
     "name": "Gamma the Magnet Warrior",
     "type": "Normal Monster",
@@ -7069,19 +6588,6 @@
     "def": 900,
     "level": 3,
     "image_filename": "genin.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 24668830,
-    "name": "Germ Infection",
-    "type": "Spell Card",
-    "desc": "The ATK of a non Machine-Type monster equipped with this card is decreased by 300 points at each of its Standby Phases.",
-    "attribute": null,
-    "race": "Equip",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "germ_infection.jpg",
     "image_downloaded": true
   },
   {
@@ -7761,19 +7267,6 @@
     "image_downloaded": true
   },
   {
-    "id": 16762927,
-    "name": "Gravekeeper's Servant",
-    "type": "Spell Card",
-    "desc": "Your opponent must send 1 card from the top of their Deck to the Graveyard to declare an attack.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "gravekeeper_s_servant.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 63695531,
     "name": "Gravekeeper's Spear Soldier",
     "type": "Effect Monster",
@@ -7849,19 +7342,6 @@
     "def": null,
     "level": null,
     "image_filename": "gravity_axe_-_grarl.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 85742772,
-    "name": "Gravity Bind",
-    "type": "Trap Card",
-    "desc": "Level 4 or higher monsters cannot attack.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "gravity_bind.jpg",
     "image_downloaded": true
   },
   {
@@ -8021,19 +7501,6 @@
     "image_downloaded": true
   },
   {
-    "id": 95744531,
-    "name": "Griggle",
-    "type": "Effect Monster",
-    "desc": "When the control of this face-up card on the field shifts to your opponent, increase your Life Points by 3000 points. This effect can only be used once as long as this card remains face-up on the field.",
-    "attribute": "EARTH",
-    "race": "Plant",
-    "atk": 350,
-    "def": 300,
-    "level": 1,
-    "image_filename": "griggle.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 58314394,
     "name": "Ground Attacker Bugroth",
     "type": "Normal Monster",
@@ -8044,19 +7511,6 @@
     "def": 1000,
     "level": 4,
     "image_filename": "ground_attacker_bugroth.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 90502999,
-    "name": "Ground Collapse",
-    "type": "Spell Card",
-    "desc": "Select 2 Main Monster Zones on the field. Neither player can use the selected zones. You cannot select a zone that is occupied by a Monster Card.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "ground_collapse.jpg",
     "image_downloaded": true
   },
   {
@@ -8226,19 +7680,6 @@
     "def": 1700,
     "level": 5,
     "image_filename": "guardian_tryce.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 73079365,
-    "name": "Gust",
-    "type": "Trap Card",
-    "desc": "You can activate this card when 1 or more of your Spell Cards are destroyed and sent from the field to the Graveyard by a card effect your opponent controls. Destroy 1 Spell or Trap Card on the field.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "gust.jpg",
     "image_downloaded": true
   },
   {
@@ -8580,19 +8021,6 @@
     "image_downloaded": true
   },
   {
-    "id": 81863068,
-    "name": "Hiro's Shadow Scout",
-    "type": "Flip Effect Monster",
-    "desc": "FLIP: Your opponent draws 3 cards. Both players look at the cards. If there are any Spell Cards among them, discard all those Spell Card(s) to the Graveyard.",
-    "attribute": "DARK",
-    "race": "Fiend",
-    "atk": 650,
-    "def": 500,
-    "level": 2,
-    "image_filename": "hiro_s_shadow_scout.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 46718686,
     "name": "Hitodenchak",
     "type": "Normal Monster",
@@ -8642,19 +8070,6 @@
     "def": 1000,
     "level": 4,
     "image_filename": "horn_imp.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 98069388,
-    "name": "Horn of Heaven",
-    "type": "Trap Card",
-    "desc": "When a monster(s) would be Summoned: Tribute 1 monster; negate the Summon, and if you do, destroy that monster(s).",
-    "attribute": null,
-    "race": "Counter",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "horn_of_heaven.jpg",
     "image_downloaded": true
   },
   {
@@ -8720,19 +8135,6 @@
     "def": 600,
     "level": 2,
     "image_filename": "hourglass_of_life.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 15083728,
-    "name": "House of Adhesive Tape",
-    "type": "Trap Card",
-    "desc": "If the DEF of a monster summoned by your opponent (excluding Special Summon) is 500 points or less, the monster is destroyed.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "house_of_adhesive_tape.jpg",
     "image_downloaded": true
   },
   {
@@ -8918,19 +8320,6 @@
     "image_downloaded": true
   },
   {
-    "id": 61740673,
-    "name": "Imperial Order",
-    "type": "Trap Card",
-    "desc": "Negate all Spell effects on the field. Once per turn, during the Standby Phase, you must pay 700 LP (this is not optional), or this card is destroyed.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "imperial_order.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 33031674,
     "name": "Incandescent Ordeal",
     "type": "Spell Card",
@@ -8954,32 +8343,6 @@
     "def": 1900,
     "level": 4,
     "image_filename": "inferno.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 94163677,
-    "name": "Infinite Cards",
-    "type": "Spell Card",
-    "desc": "There is no limit to the number of cards in players' hands.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "infinite_cards.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 54109233,
-    "name": "Infinite Dismissal",
-    "type": "Trap Card",
-    "desc": "Level 3 or lower monsters are destroyed during the End Phase of the turn that they are Normal Summoned or Flip Summoned.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "infinite_dismissal.jpg",
     "image_downloaded": true
   },
   {
@@ -9019,19 +8382,6 @@
     "def": null,
     "level": null,
     "image_filename": "insect_armor_with_laser_cannon.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 23615409,
-    "name": "Insect Barrier",
-    "type": "Spell Card",
-    "desc": "Insect-Type monsters your opponent controls cannot declare an attack.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "insect_barrier.jpg",
     "image_downloaded": true
   },
   {
@@ -9201,19 +8551,6 @@
     "def": null,
     "level": null,
     "image_filename": "jam_breeding_machine.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 21558682,
-    "name": "Jam Defender",
-    "type": "Trap Card",
-    "desc": "When an opponent's monster declares an attack on a monster you control: You can target 1 \"Revival Jam\" you control; switch the attack target to that target.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "jam_defender.jpg",
     "image_downloaded": true
   },
   {
@@ -9909,7 +9246,7 @@
     "id": 37390589,
     "name": "Kunai with Chain",
     "type": "Trap Card",
-    "desc": "Activate 1 or both of these effects (simultaneously).\n● When an opponent's monster declares an attack: Target the attacking monster; change that target to Defense Position.\n● Target 1 face-up monster you control; equip this card to that target. It gains 500 ATK.",
+    "desc": "Activate 1 or both of these effects (simultaneously).\n\u25cf When an opponent's monster declares an attack: Target the attacking monster; change that target to Defense Position.\n\u25cf Target 1 face-up monster you control; equip this card to that target. It gains 500 ATK.",
     "attribute": null,
     "race": "Normal",
     "atk": null,
@@ -9959,7 +9296,7 @@
   },
   {
     "id": 60802233,
-    "name": "Kuwagata α",
+    "name": "Kuwagata \u03b1",
     "type": "Normal Monster",
     "desc": "A very vicious stag beetle that goes for the head.",
     "attribute": "EARTH",
@@ -9967,14 +9304,14 @@
     "atk": 1250,
     "def": 1000,
     "level": 4,
-    "image_filename": "kuwagata_α.jpg",
+    "image_filename": "kuwagata_\u03b1.jpg",
     "image_downloaded": true
   },
   {
     "id": 95144193,
     "name": "Kwagar Hercules",
     "type": "Fusion Monster",
-    "desc": "\"Kuwagata α\" + \"Hercules Beetle\"",
+    "desc": "\"Kuwagata \u03b1\" + \"Hercules Beetle\"",
     "attribute": "EARTH",
     "race": "Insect",
     "atk": 1900,
@@ -10205,19 +9542,6 @@
     "image_downloaded": true
   },
   {
-    "id": 20394040,
-    "name": "Lava Battleguard",
-    "type": "Effect Monster",
-    "desc": "This card gains 500 ATK for each \"Swamp Battleguard\" you control.",
-    "attribute": "EARTH",
-    "race": "Warrior",
-    "atk": 1550,
-    "def": 1800,
-    "level": 5,
-    "image_filename": "lava_battleguard.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 102380,
     "name": "Lava Golem",
     "type": "Effect Monster",
@@ -10439,23 +9763,10 @@
     "image_downloaded": true
   },
   {
-    "id": 62867251,
-    "name": "Light of Intervention",
-    "type": "Trap Card",
-    "desc": "While this card is on the field, Monster Cards cannot be Set or flipped face-down. If a Monster Card would be Set, it must be Normal Summoned in face-up Defense Position.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "light_of_intervention.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 44595286,
     "name": "Light of Judgment",
     "type": "Trap Card",
-    "desc": "If \"The Sanctuary in the Sky\" is on the field: Discard 1 LIGHT monster to the GY; apply 1 of the following effects.\r\n● Look at your opponent's hand and discard 1 card from their hand.\r\n● Send 1 card your opponent controls to the GY.",
+    "desc": "If \"The Sanctuary in the Sky\" is on the field: Discard 1 LIGHT monster to the GY; apply 1 of the following effects.\r\n\u25cf Look at your opponent's hand and discard 1 card from their hand.\r\n\u25cf Send 1 card your opponent controls to the GY.",
     "attribute": null,
     "race": "Normal",
     "atk": null,
@@ -10894,32 +10205,6 @@
     "image_downloaded": true
   },
   {
-    "id": 59344077,
-    "name": "Magic Drain",
-    "type": "Trap Card",
-    "desc": "When your opponent activates a Spell Card: They can discard 1 Spell Card to negate this card's effect, otherwise negate the activation of their Spell Card, and if you do, destroy it.",
-    "attribute": null,
-    "race": "Counter",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "magic_drain.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 77414722,
-    "name": "Magic Jammer",
-    "type": "Trap Card",
-    "desc": "When a Spell Card is activated: Discard 1 card; negate the activation, and if you do, destroy it.",
-    "attribute": null,
-    "race": "Counter",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "magic_jammer.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 96008713,
     "name": "Magical Arm Shield",
     "type": "Trap Card",
@@ -10943,19 +10228,6 @@
     "def": 1400,
     "level": 4,
     "image_filename": "magical_ghost.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 81210420,
-    "name": "Magical Hats",
-    "type": "Trap Card",
-    "desc": "During your opponent's Battle Phase: Choose 2 Spell/Trap Cards from your Deck and 1 monster in your Main Monster Zone. Special Summon them as Normal Monsters (ATK 0/DEF 0) in face-down Defense Position, Set the chosen monster if it is face-up, and shuffle them on the field. The 2 cards chosen from your Deck are destroyed at the end of the Battle Phase, and cannot remain on the field except during this Battle Phase.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "magical_hats.jpg",
     "image_downloaded": true
   },
   {
@@ -11112,19 +10384,6 @@
     "def": 1300,
     "level": 4,
     "image_filename": "maiden_of_the_moonlight.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 9074847,
-    "name": "Major Riot",
-    "type": "Trap Card",
-    "desc": "You can activate this card when 1 or more of your monsters are returned from the field to your hand by your opponent's effect. Return all Monster Cards on the field to your respective hands. Both you and your opponent then Special Summon from your hand the same number of Monster Cards on the field in face-down Defense Position.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "major_riot.jpg",
     "image_downloaded": true
   },
   {
@@ -11398,32 +10657,6 @@
     "def": 400,
     "level": 2,
     "image_filename": "mask_of_darkness.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 20765952,
-    "name": "Mask of Dispel",
-    "type": "Spell Card",
-    "desc": "Select 1 face-up Spell Card on the field. The controller of the Spell Card takes 500 points of damage during each of your Standby Phases. When the selected card is removed from the field, destroy this card.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "mask_of_dispel.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 29549364,
-    "name": "Mask of Restrict",
-    "type": "Trap Card",
-    "desc": "Neither player can Tribute cards.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "mask_of_restrict.jpg",
     "image_downloaded": true
   },
   {
@@ -11804,19 +11037,6 @@
     "image_downloaded": true
   },
   {
-    "id": 44656491,
-    "name": "Messenger of Peace",
-    "type": "Spell Card",
-    "desc": "Monsters with 1500 or more ATK cannot declare an attack. Once per turn, during your Standby Phase, pay 100 LP or destroy this card.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "messenger_of_peace.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 65957473,
     "name": "Metal Armored Bug",
     "type": "Normal Monster",
@@ -11827,19 +11047,6 @@
     "def": 1500,
     "level": 8,
     "image_filename": "metal_armored_bug.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 75646520,
-    "name": "Metal Detector",
-    "type": "Trap Card",
-    "desc": "You can only activate this card when a Continuous Trap Card is activated. Negate all Continuous Trap Cards during the turn this card is activated.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "metal_detector.jpg",
     "image_downloaded": true
   },
   {
@@ -12074,19 +11281,6 @@
     "def": 1200,
     "level": 4,
     "image_filename": "minomushi_warrior.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 1918087,
-    "name": "Minor Goblin Official",
-    "type": "Trap Card",
-    "desc": "You can only activate this card when your opponent's Life Points are 3000 or less. Inflict 500 points of damage to your opponent's Life Points during each of his/her Standby Phases.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "minor_goblin_official.jpg",
     "image_downloaded": true
   },
   {
@@ -12597,19 +11791,6 @@
     "image_downloaded": true
   },
   {
-    "id": 93900406,
-    "name": "Mushroom Man #2",
-    "type": "Effect Monster",
-    "desc": "A player controlling this monster loses 300 Life Points during each of his/her Standby Phases when this card is face-up on the field. Control of this card is shifted to your opponent by paying 500 Life Points at your own End Phase.",
-    "attribute": "EARTH",
-    "race": "Warrior",
-    "atk": 1250,
-    "def": 800,
-    "level": 3,
-    "image_filename": "mushroom_man_#2.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 56907389,
     "name": "Musician King",
     "type": "Fusion Monster",
@@ -12711,19 +11892,6 @@
     "def": null,
     "level": null,
     "image_filename": "mystic_plasma_zone.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 49251811,
-    "name": "Mystic Probe",
-    "type": "Trap Card",
-    "desc": "You can only activate this card when a Continuous Spell Card is activated. Negate all Continuous Spell Cards during the turn this card is activated.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "mystic_probe.jpg",
     "image_downloaded": true
   },
   {
@@ -13192,32 +12360,6 @@
     "def": 800,
     "level": 3,
     "image_filename": "niwatori.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 71044499,
-    "name": "Nobleman of Crossout",
-    "type": "Spell Card",
-    "desc": "Target 1 face-down monster on the field; destroy that target, and if you do, banish it, then, if it was a Flip monster, each player reveals their Main Deck, then banishes all cards from it with that monster's name.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "nobleman_of_crossout.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 17449108,
-    "name": "Nobleman of Extermination",
-    "type": "Spell Card",
-    "desc": "Select, destroy, and remove from play 1 face-down Spell or Trap Card. If it was a Trap Card, both players must remove from play all copies of that card from their Decks.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "nobleman_of_extermination.jpg",
     "image_downloaded": true
   },
   {
@@ -14121,7 +13263,7 @@
     "id": 8842266,
     "name": "Poison of the Old Man",
     "type": "Spell Card",
-    "desc": "Activate 1 of these effects;\n● Gain 1200 LP.\n● Inflict 800 damage to your opponent.",
+    "desc": "Activate 1 of these effects;\n\u25cf Gain 1200 LP.\n\u25cf Inflict 800 damage to your opponent.",
     "attribute": null,
     "race": "Quick-Play",
     "atk": null,
@@ -14274,19 +13416,6 @@
     "image_downloaded": true
   },
   {
-    "id": 51371017,
-    "name": "Princess of Tsurugi",
-    "type": "Flip Effect Monster",
-    "desc": "FLIP: Inflict 500 damage to your opponent for each Spell and Trap Card on your opponent's side of the field.",
-    "attribute": "WIND",
-    "race": "Warrior",
-    "atk": 900,
-    "def": 700,
-    "level": 3,
-    "image_filename": "princess_of_tsurugi.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 80234301,
     "name": "Prisman",
     "type": "Normal Monster",
@@ -14297,19 +13426,6 @@
     "def": 1000,
     "level": 3,
     "image_filename": "prisman.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 43711255,
-    "name": "Prohibition",
-    "type": "Spell Card",
-    "desc": "Activate by declaring 1 card name. Cards with that name, and their effects, cannot be used. Cards already on the field are not affected (including face-down cards).",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "prohibition.jpg",
     "image_downloaded": true
   },
   {
@@ -14394,7 +13510,7 @@
     "id": 76754619,
     "name": "Pyramid Energy",
     "type": "Spell Card",
-    "desc": "You can select and activate 1 of the following effects:\n● Increase the ATK of all face-up monsters on your side of the field by 200 points until the End Phase of the turn this card is activated.\n● Increase the DEF of all face-up monsters on your side of the field by 500 points until the End Phase of the turn this card is activated.",
+    "desc": "You can select and activate 1 of the following effects:\n\u25cf Increase the ATK of all face-up monsters on your side of the field by 200 points until the End Phase of the turn this card is activated.\n\u25cf Increase the DEF of all face-up monsters on your side of the field by 500 points until the End Phase of the turn this card is activated.",
     "attribute": null,
     "race": "Quick-Play",
     "atk": null,
@@ -14820,32 +13936,6 @@
     "image_downloaded": true
   },
   {
-    "id": 51482758,
-    "name": "Remove Trap",
-    "type": "Spell Card",
-    "desc": "Select 1 face-up Trap Card on the field and destroy it.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "remove_trap.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 8951260,
-    "name": "Respect Play",
-    "type": "Trap Card",
-    "desc": "During their respective turns, each player must show their opponent their hand.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "respect_play.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 99518961,
     "name": "Restructer Revolution",
     "type": "Spell Card",
@@ -14888,7 +13978,7 @@
     "id": 61466310,
     "name": "Return of the Monarchs",
     "type": "Spell Card",
-    "desc": "You cannot Special Summon monsters from the Extra Deck. When you Tribute Summon a monster: You can activate 1 of these effects;\n● Add, from your Deck to your hand, 1 monster with 2400 ATK and 1000 DEF with a different name from that Tribute Summoned monster.\n● Add, from your Deck to your hand, 1 monster with 2800 ATK and 1000 DEF with a different name from that Tribute Summoned monster.\nThe Tribute Summoned monster must be face-up on the field to activate and to resolve this effect. You can only use this effect of \"Return of the Monarchs\" once per turn.",
+    "desc": "You cannot Special Summon monsters from the Extra Deck. When you Tribute Summon a monster: You can activate 1 of these effects;\n\u25cf Add, from your Deck to your hand, 1 monster with 2400 ATK and 1000 DEF with a different name from that Tribute Summoned monster.\n\u25cf Add, from your Deck to your hand, 1 monster with 2800 ATK and 1000 DEF with a different name from that Tribute Summoned monster.\nThe Tribute Summoned monster must be face-up on the field to activate and to resolve this effect. You can only use this effect of \"Return of the Monarchs\" once per turn.",
     "attribute": null,
     "race": "Continuous",
     "atk": null,
@@ -15002,19 +14092,6 @@
     "image_downloaded": true
   },
   {
-    "id": 20436034,
-    "name": "Ring of Magnetism",
-    "type": "Spell Card",
-    "desc": "You can only equip this card to a monster on your side of the field. Decrease the ATK and DEF of a monster equipped with this card by 500 points. In addition, all the monsters on your opponent's side of the field can only attack the monster equipped with this card, if they attack.",
-    "attribute": null,
-    "race": "Equip",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "ring_of_magnetism.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 34016756,
     "name": "Riryoku",
     "type": "Spell Card",
@@ -15025,19 +14102,6 @@
     "def": null,
     "level": null,
     "image_filename": "riryoku.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 70344351,
-    "name": "Riryoku Field",
-    "type": "Trap Card",
-    "desc": "When a Spell Card that targets exactly 1 monster on the field (and no other cards) is activated: Negate the activation, and if you do, destroy it.",
-    "attribute": null,
-    "race": "Counter",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "riryoku_field.jpg",
     "image_downloaded": true
   },
   {
@@ -15311,19 +14375,6 @@
     "def": 2000,
     "level": 4,
     "image_filename": "roulette_barrel.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 33950246,
-    "name": "Royal Command",
-    "type": "Trap Card",
-    "desc": "Flip monsters' effects cannot be activated, also their effects are negated.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "royal_command.jpg",
     "image_downloaded": true
   },
   {
@@ -15964,19 +15015,6 @@
     "image_downloaded": true
   },
   {
-    "id": 3819470,
-    "name": "Seven Tools of the Bandit",
-    "type": "Trap Card",
-    "desc": "When a Trap Card is activated: Pay 1000 LP; negate the activation, and if you do, destroy it.",
-    "attribute": null,
-    "race": "Counter",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "seven_tools_of_the_bandit.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 30778711,
     "name": "Shadow Ghoul",
     "type": "Effect Monster",
@@ -15987,19 +15025,6 @@
     "def": 1300,
     "level": 5,
     "image_filename": "shadow_ghoul.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 58621589,
-    "name": "Shadow of Eyes",
-    "type": "Trap Card",
-    "desc": "When a monster(s) is Set on your opponent's field: Target 1 of those Set monsters; change that Set monster to face-up Attack Position. (Flip Effects are not activated.)",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "shadow_of_eyes.jpg",
     "image_downloaded": true
   },
   {
@@ -16078,19 +15103,6 @@
     "def": null,
     "level": null,
     "image_filename": "shield_&_sword.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 59560625,
-    "name": "Shift",
-    "type": "Trap Card",
-    "desc": "When your opponent targets exactly 1 monster you control (and no other cards) for an attack, or with a Spell/Trap effect: Target another monster you control that would be an appropriate target; that attack/Spell/Trap now targets the new target.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "shift.jpg",
     "image_downloaded": true
   },
   {
@@ -16575,19 +15587,6 @@
     "image_downloaded": true
   },
   {
-    "id": 596051,
-    "name": "Snake Fang",
-    "type": "Trap Card",
-    "desc": "Decrease 1 selected monster's DEF by 500 points during the turn this card is activated.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "snake_fang.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 29802344,
     "name": "Snakeyashi",
     "type": "Normal Monster",
@@ -16598,19 +15597,6 @@
     "def": 1200,
     "level": 4,
     "image_filename": "snakeyashi.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 45986603,
-    "name": "Snatch Steal",
-    "type": "Spell Card",
-    "desc": "Equip only to a monster your opponent controls. Take control of the equipped monster. During each of your opponent's Standby Phases: They gain 1000 Life Points.",
-    "attribute": null,
-    "race": "Equip",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "snatch_steal.jpg",
     "image_downloaded": true
   },
   {
@@ -16689,19 +15675,6 @@
     "def": 1000,
     "level": 3,
     "image_filename": "solitude.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 23471572,
-    "name": "Solomon's Lawbook",
-    "type": "Trap Card",
-    "desc": "Skip your next Standby Phase.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "solomon_s_lawbook.jpg",
     "image_downloaded": true
   },
   {
@@ -17020,7 +15993,7 @@
     "id": 38275183,
     "name": "Spell Shield Type-8",
     "type": "Trap Card",
-    "desc": "Activate 1 of these effects.\n● When a Spell Card is activated that targets exactly 1 monster on the field: Negate the activation, and if you do, destroy it.\n● When a Spell Card is activated: Send 1 Spell Card from your hand to the Graveyard; negate the activation, and if you do, destroy it.",
+    "desc": "Activate 1 of these effects.\n\u25cf When a Spell Card is activated that targets exactly 1 monster on the field: Negate the activation, and if you do, destroy it.\n\u25cf When a Spell Card is activated: Send 1 Spell Card from your hand to the Graveyard; negate the activation, and if you do, destroy it.",
     "attribute": null,
     "race": "Counter",
     "atk": null,
@@ -17118,19 +16091,6 @@
     "def": 1000,
     "level": 3,
     "image_filename": "spirit_caller.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 69832741,
-    "name": "Spirit Elimination",
-    "type": "Spell Card",
-    "desc": "When monsters in the Graveyard are removed from play, remove monsters on your side of the field from play as substitutes. This card remains active until the end of the turn that it is activated. The substitutes remain removed from play.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "spirit_elimination.jpg",
     "image_downloaded": true
   },
   {
@@ -17316,19 +16276,6 @@
     "image_downloaded": true
   },
   {
-    "id": 94425169,
-    "name": "Spring of Rebirth",
-    "type": "Spell Card",
-    "desc": "Increase your Life Points by 500 points every time monsters return from the field to the owner's hand.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "spring_of_rebirth.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 21175632,
     "name": "St. Joan",
     "type": "Fusion Monster",
@@ -17446,19 +16393,6 @@
     "image_downloaded": true
   },
   {
-    "id": 83225447,
-    "name": "Stim-Pack",
-    "type": "Spell Card",
-    "desc": "The equipped monster gains 700 ATK. During each of your Standby Phases, the equipped monster loses 200 ATK.",
-    "attribute": null,
-    "race": "Equip",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "stim-pack.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 63432835,
     "name": "Stone Armadiller",
     "type": "Normal Monster",
@@ -17521,19 +16455,6 @@
     "def": 2000,
     "level": 4,
     "image_filename": "stone_statue_of_the_aztecs.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 63102017,
-    "name": "Stop Defense",
-    "type": "Spell Card",
-    "desc": "Select 1 Defense Position monster on your opponent's side of the field and change it to Attack Position.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "stop_defense.jpg",
     "image_downloaded": true
   },
   {
@@ -17693,19 +16614,6 @@
     "image_downloaded": true
   },
   {
-    "id": 40453765,
-    "name": "Swamp Battleguard",
-    "type": "Effect Monster",
-    "desc": "This card gains 500 ATK for each \"Lava Battleguard\" you control.",
-    "attribute": "EARTH",
-    "race": "Warrior",
-    "atk": 1800,
-    "def": 1500,
-    "level": 5,
-    "image_filename": "swamp_battleguard.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 41872150,
     "name": "Swarm of Locusts",
     "type": "Effect Monster",
@@ -17748,7 +16656,7 @@
     "id": 51345461,
     "name": "Sword Hunter",
     "type": "Effect Monster",
-    "desc": "At the end of the Battle Phase, if this card destroyed a monster(s) by battle and sent it to the Graveyard this Battle Phase: Equip all those monsters from the Graveyard to this card as an Equip Spell Card(s) with this effect.\n● The equipped monster gains 200 ATK.",
+    "desc": "At the end of the Battle Phase, if this card destroyed a monster(s) by battle and sent it to the Graveyard this Battle Phase: Equip all those monsters from the Graveyard to this card as an Equip Spell Card(s) with this effect.\n\u25cf The equipped monster gains 200 ATK.",
     "attribute": "EARTH",
     "race": "Warrior",
     "atk": 2450,
@@ -18226,19 +17134,6 @@
     "image_downloaded": true
   },
   {
-    "id": 30606547,
-    "name": "The Dark Door",
-    "type": "Spell Card",
-    "desc": "Only 1 monster can attack during each Battle Phase.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "the_dark_door.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 93346024,
     "name": "The Dragon Dwelling in the Cave",
     "type": "Normal Monster",
@@ -18278,19 +17173,6 @@
     "image_downloaded": true
   },
   {
-    "id": 68400115,
-    "name": "The Emperor's Holiday",
-    "type": "Trap Card",
-    "desc": "Negate all Equip Card effects on the field.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "the_emperor_s_holiday.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 65403020,
     "name": "The End of Anubis",
     "type": "Effect Monster",
@@ -18301,19 +17183,6 @@
     "def": 0,
     "level": 6,
     "image_filename": "the_end_of_anubis.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 34694160,
-    "name": "The Eye of Truth",
-    "type": "Trap Card",
-    "desc": "Your opponent must keep their hand revealed. Once per turn, during your opponent's Standby Phase, if they have a Spell(s) in their hand: They gain 1000 LP if they have a Spell(s) in their hand at resolution.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "the_eye_of_truth.jpg",
     "image_downloaded": true
   },
   {
@@ -18366,19 +17235,6 @@
     "def": null,
     "level": null,
     "image_filename": "the_flute_of_summoning_dragon.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 42829885,
-    "name": "The Forceful Sentry",
-    "type": "Spell Card",
-    "desc": "Look at your opponent's hand. Select 1 card among them and return it to his/her Deck. The Deck is then shuffled.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "the_forceful_sentry.jpg",
     "image_downloaded": true
   },
   {
@@ -18603,19 +17459,6 @@
     "image_downloaded": true
   },
   {
-    "id": 296499,
-    "name": "The Regulation of Tribe",
-    "type": "Trap Card",
-    "desc": "Declare 1 Type of monster. Monsters of the declared Type cannot attack. Tribute 1 monster from your side of the field during each of your Standby Phases. If you do not, this card is destroyed.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "the_regulation_of_tribe.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 16430187,
     "name": "The Reliable Guardian",
     "type": "Spell Card",
@@ -18795,19 +17638,6 @@
     "def": 1000,
     "level": 4,
     "image_filename": "the_unfriendly_amazon.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 51275027,
-    "name": "The Unhappy Maiden",
-    "type": "Effect Monster",
-    "desc": "When this card is sent to the Graveyard as a result of battle, the Battle Phase for that turn ends immediately.",
-    "attribute": "LIGHT",
-    "race": "Spellcaster",
-    "atk": 0,
-    "def": 100,
-    "level": 1,
-    "image_filename": "the_unhappy_maiden.jpg",
     "image_downloaded": true
   },
   {
@@ -19084,19 +17914,6 @@
     "image_downloaded": true
   },
   {
-    "id": 35316708,
-    "name": "Time Seal",
-    "type": "Trap Card",
-    "desc": "Skip the Draw Phase of your opponent's next turn.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "time_seal.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 71625222,
     "name": "Time Wizard",
     "type": "Effect Monster",
@@ -19159,19 +17976,6 @@
     "def": null,
     "level": null,
     "image_filename": "token_thanksgiving.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 82003859,
-    "name": "Toll",
-    "type": "Spell Card",
-    "desc": "Each player must pay 500 Life Points to declare an attack.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "toll.jpg",
     "image_downloaded": true
   },
   {
@@ -19315,19 +18119,6 @@
     "def": 1000,
     "level": 3,
     "image_filename": "torpedo_fish.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 53582587,
-    "name": "Torrential Tribute",
-    "type": "Trap Card",
-    "desc": "When a monster(s) is Summoned: Destroy all monsters on the field.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "torrential_tribute.jpg",
     "image_downloaded": true
   },
   {
@@ -19760,19 +18551,6 @@
     "image_downloaded": true
   },
   {
-    "id": 83887306,
-    "name": "Two-Pronged Attack",
-    "type": "Trap Card",
-    "desc": "Select and destroy 2 of your monsters and 1 of your opponent's monsters.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "two-pronged_attack.jpg",
-    "image_downloaded": true
-  },
-  {
     "id": 72842870,
     "name": "Tyhone",
     "type": "Normal Monster",
@@ -20056,19 +18834,6 @@
     "def": 1000,
     "level": 4,
     "image_filename": "vampiric_orchis.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 95220856,
-    "name": "Vengeful Bog Spirit",
-    "type": "Spell Card",
-    "desc": "Monsters cannot attack the turn they are Summoned.",
-    "attribute": null,
-    "race": "Continuous",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "vengeful_bog_spirit.jpg",
     "image_downloaded": true
   },
   {
@@ -20433,19 +19198,6 @@
     "def": 400,
     "level": 2,
     "image_filename": "weather_control.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 72053645,
-    "name": "Weather Report",
-    "type": "Flip Effect Monster",
-    "desc": "FLIP: Destroys all of your opponent's face-up \"Swords of Revealing Light\" on the field. If \"Swords of Revealing Light\" is destroyed, you can perform your Battle Phase twice this turn (or your next turn, if activated during your opponent's turn).",
-    "attribute": "WATER",
-    "race": "Aqua",
-    "atk": 950,
-    "def": 1500,
-    "level": 4,
-    "image_filename": "weather_report.jpg",
     "image_downloaded": true
   },
   {
@@ -20888,19 +19640,6 @@
     "def": 400,
     "level": 3,
     "image_filename": "woodland_sprite.jpg",
-    "image_downloaded": true
-  },
-  {
-    "id": 12253117,
-    "name": "World Suppression",
-    "type": "Trap Card",
-    "desc": "You can only activate this card when a Field Spell Card is activated. Negate the Field Spell Card during the turn this card is activated.",
-    "attribute": null,
-    "race": "Normal",
-    "atk": null,
-    "def": null,
-    "level": null,
-    "image_filename": "world_suppression.jpg",
     "image_downloaded": true
   },
   {
