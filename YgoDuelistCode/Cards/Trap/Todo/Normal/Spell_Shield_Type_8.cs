@@ -1,8 +1,13 @@
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
@@ -14,22 +19,47 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteTrapEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner == null || Owner.Creature == null)
+            return;
+
+        decimal block = IsUpgraded ? 10m : 7m;
+
+        // "Choose 1" implemented as: you may discard a Spell from hand; cancel = take the base block.
+        CardModel? chosenSpell = await TryChooseSpellToDiscard(choiceContext, Owner);
+        if (chosenSpell != null)
+        {
+            await CardCmd.Discard(choiceContext, chosenSpell);
+            block *= 2m;
+        }
+
+        await CreatureCmd.GainBlock(Owner.Creature, block, default, cardPlay);
     }
 
-    protected override void OnUpgrade()
+    private async Task<CardModel?> TryChooseSpellToDiscard(PlayerChoiceContext choiceContext, Player player)
     {
-        ExecuteTrapUpgradePlaceholder();
-    }
+        var hand = PileType.Hand.GetPile(player);
+        if (hand == null || hand.Cards.Count == 0)
+            return null;
 
-    private void ExecuteTrapEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
+        bool anySpell = hand.Cards.Any(c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell);
+        if (!anySpell)
+            return null;
 
-    private void ExecuteTrapUpgradePlaceholder()
-    {
+        var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = true
+        };
+
+        var selected = await CardSelectCmd.FromHand(
+            choiceContext,
+            player,
+            prefs,
+            c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
+            this);
+
+        return selected.FirstOrDefault();
     }
 }

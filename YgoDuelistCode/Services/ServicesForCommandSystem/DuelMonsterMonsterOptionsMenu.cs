@@ -58,6 +58,24 @@ public static class DuelMonsterMonsterOptionsMenu
             commands.Add(toggle);
         }
 
+        if (monsterCard is IMonsterActivatedEffect)
+        {
+            Activate_Effect activate = combatState.CreateCard<Activate_Effect>(player);
+            activate.InitializeSource(monsterCard);
+            commands.Add(activate);
+        }
+
+        if (monsterCard is IMonsterOptionCommandProvider provider)
+        {
+            foreach (var extra in provider.BuildExtraMonsterOptionCommands(combatState, player, pet))
+            {
+                if (extra == null)
+                    continue;
+                extra.InitializeSource(monsterCard);
+                commands.Add(extra);
+            }
+        }
+
         Exit_Monster_Options exit = combatState.CreateCard<Exit_Monster_Options>(player);
         exit.InitializeSource(monsterCard);
         commands.Add(exit);

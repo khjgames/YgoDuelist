@@ -67,8 +67,10 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             if (!card.IsMutable)
                 continue;
 
+            bool wasFaceDown = card.FaceDown;
             card.FaceDown = false;
             card.UpdateFaceDownKeywordFromBool();
+            YgoMonsterFlipEffectRunner.ScheduleIfFlippedOnField(card, wasFaceDown, choiceContext);
         }
     }
 }

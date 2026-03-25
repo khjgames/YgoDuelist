@@ -1,17 +1,24 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
-using YgoDuelist.YgoDuelistCode.Cards;
+using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
+/// <summary>
+/// Revised: damage all enemies for (sum of their attack intents) × 4 (×5 upgraded); destroy Spell/Trap zone and hand except Normal monsters;
+/// destroy non-Normal monsters on your field (pets killed, unsummoned cards to GY).
+/// </summary>
 public sealed class The_Law_of_the_Normal : BaseSpellCard
 {
     public The_Law_of_the_Normal()
@@ -21,19 +28,76 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner?.Creature == null)
+        Player? player = Owner;
+        if (player?.Creature?.CombatState == null)
             return;
 
-        var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.OfType<BaseMonsterCard>() ?? Enumerable.Empty<BaseMonsterCard>();
-        foreach (BaseMonsterCard m in field)
+        var cs = player.Creature.CombatState;
+        var enemies = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
+        int combined = 0;
+        foreach (Creature e in enemies)
+            combined += YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, player.Creature);
+
+        int mult = IsUpgraded ? 5 : 4;
+        decimal dmgEach = combined * mult;
+        if (dmgEach > 0)
         {
-            if (m.YgoCardType != YgoCardType.Monster)
+            foreach (Creature enemy in enemies)
+            {
+                if (!enemy.IsAlive)
+                    continue;
+                await CreatureCmd.Damage(choiceContext, enemy, dmgEach, ValueProp.Unpowered, player.Creature, this);
+            }
+        }
+
+        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        if (gy == null)
+            return;
+
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zone != null && zone.Cards.Count > 0)
+        {
+            List<CardModel> zoneCards = zone.Cards.ToList();
+            await CardPileCmd.Add(zoneCards, gy, CardPilePosition.Top, this, false);
+            YgoSpellTrapZoneBridge.SyncFromZonePile(player);
+            YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
+            YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
+        }
+
+        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.GetFieldMonsters(player).ToList())
+        {
+            if (m.YgoCardType == YgoCardType.Monster)
                 continue;
-            var pet = TributeSummonSelection.ResolvePetForFieldCard(Owner, m);
-            if (pet != null)
-                await PowerCmd.Apply<StrengthPower>(pet, 3m, Owner.Creature, this);
+            Creature? pet = TributeSummonSelection.ResolvePetForFieldCard(player, m);
+            if (pet != null && pet.IsAlive)
+                await CreatureCmd.Kill(pet, force: true);
+        }
+
+        CardPile? monsterPile = MonsterPile.CustomType.GetPile(player);
+        if (monsterPile != null)
+        {
+            foreach (CardModel c in monsterPile.Cards.ToList())
+            {
+                if (c is not BaseMonsterCard bm || bm.YgoCardType == YgoCardType.Monster)
+                    continue;
+                Creature? pet = TributeSummonSelection.ResolvePetForFieldCard(player, bm);
+                if (pet == null && c.Pile != gy)
+                    await CardPileCmd.Add(new[] { c }, gy, CardPilePosition.Top, this, false);
+            }
+        }
+
+        CardPile? hand = PileType.Hand.GetPile(player);
+        if (hand != null)
+        {
+            foreach (CardModel c in hand.Cards.ToList())
+            {
+                if (ReferenceEquals(c, this))
+                    continue;
+                if (c is BaseMonsterCard bm && bm.YgoCardType == YgoCardType.Monster)
+                    continue;
+                if (c.Pile != gy)
+                    await CardPileCmd.Add(new[] { c }, gy, CardPilePosition.Top, this, false);
+            }
         }
     }
-
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

@@ -9,6 +9,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
@@ -50,6 +51,7 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     public void InitializeSource(NormalMonsterCard source)
     {
         SourceMonster = source;
+        CardModelEnergyCache.Invalidate(this);
     }
 
     public YgoCardType YgoCardType => YgoCardType.Spell;
@@ -65,6 +67,13 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
 
     // Use the dedicated command card pool so these menu-only commands render in UIs without falling back to MockCardPool.
     public override CardPoolModel VisualCardPool => ModelDb.CardPool<YgoCommandCardPool>();
+
+    /// <summary>
+    /// Base <see cref="CardModel.Pool"/> only resolves if this card's id is listed in a pool's <c>AllCards</c>.
+    /// Menu-only commands that are not listed in <see cref="YgoCommandCardPool.AllCards"/> still need a pool; tie <see cref="Pool"/>
+    /// to <see cref="VisualCardPool"/> so UI code never hits <see cref="InvalidProgramException"/> ("not in any card pool").
+    /// </summary>
+    public override CardPoolModel Pool => VisualCardPool;
 
     /// <summary>
     /// Helper identical in spirit to BaseSpellCard.SendThisSpellToGraveyard,

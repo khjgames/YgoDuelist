@@ -6,26 +6,17 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
-/// <summary>Cestus of Dagla — Spellcaster equip; Splinter on battle damage (mod mapping for piercing burn).</summary>
+/// <summary>Cestus of Dagla — Spellcaster equip; restore HP when the equipped monster attacks.</summary>
 public sealed class Cestus_of_Dagla : BaseEquipSpellCard
 {
-    private const int PrintedAtkBonus = 5;
-    private int _bonusAtk = PrintedAtkBonus;
-
     public Cestus_of_Dagla()
         : base(1, CardRarity.Common, TargetType.Self)
     {
     }
 
-    public override bool GrantsSplinterDamage => true;
-
     public override bool CanEquipTo(BaseMonsterCard target) => target.DuelMonsterRace == DuelMonsterRace.Spellcaster;
 
-    public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => new StatEffectTotal(_bonusAtk, 0);
+    public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;
 
-    protected override void OnUpgrade()
-    {
-        _bonusAtk = PrintedAtkBonus + YgoStatUpgradeScaling.GetStatUpgradeBonus(PrintedAtkBonus);
-        EnergyCost.UpgradeBy(-1);
-    }
+    protected override void OnUpgrade() { }
 }

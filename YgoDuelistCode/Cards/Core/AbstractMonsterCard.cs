@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.HoverTips;
@@ -60,6 +63,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// <summary>True while in Hand Effect form (plays as Skill with that effect only).</summary>
     public bool IsHandEffectFormActive => SupportsHandEffectForm && _displayForm == MonsterDisplayForm.HandEffect;
 
+    /// <summary>Attack position for field / command menu (excludes defense and hand-effect forms).</summary>
+    public bool IsAttackBattlePosition => _displayForm == MonsterDisplayForm.Attack;
+
     public override CardType Type => _displayForm == MonsterDisplayForm.Attack ? CardType.Attack : CardType.Skill;
     public override TargetType TargetType =>
         _displayForm == MonsterDisplayForm.Attack ? TargetType.AnyEnemy : TargetType.Self;
@@ -80,9 +86,14 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             {
                 if (SupportsHandEffectForm && IsHandEffectFormActive)
                     return HandEffectMonsterEnergyCost;
-                return Type == CardType.Attack
+                int baseCost = Type == CardType.Attack
                     ? bm.DuelMonsterAttackPlayEnergy
                     : bm.DuelMonsterDefensePlayEnergy;
+                int discount = bm.GetDuelMonsterPlayEnergyDiscount();
+                if (discount <= 0)
+                    return baseCost;
+                int discounted = baseCost - discount;
+                return discounted < 0 ? 0 : discounted;
             }
 
             return _handSummonFallbackEnergy;
@@ -104,7 +115,11 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     {
         _displayForm = displayAsAttack ? MonsterDisplayForm.Attack : MonsterDisplayForm.Defense;
         if (_displayForm == MonsterDisplayForm.Attack && FaceDown)
+        {
+            bool wasFaceDown = FaceDown;
             FaceDown = false;
+            YgoMonsterFlipEffectRunner.ScheduleIfFlippedOnField(this, wasFaceDown, choiceContext: null);
+        }
         else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet)
             FaceDown = true;
         UpdateFaceDownKeywordFromBool();
@@ -125,16 +140,22 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// Defense → attack: face-up and <see cref="WillSet"/> = false (no automatic set).
     /// Attack → defense: position only; <see cref="FaceDown"/> and <see cref="WillSet"/> unchanged.
     /// </summary>
-    public void ApplyBattlePositionChangeFromCommandMenu()
+    /// <returns><c>true</c> if the monster switched from defense to attack this call.</returns>
+    public bool ApplyBattlePositionChangeFromCommandMenu()
     {
+        bool switchedFromDefenseToAttack = false;
+
         if (SupportsHandEffectForm && _displayForm == MonsterDisplayForm.HandEffect)
             _displayForm = MonsterDisplayForm.Defense;
 
         if (_displayForm == MonsterDisplayForm.Defense)
         {
+            switchedFromDefenseToAttack = true;
             _displayForm = MonsterDisplayForm.Attack;
+            bool wasFaceDown = FaceDown;
             FaceDown = false;
             WillSet = false;
+            YgoMonsterFlipEffectRunner.ScheduleIfFlippedOnField(this, wasFaceDown, choiceContext: null);
         }
         else
         {
@@ -143,11 +164,27 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
 
         UpdateFaceDownKeywordFromBool();
         AfterDisplayFormChanged();
+        return switchedFromDefenseToAttack;
     }
+
+    /// <summary>
+    /// After this card's field monster switches from defense to attack via <see cref="ApplyBattlePositionChangeFromCommandMenu"/>.
+    /// </summary>
+    public virtual Task OnSwitchedFromDefenseToAttackFromCommandAsync(PlayerChoiceContext choiceContext, Player player) =>
+        Task.CompletedTask;
+
+    /// <summary>
+    /// After this card's field monster switches from attack to defense via <see cref="ApplyBattlePositionChangeFromCommandMenu"/>.
+    /// </summary>
+    public virtual Task OnSwitchedFromAttackToDefenseFromCommandAsync(PlayerChoiceContext choiceContext, Player player) =>
+        Task.CompletedTask;
 
     /// <summary>Cycles attack / defense, or attack / defense / hand effect when supported. Right-click in hand.</summary>
     public void ToggleAttackSkill()
     {
+        if (this is BaseMonsterCard bm && MonsterCommandRegistry.SourceMonsterHasDieForYouForcedActive(Owner, bm))
+            return;
+
         if (!SupportsHandEffectForm)
         {
             _displayForm = _displayForm == MonsterDisplayForm.Attack
@@ -166,7 +203,11 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         }
 
         if (_displayForm == MonsterDisplayForm.Attack && FaceDown)
+        {
+            bool wasFaceDown = FaceDown;
             FaceDown = false;
+            YgoMonsterFlipEffectRunner.ScheduleIfFlippedOnField(this, wasFaceDown, choiceContext: null);
+        }
         else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet)
             FaceDown = true;
         else if (_displayForm == MonsterDisplayForm.HandEffect)

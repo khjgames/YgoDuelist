@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -14,22 +16,26 @@ public sealed class Book_of_Taiyou : BaseSpellCard
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner?.Creature?.CombatState == null)
+            return;
+
+        foreach (var creature in Owner.Creature.CombatState.Creatures)
+        {
+            if (!creature.IsAlive)
+                continue;
+
+            if (creature.Block > 0m)
+                await CreatureCmd.LoseBlock(creature, creature.Block);
+
+            while (creature.GetPower<ArtifactPower>() != null)
+                await PowerCmd.Remove<ArtifactPower>(creature);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        base.OnUpgrade();
     }
 }

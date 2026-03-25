@@ -7,29 +7,20 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
-public sealed class Curse_of_Darkness : BaseTrapCard
+public sealed class Curse_of_Darkness : BaseContinuousTrapCard
 {
     public Curse_of_Darkness()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapContinuous)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteTrapEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        await Task.CompletedTask;
     }
 
     protected override void OnUpgrade()
     {
-        ExecuteTrapUpgradePlaceholder();
-    }
-
-    private void ExecuteTrapEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteTrapUpgradePlaceholder()
-    {
+        base.OnUpgrade();
     }
 }

@@ -22,11 +22,11 @@ public sealed class Witchs_Apprentice : EffectMonsterCard
     {
     }
 
-    public override StatEffectTotal GetStatEffect(DuelMonsterAttribute targetAttribute)
+    public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
     {
-        if (targetAttribute == DuelMonsterAttribute.Dark)
+        if (target.DuelMonsterAttribute == DuelMonsterAttribute.Dark)
             return new StatEffectTotal(BaseMgc, 0); // +5 base, +6 when upgrade
-        if (targetAttribute == DuelMonsterAttribute.Light)
+        if (target.DuelMonsterAttribute == DuelMonsterAttribute.Light)
             return new StatEffectTotal(BaseMgc-9, 0); // -4 base, -3 when upgrade
         return StatEffectTotal.None;
     }

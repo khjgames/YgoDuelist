@@ -22,4 +22,5 @@ public sealed class Toon_Summoned_Skull : EffectMonsterCard
     {
     }
 
+    public override bool AttackDealsBlightedDamage => true;
 }

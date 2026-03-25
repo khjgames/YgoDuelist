@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -10,26 +15,60 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 public sealed class Spellbook_Organization : BaseSpellCard
 {
     public Spellbook_Organization()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
+        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
-    }
+        Player? player = Owner;
+        if (player == null)
+            return;
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
+        await CardPileCmd.ShuffleIfNecessary(choiceContext, player);
 
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
+        var drawPile = PileType.Draw.GetPile(player);
+        if (drawPile == null)
+            return;
 
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        var top = drawPile.Cards.Take(3).ToList();
+        if (top.Count == 0)
+            return;
+
+        var remaining = top.ToList();
+        var chosenTopToBottom = new List<CardModel>(remaining.Count);
+
+        while (remaining.Count > 0)
+        {
+            CardModel? pick;
+            if (remaining.Count == 1)
+            {
+                pick = remaining[0];
+            }
+            else
+            {
+                try
+                {
+                    pick = await CardSelectCmd.FromChooseACardScreen(choiceContext, remaining, player, canSkip: false);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+            }
+
+            if (pick == null)
+                return;
+
+            remaining.Remove(pick);
+            chosenTopToBottom.Add(pick);
+        }
+
+        // Rebuild top of draw pile: Add to top from bottom-most to top-most.
+        for (int i = chosenTopToBottom.Count - 1; i >= 0; i--)
+            await CardPileCmd.Add(new[] { chosenTopToBottom[i] }, drawPile, CardPilePosition.Top, this, false);
+
+        if (IsUpgraded)
+            await CardPileCmd.Draw(choiceContext, 1, player);
     }
 }

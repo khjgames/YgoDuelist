@@ -12,7 +12,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 public sealed class Talisman_of_Trap_Sealing : BaseContinuousSpellCard
 {
     public Talisman_of_Trap_Sealing()
-        : base(1, CardRarity.Common, TargetType.Self)
+        : base(0, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -24,5 +24,5 @@ public sealed class Talisman_of_Trap_Sealing : BaseContinuousSpellCard
             await PowerCmd.Apply<TalismanTrapSealingFieldPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade() => base.OnUpgrade();
 }

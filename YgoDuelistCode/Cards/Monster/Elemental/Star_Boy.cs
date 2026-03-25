@@ -22,11 +22,11 @@ public sealed class Star_Boy : EffectMonsterCard
     {
     }
 
-    public override StatEffectTotal GetStatEffect(DuelMonsterAttribute targetAttribute)
+    public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
     {
-        if (targetAttribute == DuelMonsterAttribute.Water)
+        if (target.DuelMonsterAttribute == DuelMonsterAttribute.Water)
             return new StatEffectTotal(BaseMgc, 0); // +5 base, +6 when upgrade
-        if (targetAttribute == DuelMonsterAttribute.Fire)
+        if (target.DuelMonsterAttribute == DuelMonsterAttribute.Fire)
             return new StatEffectTotal(BaseMgc-9, 0); // -4 base, -3 when upgrade
         return StatEffectTotal.None;
     }

@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -15,26 +18,68 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 public sealed class Burst_Breath : BaseTrapCard
 {
     public Burst_Breath()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner?.Creature?.CombatState == null)
+        var player = Owner;
+        if (player?.Creature?.CombatState == null)
             return;
 
-        bool hasDragon = DuelMonsterFieldRegistry
-            .GetFieldMonsters(Owner)
+        var combat = player.Creature.CombatState;
+        if (combat == null)
+            return;
+
+        var field = DuelMonsterFieldRegistry
+            .GetFieldMonsters(player)
             .OfType<BaseMonsterCard>()
-            .Any(m => m.DuelMonsterRace == DuelMonsterRace.Dragon);
+            .ToList();
 
-        if (!hasDragon)
+        var dragons = field
+            .Where(m => m.DuelMonsterRace == DuelMonsterRace.Dragon)
+            .ToList();
+
+        if (dragons.Count == 0)
             return;
 
-        foreach (Creature e in Owner.Creature.CombatState.HittableEnemies.Where(c => c.IsAlive))
+        BaseMonsterCard selectedDragon = dragons[0];
+        if (dragons.Count > 1)
         {
-            await DamageCmd.Attack(14m)
+            var ctx = new BlockingPlayerChoiceContext();
+            var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
+            {
+                Cancelable = true
+            };
+
+            IEnumerable<CardModel> pick;
+            try
+            {
+                pick = await CardSelectCmd.FromSimpleGrid(ctx, dragons, player, prefs);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+
+            selectedDragon = pick.OfType<BaseMonsterCard>().FirstOrDefault();
+            if (selectedDragon == null)
+                return;
+        }
+
+        // Damage uses the dragon's current ATK (including other field effects) before tributing.
+        decimal dragonAtk = selectedDragon.CalcDuelMonsterStats(field).Atk;
+
+        Creature? tributePet = TributeSummonSelection.ResolvePetForFieldCard(player, selectedDragon);
+        if (tributePet == null || !tributePet.IsAlive)
+            return;
+
+        await CreatureCmd.Kill(tributePet, force: true);
+
+        foreach (Creature e in combat.HittableEnemies.Where(c => c.IsAlive))
+        {
+            await DamageCmd.Attack(dragonAtk)
                 .FromCard(this)
                 .Targeting(e)
                 .WithHitFx("vfx/vfx_attack_slash")
@@ -42,5 +87,8 @@ public sealed class Burst_Breath : BaseTrapCard
         }
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+    }
 }

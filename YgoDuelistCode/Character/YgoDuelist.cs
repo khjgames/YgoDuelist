@@ -15,7 +15,11 @@ using YgoDuelist.YgoDuelistCode.Cards.Spell;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Character;
@@ -34,6 +38,103 @@ public class YgoDuelist : PlaceholderCharacterModel
 
     public override IEnumerable<CardModel> StartingDeck =>
     [
+        ModelDb.Card<Amazoness_Blowpiper>(),
+        ModelDb.Card<Amazoness_Swords_Woman>(),
+        ModelDb.Card<Amazoness_Tiger>(),
+        ModelDb.Card<Ameba>(),
+        ModelDb.Card<Anti_Aircraft_Flower>(),
+        ModelDb.Card<Anti_Spell>(),
+        ModelDb.Card<Appropriate>(),
+        ModelDb.Card<Arcane_Archer_of_the_Forest>(),
+        ModelDb.Card<Archfiend_s_Oath>(),
+        ModelDb.Card<Arsenal_Robber>(),
+        ModelDb.Card<Blast_Juggler>(),
+        ModelDb.Card<Blind_Destruction>(),
+        StartingUpgradedBadReactionToSimochi(),
+        ModelDb.Card<Upstart_Goblin>(),
+        ModelDb.Card<Upstart_Goblin>(),
+        ModelDb.Card<Upstart_Goblin>(),
+        ModelDb.Card<Upstart_Goblin>(),
+        ModelDb.Card<Book_of_Moon>(),
+        ModelDb.Card<Book_of_Taiyou>(),
+        ModelDb.Card<Bottomless_Shifting_Sand>(),
+        ModelDb.Card<Bottomless_Trap_Hole>(),
+        ModelDb.Card<Bowganian>(),
+        ModelDb.Card<Burning_Algae>(),
+        ModelDb.Card<Burning_Beast>(),
+        ModelDb.Card<Burning_Land>(),
+        ModelDb.Card<Burst_Breath>(),
+        ModelDb.Card<Burst_Stream_of_Destruction>(),
+        ModelDb.Card<Cat_s_Ear_Tribe>(),
+        ModelDb.Card<Cestus_of_Dagla>(),
+        ModelDb.Card<Chaos_Command_Magician>(),
+        ModelDb.Card<Chaos_End>(),
+        ModelDb.Card<Compulsory_Evacuation_Device>(),
+        ModelDb.Card<Convulsion_of_Nature>(),
+        ModelDb.Card<Crass_Clown>(),
+        ModelDb.Card<Cure_Mermaid>(),
+        ModelDb.Card<Curse_of_Aging>(),
+        ModelDb.Card<Curse_of_Anubis>(),
+        ModelDb.Card<Curse_of_Darkness>(),
+        ModelDb.Card<Cursed_Seal_of_the_Forbidden_Spell>(),
+        ModelDb.Card<Cyber_Jar>(),
+        ModelDb.Card<D_D_Crazy_Beast>(),
+        ModelDb.Card<D_D_Warrior_Lady>(),
+        ModelDb.Card<Dancing_Fairy>(),
+        ModelDb.Card<Dark_Cat_with_White_Tail>(),
+        ModelDb.Card<Dark_Hole>(),
+        ModelDb.Card<Dark_Jeroid>(),
+        ModelDb.Card<Dark_Magic_Attack>(),
+        ModelDb.Card<Dark_Mirror_Force>(),
+        ModelDb.Card<Dark_Snake_Syndrome>(),
+        ModelDb.Card<Dark_Spirit_of_the_Silent>(),
+        ModelDb.Card<Dark_Zebra>(),
+        ModelDb.Card<Darklord_Marie>(),
+        ModelDb.Card<Deal_of_Phantom>(),
+        ModelDb.Card<Des_Counterblow>(),
+        ModelDb.Card<Des_Kangaroo>(),
+        ModelDb.Card<Diffusion_Wave_Motion>(),
+        ModelDb.Card<Draining_Shield>(),
+        ModelDb.Card<Dream_Clown>(),
+        ModelDb.Card<Dust_Barrier>(),
+        ModelDb.Card<Elephant_Statue_of_Blessing>(),
+        ModelDb.Card<Elephant_Statue_of_Disaster>(),
+        ModelDb.Card<Emergency_Provisions>(),
+        ModelDb.Card<Enchanted_Javelin>(),
+        ModelDb.Card<Energy_Drain>(),
+        ModelDb.Card<Exiled_Force>(),
+        ModelDb.Card<Fairy_Box>(),
+        ModelDb.Card<Fairy_Guardian>(),
+        ModelDb.Card<Sparks>(),
+        ModelDb.Card<Spell_Shield_Type_8>(),
+        ModelDb.Card<Spellbinding_Circle>(),
+        ModelDb.Card<Spellbook_Organization>(),
+        ModelDb.Card<Spirit_of_the_Breeze>(),
+        ModelDb.Card<Stumbling>(),
+        ModelDb.Card<Super_Rejuvenation>(),
+        ModelDb.Card<Sword_Hunter>(),
+        ModelDb.Card<Tailor_of_the_Fickle>(),
+        ModelDb.Card<Tainted_Wisdom>(),
+        ModelDb.Card<Talisman_of_Spell_Sealing>(),
+        ModelDb.Card<Talisman_of_Trap_Sealing>(),
+        ModelDb.Card<Terrorking_Archfiend>(),
+        ModelDb.Card<The_Sanctuary_in_the_Sky>(),
+        ModelDb.Card<The_Agent_of_Wisdom_Mercury>(),
+        ModelDb.Card<The_Bistro_Butcher>(),
+        ModelDb.Card<The_Hunter_with_7_Weapons>(),
+        ModelDb.Card<The_Law_of_the_Normal>(),
+        ModelDb.Card<The_Legendary_Fisherman>(),
+        ModelDb.Card<Rush_Recklessly>(),
+        ModelDb.Card<The_Reliable_Guardian>(),
+        ModelDb.Card<Timeater>(),
+        ModelDb.Card<Tornado_Wall>(),
+        ModelDb.Card<Torpedo_Fish>(),
+        ModelDb.Card<Twin_Headed_Wolf>(),
+        ModelDb.Card<Zone_Eater>(),
+        ModelDb.Card<Possessed_Dark_Soul>(),
+        ModelDb.Card<Pitch_Dark_Dragon>(),
+        ModelDb.Card<Lord_of_D>(),
+        ModelDb.Card<Zombyra_the_Dark>(),
         ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Pot_Of_Greed>(),
         ModelDb.Card<Pot_Of_Greed>(),
@@ -101,4 +202,12 @@ public class YgoDuelist : PlaceholderCharacterModel
     public override string CustomCharacterSelectIconPath => "char_select_char_name.png".CharacterUiPath();
     public override string CustomCharacterSelectLockedIconPath => "char_select_char_name_locked.png".CharacterUiPath();
     public override string CustomMapMarkerPath => "map_marker_char_name.png".CharacterUiPath();
+
+    private static CardModel StartingUpgradedBadReactionToSimochi()
+    {
+        var card = (Bad_Reaction_to_Simochi)ModelDb.Card<Bad_Reaction_to_Simochi>().ToMutable();
+        card.UpgradeInternal();
+        card.FinalizeUpgradeInternal();
+        return card;
+    }
 }

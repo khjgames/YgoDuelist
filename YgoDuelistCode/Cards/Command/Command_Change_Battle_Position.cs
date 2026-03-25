@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
@@ -41,10 +42,17 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
         if (pet != null && pet.HasPower<StiffPower>())
             return;
 
-        monster.ApplyBattlePositionChangeFromCommandMenu();
+        bool wasAttackPosition = monster.IsAttackBattlePosition;
+        bool switchedDefToAtk = monster.ApplyBattlePositionChangeFromCommandMenu();
 
         if (pet != null)
             await MonsterCommandRegistry.ApplyStiffFromBattlePositionChangeOnly(pet, player.Creature, this);
+
+        var ctx = new BlockingPlayerChoiceContext();
+        if (switchedDefToAtk)
+            await monster.OnSwitchedFromDefenseToAttackFromCommandAsync(ctx, player);
+        else if (wasAttackPosition)
+            await monster.OnSwitchedFromAttackToDefenseFromCommandAsync(ctx, player);
 
         YgoOptionHandBridge.RequestDeferredSyncFromOptionPile(player);
     }

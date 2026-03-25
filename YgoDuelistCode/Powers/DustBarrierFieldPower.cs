@@ -7,7 +7,9 @@ using MegaCrit.Sts2.Core.Localization;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>Turn-limited block shield; stacks count down each player turn.</summary>
+/// <summary>
+/// While <see cref="Cards.Spell.Todo.Continuos.Dust_Barrier"/> is active: your Normal Monster pets ignore Weak, Frail, and negative Strength/Dexterity (duration counter).
+/// </summary>
 public sealed class DustBarrierFieldPower : YgoDuelistPower
 {
     public override PowerType Type => PowerType.Buff;
@@ -23,7 +25,6 @@ public sealed class DustBarrierFieldPower : YgoDuelistPower
         if (player != Owner.Player)
             return;
 
-        await CreatureCmd.GainBlock(Owner, 6m, default, null);
         await PowerCmd.ModifyAmount(this, -1m, null, null);
         if (Amount <= 0)
             await PowerCmd.Remove(this);

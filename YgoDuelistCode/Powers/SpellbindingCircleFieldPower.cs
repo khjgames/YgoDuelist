@@ -7,11 +7,10 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>Approximates "cannot attack" by re-applying Weak each turn.</summary>
+/// <summary>Each turn: enemies lose 1 temporary Strength and gain 1 Spellbound.</summary>
 public sealed class SpellbindingCircleFieldPower : YgoDuelistPower
 {
     public override PowerType Type => PowerType.Buff;
@@ -32,6 +31,9 @@ public sealed class SpellbindingCircleFieldPower : YgoDuelistPower
             return;
 
         foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
-            await PowerCmd.Apply<WeakPower>(e, 1m, Owner, null);
+        {
+            await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, 1m, Owner, null);
+            await PowerCmd.Apply<SpellboundPower>(e, 1m, Owner, null);
+        }
     }
 }

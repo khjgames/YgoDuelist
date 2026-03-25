@@ -3,10 +3,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Services;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
@@ -24,9 +23,8 @@ public sealed class Archfiend_s_Oath : BaseContinuousSpellCard
         if (Owner?.Creature == null)
             return;
 
-        await CreatureCmd.Damage(choiceContext, Owner.Creature, 5m, ValueProp.Unpowered, null, this);
-        if (Owner != null)
-            await YgoSpellCounterService.Add(Owner, 2, this);
+        // Triggers once per player turn via the field power (damage + declare + top-card resolution).
+        await PowerCmd.Apply<Archfiend_s_OathFieldPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);

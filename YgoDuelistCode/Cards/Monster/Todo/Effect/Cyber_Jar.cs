@@ -1,10 +1,15 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -12,7 +17,7 @@ public sealed class Cyber_Jar : EffectMonsterCard
 {
     public Cyber_Jar()
         : base(
-            cost: 1,
+            cost: 3,
             type: CardType.Attack,
             rarity: CardRarity.Common,
             target: TargetType.AnyEnemy,
@@ -27,8 +32,55 @@ public sealed class Cyber_Jar : EffectMonsterCard
 
     protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner != null)
-            await CardPileCmd.Draw(choiceContext, 3, Owner);
+        Player? player = Owner;
+        if (player?.PlayerCombatState == null)
+            return;
+
+        var pcs = player.PlayerCombatState;
+        List<Creature> duelPets = pcs.Pets
+            .Where(p => p.Monster is DuelMonsterModel && p.IsAlive)
+            .ToList();
+        foreach (Creature pet in duelPets)
+            await CreatureCmd.Kill(pet, force: true);
+
+        int revealCount = IsUpgraded ? 6 : 5;
+        CardPile draw = pcs.DrawPile;
+        CardPile discard = pcs.DiscardPile;
+
+        var revealed = new List<CardModel>();
+        for (int i = 0; i < revealCount; i++)
+        {
+            await CardPileCmd.ShuffleIfNecessary(choiceContext, player);
+            if (draw.IsEmpty)
+                break;
+            CardModel? top = draw.Cards.FirstOrDefault();
+            if (top == null)
+                break;
+            revealed.Add(top);
+            await CardPileCmd.Add(top, discard, CardPilePosition.Top, top, false);
+        }
+
+        foreach (CardModel card in revealed)
+        {
+            if (card is BaseMonsterCard bm
+                && bm.DuelMonsterLevel <= 4
+                && bm.CanSummonDuelMonster
+                && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
+            {
+                bool summoned = await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, bm, choiceContext);
+                if (summoned)
+                {
+                    Creature? pet = pcs.Pets
+                        .FirstOrDefault(p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceCardForPet(p) == bm);
+                    if (pet != null)
+                        MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn = true;
+                }
+                else
+                    await CardPileCmd.Add(card, draw, CardPilePosition.Bottom, card, false);
+            }
+            else
+                await CardPileCmd.Add(card, draw, CardPilePosition.Bottom, card, false);
+        }
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();

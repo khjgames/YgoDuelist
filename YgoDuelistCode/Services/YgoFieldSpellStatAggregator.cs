@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -53,6 +54,9 @@ public static class YgoFieldSpellStatAggregator
         }
     }
 
+    public static bool HasActiveFaceUpFieldSpell<T>(Player? player) where T : BaseFieldSpellCard =>
+        GetActiveFaceUpFieldSpells(player).Any(fs => fs is T);
+
     public static void RefreshMonsterSummonKeywords(Player? player)
     {
         if (player == null)
@@ -64,11 +68,17 @@ public static class YgoFieldSpellStatAggregator
             foreach (CardModel c in hand.Cards)
             {
                 if (c is BaseMonsterCard m)
+                {
                     m.RefreshSummonKeywordsForMonsterLevel();
+                    CardModelEnergyCache.Invalidate(m);
+                }
             }
         }
 
         foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        {
             m.RefreshSummonKeywordsForMonsterLevel();
+            CardModelEnergyCache.Invalidate(m);
+        }
     }
 }

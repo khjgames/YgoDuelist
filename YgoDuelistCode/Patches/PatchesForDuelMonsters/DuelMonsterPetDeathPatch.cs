@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HarmonyLib;
@@ -14,8 +15,11 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Models.Powers;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -54,8 +58,27 @@ public static class DuelMonsterPetDeathPatch
                 return;
             }
 
+            if (card is Burning_Algae)
+            {
+                var cs = pet.CombatState;
+                if (cs != null)
+                {
+                    TaskHelper.RunSafely(HealAllEnemiesAsync(cs, 10m));
+                }
+            }
+
             if (card is BaseMonsterCard bmc && bmc.DuelMonsterRace == DuelMonsterRace.Dragon)
                 GraveyardRelic.RegisterDragonMonsterDestroyed(player);
+
+            if (card is BaseMonsterCard fairySrc
+                && fairySrc.DuelMonsterRace == DuelMonsterRace.Fairy
+                && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<The_Sanctuary_in_the_Sky>(player))
+            {
+                bool dieForYou = pet.HasPower<DieForYouPower>()
+                    || (MonsterCommandRegistry.TryGet(pet, out var cmdState) && cmdState.DieForYouEnabled);
+                if (dieForYou)
+                    GraveyardRelic.ArmSanctuaryHalveNextSpillDamage(player);
+            }
 
             // If the current option pile is for this monster, clear it so the player can't use options pointing at a dead monster.
             var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
@@ -71,12 +94,22 @@ public static class DuelMonsterPetDeathPatch
                 }
             }
 
-            // Send attached equips to the Graveyard, then the monster card.
             var graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
-            if (graveyard != null && card.Pile != graveyard)
+            bool bounceToHand = YgoDuelMonsterBounceToHand.TryConsume(pet);
+
+            if (bounceToHand)
+            {
+                CardPile? hand = PileType.Hand.GetPile(player);
+                if (hand != null && graveyard != null && card.Pile != hand)
+                {
+                    GD.Print($"[ZGO] DuelMonsterPetDeathPatch: bounce {card.Id.Entry} to hand (equips to GY).");
+                    TaskHelper.RunSafely(MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, hand, graveyard));
+                }
+            }
+            else if (graveyard != null && card.Pile != graveyard)
             {
                 GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
-                TaskHelper.RunSafely(MoveEquipsThenMonsterToGraveyardAsync(player, card, graveyard));
+                TaskHelper.RunSafely(MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, graveyard, graveyard));
             }
 
             // Remove from field/command registries so it no longer affects stats or menus.
@@ -115,7 +148,17 @@ public static class DuelMonsterPetDeathPatch
         }
     }
 
-    private static async Task MoveEquipsThenMonsterToGraveyardAsync(Player player, BaseMonsterCard card, CardPile graveyard)
+    private static async Task HealAllEnemiesAsync(CombatState cs, decimal amount)
+    {
+        foreach (Creature enemy in cs.Enemies.Where(e => e.IsAlive))
+            await CreatureCmd.Heal(enemy, amount);
+    }
+
+    private static async Task MoveEquipsToGraveyardThenMonsterToPileAsync(
+        Player player,
+        BaseMonsterCard card,
+        CardPile monsterDestination,
+        CardPile graveyardForEquips)
     {
         IReadOnlyList<BaseEquipSpellCard> equips = YgoEquipSpellRegistry.TakeAllEquipsFromMonster(card);
         foreach (BaseEquipSpellCard eq in equips)
@@ -124,7 +167,7 @@ public static class DuelMonsterPetDeathPatch
             {
                 await CardPileCmd.Add(
                     new CardModel[] { eq },
-                    graveyard,
+                    graveyardForEquips,
                     CardPilePosition.Top,
                     eq,
                     false);
@@ -134,11 +177,11 @@ public static class DuelMonsterPetDeathPatch
         YgoSpellTrapZoneBridge.SyncFromZonePile(player);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
 
-        if (card.Pile != graveyard)
+        if (card.Pile != monsterDestination)
         {
             await CardPileCmd.Add(
                 new CardModel[] { card },
-                graveyard,
+                monsterDestination,
                 CardPilePosition.Top,
                 card,
                 false);

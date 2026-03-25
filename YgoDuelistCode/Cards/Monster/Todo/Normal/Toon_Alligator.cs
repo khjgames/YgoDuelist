@@ -21,4 +21,6 @@ public sealed class Toon_Alligator : NormalMonsterCard
             duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
+
+    public override bool AttackDealsBlightedDamage => true;
 }

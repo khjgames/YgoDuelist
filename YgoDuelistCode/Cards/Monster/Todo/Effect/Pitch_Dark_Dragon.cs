@@ -5,6 +5,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>Revised: same ATK/DEF/level as Dark Blade (fusion material).</summary>
 public sealed class Pitch_Dark_Dragon : EffectMonsterCard
 {
     public Pitch_Dark_Dragon()
@@ -13,13 +14,14 @@ public sealed class Pitch_Dark_Dragon : EffectMonsterCard
             type: CardType.Attack,
             rarity: CardRarity.Common,
             target: TargetType.AnyEnemy,
-            duelMonsterLevel: 3,
+            duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 9,
-            baseDef: 6,
+            baseAtk: 18,
+            baseDef: 15,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
 
+    public override bool AttackDealsSplinterDamage => true;
 }

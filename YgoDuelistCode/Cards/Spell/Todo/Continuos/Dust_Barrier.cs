@@ -21,7 +21,7 @@ public sealed class Dust_Barrier : BaseContinuousSpellCard
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature != null)
-            await PowerCmd.Apply<DustBarrierFieldPower>(Owner.Creature, 3m, Owner.Creature, this);
+            await PowerCmd.Apply<DustBarrierFieldPower>(Owner.Creature, 2m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);

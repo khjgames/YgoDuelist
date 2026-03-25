@@ -1,20 +1,21 @@
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Ameba : EffectMonsterCard
+public sealed class Ameba : EffectMonsterCard, IMonsterActivatedEffect
 {
     public Ameba()
         : base(
-            cost: 1,
+            cost: 0,
             type: CardType.Attack,
             rarity: CardRarity.Common,
             target: TargetType.AnyEnemy,
@@ -27,14 +28,33 @@ public sealed class Ameba : EffectMonsterCard
     {
     }
 
-    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public int ActivatedEffectEnergyCost => 3;
+    public CardType ActivatedEffectCardType => CardType.Attack;
+    public TargetType ActivatedEffectTarget => TargetType.AnyEnemy;
+    public string ActivatedEffectDescriptionLocKey => "YGODUELIST-AMEBA.activated_effect.description";
+
+    public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
-        if (Owner == null || !YgoAnnualTracker.TryConsumeAnnual(Owner, "AMEBA_GROW"))
+        var player = source.Owner;
+        if (player == null || cardPlay.Target == null)
             return;
 
-        var pet = TributeSummonSelection.ResolvePetForFieldCard(Owner, this);
-        if (pet != null && Owner.Creature != null)
-            await PowerCmd.Apply<StrengthPower>(pet, 4m, Owner.Creature, this);
+        var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source);
+        if (pet == null)
+            return;
+
+        MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
+
+        await CreatureCmd.Kill(pet, force: true);
+        var grave = GraveyardPile.CustomType.GetPile(player);
+        if (grave != null)
+            await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
+
+        await DamageCmd.Attack(20m)
+            .FromCard(source)
+            .Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .Execute(choiceContext);
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();

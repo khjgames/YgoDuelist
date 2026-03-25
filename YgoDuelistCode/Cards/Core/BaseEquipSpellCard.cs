@@ -35,6 +35,15 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
     /// <summary>When true, the equipped monster's attacks also resolve Splinter splash (see <see cref="Relics.GraveyardRelic"/>).</summary>
     public virtual bool GrantsSplinterDamage => false;
 
+    /// <summary>When true, the equipped monster's attacks also apply Blight from unblocked damage (see <see cref="Relics.GraveyardRelic"/>).</summary>
+    public virtual bool GrantsBlightedDamage => false;
+
+    /// <summary>Per-equip override: Splinter for this attachment (default: <see cref="GrantsSplinterDamage"/>).</summary>
+    public virtual bool GrantsSplinterTo(BaseMonsterCard equipped) => GrantsSplinterDamage;
+
+    /// <summary>Per-equip override: Blighted attacks for this attachment (default: <see cref="GrantsBlightedDamage"/>).</summary>
+    public virtual bool GrantsBlightTo(BaseMonsterCard equipped) => GrantsBlightedDamage;
+
     protected override bool IsPlayable
     {
         get
@@ -86,6 +95,8 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
         await CreatureCmd.TriggerAnim(player.Creature, "Cast", player.Character.CastAnimDelay);
 
         await YgoSpellTrapZoneBridge.ActivateEquipSpellAsync(this, targetMonster);
+
+        await YgoCurseOfDarknessSpellHook.AfterSpellResolved(choiceContext, this);
 
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);

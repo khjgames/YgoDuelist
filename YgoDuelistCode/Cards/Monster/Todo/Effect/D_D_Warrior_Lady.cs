@@ -1,11 +1,19 @@
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class D_D_Warrior_Lady : EffectMonsterCard
+public sealed class D_D_Warrior_Lady : EffectMonsterCard, IMonsterActivatedEffect
 {
     public D_D_Warrior_Lady()
         : base(
@@ -22,4 +30,42 @@ public sealed class D_D_Warrior_Lady : EffectMonsterCard
     {
     }
 
+    public int ActivatedEffectEnergyCost => 0;
+    public CardType ActivatedEffectCardType => CardType.Attack;
+    public TargetType ActivatedEffectTarget => TargetType.AnyEnemy;
+    public string ActivatedEffectDescriptionLocKey => "YGODUELIST-D_D_WARRIOR_LADY.activated_effect.description";
+
+    public bool IsActivatedEffectAvailable
+    {
+        get
+        {
+            Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this);
+            return pet != null
+                && MonsterCommandRegistry.TryGet(pet, out MonsterCommandState s)
+                && s.WarriorLadyBanishWindowActive;
+        }
+    }
+
+    public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
+    {
+        Player? player = source.Owner;
+        Creature? target = cardPlay.Target;
+        if (player == null || target == null || target.Side != CombatSide.Enemy)
+            return;
+
+        Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source);
+        if (pet == null)
+            return;
+
+        MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
+        MonsterCommandRegistry.GetOrCreate(pet).WarriorLadyBanishWindowActive = false;
+
+        await CreatureCmd.Kill(pet, force: true);
+        await YgoShadowRealmService.BanishCard(player, source);
+
+        decimal vuln = source.IsUpgraded ? 3m : 2m;
+        await PowerCmd.Apply<VulnerablePower>(target, vuln, player.Creature, source);
+    }
+
+    protected override void OnUpgrade() => base.OnUpgrade();
 }

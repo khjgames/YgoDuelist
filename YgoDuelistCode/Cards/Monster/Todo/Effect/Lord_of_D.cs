@@ -5,6 +5,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>While on the field: Dragon-type monsters gain +2 ATK and +2 DEF (YGO 200 ÷ 100).</summary>
 public sealed class Lord_of_D : EffectMonsterCard
 {
     public Lord_of_D()
@@ -22,4 +23,10 @@ public sealed class Lord_of_D : EffectMonsterCard
     {
     }
 
+    public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
+    {
+        if (target.DuelMonsterRace == DuelMonsterRace.Dragon)
+            return new StatEffectTotal(2, 2);
+        return StatEffectTotal.None;
+    }
 }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -9,27 +10,29 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Upstart_Goblin : BaseSpellCard
 {
+    private const decimal EnemyHeal = 10m;
+
     public Upstart_Goblin()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
-    }
+        if (Owner == null)
+            return;
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
+        int draw = IsUpgraded ? 3 : 2;
+        await CardPileCmd.Draw(choiceContext, draw, Owner);
 
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
+        if (Owner.Creature?.CombatState == null)
+            return;
 
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        foreach (var enemy in Owner.Creature.CombatState.HittableEnemies)
+        {
+            if (!enemy.IsAlive)
+                continue;
+            await CreatureCmd.Heal(enemy, EnemyHeal);
+        }
     }
 }

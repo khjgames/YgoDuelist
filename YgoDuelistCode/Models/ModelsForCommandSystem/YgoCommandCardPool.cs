@@ -45,6 +45,7 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
         ModelDb.Card<Command_Change_Battle_Position>(),
         ModelDb.Card<Command_Attack>(),
         ModelDb.Card<Command_Defend>(),
+        ModelDb.Card<Activate_Effect>(),
     };
 
     public override bool IsColorless => false;

@@ -1,17 +1,27 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Anti_Aircraft_Flower : EffectMonsterCard
+public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedEffect
 {
+    private static readonly LocString TributePrompt = new("combat_messages", "TRIBUTE_SUMMON_SELECT");
+
     public Anti_Aircraft_Flower()
         : base(
             cost: 1,
@@ -27,20 +37,90 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard
     {
     }
 
-    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public int ActivatedEffectEnergyCost => 0;
+    public CardType ActivatedEffectCardType => CardType.Skill;
+    public TargetType ActivatedEffectTarget => TargetType.Self;
+    public string ActivatedEffectDescriptionLocKey => "YGODUELIST-ANTI_AIRCRAFT_FLOWER.activated_effect.description";
+
+    public bool IsActivatedEffectAvailable =>
+        Owner?.PlayerCombatState?.Pets.Any(p =>
+            p.IsAlive
+            && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard c
+            && c.DuelMonsterAttribute == DuelMonsterAttribute.Earth
+            && !ReferenceEquals(c, this)) == true;
+
+    public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
-        if (Owner?.Creature?.CombatState == null)
+        var player = source.Owner;
+        if (player?.PlayerCombatState?.Pets == null)
             return;
 
-        var list = Owner.Creature.CombatState.HittableEnemies.Where(c => c.IsAlive).ToList();
-        if (list.Count == 0)
+        Creature? sourcePet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source);
+        if (sourcePet == null)
             return;
 
-        var target = Owner.RunState.Rng.CombatTargets.NextItem(list);
-        if (target == null)
+        // Tribute any 1 Earth monster on your side (excluding this monster itself).
+        var candidates = new List<(Creature pet, BaseMonsterCard card)>();
+        foreach (Creature pet in player.PlayerCombatState.Pets)
+        {
+            if (!pet.IsAlive)
+                continue;
+
+            BaseMonsterCard? card = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            if (card == null)
+                continue;
+
+            if (card.DuelMonsterAttribute != DuelMonsterAttribute.Earth)
+                continue;
+
+            if (ReferenceEquals(card, source))
+                continue;
+
+            candidates.Add((pet, card));
+        }
+
+        if (candidates.Count == 0)
             return;
 
-        await PowerCmd.Apply<VulnerablePower>(target, 2m, Owner.Creature, this);
+        var candidateCards = candidates.Select(c => c.card).ToList();
+        var prefs = new CardSelectorPrefs(TributePrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = true,
+        };
+
+        IEnumerable<CardModel> picked;
+        try
+        {
+            picked = await CardSelectCmd.FromSimpleGrid(choiceContext, candidateCards, player, prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
+        if (chosen == null)
+            return;
+
+        Creature? tributePet = candidates.FirstOrDefault(c => ReferenceEquals(c.card, chosen)).pet;
+        if (tributePet == null || !tributePet.IsAlive)
+            return;
+
+        MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(sourcePet, true);
+
+        await CreatureCmd.Kill(tributePet, force: true);
+
+        CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+        if (graveyard != null)
+            await CardPileCmd.Add(new[] { chosen }, graveyard, CardPilePosition.Top, chosen, false);
+
+        var cs = player.Creature?.CombatState;
+        if (cs == null)
+            return;
+
+        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
+            await CreatureCmd.Damage(choiceContext, e, 8m, ValueProp.Unpowered, sourcePet, source);
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();

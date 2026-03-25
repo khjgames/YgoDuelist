@@ -22,11 +22,11 @@ public sealed class Milus_Radiant : EffectMonsterCard
     {
     }
 
-    public override StatEffectTotal GetStatEffect(DuelMonsterAttribute targetAttribute)
+    public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
     {
-        if (targetAttribute == DuelMonsterAttribute.Earth)
+        if (target.DuelMonsterAttribute == DuelMonsterAttribute.Earth)
             return new StatEffectTotal(BaseMgc, 0); // +5 base, +6 when upgrade
-        if (targetAttribute == DuelMonsterAttribute.Wind)
+        if (target.DuelMonsterAttribute == DuelMonsterAttribute.Wind)
             return new StatEffectTotal(BaseMgc-9, 0); // -4 base, -3 when upgrade
         return StatEffectTotal.None;
     }

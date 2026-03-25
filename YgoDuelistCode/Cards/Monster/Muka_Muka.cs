@@ -25,7 +25,9 @@ public sealed class Muka_Muka : EffectMonsterCard
             baseAtk: 6,
             baseDef: 3,
             baseMgc: 2,
-            duelMonsterRace: DuelMonsterRace.Rock)
+            duelMonsterRace: DuelMonsterRace.Rock,
+            duelMonsterAttackPlayEnergyOverride: 1,
+            duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
 
@@ -45,6 +47,18 @@ public sealed class Muka_Muka : EffectMonsterCard
         return Math.Max(0, hand.Count(c => c != card));
     }
 
+    private static decimal GetPrintedAtk(CardModel card, Muka_Muka m) =>
+        card.DynamicVars?.Damage != null ? card.DynamicVars.Damage.BaseValue : m.BaseAtk;
+
+    private static decimal GetPrintedDef(CardModel card, Muka_Muka m)
+    {
+        if (card.DynamicVars != null && card.DynamicVars.ContainsKey("Def"))
+            return card.DynamicVars["Def"].BaseValue;
+        if (card.DynamicVars?.Block != null)
+            return card.DynamicVars.Block.BaseValue;
+        return m.BaseDef;
+    }
+
     private static decimal GetCalculatedAtk(CardModel card)
     {
         if (card is not Muka_Muka m)
@@ -53,7 +67,7 @@ public sealed class Muka_Muka : EffectMonsterCard
         decimal mgc = (card.DynamicVars != null && card.DynamicVars.ContainsKey("Mgc"))
             ? card.DynamicVars["Mgc"].BaseValue
             : (decimal)m.BaseMgc;
-        return m.BaseAtk + mgc * others;
+        return GetPrintedAtk(card, m) + mgc * others;
     }
 
     private static decimal GetCalculatedDef(CardModel card)
@@ -64,13 +78,7 @@ public sealed class Muka_Muka : EffectMonsterCard
         decimal mgc = (card.DynamicVars != null && card.DynamicVars.ContainsKey("Mgc"))
             ? card.DynamicVars["Mgc"].BaseValue
             : (decimal)m.BaseMgc;
-        return m.BaseDef + mgc * others;
-    }
-
-    protected override void OnUpgrade()
-    {
-        base.OnUpgrade();
-        DynamicVars.Damage.UpgradeValueBy(1m);
+        return GetPrintedDef(card, m) + mgc * others;
     }
 
     /// <summary>
@@ -78,9 +86,10 @@ public sealed class Muka_Muka : EffectMonsterCard
     /// </summary>
     protected override (int atk, int def) GetSecondaryStats()
     {
-        // Use the same logic as the preview variables but return just the delta over base stats.
+        int printedAtk = (int)GetPrintedAtk(this, this);
+        int printedDef = (int)GetPrintedDef(this, this);
         int atk = (int)GetCalculatedAtk(this);
         int def = (int)GetCalculatedDef(this);
-        return (atk - BaseAtk, def - BaseDef);
+        return (atk - printedAtk, def - printedDef);
     }
 }

@@ -22,4 +22,5 @@ public sealed class Dark_Blade : NormalMonsterCard
     {
     }
 
+    public override bool AttackDealsSplinterDamage => true;
 }

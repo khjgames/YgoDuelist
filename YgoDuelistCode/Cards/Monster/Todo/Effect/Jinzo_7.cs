@@ -22,4 +22,5 @@ public sealed class Jinzo_7 : EffectMonsterCard
     {
     }
 
+    public override bool AttackDealsBlightedDamage => true;
 }

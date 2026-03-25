@@ -1,0 +1,52 @@
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Services;
+
+namespace YgoDuelist.YgoDuelistCode.Cards.Command;
+
+/// <summary>
+/// Single monster-options command; behavior and display come from <see cref="IMonsterActivatedEffect"/> on <see cref="MonsterCommandCard.SourceMonster"/>.
+/// </summary>
+public sealed class Activate_Effect : MonsterCommandCard
+{
+    private IMonsterActivatedEffect? Effect => SourceMonster as IMonsterActivatedEffect;
+
+    public Activate_Effect()
+    {
+    }
+
+    public override CardType Type => Effect?.ActivatedEffectCardType ?? CardType.Skill;
+
+    public override TargetType TargetType => Effect?.ActivatedEffectTarget ?? TargetType.Self;
+
+    protected override int CanonicalEnergyCost => Effect?.ActivatedEffectEnergyCost ?? 0;
+
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (!base.IsPlayable || SourceMonster is not IMonsterActivatedEffect)
+                return false;
+            if (SourceMonster.FaceDown)
+                return false;
+            if (SourceMonster is IMonsterActivatedEffect impl && !impl.IsActivatedEffectAvailable)
+                return false;
+            var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster);
+            if (pet == null)
+                return false;
+            return !MonsterCommandRegistry.GetOrCreate(pet).HasUsedActivatedEffectThisTurn;
+        }
+    }
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner == null || SourceMonster is not IMonsterActivatedEffect impl || SourceMonster.FaceDown)
+            return;
+
+        await impl.OnActivatedEffect(choiceContext, cardPlay, SourceMonster);
+    }
+}

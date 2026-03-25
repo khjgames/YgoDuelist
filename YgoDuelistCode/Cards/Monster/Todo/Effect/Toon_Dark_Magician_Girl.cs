@@ -21,4 +21,6 @@ public sealed class Toon_Dark_Magician_Girl : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
+
+    public override bool AttackDealsBlightedDamage => true;
 }

@@ -1,7 +1,12 @@
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -10,26 +15,70 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
 {
     public Cursed_Seal_of_the_Forbidden_Spell()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapCounter)
+        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapCounter)
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override bool IsPlayable
     {
-        ExecuteTrapEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        get
+        {
+            if (!base.IsPlayable)
+                return false;
+
+            var hand = Owner?.PlayerCombatState?.Hand;
+            if (hand == null)
+                return false;
+
+            return hand.Cards.Any(c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell);
+        }
+    }
+
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner == null)
+            return;
+
+        CardModel? spell = await ChooseSpellToDiscard(choiceContext);
+        if (spell == null)
+            return;
+
+        await CardCmd.Discard(choiceContext, spell);
+
+        decimal artifact = IsUpgraded ? 4m : 3m;
+        await PowerCmd.Apply<ArtifactPower>(Owner.Creature, artifact, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        ExecuteTrapUpgradePlaceholder();
+        base.OnUpgrade();
     }
 
-    private void ExecuteTrapEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    private async Task<CardModel?> ChooseSpellToDiscard(PlayerChoiceContext choiceContext)
     {
-    }
+        if (Owner == null)
+            return null;
 
-    private void ExecuteTrapUpgradePlaceholder()
-    {
+        var hand = PileType.Hand.GetPile(Owner);
+        if (hand == null || hand.Cards.Count == 0)
+            return null;
+
+        if (!hand.Cards.Any(c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell))
+            return null;
+
+        var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = false
+        };
+
+        var selected = await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            prefs,
+            c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
+            this);
+
+        return selected.FirstOrDefault();
     }
 }

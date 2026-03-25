@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Services;
+using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
@@ -23,12 +23,12 @@ public sealed class Deal_of_Phantom : BaseTrapCard
         if (Owner?.Creature == null)
             return;
 
-        var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.OfType<BaseMonsterCard>() ?? Enumerable.Empty<BaseMonsterCard>();
-        if (!field.Any())
+        int monstersInGrave = GraveyardRelic.GetGraveyardCards(Owner).Count(c => c is BaseMonsterCard);
+        decimal per = IsUpgraded ? 2m : 1m;
+        decimal block = per * monstersInGrave;
+        if (block <= 0m)
             return;
 
-        await CreatureCmd.GainBlock(Owner.Creature, 18m, default, cardPlay);
+        await CreatureCmd.GainBlock(Owner.Creature, block, default, cardPlay);
     }
-
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

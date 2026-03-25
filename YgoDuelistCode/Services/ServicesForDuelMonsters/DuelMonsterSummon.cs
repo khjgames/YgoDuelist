@@ -1,3 +1,4 @@
+using System.Linq;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -5,9 +6,14 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -82,11 +88,33 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         // Track this card as an active field monster for aura/stat calculations and menu commands.
         DuelMonsterFieldRegistry.RegisterSummon(player, card, petCreature);
 
+        bool stumblingField = YgoStumblingField.IsActive(player);
+        if (stumblingField)
+            await PowerCmd.Apply<YgoStumblingDefendOnlyPower>(petCreature, 1m, player.Creature, null);
+
+        bool anubisTurn = player.Creature.HasPower<YgoCurseOfAnubisPlayerMarkerPower>();
+        if (anubisTurn && card is EffectMonsterCard && !petCreature.HasPower<YgoCurseOfAnubisEffectMonsterPower>())
+            await PowerCmd.Apply<YgoCurseOfAnubisEffectMonsterPower>(petCreature, 1m, player.Creature, null);
+
         // Normal/tribute summons: mark Command as used this turn. Special summons pass canAttackThisTurn: true.
-        if (!canAttackThisTurn)
+        // Stumbling: summons may still Command Defend; YgoStumblingDefendOnlyPower blocks Attack only.
+        if (!canAttackThisTurn && !stumblingField)
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(petCreature, true, player.Creature, card);
 
         await DuelMonsterStancePowerSync.SyncForPetAsync(petCreature, card, player.Creature, card);
+
+        if (card is The_Hunter_with_7_Weapons hunterCard)
+        {
+            GraveyardRelic? gy = player.Relics.OfType<GraveyardRelic>().FirstOrDefault();
+            gy?.OnHunterSummonedDuringSevenWeaponsBonus(hunterCard);
+            await GraveyardRelic.SyncSevenWeaponsCounterPetsAsync(player);
+        }
+
+        if (card is Cure_Mermaid cureMermaid)
+        {
+            await MonsterCommandRegistry.SetDieForYouForcedAsync(petCreature, true, player, cureMermaid);
+            NCombatRoom.Instance?.GetCreatureNode(petCreature)?.TrackBlockStatus(player.Creature);
+        }
 
         // After the summon completes, move the monster card into the MonsterPile
         // so it is no longer in Hand/Discard/etc.

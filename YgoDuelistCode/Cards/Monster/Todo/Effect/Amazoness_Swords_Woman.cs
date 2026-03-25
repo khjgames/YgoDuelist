@@ -1,5 +1,9 @@
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -20,6 +24,13 @@ public sealed class Amazoness_Swords_Woman : EffectMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
+    }
+
+    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner?.Creature == null)
+            return;
+        await PowerCmd.Apply<ThornsPower>(Owner.Creature, 3m, Owner.Creature, this);
     }
 
 }

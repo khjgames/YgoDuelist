@@ -1,4 +1,8 @@
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -22,4 +26,13 @@ public sealed class Chaos_Command_Magician : EffectMonsterCard
     {
     }
 
+    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner?.Creature == null)
+            return;
+
+        await PowerCmd.Apply<ArtifactPower>(Owner.Creature, 2m, Owner.Creature, this);
+    }
+
+    protected override void OnUpgrade() => base.OnUpgrade();
 }

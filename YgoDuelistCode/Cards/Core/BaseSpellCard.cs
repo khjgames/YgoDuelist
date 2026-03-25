@@ -49,6 +49,8 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
 
         await OnSpellPlay(choiceContext, cardPlay);
 
+        await YgoCurseOfDarknessSpellHook.AfterSpellResolved(choiceContext, this);
+
         await SendThisSpellToGraveyard(choiceContext);
     }
 

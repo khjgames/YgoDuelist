@@ -22,7 +22,7 @@ public sealed class D_D_Crazy_Beast : EffectMonsterCard
     {
     }
 
-    public override bool AttackDealsSplinterDamage => true;
+    public override int PermanentAtkDeltaOnEnemyExecute => 2;
 
     protected override void OnUpgrade() => base.OnUpgrade();
 }

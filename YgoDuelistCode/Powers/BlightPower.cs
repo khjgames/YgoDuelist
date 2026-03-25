@@ -8,9 +8,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>
-/// At end of the player's turn, the owner loses HP equal to stacks (ignores block), then this power is removed.
-/// </summary>
+/// <summary>Blight X: at end of the player's turn, lose X HP (ignores Block), then remove.</summary>
 public sealed class BlightPower : YgoDuelistPower
 {
     public override PowerType Type => PowerType.Debuff;

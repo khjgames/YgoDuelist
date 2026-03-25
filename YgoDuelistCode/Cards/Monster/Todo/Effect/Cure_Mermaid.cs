@@ -1,7 +1,4 @@
-using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -21,14 +18,10 @@ public sealed class Cure_Mermaid : EffectMonsterCard
             baseAtk: 15,
             baseDef: 8,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fish)
+            duelMonsterRace: DuelMonsterRace.Fish,
+            duelMonsterAttackPlayEnergyOverride: 2,
+            duelMonsterDefensePlayEnergyOverride: 1)
     {
-    }
-
-    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        if (Owner?.Creature != null)
-            await CreatureCmd.Heal(Owner.Creature, 12m);
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();

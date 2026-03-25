@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -27,6 +29,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Energy to play from hand / summon in defense stance (Z = BaseDef).</summary>
     public int DuelMonsterDefensePlayEnergy { get; }
 
+    /// <summary>Subtracts from attack/defense play energy (e.g. The Legendary Fisherman while Umi is up). Clamped to 0.</summary>
+    public virtual int GetDuelMonsterPlayEnergyDiscount() => 0;
+
     /// <summary>Level (star count) for the duel monster this card summons.</summary>
     public override int DuelMonsterLevel => _duelMonsterLevel;
 
@@ -36,10 +41,10 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Duel monster race / type for the card frame icon.</summary>
     public override DuelMonsterRace DuelMonsterRace { get; }
 
-    /// <summary>Mod keyword Splinter (YGO piercing): unblocked damage to the primary target splashes 50% to other enemies.</summary>
+    /// <summary>Splinter (YGO piercing): when this deals unblocked damage, each other enemy takes 50% of that damage.</summary>
     public virtual bool AttackDealsSplinterDamage => false;
 
-    /// <summary>Mod keyword Blighted (YGO direct-attack style): 50% of unblocked hit damage applies as Blight stacks on the target.</summary>
+    /// <summary>Blighted (YGO direct attack): 50% of unblocked hit damage applies as Blight stacks on the hit enemy (Blight X ticks at end of your turn, ignores Block, then removes).</summary>
     public virtual bool AttackDealsBlightedDamage => false;
 
     /// <summary>
@@ -48,10 +53,15 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public virtual int PermanentAtkDeltaOnEnemyExecute => 0;
 
     /// <summary>
-    /// Support effect this monster applies to a target duel monster based on its attribute (e.g. +MGC ATK to same-attribute, -4 to the opposing attribute).
+    /// If false for a given kill, <see cref="PermanentAtkDeltaOnEnemyExecute"/> does not apply for that target (e.g. only real monsters).
+    /// </summary>
+    public virtual bool AppliesPermanentAtkDeltaOnEnemyKill(Creature killedEnemy) => true;
+
+    /// <summary>
+    /// Field aura: stat change this monster grants to <paramref name="target"/> while both are on the field (attribute, race, etc.).
     /// Default: no effect.
     /// </summary>
-    public virtual StatEffectTotal GetStatEffect(DuelMonsterAttribute targetAttribute) => StatEffectTotal.None;
+    public virtual StatEffectTotal GetStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 
     /// <summary>
     /// Optional extra ATK/DEF from this card's own secondary stats (e.g. hand-based scaling like Muka Muka).
@@ -110,8 +120,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// </summary>
     public DuelMonsterStats CalcDuelMonsterStats(IEnumerable<BaseMonsterCard> fieldMonsters)
     {
-        int atk = BaseAtk;
-        int def = BaseDef;
+        GetDynamicPrintedAtkDef(out int atk, out int def);
 
         // Include any per-card secondary scaling (e.g. hand-based bonuses).
         var (secAtk, secDef) = GetSecondaryStats();
@@ -124,8 +133,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             {
                 if (source == null)
                     continue;
-                // Each monster on the field can contribute a flat ATK/DEF change for this attribute.
-                StatEffectTotal effect = source.GetStatEffect(DuelMonsterAttribute);
+                // Each monster on the field can contribute a flat ATK/DEF aura to this card.
+                StatEffectTotal effect = source.GetStatEffect(this);
                 atk += effect.BonusAtk;
                 def += effect.BonusDef;
             }
@@ -169,6 +178,23 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     }
 
     /// <summary>
+    /// ATK/DEF as shown on the card: <see cref="DynamicVars"/> (upgrades, runtime changes) when present, else <see cref="BaseAtk"/>/<see cref="BaseDef"/>.
+    /// </summary>
+    private void GetDynamicPrintedAtkDef(out int atk, out int def)
+    {
+        atk = BaseAtk;
+        def = BaseDef;
+        if (DynamicVars == null)
+            return;
+        if (DynamicVars.Damage != null)
+            atk = (int)DynamicVars.Damage.BaseValue;
+        if (DynamicVars.ContainsKey("Def"))
+            def = (int)DynamicVars["Def"].BaseValue;
+        else if (DynamicVars.Block != null)
+            def = (int)DynamicVars.Block.BaseValue;
+    }
+
+    /// <summary>
     /// Printed level plus face-up field spell level modifiers (e.g. A Legendary Ocean), clamped 1–12 for UI and tribute rules.
     /// </summary>
     public int GetEffectiveDuelMonsterLevel()
@@ -205,4 +231,18 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             "cards",
             Id.Entry + ".title",
             PortraitPath);
+
+    private bool SourcePetHasCurseOfAnubis()
+    {
+        if (this is not EffectMonsterCard || IsCanonical || Owner?.PlayerCombatState == null)
+            return false;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this && pet.HasPower<YgoCurseOfAnubisEffectMonsterPower>())
+                return true;
+        }
+
+        return false;
+    }
 }

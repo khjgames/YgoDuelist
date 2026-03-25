@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -6,6 +7,8 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
@@ -23,6 +26,19 @@ public sealed class Command_Attack : MonsterCommandCard
     public Command_Attack(NormalMonsterCard source)
         : base(source, source.DuelMonsterAttackPlayEnergy, CardType.Attack, TargetType.AnyEnemy)
     {
+    }
+
+    protected override int CanonicalEnergyCost
+    {
+        get
+        {
+            if (SourceMonster == null)
+                return 0;
+            Creature? pet = FindPetForMonster(SourceMonster);
+            if (pet != null && MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn)
+                return 0;
+            return SourceMonster.DuelMonsterAttackPlayEnergy;
+        }
     }
 
     /// <summary>Always Attack so the card frame is correct when created from canonical (parameterless) instance.</summary>
@@ -50,6 +66,15 @@ public sealed class Command_Attack : MonsterCommandCard
             if (!base.IsPlayable || SourceMonster == null) return false;
             var pet = FindPetForMonster(SourceMonster);
             if (pet == null) return false;
+            if (pet.HasPower<YgoStumblingDefendOnlyPower>())
+                return false;
+            if (SourceMonster is Dark_Zebra && Owner != null)
+            {
+                var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.ToList() ?? [];
+                if (field.Count == 1 && field[0] == SourceMonster)
+                    return false;
+            }
+
             return !MonsterCommandRegistry.GetOrCreate(pet).HasUsedCommandThisTurn;
         }
     }

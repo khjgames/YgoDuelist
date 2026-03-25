@@ -1,35 +1,61 @@
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Enchanted_Javelin : BaseTrapCard
 {
     public Enchanted_Javelin()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override bool IsPlayable
     {
-        ExecuteTrapEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        get
+        {
+            if (!base.IsPlayable || Owner?.Creature?.CombatState == null)
+                return false;
+            return AnyEnemyWithAttackIntent(Owner);
+        }
+    }
+
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner?.Creature == null)
+            return;
+
+        var target = cardPlay.Target;
+        if (target == null || !target.IsAlive)
+            return;
+
+        int incoming = YgoIntentAttackDamage.GetTotalAttackIntentDamage(target, Owner.Creature);
+        if (incoming <= 0)
+            return;
+
+        await CreatureCmd.Heal(Owner.Creature, incoming / 9m);
     }
 
     protected override void OnUpgrade()
     {
-        ExecuteTrapUpgradePlaceholder();
+        base.OnUpgrade();
     }
 
-    private void ExecuteTrapEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    private static bool AnyEnemyWithAttackIntent(Player player)
     {
-    }
-
-    private void ExecuteTrapUpgradePlaceholder()
-    {
+        Creature? pc = player.Creature;
+        if (pc?.CombatState is not CombatState cs)
+            return false;
+        return cs.HittableEnemies.Any(e => e.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) > 0);
     }
 }

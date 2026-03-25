@@ -38,6 +38,7 @@ public abstract class BaseContinuousSpellCard : BaseSpellCard
 
         await CreatureCmd.TriggerAnim(player.Creature, "Cast", player.Character.CastAnimDelay);
         await OnSpellPlay(choiceContext, cardPlay);
+        await YgoCurseOfDarknessSpellHook.AfterSpellResolved(choiceContext, this);
         await YgoSpellTrapZoneBridge.ActivateContinuousSpellAsync(this);
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);

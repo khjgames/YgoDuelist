@@ -4,6 +4,8 @@ You will refer to and implement these revised versions in the cs and localizatio
 Important reminder interpretation rule / note:
 Many things in yugioh are in multiples of 100 in terms of stats healing or damage, in our mod for any of those things that are above 100 you should divide them by 100 to get the correct implementation values. ex: 100 atk to 1 atk, 8000 lp to 80 lp.
 
+when implementing dice rolls or any rng mechanics it needs to use consistent deterministic rng that wont interfere with multiplayer state sync. For example basing the fixed deterministic seed of the rng roll by the floor number and turn number in the combat and using the same deterministic rng logic for coin flips.
+
 amazoness blowpiper  -> can apply weak 
 amazoness swords woman  -> gives you 3 thorns
 amazoness tiger  -> 4 atk per amazoness monster
@@ -30,7 +32,7 @@ Burst Stream Of Destruction  -> 0 cost, target blue-eyes, all enemies take damag
 Cat's Ear Tribe  -> 0 cost, attacked target temp strength -1
 Cestus of Dagla -> 1 cost, restore 1 health when equipped monster attacks
 Chaos Command Magician -> Gain 2 artifact
-Chaos End -> 1 cost, 5 damage per card in shadow realm
+Chaos End -> uncommon, 1 cost, 5 damage per card in shadow realm
 Compulsary Evacuation Device  -> Target temp strength -5
 Convulsion of Nature  -> Allways reveal the top card of your draw pile
 Crass Clown  -> When changed from defense to attack, target one enemy, apply 1 weak and deal 6 damage.
@@ -155,3 +157,47 @@ Splinter: “When this deals unblocked damage, all other enemies are hit for 50%
 
 this monster can Attack Directly changes to Blighted effect -> Deal an additional 50% damage as Blight. 
  Blight X: “At end of turn, lose X health. Ignores block. Remove Blight.”
+
+---
+
+## Remaining revised cards — lettered A–Z
+
+**A–T:** four cards per chunk. **U:** two cards (82 total names does not divide evenly by 4). **V–Z:** cross-cutting rules from this doc (not individual cards).
+
+**Already implemented or audited as matching the doc (not listed below):** Blind Destruction, Bottomless Shifting Sand, Burning Land, Book of Moon, Bowganian, Chaos Command Magician, Dark Magic Attack, Rush Recklessly, The Reliable Guardian, Possessed Dark Soul.
+
+| Chunk | Cards |
+|-------|--------|
+| **A** | Amazoness Blowpiper, Amazoness Swords Woman, Amazoness Tiger, Ameba |
+| **B** | Anti-Aircraft Flower, Anti-Spell (Spell Barrier), Appropriate, Arcane Archer of the Forest |
+| **C** | Archfiend's Oath, Arsenal Robber, Blast Juggler, Book of Taiyou |
+| **D** | Bottomless Trap Hole, Burning Algae, Burning Beast, Burst Breath |
+| **E** | Burst Stream of Destruction, Cat's Ear Tribe, Cestus of Dagla, Chaos End |
+| **F** | Compulsary Evacuation Device, Convulsion of Nature, Crass Clown, Cure Mermaid |
+| **G** | Curse of Aging, Curse of Anubis, Curse of Darkness, Cursed Seal of the Forbidden Spell |
+| **H** | Cyber Jar, D.D. Crazy Beast, D.D. Warrior Lady, Dancing Fairy |
+| **I** | Dark Cat with White Tail, Dark Hole, Dark Jeroid, Dark Mirror Force |
+| **J** | Dark Snake Syndrome, Dark Spirit of the Silent, Dark Zebra, Darklord Marie |
+| **K** | Deal of Phantom, Des Counterblow, Des Kangaroo, Diffusion Wave-Motion |
+| **L** | Draining Shield, Dream Clown, Dust Barrier, Elephant Statue of Blessing |
+| **M** | Elephant Statue of Disaster, Emergency Provisions, Enchanted Javelin, Energy Drain |
+| **N** | Exiled Force, Fairy Box, Fairy Guardian, Sparks |
+| **O** | Spell Shield Type-B, Spellbinding Circle, Spellbook Organization, Spirit of the Breeze |
+| **P** | Stumbling, Super Rejuvenation, Sword Hunter, Tailor of the Fickle |
+| **Q** | Tainted Wisdom, Talisman of Spell Sealing, Talisman of Trap Sealing, Terrorking Archfiend |
+| **R** | The Sanctuary in the Sky, The Agent of Wisdom — Mercury, The Bistro Butcher, The Hunter With 7 Weapons |
+| **S** | The Law of the Normal, The Legendary Fisherman, Timeater, Tornado Wall |
+| **T** | Torpedo Fish, Twin-Headed Wolf, Zone Eater, Pitch-Dark Dragon |
+| **U** | Lord of D., Zombyra the Dark |
+
+**Per-card total in table:** 20×4 + 2 = **82** (chunks **A–U**).
+
+**Letters V–Z** (global spec, not single cards):
+
+| Chunk | Scope |
+|-------|--------|
+| **V** | ÷100 scaling + deterministic dice/coin RNG (doc intro) |
+| **W** | Generic upgrade scaling (+2 / +3 / +4 / +5 tiers) |
+| **X** | Monster attack/defense energy formula (all level bands) |
+| **Y** | Forced die-for-you / toggle lock note |
+| **Z** | Splinter + Blight behavior |

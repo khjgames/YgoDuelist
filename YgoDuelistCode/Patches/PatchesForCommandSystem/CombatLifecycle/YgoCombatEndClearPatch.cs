@@ -23,12 +23,15 @@ public static class YgoCombatEndClearPatch
     {
         DuelMonsterFieldRegistry.ClearAll();
         MonsterCommandRegistry.ClearAll();
+        YgoDarkSnakeSyndromeTargetState.ClearAll();
+        YgoDarkSpiritSilentState.ClearAll();
         NormalSummonTracker.ClearAll();
         TributeSummonPlayPayload.ClearAll();
         EquipSpellPlayPayload.ClearAll();
         RitualSpellPlayPayload.ClearAll();
         FusionSpellPlayPayload.ClearAll();
         YgoEquipSpellRegistry.ClearAll();
+        YgoCurseOfDarknessSpellHook.ClearAll();
 
         if (combatState != null)
         {

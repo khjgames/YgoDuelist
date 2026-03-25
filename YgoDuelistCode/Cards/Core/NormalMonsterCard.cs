@@ -126,7 +126,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null || mats.Count < tribute)
                 {
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
-                    await CombatAction(choiceContext, cardPlay);
+                    if (!ShouldSkipCombatActionAfterSummon(cardPlay))
+                        await CombatAction(choiceContext, cardPlay);
                     return;
                 }
 
@@ -147,14 +148,22 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     protected virtual Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
+    /// <summary>Tribute fallback path: skip the post-summon combat action when true (e.g. Dark Zebra alone on field).</summary>
+    protected virtual bool ShouldSkipCombatActionAfterSummon(CardPlay cardPlay) => false;
+
     // Complex: override in effect monsters for calculated damage.
     // public virtual decimal GetDamageAmount(Creature? target) => DynamicVars.Damage.BaseValue;
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseAtk));
-        DynamicVars["Def"].UpgradeValueBy(YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseDef));
-        DynamicVars["Mgc"].UpgradeValueBy(YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseMgc));
+        int atkBonus = YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseAtk);
+        int defBonus = YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseDef);
+        int mgcBonus = YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseMgc);
+        DynamicVars.Damage.UpgradeValueBy(atkBonus);
+        DynamicVars["Def"].UpgradeValueBy(defBonus);
+        if (DynamicVars.Block != null)
+            DynamicVars.Block.UpgradeValueBy(defBonus);
+        DynamicVars["Mgc"].UpgradeValueBy(mgcBonus);
     }
 
     public static decimal GetTotalAtkForPreview(CardModel card)

@@ -5,6 +5,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
@@ -19,8 +21,11 @@ public sealed class Convulsion_of_Nature : BaseContinuousSpellCard
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner != null)
-            await CardPileCmd.Draw(choiceContext, 2, Owner);
+        if (Owner?.Creature == null)
+            return;
+
+        await ConvulsionOfNatureReveal.TryRevealDrawTop(choiceContext, Owner);
+        await PowerCmd.Apply<ConvulsionOfNatureFieldPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);

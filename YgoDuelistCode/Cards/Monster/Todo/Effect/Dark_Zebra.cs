@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -22,4 +26,11 @@ public sealed class Dark_Zebra : EffectMonsterCard
     {
     }
 
+    protected override bool ShouldSkipCombatActionAfterSummon(CardPlay cardPlay)
+    {
+        if (Type != CardType.Attack || Owner == null)
+            return false;
+        List<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.ToList() ?? [];
+        return field.Count == 1 && field[0] == this;
+    }
 }

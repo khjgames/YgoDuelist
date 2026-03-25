@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -24,6 +23,19 @@ public sealed class Command_Defend : MonsterCommandCard
     public Command_Defend(NormalMonsterCard source)
         : base(source, source.DuelMonsterDefensePlayEnergy, CardType.Skill, TargetType.Self)
     {
+    }
+
+    protected override int CanonicalEnergyCost
+    {
+        get
+        {
+            if (SourceMonster == null)
+                return 0;
+            Creature? pet = FindPetForMonster(SourceMonster);
+            if (pet != null && MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn)
+                return 0;
+            return SourceMonster.DuelMonsterDefensePlayEnergy;
+        }
     }
 
     public new LocString Description
@@ -51,17 +63,11 @@ public sealed class Command_Defend : MonsterCommandCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        GD.Print("[ZGO Command_Defend] OnPlay start");
         var player = Owner;
         if (player == null || SourceMonster == null)
-        {
-            GD.Print("[ZGO Command_Defend] Early return: player=", player != null, " SourceMonster=", SourceMonster != null);
             return;
-        }
-        GD.Print("[ZGO Command_Defend] Player found: ");
 
         var pet = FindPetForMonster(SourceMonster);
-        GD.Print("[ZGO Command_Defend] Pet found: ", pet != null);
         if (pet != null)
         {
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, true, player.Creature, SourceMonster);

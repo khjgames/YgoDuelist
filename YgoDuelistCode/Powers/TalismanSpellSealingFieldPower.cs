@@ -1,8 +1,5 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -11,6 +8,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
+/// <summary>While <see cref="Cards.Trap.Todo.Continuos.Talisman_of_Spell_Sealing"/> is active: once per turn at turn start, gain 2 Artifact until end of turn.</summary>
 public sealed class TalismanSpellSealingFieldPower : YgoDuelistPower
 {
     public override PowerType Type => PowerType.Buff;
@@ -26,11 +24,7 @@ public sealed class TalismanSpellSealingFieldPower : YgoDuelistPower
         if (player != Owner.Player)
             return;
 
-        var cs = Owner.CombatState;
-        if (cs == null)
-            return;
-
-        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
-            await PowerCmd.Apply<VulnerablePower>(e, 1m, Owner, null);
+        await PowerCmd.Apply<ArtifactPower>(Owner, 2m, Owner, null);
+        await PowerCmd.Apply<YgoScheduledArtifactRemovalPower>(Owner, 2m, Owner, null);
     }
 }

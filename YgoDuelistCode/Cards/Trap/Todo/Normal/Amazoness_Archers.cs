@@ -1,12 +1,18 @@
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
+/// <summary>Trap: enemies that intend to attack you lose effective damage via Weak.</summary>
 public sealed class Amazoness_Archers : BaseTrapCard
 {
     public Amazoness_Archers()
@@ -14,22 +20,18 @@ public sealed class Amazoness_Archers : BaseTrapCard
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteTrapEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner?.Creature?.CombatState == null)
+            return;
+
+        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies.Where(c => c.IsAlive))
+        {
+            if (YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, Owner.Creature) <= 0)
+                continue;
+            await PowerCmd.Apply<WeakPower>(enemy, 2m, Owner.Creature, this);
+        }
     }
 
-    protected override void OnUpgrade()
-    {
-        ExecuteTrapUpgradePlaceholder();
-    }
-
-    private void ExecuteTrapEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteTrapUpgradePlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

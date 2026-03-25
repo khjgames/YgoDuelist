@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -18,8 +16,8 @@ public sealed class Insect_Armor_with_Laser_Cannon : BaseEquipSpellCard
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;
 
+    public override bool GrantsSplinterTo(BaseMonsterCard equipped) =>
+        equipped.DuelMonsterRace is DuelMonsterRace.Beast or DuelMonsterRace.BeastWarrior or DuelMonsterRace.WingedBeast;
 
-    protected override void OnUpgrade()
-    {
-    }
+    protected override void OnUpgrade() { }
 }

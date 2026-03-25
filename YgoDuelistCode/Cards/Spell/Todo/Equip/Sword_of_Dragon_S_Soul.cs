@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -18,8 +16,7 @@ public sealed class Sword_of_Dragon_S_Soul : BaseEquipSpellCard
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;
 
+    public override bool GrantsSplinterDamage => true;
 
-    protected override void OnUpgrade()
-    {
-    }
+    protected override void OnUpgrade() { }
 }

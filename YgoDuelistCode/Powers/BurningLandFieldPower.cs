@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>Standby burn while <see cref="Cards.Spell.Todo.Continuos.Burning_Land"/> is active.</summary>
+/// <summary>End-of-turn burn to enemies while <see cref="Cards.Spell.Todo.Continuos.Burning_Land"/> is active (poison timing).</summary>
 public sealed class BurningLandFieldPower : YgoDuelistPower
 {
     public override PowerType Type => PowerType.Debuff;
@@ -22,12 +22,10 @@ public sealed class BurningLandFieldPower : YgoDuelistPower
 
     public override LocString Description => new("powers", "YGODUELIST-BURNING_LAND_FIELD_POWER.description");
 
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {
-        if (player != Owner.Player)
+        if (side != CombatSide.Player || Owner.Side != CombatSide.Player)
             return;
-
-        await CreatureCmd.Damage(choiceContext, Owner, 5m, ValueProp.Unpowered, null, null);
 
         var cs = Owner.CombatState;
         if (cs == null)

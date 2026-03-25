@@ -23,4 +23,6 @@ public sealed class Dark_Blade_the_Dragon_Knight : FusionMonsterCard
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Pitch_Dark_Dragon))
     {
     }
+
+    public override bool AttackDealsSplinterDamage => true;
 }
