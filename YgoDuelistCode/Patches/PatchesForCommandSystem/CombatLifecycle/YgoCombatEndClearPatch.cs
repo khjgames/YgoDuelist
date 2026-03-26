@@ -30,6 +30,8 @@ public static class YgoCombatEndClearPatch
         EquipSpellPlayPayload.ClearAll();
         RitualSpellPlayPayload.ClearAll();
         FusionSpellPlayPayload.ClearAll();
+        TailorOfTheFicklePlayPayload.ClearAll();
+        EmergencyProvisionsPlayPayload.ClearAll();
         YgoEquipSpellRegistry.ClearAll();
         YgoCurseOfDarknessSpellHook.ClearAll();
 

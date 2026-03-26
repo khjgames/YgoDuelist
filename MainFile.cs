@@ -4,10 +4,12 @@ using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
+using MegaCrit.Sts2.Core.Models;
 using BaseLib.Utils;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Nodes;
+using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist;
@@ -24,7 +26,13 @@ public partial class MainFile : Node
     {
         Harmony harmony = new(ModId);
 
-        harmony.PatchAll();
+        // PatchAll() with no assembly uses GetCallingAssembly(); the mod loader may not be YgoDuelist.dll,
+        // so no patches from this mod would register. Always scan our assembly explicitly.
+        harmony.PatchAll(typeof(MainFile).Assembly);
+
+        harmony.Patch(
+            AccessTools.Method(typeof(MonsterModel), nameof(MonsterModel.CreateVisuals)),
+            prefix: new HarmonyMethod(typeof(StaticImageCreateVisualsPatch), nameof(StaticImageCreateVisualsPatch.Prefix)));
 
         ModHelper.AddModelToPool<YgoDuelistRelicPool, GraveyardRelic>();
         ModHelper.AddModelToPool<YgoDuelistRelicPool, ExtraDeckRelic>();

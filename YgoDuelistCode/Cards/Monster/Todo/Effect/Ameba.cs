@@ -28,7 +28,7 @@ public sealed class Ameba : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public int ActivatedEffectEnergyCost => 3;
+    public int ActivatedEffectEnergyCost => 2;
     public CardType ActivatedEffectCardType => CardType.Attack;
     public TargetType ActivatedEffectTarget => TargetType.AnyEnemy;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-AMEBA.activated_effect.description";

@@ -9,10 +9,11 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Allows static-image enemy scenes (like our duel monsters) to work even if the scene
-/// doesn't directly instantiate as NCreatureVisuals, following the EarlyStS2ModdingGuides pattern.
+/// Allows static-image enemy scenes (like duel_monster.tscn) to work when the packed root is
+/// plain Node2D (no C# script on the scene: exported PCKs do not ship YgoDuelistCode .cs sources).
+/// Reparents children onto <c>new NCreatureVisuals()</c> from the game assembly.
+/// Registered explicitly from mod <c>Initialize</c> so it always applies.
 /// </summary>
-[HarmonyPatch(typeof(MonsterModel), nameof(MonsterModel.CreateVisuals))]
 public static class StaticImageCreateVisualsPatch
 {
     private static readonly MethodInfo _visualsPathGetter = typeof(MonsterModel)

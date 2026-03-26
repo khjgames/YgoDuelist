@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Cure_Mermaid : EffectMonsterCard
 {
+    protected override bool HasRecklessBlockerKeyword => true;
+
     public Cure_Mermaid()
         : base(
             cost: 1,

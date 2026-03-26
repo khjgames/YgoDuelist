@@ -30,6 +30,12 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
 public static class PlayCardFromOptionPilePatch
 {
+    private static bool IsLifecycleDebugCard(CardModel? card)
+    {
+        var modelName = card?.GetType().Name;
+        return modelName == "Activate_Effect";
+    }
+
     private static readonly PropertyInfo? PlayerChoiceContextProp =
         typeof(PlayCardAction).GetProperty("PlayerChoiceContext", BindingFlags.Public | BindingFlags.Instance);
 
@@ -140,13 +146,32 @@ public static class PlayCardFromOptionPilePatch
                 var timer = tree.CreateTimer(0.0);
                 timer.Timeout += () =>
                 {
+                    if (IsLifecycleDebugCard(cardPlayed))
+                        GD.Print("[YgoLifecycle] PlayCardFromOptionPile P1_TimerTimeout card=", cardPlayed?.GetType().Name ?? "null");
+
                     if (cardPlayed != null)
                     {
+                        var postPlayOptionPile = player != null ? YgoCardOptionPile.CustomType.GetPile(player) : null;
+                        bool cardStillInOptionPile = postPlayOptionPile != null && postPlayOptionPile.Cards.Contains(cardPlayed);
+                        if (IsLifecycleDebugCard(cardPlayed))
+                            GD.Print("[YgoLifecycle] PlayCardFromOptionPile P2_PostPlayPileCheck cardInOptionPile=", cardStillInOptionPile);
+                        if (cardStillInOptionPile)
+                        {
+                            YgoOptionHandBridge.SyncFromOptionPile(player);
+                            if (IsLifecycleDebugCard(cardPlayed))
+                                GD.Print("[YgoLifecycle] PlayCardFromOptionPile P3_SyncedOnly_NoForcedNCardCleanup");
+                            return;
+                        }
+
                         var ncard = NCard.FindOnTable(cardPlayed);
+                        if (IsLifecycleDebugCard(cardPlayed))
+                            GD.Print("[YgoLifecycle] PlayCardFromOptionPile P4_FindOnTable ncardFound=", ncard != null);
                         if (ncard != null && GodotObject.IsInstanceValid(ncard))
                         {
                             ncard.Visible = false;
                             var holder = ncard.GetParent() as NHandCardHolder;
+                            if (IsLifecycleDebugCard(cardPlayed))
+                                GD.Print("[YgoLifecycle] PlayCardFromOptionPile P5_NCardCleanup holderFound=", holder != null);
                             if (holder != null && GodotObject.IsInstanceValid(holder))
                             {
                                 holder.Visible = false;
@@ -160,8 +185,12 @@ public static class PlayCardFromOptionPilePatch
                             else
                                 ncard.QueueFree();
                         }
+                        else if (IsLifecycleDebugCard(cardPlayed))
+                            GD.Print("[YgoLifecycle] PlayCardFromOptionPile P6_NoNCardFoundToCleanup");
                     }
                     YgoOptionHandBridge.SyncFromOptionPile(player);
+                    if (IsLifecycleDebugCard(cardPlayed))
+                        GD.Print("[YgoLifecycle] PlayCardFromOptionPile P7_FinalSyncDone");
                 };
             }
         }

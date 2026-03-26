@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -21,79 +18,51 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard
     {
     }
 
-    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        var player = Owner;
-        if (player == null)
-            return;
+    protected override bool IsPlayable =>
+        base.IsPlayable
+        && Owner != null
+        && GetReassignableEquips(Owner).Count > 0;
 
+    internal static List<BaseMonsterCard> GetAlternateValidTargets(BaseEquipSpellCard equip, MegaCrit.Sts2.Core.Entities.Players.Player player)
+    {
+        var current = YgoEquipSpellRegistry.GetEquippedMonster(equip);
+        if (current == null)
+            return new List<BaseMonsterCard>();
+
+        return DuelMonsterFieldRegistry.GetFieldMonsters(player)
+            .OfType<BaseMonsterCard>()
+            .Where(m => !ReferenceEquals(m, current) && equip.CanEquipTo(m))
+            .ToList();
+    }
+
+    internal static List<BaseEquipSpellCard> GetReassignableEquips(MegaCrit.Sts2.Core.Entities.Players.Player player)
+    {
         var zonePile = SpellTrapZonePile.CustomType.GetPile(player);
         if (zonePile == null)
-            return;
+            return new List<BaseEquipSpellCard>();
 
-        List<BaseEquipSpellCard> equippedEquips = zonePile.Cards
+        return zonePile.Cards
             .OfType<BaseEquipSpellCard>()
             .Where(eq => YgoEquipSpellRegistry.GetEquippedMonster(eq) != null)
+            .Where(eq => GetAlternateValidTargets(eq, player).Count > 0)
             .ToList();
+    }
 
-        if (equippedEquips.Count == 0)
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (!TailorOfTheFicklePlayPayload.TryTakePending(this, out var pending) || pending == null)
+            return;
+        if (Owner == null)
+            return;
+        if (!GetReassignableEquips(Owner).Contains(pending.Equip))
+            return;
+        if (!GetAlternateValidTargets(pending.Equip, Owner).Contains(pending.Target))
             return;
 
-        var equipPrefs = new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true
-        };
-
-        IEnumerable<CardModel> equipPick;
-        try
-        {
-            equipPick = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), equippedEquips, player, equipPrefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        var equip = equipPick.FirstOrDefault() as BaseEquipSpellCard;
-        if (equip == null)
-            return;
-
-        var current = YgoEquipSpellRegistry.GetEquippedMonster(equip);
-        var monsters = DuelMonsterFieldRegistry.GetFieldMonsters(player).OfType<BaseMonsterCard>().ToList();
-
-        List<BaseMonsterCard> validTargets = monsters
-            .Where(m => m != null && !ReferenceEquals(m, current) && equip.CanEquipTo(m))
-            .ToList();
-
-        if (validTargets.Count == 0)
-            return;
-
-        var targetPrefs = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true
-        };
-
-        IEnumerable<CardModel> targetPick;
-        try
-        {
-            targetPick = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), validTargets, player, targetPrefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        var targetMonster = targetPick.FirstOrDefault() as BaseMonsterCard;
-        if (targetMonster == null)
-            return;
-
-        YgoEquipSpellRegistry.Attach(equip, targetMonster);
-        YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
-
+        YgoEquipSpellRegistry.Attach(pending.Equip, pending.Target);
+        YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(Owner);
         if (IsUpgraded)
-            await CardPileCmd.Draw(choiceContext, 1, player);
+            await MegaCrit.Sts2.Core.Commands.CardPileCmd.Draw(choiceContext, 1, Owner);
     }
 
     protected override void OnUpgrade()

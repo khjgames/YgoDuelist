@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -23,7 +22,7 @@ public sealed class ConvulsionOfNatureFieldPower : YgoDuelistPower
     {
         if (player != Owner.Player)
             return;
-
-        await ConvulsionOfNatureReveal.TryRevealDrawTop(choiceContext, player);
+        // UI-driven reveal: the top-card preview is always visible while this power is active.
+        await Task.CompletedTask;
     }
 }

@@ -49,6 +49,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword RitualMonsterKeyword => (CardKeyword)20037;
     private static CardKeyword HandEffectMonsterKeyword => (CardKeyword)20038;
     private static CardKeyword CycleMonsterKeyword => (CardKeyword)20039;
+    private static CardKeyword FlipEffectKeyword => (CardKeyword)20041;
+    private static CardKeyword RecklessBlockerKeyword => (CardKeyword)20042;
 
     public abstract YgoCardType YgoCardType { get; }
     public bool FaceDown { get; set; } = false;
@@ -302,6 +304,20 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         yield return CycleMonsterKeyword;
     }
 
+    private IEnumerable<CardKeyword> GetFlipEffectKeywords()
+    {
+        if (this is IMonsterFlipEffect)
+            yield return FlipEffectKeyword;
+    }
+
+    protected virtual bool HasRecklessBlockerKeyword => false;
+
+    private IEnumerable<CardKeyword> GetRecklessBlockerKeywords()
+    {
+        if (HasRecklessBlockerKeyword)
+            yield return RecklessBlockerKeyword;
+    }
+
     private int ComputeTributeReleaseCount()
     {
         if (IsRitualOrFusionMonster)
@@ -340,6 +356,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             keywords.AddRange(GetFusionAndRitualKeywords());
             keywords.AddRange(GetHandEffectMonsterKeywords());
             keywords.AddRange(GetCycleMonsterKeywordWhenEligible());
+            keywords.AddRange(GetFlipEffectKeywords());
+            keywords.AddRange(GetRecklessBlockerKeywords());
             keywords.AddRange(GetFaceDownKeywordsFromBool());
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
@@ -359,6 +377,14 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             foreach (CardKeyword kw in GetHandEffectMonsterKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetCycleMonsterKeywordWhenEligible())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+            if (this is IMonsterFlipEffect)
+            {
+                var title = new LocString("card_keywords", "20041.title");
+                var description = new LocString("cards", Id.Entry + ".flip_effect.description");
+                tips.Add(new HoverTip(title, description));
+            }
+            foreach (CardKeyword kw in GetRecklessBlockerKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
                 tips.Add(HoverTipFactory.FromKeyword(kw));

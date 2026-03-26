@@ -121,6 +121,11 @@
   "20039.description": "[blue]right-click[/blue] this card to cycle between [gold]attack[/gold] & [gold]defense[/gold].",
 
   "20040.title": "Cycle Spell",
-  "20040.description": "[blue]right-click[/blue] this card to cycle between [gold]playing[/gold] & [gold]setting in your spell/trap card zone[/gold]."
+  "20040.description": "[blue]right-click[/blue] this card to cycle between [gold]playing[/gold] & [gold]setting in your spell/trap card zone[/gold].",
+
+  "20041.title": "Flip Effect",
+  "20041.description": "Triggers when this card is flipped face-up from face-down.",
+  "20042.title": "Reckless Blocker",
+  "20042.description": "This monster will always Die for You. You cannot toggle it off."
 
 }

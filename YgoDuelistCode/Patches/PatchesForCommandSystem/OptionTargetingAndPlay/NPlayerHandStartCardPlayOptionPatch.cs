@@ -21,6 +21,24 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch(typeof(NPlayerHand), "StartCardPlay")]
 public static class NPlayerHandStartCardPlayOptionPatch
 {
+    private static bool IsLifecycleDebugHolder(NHandCardHolder holder)
+    {
+        var modelName = holder?.CardModel?.GetType().Name;
+        return holder is NYgoOptionCardHolder || modelName == "Activate_Effect";
+    }
+
+    private static void LogLifecycle(string point, NHandCardHolder holder, string extra = "")
+    {
+        if (!IsLifecycleDebugHolder(holder))
+            return;
+        GD.Print("[YgoLifecycle] StartCardPlay ", point,
+            " holderId=", holder.GetInstanceId(),
+            " model=", holder.CardModel?.GetType().Name ?? "null",
+            " index=", holder.GetIndex(),
+            " inTree=", holder.IsInsideTree(),
+            " extra=", extra);
+    }
+
     private static readonly FieldInfo DraggedHolderIndexField =
         AccessTools.Field(typeof(NPlayerHand), "_draggedHolderIndex");
 
@@ -40,6 +58,7 @@ public static class NPlayerHandStartCardPlayOptionPatch
     {
         int originalIndex = holder.GetIndex();
         bool needsSafePath = holder is NYgoOptionCardHolder || originalIndex < 0 || originalIndex >= 10;
+        LogLifecycle("S1_EnterPrefix", holder, $"needsSafePath={needsSafePath}");
         if (!needsSafePath)
             return true;
 
@@ -50,9 +69,11 @@ public static class NPlayerHandStartCardPlayOptionPatch
         var queue = HoldersAwaitingQueueField?.GetValue(__instance) as Dictionary<NHandCardHolder, int>;
         if (queue != null)
             queue[holder] = queuedIndex;
+        LogLifecycle("S2_QueuedHolder", holder, $"queuedIndex={queuedIndex}");
 
         holder.Reparent(__instance);
         holder.BeginDrag();
+        LogLifecycle("S3_BeginDrag", holder);
 
         bool usingController = NControllerManager.Instance?.IsUsingController == true;
         NCardPlay cardPlay = usingController
@@ -61,15 +82,32 @@ public static class NPlayerHandStartCardPlayOptionPatch
 
         CurrentCardPlayField?.SetValue(__instance, cardPlay);
         __instance.AddChildSafely(cardPlay);
+        LogLifecycle("S4_CardPlayCreated", holder, $"cardPlayType={cardPlay.GetType().Name}");
 
         cardPlay.Connect(NCardPlay.SignalName.Finished, Callable.From<bool>(success =>
         {
+            LogLifecycle("S5_FinishedSignal", holder, $"success={success}");
             RunManager.Instance.HoveredModelTracker.OnLocalCardDeselected();
             if (!success)
+            {
+                LogLifecycle("S6_InvokeReturnHolderToHand", holder);
                 ReturnHolderToHandMethod?.Invoke(__instance, new object[] { holder });
+            }
+            else if (holder is NYgoOptionCardHolder)
+            {
+                var player = holder.CardModel?.Owner as MegaCrit.Sts2.Core.Entities.Players.Player;
+                bool shouldScrap = YgoOptionHandUiPatch.ShouldScrapOptionHolderAfterPlay(holder, player);
+                LogLifecycle("S6b_SuccessPathScrapDecision", holder, $"shouldScrap={shouldScrap}");
+                if (shouldScrap)
+                {
+                    YgoOptionHandUiPatch.ForceReleaseOptionHolder(holder);
+                    LogLifecycle("S6c_SuccessPathForceRelease", holder);
+                }
+            }
 
             DraggedHolderIndexField?.SetValue(__instance, -1);
             RefreshLayoutMethod?.Invoke(__instance, null);
+            LogLifecycle("S7_FinishedCleanupDone", holder);
         }));
 
         if (holder.CardNode?.Model != null)
@@ -77,6 +115,7 @@ public static class NPlayerHandStartCardPlayOptionPatch
         cardPlay.Start();
         RefreshLayoutMethod?.Invoke(__instance, null);
         holder.SetIndexLabel(queuedIndex + 1);
+        LogLifecycle("S8_StartCalled", holder);
 
         GD.Print("[YgoDuelist] StartCardPlay PREFIX: custom safe start path holderId=", holder.GetInstanceId(), " index=", originalIndex, " isOption=", (holder is NYgoOptionCardHolder));
         return false;

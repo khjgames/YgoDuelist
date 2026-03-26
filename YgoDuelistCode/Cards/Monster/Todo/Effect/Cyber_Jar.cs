@@ -13,7 +13,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Cyber_Jar : EffectMonsterCard
+public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
 {
     public Cyber_Jar()
         : base(
@@ -30,7 +30,7 @@ public sealed class Cyber_Jar : EffectMonsterCard
     {
     }
 
-    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {
         Player? player = Owner;
         if (player?.PlayerCombatState == null)

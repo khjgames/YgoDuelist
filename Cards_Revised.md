@@ -18,12 +18,12 @@ archfiend's oath - once per turn, take 5 (blockable) damage, declare spell / tra
 if its the declared card type add it to your hand, otherwise send it to the graveyard.
 arsenal robber -> can send 1 equip spell from your deck to the graveyard.
 blast juggler -> 0 cost, sacrifice this monster, up to two unique targets take 10 damage 
-blind destruction - annual - 0 cost - roll a d6, if 6 all enemies take 12 otherwise all enemies and your summons take the rolled amount.
+blind destruction - once per turn,  - 0 cost - roll a d6, if 6 all enemies take 12 otherwise all enemies and your summons take the rolled amount.
 book of moon  -> strength - 4
 book of taiyou  -> break all block & remove all artifact
 bottomless shifting sand  -> destroyed if you end a turn with less than 4 cards in hand, the enemy with the highest attack intent each turn takes damage equal to its attack (max 30)
 bottomless trap hole  -> 1 cost, if enemy intends to attack for 15 or more they deal 30 damage.
-bowganian  -> annual 0 cost 6 damage.
+bowganian  -> once per turn,  0 cost 6 damage.
 Burning Algae  -> 0 cost 5 attack, 2 cost block 15, heals all enemies 10 upon destruction.
 Burning Beast  -> Equip effect (monster attacks inflict 1 weak and vulnerable)
 Burning Land  -> Destroy any active field spells, all enemies take 5 damage at the end of your turn (same as poison timing)
@@ -36,7 +36,7 @@ Chaos End -> uncommon, 1 cost, 5 damage per card in shadow realm
 Compulsary Evacuation Device  -> Target temp strength -5
 Convulsion of Nature  -> Allways reveal the top card of your draw pile
 Crass Clown  -> When changed from defense to attack, target one enemy, apply 1 weak and deal 6 damage.
-Cure mermaid  -> 2 cost 15 atk, 1 cost 8 def, Forced die for you, annually takes 1 (0) damage and heals you 1 hp.
+Cure mermaid  -> 2 cost 15 atk, 1 cost 8 def, Forced die for you, once per turn, takes 1 (0) damage and heals you 1 hp.
 Curse of aging  -> destroy 1 card in hand, all enemies gain 1 weaken and 1 vulnerable
 Curse of anubis  -> your effect monsters can't attack and their base def is 0 this turn, enemies permanently lose 1 strength & 1 dex and gain 1 weaken.
 curse of darkness  -> 1 cost, every time you play a spell a random enemy takes 6 damage.
@@ -53,7 +53,7 @@ Dark Mirror Force  -> 1 cost, target one enemy who intends to attack, inflict da
 Dark Snake Syndrome  -> 3 (2) cost, damages target enemy for 1, doubling each turn, capped at 64.
 Dark Spirit Of The Silent  -> 2 (1) cost, If at least 2 enemies intend to attack, target one enemy, negate its attack, the other attacks twice.
 Dark Zebra  -> After being summoned, cannot attack when its the only monster you control.
-Darklord Marie  ->  Annual if in graveyard heal 1 hp.
+Darklord Marie  ->  once per turn, if in graveyard heal 1 hp.
 Deal of Phantom  -> 1 cost, upgrades to 2 atk per monster in grave
 Des Counterblow  -> 1 cost gain 4 thorns
 Des Kangaroo  -> defense grants 2 temporary thorns
@@ -67,7 +67,7 @@ Emergency provisions  -> Destroy any number of spell / trap cards you control, h
 Enchanted Javelin  -> if an enemy intends to attack, heal for 1/9th of the damage it would deal. 
 Energy Drain  -> Gains 2atk per card in your hand.
 Exiled Force  -> You can tribute this card to deal 10 damage.
-Fairy box  -> If you call it right all enemies gain 1 weaken, annual take 5 damage (blockable) or destroy this card.
+Fairy box  -> If you call it right all enemies gain 1 weaken, once per turn, take 5 damage (blockable) or destroy this card.
 Fairy Guardian  -> Tribute this card, return a spell card from your graveyard to the bottom of your draw pile.
 Sparks  -> 0 cost, deal 2 (5), draw a card.
 Spell Shield  Type-B  -> 1 cost, Choose 1:  |  Gain 7 (10) block  |  or  |  Destroy a spell in hand, Gain 7 (10)  x 2 block  |

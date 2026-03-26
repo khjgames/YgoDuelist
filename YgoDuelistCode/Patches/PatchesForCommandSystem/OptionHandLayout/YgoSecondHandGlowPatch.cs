@@ -6,16 +6,16 @@ using YgoDuelist.YgoDuelistCode.Nodes;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Prevents null-ref in NHandCardHolder.ShouldGlowGold for NYgoOptionCardHolder
-/// by providing a safe implementation that doesn't depend on the private _hand
-/// field. We approximate the vanilla logic but ignore SelectModeGoldGlowOverride.
+/// Prevents null-ref in NHandCardHolder.ShouldGlowGold for holders that extend
+/// <see cref="NHandCardHolder"/> without a real <c>NPlayerHand</c> (option row,
+/// Convulsion preview). Approximates vanilla logic without SelectModeGoldGlowOverride.
 /// </summary>
 [HarmonyPatch(typeof(NHandCardHolder), "get_ShouldGlowGold")]
 public static class YgoSecondHandGlowPatch
 {
     static bool Prefix(NHandCardHolder __instance, ref bool __result)
     {
-        if (__instance is not NYgoOptionCardHolder)
+        if (__instance is not NYgoOptionCardHolder && __instance is not NYgoConvulsionPreviewHolder)
             return true; // use vanilla for normal holders
 
         var card = __instance.CardNode?.Model;

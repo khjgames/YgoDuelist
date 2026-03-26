@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -32,37 +29,10 @@ public sealed class Emergency_Provisions : BaseSpellCard
         if (player?.Creature == null)
             return;
 
-        var zonePile = SpellTrapZonePile.CustomType.GetPile(player);
-        if (zonePile == null)
+        if (!EmergencyProvisionsPlayPayload.TryTakePending(this, out var selectedCards) || selectedCards == null)
             return;
 
-        List<CardModel> candidates = zonePile.Cards
-            .Where(YgoSpellTrapZoneBridge.IsSpellOrTrapCard)
-            .ToList();
-
-        if (candidates.Count == 0)
-            return;
-
-        var prefs = new CardSelectorPrefs(CardSelectorPrefs.RemoveSelectionPrompt, 0, candidates.Count)
-        {
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        List<CardModel> toDestroy = pick
+        List<CardModel> toDestroy = selectedCards
             .Where(c => c.Pile?.Type == SpellTrapZonePile.CustomType && YgoSpellTrapZoneBridge.IsSpellOrTrapCard(c))
             .Distinct()
             .ToList();
@@ -83,7 +53,7 @@ public sealed class Emergency_Provisions : BaseSpellCard
             YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
 
-        await CreatureCmd.Heal(player.Creature, toDestroy.Count * 1m);
+        await CreatureCmd.Heal(player.Creature, toDestroy.Count * 2m);
     }
 
     protected override void OnUpgrade()

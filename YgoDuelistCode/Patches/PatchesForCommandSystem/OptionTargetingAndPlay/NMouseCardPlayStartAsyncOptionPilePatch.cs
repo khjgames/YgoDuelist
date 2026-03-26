@@ -28,6 +28,25 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch(typeof(NMouseCardPlay), "StartAsync")]
 public static class NMouseCardPlayStartAsyncOptionPilePatch
 {
+    private static bool IsLifecycleDebugHolder(NHandCardHolder? holder)
+    {
+        var modelName = holder?.CardModel?.GetType().Name;
+        return holder is NYgoOptionCardHolder || modelName == "Activate_Effect";
+    }
+
+    private static void LogLifecycle(string point, NMouseCardPlay self, string extra = "")
+    {
+        var holder = self?.Holder;
+        if (!IsLifecycleDebugHolder(holder))
+            return;
+        GD.Print("[YgoLifecycle] MouseStartAsync ", point,
+            " holderId=", holder?.GetInstanceId() ?? 0,
+            " model=", holder?.CardModel?.GetType().Name ?? "null",
+            " holderInTree=", holder?.IsInsideTree() ?? false,
+            " selfInTree=", self?.IsInsideTree() ?? false,
+            " extra=", extra);
+    }
+
     private static readonly MethodInfo StartCardDragMethod =
         AccessTools.DeclaredMethod(typeof(NMouseCardPlay), "StartCardDrag")!;
 
@@ -80,36 +99,51 @@ public static class NMouseCardPlayStartAsyncOptionPilePatch
     private static async Task RunStartAsync(NMouseCardPlay self)
     {
         var holder = self.Holder;
+        LogLifecycle("M1_Enter", self);
         if (holder is NYgoOptionCardHolder opt)
         {
             if (!GodotObject.IsInstanceValid(opt) || !opt.IsInsideTree())
             {
+                LogLifecycle("M2_OptionHolderInvalid_Cancel", self);
                 self.CancelPlayCard();
                 return;
             }
         }
 
         if (CardOf(self) == null || CardNodeOf(self) == null)
+        {
+            LogLifecycle("M3_CardOrNodeNull_BeforeDrag", self);
             return;
+        }
 
+        LogLifecycle("M4_StartCardDrag_BeginAwait", self);
         await (Task)StartCardDragMethod.Invoke(self, null)!;
+        LogLifecycle("M5_StartCardDrag_EndAwait", self);
 
         if (!GodotObject.IsInstanceValid(self) || !self.IsInsideTree())
+        {
+            LogLifecycle("M6_SelfInvalid_AfterDrag", self);
             return;
+        }
 
         if (IsCtsCancelled(self))
+        {
+            LogLifecycle("M7_CtsCancelled_AfterDrag", self);
             return;
+        }
 
         var card = CardOf(self);
         var cardNode = CardNodeOf(self);
         if (card == null || cardNode == null)
         {
+            LogLifecycle("M8_CardOrNodeNull_AfterDrag_Cancel", self);
             self.CancelPlayCard();
             return;
         }
 
         if (!card.CanPlay(out UnplayableReason reason, out AbstractModel preventer))
         {
+            LogLifecycle("M9_CannotPlay_Cancel", self, $"reason={reason}");
             CannotPlayFtueMethod.Invoke(self, new object[] { card });
             self.CancelPlayCard();
             LocString? line = UnplayableDialogueMethod?.Invoke(null, new object?[] { reason, preventer }) as LocString;
@@ -133,15 +167,25 @@ public static class NMouseCardPlayStartAsyncOptionPilePatch
             : TargetMode.ClickMouseToTarget;
 
         await (Task)TargetSelectionMethod.Invoke(self, new object[] { targetMode })!;
+        LogLifecycle("M10_TargetSelectionCompleted", self, $"targetMode={targetMode}");
 
         if (IsCtsCancelled(self))
+        {
+            LogLifecycle("M11_CtsCancelled_AfterTargetSelection", self);
             return;
+        }
 
         if (!(bool)IsCardInPlayZoneMethod.Invoke(self, null)!)
+        {
+            LogLifecycle("M12_NotInPlayZone_Cancel", self);
             self.CancelPlayCard();
+        }
 
         if (!IsCtsCancelled(self))
+        {
+            LogLifecycle("M13_InvokeTryPlayCard", self);
             TryPlayCardMethod.Invoke(self, new object?[] { TargetField.GetValue(self) as Creature });
+        }
     }
 
     private static CardModel? CardOf(NCardPlay p) => CardProperty.GetValue(p) as CardModel;

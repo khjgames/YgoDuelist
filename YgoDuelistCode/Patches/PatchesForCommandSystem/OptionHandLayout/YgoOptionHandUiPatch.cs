@@ -25,6 +25,25 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch]
 public static class YgoOptionHandUiPatch
 {
+    private static bool IsLifecycleDebugHolder(NHandCardHolder? holder)
+    {
+        var modelName = holder?.CardModel?.GetType().Name;
+        return holder is NYgoOptionCardHolder || modelName == "Activate_Effect";
+    }
+
+    private static void LogLifecycle(string point, NHandCardHolder? holder, string extra = "")
+    {
+        if (!IsLifecycleDebugHolder(holder) || holder == null)
+            return;
+        GD.Print("[YgoLifecycle] OptionHandUi ", point,
+            " holderId=", holder.GetInstanceId(),
+            " model=", holder.CardModel?.GetType().Name ?? "null",
+            " inTree=", holder.IsInsideTree(),
+            " visible=", holder.Visible,
+            " inActive=", NPlayerHand.Instance?.ActiveHolders.Contains(holder) ?? false,
+            " extra=", extra);
+    }
+
     // Track active holders per player so we can recycle them when the
     // logical option set changes.
     private static readonly Dictionary<Player, List<NYgoOptionCardHolder>> _holdersByPlayer = new();
@@ -285,6 +304,64 @@ public static class YgoOptionHandUiPatch
 
         if (anyFail)
             GD.Print("[YgoDuelist] ValidateSecondHand: END (had failures)");
+    }
+
+    /// <summary>
+    /// Force-removes a specific option holder from tracking and the scene tree.
+    /// Used when play resolution races with option row teardown and the holder
+    /// misses the normal ReturnHolderToHand cleanup path.
+    /// </summary>
+    public static void ForceReleaseOptionHolder(NHandCardHolder? holder)
+    {
+        if (holder is not NYgoOptionCardHolder optionHolder)
+            return;
+        LogLifecycle("O1_ForceRelease_Enter", optionHolder);
+
+        foreach (var kv in _holdersByPlayer)
+            kv.Value.Remove(optionHolder);
+
+        if (PendingOptionHolderToFreeAfterReturnToHand == optionHolder)
+            PendingOptionHolderToFreeAfterReturnToHand = null;
+
+        if (!GodotObject.IsInstanceValid(optionHolder))
+            return;
+
+        optionHolder.Visible = false;
+        if (optionHolder.Hitbox != null)
+        {
+            optionHolder.Hitbox.Visible = false;
+            optionHolder.Hitbox.SetEnabled(false);
+        }
+
+        if (optionHolder.IsInsideTree())
+            optionHolder.QueueFree();
+        LogLifecycle("O2_ForceRelease_QueuedFree", optionHolder);
+    }
+
+    /// <summary>
+    /// True when an option holder should be scrapped after play resolution.
+    /// We only scrap orphaned holders whose card is no longer present in the option pile.
+    /// If the card is still in the pile, keep normal return/rebuild behavior.
+    /// </summary>
+    public static bool ShouldScrapOptionHolderAfterPlay(NHandCardHolder? holder, Player? player)
+    {
+        if (holder is not NYgoOptionCardHolder optionHolder)
+            return false;
+        if (!GodotObject.IsInstanceValid(optionHolder))
+            return false;
+        if (player == null)
+            return true;
+
+        var hand = NPlayerHand.Instance;
+        if (hand != null && hand.ActiveHolders.Contains(optionHolder))
+            return false;
+
+        var card = optionHolder.CardModel;
+        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        bool cardStillInOptionPile = card != null && optionPile != null && optionPile.Cards.Contains(card);
+        bool shouldScrap = !cardStillInOptionPile;
+        LogLifecycle("O3_ShouldScrap_Decision", optionHolder, $"playerNull={player == null} cardInOptionPile={cardStillInOptionPile} shouldScrap={shouldScrap}");
+        return shouldScrap;
     }
 
     private static void ClearAll()

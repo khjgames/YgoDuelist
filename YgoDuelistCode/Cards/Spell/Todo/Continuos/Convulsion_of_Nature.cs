@@ -1,12 +1,9 @@
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Powers;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
@@ -21,11 +18,9 @@ public sealed class Convulsion_of_Nature : BaseContinuousSpellCard
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner?.Creature == null)
-            return;
-
-        await ConvulsionOfNatureReveal.TryRevealDrawTop(choiceContext, Owner);
-        await PowerCmd.Apply<ConvulsionOfNatureFieldPower>(Owner.Creature, 1m, Owner.Creature, this);
+        // UI-driven effect: when you control this continuous spell face-up in the Spell/Trap zone,
+        // the top of your draw pile is previewed in the combat UI.
+        await Task.CompletedTask;
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
