@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -53,6 +54,8 @@ public static class YgoMonsterLevelStripPatch
 
     /// <summary>Race icon: horizontal nudge from card/banner right (positive = move left), same sense as <see cref="StripHorizontalNudgePx"/>.</summary>
     private const float RaceHorizontalNudgePx = 48f;
+    /// <summary>Command-card portraits need race icon slightly lower than normal cards.</summary>
+    private const float CommandCardRaceVerticalNudgePx = 48f;
 
     /// <summary>Attribute sits to the left of the race; its right edge is this many px left of the race’s right edge.</summary>
     private const float AttributeRightEdgeLeftOfRaceRightPx = 31f;
@@ -65,6 +68,7 @@ public static class YgoMonsterLevelStripPatch
     private static AtlasTexture[]? _atlasesByLevelFaceDown;
     private static readonly Dictionary<DuelMonsterAttribute, Texture2D?> _attributeTextures = new();
     private static readonly Dictionary<DuelMonsterRace, Texture2D?> _raceTextures = new();
+    private static readonly HashSet<int> _loggedStripDebugIds = new();
     private static bool _hoverTipLogOnce;
 
     [HarmonyPostfix]
@@ -80,7 +84,7 @@ public static class YgoMonsterLevelStripPatch
         var raceIcon = body.GetNodeOrNull<TextureRect>(RaceNodeName);
 
         CardModel? model = __instance.Model;
-        if (model == null || model.Rarity == CardRarity.Ancient || model is not AbstractMonsterCard monster)
+        if (model == null || model.Rarity == CardRarity.Ancient)
         {
             strip?.Hide();
             attributeIcon?.Hide();
@@ -88,7 +92,15 @@ public static class YgoMonsterLevelStripPatch
             return;
         }
 
-        bool useFaceDownStrip = monster.FaceDown || (monster.Pile?.Type == PileType.Hand && monster.WillSet);
+        if (!TryGetMonsterVisualData(model, out var attribute, out var race, out int level, out bool useFaceDownStrip))
+        {
+            strip?.Hide();
+            attributeIcon?.Hide();
+            raceIcon?.Hide();
+            return;
+        }
+
+        LogStripVisualStateOnce(model, useFaceDownStrip);
         Texture2D? stripTexture = GetStripTexture(useFaceDownStrip);
         AtlasTexture[]? atlasesByLevel = EnsureAtlases(stripTexture, useFaceDownStrip);
 
@@ -121,10 +133,7 @@ public static class YgoMonsterLevelStripPatch
             body.MoveChild(strip, banner.GetIndex() + 1);
         }
 
-        int level = Mathf.Clamp(
-            monster is BaseMonsterCard bm ? bm.GetEffectiveDuelMonsterLevel() : monster.DuelMonsterLevel,
-            1,
-            12);
+        level = Mathf.Clamp(level, 1, 12);
         if (level < 1 || level > 12 || atlasesByLevel == null || stripTexture == null)
         {
             strip?.Hide();
@@ -140,8 +149,8 @@ public static class YgoMonsterLevelStripPatch
 
         TextureRect attrNode = EnsureAttributeIconNode(body, banner, strip);
         TextureRect raceNode = EnsureRaceIconNode(body, attrNode);
-        UpdateAttributeIcon(attrNode, monster, banner, useFaceDownStrip);
-        UpdateRaceIcon(raceNode, monster, banner, useFaceDownStrip);
+        UpdateAttributeIcon(attrNode, attribute, model, banner, useFaceDownStrip);
+        UpdateRaceIcon(raceNode, race, model, banner, useFaceDownStrip);
     }
 
     private static TextureRect EnsureAttributeIconNode(Control body, TextureRect banner, TextureRect? strip)
@@ -225,9 +234,9 @@ public static class YgoMonsterLevelStripPatch
         rect.OffsetLeft = right - displayW;
     }
 
-    private static void UpdateAttributeIcon(TextureRect attr, AbstractMonsterCard monster, TextureRect banner, bool useSetTransparency)
+    private static void UpdateAttributeIcon(TextureRect attr, DuelMonsterAttribute attribute, CardModel model, TextureRect banner, bool useSetTransparency)
     {
-        Texture2D? tex = GetAttributeTexture(monster.DuelMonsterAttribute);
+        Texture2D? tex = GetAttributeTexture(attribute);
         if (tex == null)
         {
             attr.Hide();
@@ -241,12 +250,12 @@ public static class YgoMonsterLevelStripPatch
 
         LayoutIconInRow(attr, banner, tex, RaceHorizontalNudgePx + AttributeRightEdgeLeftOfRaceRightPx);
         attr.Show();
-        TrySetHoverTip(attr, GetAttributeHoverTipKey(monster.DuelMonsterAttribute), monster);
+        TrySetHoverTip(attr, GetAttributeHoverTipKey(attribute), model);
     }
 
-    private static void UpdateRaceIcon(TextureRect race, AbstractMonsterCard monster, TextureRect banner, bool useSetTransparency)
+    private static void UpdateRaceIcon(TextureRect race, DuelMonsterRace raceType, CardModel model, TextureRect banner, bool useSetTransparency)
     {
-        Texture2D? tex = GetRaceTexture(monster.DuelMonsterRace);
+        Texture2D? tex = GetRaceTexture(raceType);
         if (tex == null)
         {
             race.Hide();
@@ -259,8 +268,13 @@ public static class YgoMonsterLevelStripPatch
         race.Modulate = new Color(1f, 1f, 1f, useSetTransparency ? RaceSetAlpha : 1f);
 
         LayoutIconInRow(race, banner, tex, RaceHorizontalNudgePx);
+        if (model is MonsterCommandCard)
+        {
+            race.OffsetTop += CommandCardRaceVerticalNudgePx;
+            race.OffsetBottom += CommandCardRaceVerticalNudgePx;
+        }
         race.Show();
-        TrySetHoverTip(race, GetRaceHoverTipKey(monster.DuelMonsterRace), monster);
+        TrySetHoverTip(race, GetRaceHoverTipKey(raceType), model);
     }
 
     private static Texture2D? GetAttributeTexture(DuelMonsterAttribute attribute)
@@ -274,7 +288,7 @@ public static class YgoMonsterLevelStripPatch
         return loaded;
     }
 
-    private static void TrySetHoverTip(TextureRect icon, string hoverTipKey, AbstractMonsterCard monster)
+    private static void TrySetHoverTip(TextureRect icon, string hoverTipKey, CardModel model)
     {
         try
         {
@@ -283,7 +297,9 @@ public static class YgoMonsterLevelStripPatch
 
             var title = new LocString("static_hover_tips", hoverTipKey + ".title");
             var description = new LocString("static_hover_tips", hoverTipKey + ".description");
-            bool useConduitIcon = monster.YgoCardType != YgoCardType.FusionMonster && monster.YgoCardType != YgoCardType.RitualMonster;
+            bool useConduitIcon = model is IYgoCard ygo
+                                  && ygo.YgoCardType != YgoCardType.FusionMonster
+                                  && ygo.YgoCardType != YgoCardType.RitualMonster;
             description.Add("conduitIcon", useConduitIcon ? ConduitImgBbcode : string.Empty);
             var tip = new HoverTip(title, description);
             Traverse.Create(icon).Field("_hoverTip").SetValue(tip);
@@ -372,6 +388,64 @@ public static class YgoMonsterLevelStripPatch
 
         _stripTextureFaceUp ??= ResourceLoader.Load<Texture2D>(StarsStripPath, null, ResourceLoader.CacheMode.Reuse);
         return _stripTextureFaceUp;
+    }
+
+    private static void LogStripVisualStateOnce(CardModel model, bool useFaceDownStrip)
+    {
+        if (model.Pile?.Type != PileType.Hand)
+            return;
+
+        int key = model.GetHashCode();
+        if (!_loggedStripDebugIds.Add(key))
+            return;
+
+        if (!TryGetMonsterVisualData(model, out var attribute, out var race, out _, out _))
+            return;
+
+        bool isHandEffect = model is AbstractMonsterCard m && m.IsHandEffectFormActive;
+        bool willSet = model is AbstractMonsterCard m2 && m2.WillSet;
+        bool faceDown = model is AbstractMonsterCard m3 && m3.FaceDown;
+        YgoCardType type = model is IYgoCard ygo ? ygo.YgoCardType : YgoCardType.Monster;
+        GD.Print(
+            $"[YgoStripVisualDebug] Id={model.Id.Entry}, YgoCardType={type}, Attr={attribute}, Race={race}, IsHandEffectFormActive={isHandEffect}, WillSet={willSet}, FaceDown={faceDown}, UseFaceDownStrip={useFaceDownStrip}");
+    }
+
+    private static bool TryGetMonsterVisualData(
+        CardModel model,
+        out DuelMonsterAttribute attribute,
+        out DuelMonsterRace race,
+        out int level,
+        out bool useFaceDownStrip)
+    {
+        if (model is AbstractMonsterCard monster)
+        {
+            attribute = monster.DuelMonsterAttribute;
+            race = monster.DuelMonsterRace;
+            level = monster is BaseMonsterCard bm ? bm.GetEffectiveDuelMonsterLevel() : monster.DuelMonsterLevel;
+            useFaceDownStrip = monster.FaceDown
+                               || (monster.Pile?.Type == PileType.Hand
+                                   && monster.WillSet
+                                   && !monster.IsAttackBattlePosition
+                                   && !monster.IsHandEffectFormActive
+                                   && monster.YgoCardType != YgoCardType.FusionMonster);
+            return true;
+        }
+
+        if (model is MonsterCommandCard cmd && cmd.SourceMonster != null)
+        {
+            var src = cmd.SourceMonster;
+            attribute = src.DuelMonsterAttribute;
+            race = src.DuelMonsterRace;
+            level = src.GetEffectiveDuelMonsterLevel();
+            useFaceDownStrip = false;
+            return true;
+        }
+
+        attribute = DuelMonsterAttribute.Earth;
+        race = DuelMonsterRace.Warrior;
+        level = 1;
+        useFaceDownStrip = false;
+        return false;
     }
 
     private static AtlasTexture[]? EnsureAtlases(Texture2D? strip, bool useFaceDownStrip)

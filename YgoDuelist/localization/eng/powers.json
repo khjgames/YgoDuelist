@@ -92,5 +92,11 @@
   "YGODUELIST-ZONE_EATER_MARK_POWER.smartDescription": "[blue]{Amount}[/blue] turns until this enemy takes [red]20[/red] damage.",
   "YGODUELIST-SEVEN_WEAPONS_POWER.title": "7 Weapons",
   "YGODUELIST-SEVEN_WEAPONS_POWER.description": "Counts toward bonus ATK for The Hunter with 7 Weapons (1–7 each time you play a card).",
-  "YGODUELIST-SEVEN_WEAPONS_POWER.smartDescription": "Step [blue]{Amount}[/blue] of 7. At 7, bonus ATK applies until you play another card."
+  "YGODUELIST-SEVEN_WEAPONS_POWER.smartDescription": "Step [blue]{Amount}[/blue] of 7. At 7, bonus ATK applies until you play another card.",
+  "YGODUELIST-RUSH_RECKLESSLY_POWER.title": "Rush Recklessly",
+  "YGODUELIST-RUSH_RECKLESSLY_POWER.description": "This duel monster gains 7 ATK this turn.",
+  "YGODUELIST-RUSH_RECKLESSLY_POWER.smartDescription": "This duel monster gains [blue]7[/blue] ATK this turn.",
+  "YGODUELIST-RELIABLE_DEFENDER_POWER.title": "Reliable Defender",
+  "YGODUELIST-RELIABLE_DEFENDER_POWER.description": "This duel monster gains 7 DEF this turn.",
+  "YGODUELIST-RELIABLE_DEFENDER_POWER.smartDescription": "This duel monster gains [blue]7[/blue] DEF this turn."
 }

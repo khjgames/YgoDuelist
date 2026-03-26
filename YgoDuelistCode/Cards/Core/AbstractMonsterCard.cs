@@ -122,7 +122,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             FaceDown = false;
             YgoMonsterFlipEffectRunner.ScheduleIfFlippedOnField(this, wasFaceDown, choiceContext: null);
         }
-        else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet)
+        else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet && CanUseSetVisualStateInCurrentForm())
             FaceDown = true;
         UpdateFaceDownKeywordFromBool();
         CardModelEnergyCache.Invalidate(this);
@@ -210,10 +210,13 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             FaceDown = false;
             YgoMonsterFlipEffectRunner.ScheduleIfFlippedOnField(this, wasFaceDown, choiceContext: null);
         }
-        else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet)
+        else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet && CanUseSetVisualStateInCurrentForm())
             FaceDown = true;
         else if (_displayForm == MonsterDisplayForm.HandEffect)
+        {
+            // Hand-effect mode should always render as face-up skill visuals.
             FaceDown = false;
+        }
 
         UpdateFaceDownKeywordFromBool();
         AfterDisplayFormChanged();
@@ -413,9 +416,24 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// </summary>
     public void NormalizeFaceDownStateForCurrentDisplayMode()
     {
-        bool shouldBeFaceDown = _displayForm == MonsterDisplayForm.Defense && WillSet;
-        FaceDown = shouldBeFaceDown;
+        // Preserve explicit face-down states (set/flip effects). Only recompute when not already face-down.
+        if (!FaceDown)
+        {
+            bool shouldBeFaceDown = _displayForm == MonsterDisplayForm.Defense
+                                    && WillSet
+                                    && CanUseSetVisualStateInCurrentForm();
+            FaceDown = shouldBeFaceDown;
+        }
         UpdateFaceDownKeywordFromBool();
+    }
+
+    private bool CanUseSetVisualStateInCurrentForm()
+    {
+        if (YgoCardType == YgoCardType.FusionMonster)
+            return false;
+        if (SupportsHandEffectForm && _displayForm == MonsterDisplayForm.HandEffect)
+            return false;
+        return true;
     }
 
     /// <summary>

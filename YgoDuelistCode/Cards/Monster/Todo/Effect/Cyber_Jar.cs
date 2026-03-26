@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -15,11 +17,14 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
 {
+    private static readonly LocString FlipRevealPreviewPrompt =
+        new("cards", "YGODUELIST-CYBER_JAR.flip_preview.selection");
+
     public Cyber_Jar()
         : base(
             cost: 3,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
@@ -58,6 +63,16 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
                 break;
             revealed.Add(top);
             await CardPileCmd.Add(top, discard, CardPilePosition.Top, top, false);
+        }
+
+        if (revealed.Count > 0)
+        {
+            var prefs = new CardSelectorPrefs(FlipRevealPreviewPrompt, 0, 0)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = false
+            };
+            await CardSelectCmd.FromSimpleGrid(choiceContext, revealed, player, prefs);
         }
 
         foreach (CardModel card in revealed)

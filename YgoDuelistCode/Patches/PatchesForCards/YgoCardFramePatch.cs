@@ -1,5 +1,6 @@
 using Godot;
 using HarmonyLib;
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
@@ -12,14 +13,20 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 internal static class YgoSetCardVisualHelper
 {
     public static readonly Color SetOrFaceDownTint = new(0.7f, 0.43f, 0.37f, 1f);
+    private static readonly HashSet<int> LoggedMonsterIds = new();
 
     public static bool ShouldUseSetFrame(CardModel model)
     {
         if (model is AbstractMonsterCard monster)
         {
+            LogMonsterSetVisualStateOnce(monster);
             if (monster.FaceDown)
                 return true;
-            if (monster.Pile?.Type == PileType.Hand && monster.WillSet)
+            if (monster.Pile?.Type == PileType.Hand
+                && monster.WillSet
+                && !monster.IsAttackBattlePosition
+                && !monster.IsHandEffectFormActive
+                && monster.YgoCardType != YgoCardType.FusionMonster)
                 return true;
         }
 
@@ -40,6 +47,24 @@ internal static class YgoSetCardVisualHelper
         }
 
         return false;
+    }
+
+    private static void LogMonsterSetVisualStateOnce(AbstractMonsterCard monster)
+    {
+        if (monster.Pile?.Type != PileType.Hand)
+            return;
+
+        int key = monster.GetHashCode();
+        if (!LoggedMonsterIds.Add(key))
+            return;
+
+        bool shouldUseSetVisual = monster.FaceDown
+                                  || (monster.WillSet
+                                      && !monster.IsAttackBattlePosition
+                                      && !monster.IsHandEffectFormActive
+                                      && monster.YgoCardType != YgoCardType.FusionMonster);
+        GD.Print(
+            $"[YgoSetVisualDebug] Id={monster.Id.Entry}, YgoCardType={monster.YgoCardType}, IsHandEffectFormActive={monster.IsHandEffectFormActive}, WillSet={monster.WillSet}, FaceDown={monster.FaceDown}, ShouldUseSetVisual={shouldUseSetVisual}");
     }
 }
 

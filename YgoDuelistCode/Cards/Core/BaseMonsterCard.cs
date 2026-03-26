@@ -140,6 +140,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             }
         }
 
+        if (SourcePetHasPower<RushRecklesslyPower>())
+            atk += RushRecklesslyPower.AtkBonus;
+        if (SourcePetHasPower<ReliableDefenderPower>())
+            def += ReliableDefenderPower.DefBonus;
+
         // Owner getter asserts mutable; canonical/library card templates must not touch it.
         if (!IsCanonical && Owner != null)
         {
@@ -240,6 +245,20 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         foreach (Creature pet in Owner.PlayerCombatState.Pets)
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this && pet.HasPower<YgoCurseOfAnubisEffectMonsterPower>())
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool SourcePetHasPower<TPower>() where TPower : MegaCrit.Sts2.Core.Models.PowerModel
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return false;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this && pet.HasPower<TPower>())
                 return true;
         }
 

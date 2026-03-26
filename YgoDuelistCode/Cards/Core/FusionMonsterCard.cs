@@ -40,6 +40,10 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         }
 
         _fusionMaterialTypes = fusionMaterialTypes.Length == 0 ? Array.Empty<Type>() : (Type[])fusionMaterialTypes.Clone();
+        // Fusion monsters should default to face-up defense visuals (not set/face-down).
+        WillSet = false;
+        FaceDown = false;
+        SetDisplayAttackSkill(displayAsAttack: false);
     }
 
     protected FusionMonsterCard(

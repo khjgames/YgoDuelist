@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Assets;
@@ -16,7 +17,9 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// </summary>
 public static class StaticImageCreateVisualsPatch
 {
-    private const float StaticPortraitAttributeRaceIconScaleMultiplier = 2.0f;
+    private const float StaticPortraitAttributeRaceIconScaleMultiplier = 4.0f;
+    private const int DeferredScalePasses = 12;
+    private const string StaticPortraitScaledMetaKey = "YgoStaticPortraitIconScaled";
 
     private static readonly MethodInfo _visualsPathGetter = typeof(MonsterModel)
         .GetProperty("VisualsPath", BindingFlags.Instance | BindingFlags.NonPublic)!
@@ -60,8 +63,27 @@ public static class StaticImageCreateVisualsPatch
 
         raw.QueueFree();
         ScaleAttributeAndRaceIconsForStaticPortrait(visuals);
+        _ = ScaleAttributeAndRaceIconsDeferredAsync(visuals);
         __result = visuals;
         return false;
+    }
+
+    private static async Task ScaleAttributeAndRaceIconsDeferredAsync(Node root)
+    {
+        if (!GodotObject.IsInstanceValid(root))
+            return;
+
+        var tree = root.GetTree();
+        if (tree == null)
+            return;
+
+        for (int i = 0; i < DeferredScalePasses; i++)
+        {
+            await root.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+            if (!GodotObject.IsInstanceValid(root))
+                return;
+            ScaleAttributeAndRaceIconsForStaticPortrait(root);
+        }
     }
 
     private static void ScaleAttributeAndRaceIconsForStaticPortrait(Node root)
@@ -70,9 +92,29 @@ public static class StaticImageCreateVisualsPatch
         {
             ScaleAttributeAndRaceIconsForStaticPortrait(child);
 
+            if (child is not CanvasItem canvas)
+                continue;
+
+            if (canvas.HasMeta(StaticPortraitScaledMetaKey))
+                continue;
+
             string name = child.Name.ToString().ToLowerInvariant();
-            bool isAttributeOrRaceIcon =
-                name.Contains("attribute") || name.Contains("race");
+            bool isAttributeOrRaceIcon = name.Contains("attribute")
+                                         || name.Contains("race")
+                                         || name.Contains("typeicon")
+                                         || name.Contains("aticon")
+                                         || name.Contains("deficon");
+
+            if (!isAttributeOrRaceIcon)
+            {
+                string texPath = child switch
+                {
+                    Sprite2D s when s.Texture?.ResourcePath != null => s.Texture.ResourcePath.ToLowerInvariant(),
+                    TextureRect t when t.Texture?.ResourcePath != null => t.Texture.ResourcePath.ToLowerInvariant(),
+                    _ => string.Empty
+                };
+                isAttributeOrRaceIcon = texPath.Contains("/attribute/") || texPath.Contains("/race/");
+            }
             if (!isAttributeOrRaceIcon)
                 continue;
 
@@ -80,9 +122,11 @@ public static class StaticImageCreateVisualsPatch
             {
                 case Node2D n2d:
                     n2d.Scale *= Vector2.One * StaticPortraitAttributeRaceIconScaleMultiplier;
+                    n2d.SetMeta(StaticPortraitScaledMetaKey, true);
                     break;
                 case Control control:
                     control.Scale *= Vector2.One * StaticPortraitAttributeRaceIconScaleMultiplier;
+                    control.SetMeta(StaticPortraitScaledMetaKey, true);
                     break;
             }
         }

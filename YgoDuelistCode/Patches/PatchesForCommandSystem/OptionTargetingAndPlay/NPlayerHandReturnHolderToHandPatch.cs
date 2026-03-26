@@ -25,6 +25,8 @@ public static class NPlayerHandReturnHolderToHandPatch
 
     private static void LogLifecycle(string point, NHandCardHolder holder, string extra = "")
     {
+        if (holder == null || !GodotObject.IsInstanceValid(holder))
+            return;
         if (!IsLifecycleDebugHolder(holder))
             return;
         GD.Print("[YgoLifecycle] ReturnHolderToHand ", point,
