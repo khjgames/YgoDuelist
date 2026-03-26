@@ -19,18 +19,24 @@ public sealed class Arsenal_Robber : BaseTrapCard
     {
     }
 
+    protected override bool IsPlayable =>
+        base.IsPlayable
+        && Owner?.PlayerCombatState != null
+        && (
+            Owner.PlayerCombatState.DrawPile.Cards.OfType<BaseEquipSpellCard>().Any()
+            || Owner.PlayerCombatState.DiscardPile.Cards.OfType<BaseEquipSpellCard>().Any()
+        );
+
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.PlayerCombatState == null)
             return;
 
-        // In-combat, the "deck" corresponds to the draw pile.
         var drawPile = Owner.PlayerCombatState.DrawPile;
-        if (drawPile.IsEmpty)
-            return;
-
+        var discardPile = Owner.PlayerCombatState.DiscardPile;
         List<BaseEquipSpellCard> equipSpells = drawPile.Cards
             .OfType<BaseEquipSpellCard>()
+            .Concat(discardPile.Cards.OfType<BaseEquipSpellCard>())
             .ToList();
 
         if (equipSpells.Count == 0)

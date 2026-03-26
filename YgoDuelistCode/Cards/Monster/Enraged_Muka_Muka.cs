@@ -26,7 +26,8 @@ public sealed class Enraged_Muka_Muka : EffectMonsterCard
             baseAtk: 12,
             baseDef: 6,
             baseMgc: 3,
-            duelMonsterRace: DuelMonsterRace.Rock)
+            duelMonsterRace: DuelMonsterRace.Rock,
+            duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
 

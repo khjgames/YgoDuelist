@@ -43,7 +43,7 @@ public sealed class Star_Boy : EffectMonsterCard
     protected override void OnUpgrade()
     {
         base.OnUpgrade();
-        int mgcBonus = YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseMgc);
+        int mgcBonus = YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseMgc);
         DynamicVars["Mgc2"].UpgradeValueBy(mgcBonus);
     }
 }

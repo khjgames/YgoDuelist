@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -25,11 +27,16 @@ public abstract class FlatRaceEquipSpell : BaseEquipSpellCard
         _bonusDef = bonusDef;
     }
 
+    /// <summary>Displayed ATK/DEF boost (same value for all curated flat race equips).</summary>
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", (decimal)_printedAtkBonus) };
+
     protected override void OnUpgrade()
     {
-        _bonusAtk = _printedAtkBonus + YgoStatUpgradeScaling.GetStatUpgradeBonus(_printedAtkBonus);
-        _bonusDef = _printedDefBonus + YgoStatUpgradeScaling.GetStatUpgradeBonus(_printedDefBonus);
+        _bonusAtk = _printedAtkBonus + YgoStatUpgradeScaling.GetSpellTrapStatBonusUpgradeDelta(_printedAtkBonus);
+        _bonusDef = _printedDefBonus + YgoStatUpgradeScaling.GetSpellTrapStatBonusUpgradeDelta(_printedDefBonus);
         EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].BaseValue = _bonusAtk;
     }
 
     public sealed override bool CanEquipTo(BaseMonsterCard target) => target.DuelMonsterRace == _requiredRace;

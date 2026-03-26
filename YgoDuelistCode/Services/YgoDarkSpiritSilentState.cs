@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 
@@ -11,8 +9,8 @@ public static class YgoDarkSpiritSilentState
 {
     private sealed class Entry
     {
-        public uint NegatedCombatId;
-        public HashSet<uint> DoubleHitCombatIds = [];
+        public uint StunnedCombatId;
+        public uint DoubleHitCombatId;
     }
 
     private static readonly Dictionary<Player, Entry> ByPlayer = new();
@@ -21,31 +19,16 @@ public static class YgoDarkSpiritSilentState
 
     public static void ClearForPlayer(Player player) => ByPlayer.Remove(player);
 
-    public static void Activate(Player player, Creature negated, CombatState cs)
+    public static void Activate(Player player, Creature stunnedTarget, Creature doubleHitTarget)
     {
-        if (!negated.CombatId.HasValue)
+        if (!stunnedTarget.CombatId.HasValue || !doubleHitTarget.CombatId.HasValue)
             return;
 
-        var entry = new Entry { NegatedCombatId = negated.CombatId.Value };
-        Creature playerCreature = player.Creature!;
-        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive && c != negated))
+        ByPlayer[player] = new Entry
         {
-            if (!e.CombatId.HasValue)
-                continue;
-            if (YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, playerCreature) > 0)
-                entry.DoubleHitCombatIds.Add(e.CombatId.Value);
-        }
-
-        ByPlayer[player] = entry;
-    }
-
-    public static bool IsNegated(Player? player, Creature? dealer)
-    {
-        if (player == null || dealer == null || !dealer.CombatId.HasValue)
-            return false;
-        if (!ByPlayer.TryGetValue(player, out Entry? e))
-            return false;
-        return dealer.CombatId.Value == e.NegatedCombatId;
+            StunnedCombatId = stunnedTarget.CombatId.Value,
+            DoubleHitCombatId = doubleHitTarget.CombatId.Value
+        };
     }
 
     public static bool ShouldDoubleAttack(Player? player, Creature? attacker)
@@ -54,6 +37,16 @@ public static class YgoDarkSpiritSilentState
             return false;
         if (!ByPlayer.TryGetValue(player, out Entry? e))
             return false;
-        return e.DoubleHitCombatIds.Contains(attacker.CombatId.Value);
+        return attacker.CombatId.Value == e.DoubleHitCombatId;
+    }
+
+    /// <summary>Attack damage from the chosen "silent" target is negated for this round (stunned enemy).</summary>
+    public static bool IsNegated(Player? player, Creature? dealer)
+    {
+        if (player == null || dealer == null || !dealer.CombatId.HasValue)
+            return false;
+        if (!ByPlayer.TryGetValue(player, out Entry? e))
+            return false;
+        return dealer.CombatId.Value == e.StunnedCombatId;
     }
 }

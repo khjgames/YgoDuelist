@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -5,15 +6,23 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Spell_Shield_Type_8 : BaseTrapCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new DynamicVar[]
+        {
+            new DynamicVar("Mgc", 7m),
+            new DynamicVar("Mgc2", 14m),
+        };
+
     public Spell_Shield_Type_8()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapCounter)
     {
@@ -24,14 +33,14 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
         if (Owner == null || Owner.Creature == null)
             return;
 
-        decimal block = IsUpgraded ? 10m : 7m;
+        decimal block = DynamicVars["Mgc"].BaseValue;
 
         // "Choose 1" implemented as: you may discard a Spell from hand; cancel = take the base block.
         CardModel? chosenSpell = await TryChooseSpellToDiscard(choiceContext, Owner);
         if (chosenSpell != null)
         {
             await CardCmd.Discard(choiceContext, chosenSpell);
-            block *= 2m;
+            block = DynamicVars["Mgc2"].BaseValue;
         }
 
         await CreatureCmd.GainBlock(Owner.Creature, block, default, cardPlay);
@@ -50,7 +59,7 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
         var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
-            Cancelable = true
+            Cancelable = true,
         };
 
         var selected = await CardSelectCmd.FromHand(
@@ -61,5 +70,11 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
             this);
 
         return selected.FirstOrDefault();
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars["Mgc"].UpgradeValueBy(3m);
+        DynamicVars["Mgc2"].UpgradeValueBy(6m);
     }
 }

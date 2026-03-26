@@ -3,7 +3,10 @@ using BaseLib.Extensions;
 using BaseLib.Utils;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Extensions;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards;
 
@@ -15,6 +18,38 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     /// When true, upgraded cards (and upgrade preview) use <c>cards.json</c> key <c>.description_upgraded</c> instead of <c>.description</c>.
     /// </summary>
     public virtual bool UseAlternateUpgradedDescription => false;
+
+    /// <summary>
+    /// When true, <see cref="GetCombatHandDescriptionLocString"/> uses <c>.description_combat</c> in combat hand (like monster attack/skill combat keys), else <c>.description</c>.
+    /// </summary>
+    public virtual bool UsesCombatHandDescription => false;
+
+    /// <summary>
+    /// Resolves <c>description</c> vs <c>description_combat</c> and optional <c>_upgraded</c> suffixes; used by <see cref="Patches.MonsterCardRightClickPatch.GetDescriptionLocString"/>.
+    /// </summary>
+    public LocString GetCombatHandDescriptionLocString()
+    {
+        string suffix = ".description";
+        if (IsInHandDuringCombat())
+            suffix = ".description_combat";
+
+        if (UseAlternateUpgradedDescription
+            && (IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None))
+        {
+            var upgraded = new LocString("cards", Id.Entry + suffix + "_upgraded");
+            if (upgraded.Exists())
+                return upgraded;
+        }
+
+        return new LocString("cards", Id.Entry + suffix);
+    }
+
+    private bool IsInHandDuringCombat()
+    {
+        if (CombatManager.Instance?.IsInProgress != true)
+            return false;
+        return Pile?.Type == PileType.Hand;
+    }
 
     //Image size:
     //Normal art: 1000x760 (Using 500x380 should also work, it will simply be scaled.)

@@ -8,8 +8,10 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -35,6 +37,8 @@ public static class YgoSpellTrapZoneBridge
             bool removed = VisibleCardsByPlayer.Remove(player);
             if (removed)
                 YgoSecondHandSourceBridge.NotifySpellTrapZoneChanged(player, Array.Empty<CardModel>());
+            DarkSnakeSyndromeFieldPower.SyncCleanupIfSpellAbsent(player);
+            _ = YgoDesCounterblowThornsSync.SyncForPlayerAsync(player);
             return;
         }
 
@@ -44,6 +48,8 @@ public static class YgoSpellTrapZoneBridge
 
         VisibleCardsByPlayer[player] = ordered;
         YgoSecondHandSourceBridge.NotifySpellTrapZoneChanged(player, ordered);
+        DarkSnakeSyndromeFieldPower.SyncCleanupIfSpellAbsent(player);
+        _ = YgoDesCounterblowThornsSync.SyncForPlayerAsync(player);
     }
 
     public static bool IsSpellOrTrapCard(CardModel card)

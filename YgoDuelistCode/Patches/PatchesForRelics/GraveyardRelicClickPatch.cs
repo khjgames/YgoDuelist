@@ -25,6 +25,9 @@ public static class GraveyardRelicClickPatch
         if (GraveyardRelic.IsGraveyardRelic(model))
             return !TryOpenGraveyardGrid(model);
 
+        if (ShadowRealmRelic.IsShadowRealmRelic(model))
+            return !TryOpenShadowRealmGrid(model);
+
         if (ExtraDeckRelic.IsExtraDeckRelic(model))
             return !TryOpenExtraDeckGrid(model);
 
@@ -53,6 +56,30 @@ public static class GraveyardRelicClickPatch
             return false;
 
         return TryOpenRelicCardGrid(YgoRelicBrowseGridOverlayPatch.RelicGridKind.Graveyard, model, player, cards);
+    }
+
+    private static bool TryOpenShadowRealmGrid(RelicModel model)
+    {
+        ShadowRealmRelic? shadow = ShadowRealmRelic.AsShadowRealm(model);
+        if (shadow == null)
+            return false;
+
+        if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ShadowRealm))
+            return true;
+
+        IRunState? runState = RunManager.Instance.DebugOnlyGetState();
+        if (runState == null)
+            return false;
+
+        Player? player = LocalContext.GetMe((IPlayerCollection)runState);
+        if (player == null)
+            return false;
+
+        IReadOnlyList<CardModel> cards = ShadowRealmRelic.GetShadowRealmCards(player);
+        if (cards.Count == 0)
+            return false;
+
+        return TryOpenRelicCardGrid(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ShadowRealm, model, player, cards);
     }
 
     private static bool TryOpenExtraDeckGrid(RelicModel model)

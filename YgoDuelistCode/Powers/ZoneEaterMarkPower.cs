@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
@@ -11,6 +13,25 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 /// <summary>Inflicted by <see cref="Cards.Monster.Todo.Effect.Zone_Eater"/>: after 5 of your turn ends, this enemy takes 20 damage.</summary>
 public sealed class ZoneEaterMarkPower : YgoDuelistPower
 {
+    private CardModel? _sourceZoneEaterCard;
+
+    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
+    {
+        _sourceZoneEaterCard = cardSource;
+        return base.AfterApplied(applier, cardSource);
+    }
+
+    /// <summary>When the source <see cref="Cards.Monster.Todo.Effect.Zone_Eater"/> leaves the field, its marks are removed from enemies.</summary>
+    public static async Task RemoveAllFromSourceCardAsync(CombatState cs, CardModel sourceCard)
+    {
+        foreach (Creature e in cs.HittableEnemies)
+        {
+            ZoneEaterMarkPower? p = e.GetPower<ZoneEaterMarkPower>();
+            if (p != null && ReferenceEquals(p._sourceZoneEaterCard, sourceCard))
+                await PowerCmd.Remove(p);
+        }
+    }
+
     public override PowerType Type => PowerType.Debuff;
 
     public override PowerStackType StackType => PowerStackType.Counter;

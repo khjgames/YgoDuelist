@@ -51,6 +51,7 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
         int revealCount = IsUpgraded ? 6 : 5;
         CardPile draw = pcs.DrawPile;
         CardPile discard = pcs.DiscardPile;
+        CardPile? hand = PileType.Hand.GetPile(player);
 
         var revealed = new List<CardModel>();
         for (int i = 0; i < revealCount; i++)
@@ -72,7 +73,15 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
                 RequireManualConfirmation = true,
                 Cancelable = false
             };
-            await CardSelectCmd.FromSimpleGrid(choiceContext, revealed, player, prefs);
+            try
+            {
+                YgoMonsterFormPreviewContext.RestrictMonsterToggleToAttackDefenseOnly = true;
+                await CardSelectCmd.FromSimpleGrid(choiceContext, revealed, player, prefs);
+            }
+            finally
+            {
+                YgoMonsterFormPreviewContext.RestrictMonsterToggleToAttackDefenseOnly = false;
+            }
         }
 
         foreach (CardModel card in revealed)
@@ -90,11 +99,11 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
                     if (pet != null)
                         MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn = true;
                 }
-                else
-                    await CardPileCmd.Add(card, draw, CardPilePosition.Bottom, card, false);
+                else if (hand != null)
+                    await CardPileCmd.Add(card, hand, CardPilePosition.Top, card, false);
             }
-            else
-                await CardPileCmd.Add(card, draw, CardPilePosition.Bottom, card, false);
+            else if (hand != null)
+                await CardPileCmd.Add(card, hand, CardPilePosition.Top, card, false);
         }
     }
 

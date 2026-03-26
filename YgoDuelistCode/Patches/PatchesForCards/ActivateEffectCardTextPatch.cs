@@ -11,16 +11,20 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// <summary>
 /// <see cref="CardModel.GetDescriptionForPile"/> reads <see cref="CardModel.Description"/> via non-virtual dispatch, so
 /// per-source text for <see cref="Activate_Effect"/> must be injected here. Title uses shared <c>YGODUELIST-ACTIVATE_EFFECT.title</c>.
+/// Dynamic vars ({Mgc}, {Mgc2}, etc.) live on <see cref="MonsterCommandCard.SourceMonster"/>, not on the command card.
 /// </summary>
 [HarmonyPatch(typeof(CardModel), nameof(CardModel.GetDescriptionForPile), typeof(PileType), typeof(Creature))]
 public static class ActivateEffectCardTextPatch
 {
     static void Postfix(CardModel __instance, ref string __result)
     {
-        if (__instance is not Activate_Effect { SourceMonster: IMonsterActivatedEffect impl })
+        if (__instance is not Activate_Effect { SourceMonster: NormalMonsterCard sourceMonster })
+            return;
+        if (sourceMonster is not IMonsterActivatedEffect impl)
             return;
 
         var loc = new LocString("cards", impl.ActivatedEffectDescriptionLocKey);
+        sourceMonster.DynamicVars.AddTo(loc);
         string text = loc.GetFormattedText();
         if (!string.IsNullOrEmpty(text))
             __result = text;

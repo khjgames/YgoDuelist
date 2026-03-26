@@ -9,8 +9,6 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 
 public sealed class RushRecklesslyPower : YgoDuelistPower
 {
-    public const int AtkBonus = 7;
-
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Counter;

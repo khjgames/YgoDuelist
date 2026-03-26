@@ -6,49 +6,37 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Services;
 
-namespace YgoDuelist.YgoDuelistCode.Powers;
+namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>While <see cref="Bottomless_Shifting_Sand"/> is active.</summary>
-public sealed class BottomlessShiftingSandFieldPower : YgoDuelistPower
+/// <summary>While <see cref="Bottomless_Shifting_Sand"/> is face-up (no player power).</summary>
+public static class YgoBottomlessShiftingSandContinuous
 {
-    public override PowerType Type => PowerType.Buff;
-
-    public override PowerStackType StackType => PowerStackType.Counter;
-
-    public override LocString Title => new("powers", "YGODUELIST-BOTTOMLESS_SHIFTING_SAND_FIELD_POWER.title");
-
-    public override LocString Description => new("powers", "YGODUELIST-BOTTOMLESS_SHIFTING_SAND_FIELD_POWER.description");
-
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public static async Task TryResolveAfterPlayerTurnEnd(PlayerChoiceContext choiceContext, Player player)
     {
-        if (side != CombatSide.Player || Owner.Side != CombatSide.Player)
+        if (player.Creature == null)
             return;
 
-        Player? pl = Owner.Player;
-        if (pl == null)
+        Bottomless_Shifting_Sand? sand = SpellTrapZonePile.CustomType.GetPile(player)?.Cards.OfType<Bottomless_Shifting_Sand>().FirstOrDefault();
+        if (sand == null)
             return;
 
-        Bottomless_Shifting_Sand? sand = SpellTrapZonePile.CustomType.GetPile(pl)?.Cards.OfType<Bottomless_Shifting_Sand>().FirstOrDefault();
-        int handThreshold = sand != null ? (int)sand.DynamicVars["Mgc"].BaseValue : 4;
+        int handThreshold = (int)sand.DynamicVars["Mgc"].BaseValue;
 
-        CardPile? hand = PileType.Hand.GetPile(pl);
+        CardPile? hand = PileType.Hand.GetPile(player);
         int handCount = hand?.Cards.Count ?? 0;
         if (handCount < handThreshold)
         {
-            await DestroyTrapAndRemovePowerAsync(pl);
+            await DestroyTrapAndSyncAsync(player);
             return;
         }
 
-        var cs = Owner.CombatState;
+        var cs = player.Creature.CombatState;
         if (cs == null)
             return;
 
@@ -60,7 +48,7 @@ public sealed class BottomlessShiftingSandFieldPower : YgoDuelistPower
         int bestIntent = -1;
         foreach (Creature e in YgoDeterministicRng.StableOrder(alive, c => c.CombatId))
         {
-            int intent = YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, Owner);
+            int intent = YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, player.Creature);
             if (intent > bestIntent)
             {
                 bestIntent = intent;
@@ -71,12 +59,12 @@ public sealed class BottomlessShiftingSandFieldPower : YgoDuelistPower
         if (best == null || bestIntent <= 0)
             return;
 
-        decimal cap = sand != null ? sand.DynamicVars["Mgc2"].BaseValue : 30m;
+        decimal cap = sand.DynamicVars["Mgc2"].BaseValue;
         decimal dmg = Math.Min(bestIntent, cap);
-        await CreatureCmd.Damage(choiceContext, best, dmg, ValueProp.Unpowered, Owner, sand);
+        await CreatureCmd.Damage(choiceContext, best, dmg, ValueProp.Unpowered, player.Creature, sand);
     }
 
-    private async Task DestroyTrapAndRemovePowerAsync(Player pl)
+    private static async Task DestroyTrapAndSyncAsync(Player pl)
     {
         CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
         Bottomless_Shifting_Sand? sand = zone?.Cards.OfType<Bottomless_Shifting_Sand>().FirstOrDefault();
@@ -87,6 +75,5 @@ public sealed class BottomlessShiftingSandFieldPower : YgoDuelistPower
         YgoSpellTrapZoneBridge.SyncFromZonePile(pl);
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(pl);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(pl);
-        await PowerCmd.Remove(this);
     }
 }

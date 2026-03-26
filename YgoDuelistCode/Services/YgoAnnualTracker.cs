@@ -14,4 +14,10 @@ public static class YgoAnnualTracker
         var relic = player?.Relics.OfType<GraveyardRelic>().FirstOrDefault();
         return relic != null && relic.TryConsumeAnnual(key);
     }
+
+    public static bool IsAnnualAvailable(Player? player, string key)
+    {
+        var relic = player?.Relics.OfType<GraveyardRelic>().FirstOrDefault();
+        return relic != null && relic.IsAnnualAvailable(key);
+    }
 }

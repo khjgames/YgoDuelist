@@ -18,6 +18,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Crass_Clown : EffectMonsterCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", 6m) });
+
     public Crass_Clown()
         : base(
             cost: 1,
@@ -28,7 +31,7 @@ public sealed class Crass_Clown : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 13,
             baseDef: 14,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }

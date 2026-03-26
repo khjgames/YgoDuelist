@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -13,6 +16,13 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Dark_Magic_Attack : BaseSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[]
+        {
+            new DynamicVar("Mgc", 3m),
+            new DynamicVar("Mgc2", 3m)
+        };
+
     public Dark_Magic_Attack()
         : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
@@ -28,17 +38,21 @@ public sealed class Dark_Magic_Attack : BaseSpellCard
         if (Owner?.Creature?.CombatState == null)
             return;
 
+        decimal weak = DynamicVars["Mgc"].BaseValue;
+        decimal vuln = DynamicVars["Mgc2"].BaseValue;
+
         foreach (var enemy in Owner.Creature.CombatState.HittableEnemies)
         {
             if (!enemy.IsAlive)
                 continue;
-            await PowerCmd.Apply<WeakPower>(enemy, 3m, Owner.Creature, this);
-            await PowerCmd.Apply<VulnerablePower>(enemy, 3m, Owner.Creature, this);
+            await PowerCmd.Apply<WeakPower>(enemy, weak, Owner.Creature, this);
+            await PowerCmd.Apply<VulnerablePower>(enemy, vuln, Owner.Creature, this);
         }
     }
 
     protected override void OnUpgrade()
     {
-        base.OnUpgrade();
+        DynamicVars["Mgc"].UpgradeValueBy(1m);
+        DynamicVars["Mgc2"].UpgradeValueBy(1m);
     }
 }

@@ -43,20 +43,28 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
     public TargetType ActivatedEffectTarget => TargetType.Self;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-ANTI_AIRCRAFT_FLOWER.activated_effect.description";
 
-    public bool IsActivatedEffectAvailable =>
-        Owner?.PlayerCombatState?.Pets.Any(p =>
+    public bool IsActivatedEffectAvailable => IsEarthTributeAvailable(Owner);
+
+    internal bool IsEarthTributeAvailable(Player? playerContext)
+    {
+        Player? player = playerContext ?? Owner;
+        if (player?.PlayerCombatState == null)
+            return false;
+
+        return player.PlayerCombatState.Pets.Any(p =>
             p.IsAlive
             && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard c
             && c.DuelMonsterAttribute == DuelMonsterAttribute.Earth
-            && !ReferenceEquals(c, this)) == true;
+            && !ReferenceEquals(c, this));
+    }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
-        var player = source.Owner;
+        Player? player = source.Owner ?? cardPlay.Card?.Owner;
         if (player?.PlayerCombatState?.Pets == null)
             return;
 
-        Creature? sourcePet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source);
+        Creature? sourcePet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source, player);
         if (sourcePet == null)
             return;
 

@@ -20,20 +20,12 @@ public sealed class The_Legendary_Fisherman : EffectMonsterCard
             baseAtk: 18,
             baseDef: 16,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Warrior)
+            duelMonsterRace: DuelMonsterRace.Warrior,
+            duelMonsterAttackPlayEnergyOverride: 1,
+            duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
 
-    public override int GetDuelMonsterPlayEnergyDiscount()
-    {
-        if (IsCanonical || Owner == null)
-            return 0;
-        foreach (BaseFieldSpellCard fs in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))
-        {
-            if (fs is Umi)
-                return 1;
-        }
-
-        return 0;
-    }
+    public override int GetDuelMonsterPlayEnergyDiscount() =>
+        !IsCanonical && Owner != null && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<Umi>(Owner) ? 1 : 0;
 }

@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -55,6 +56,17 @@ public static class PlayCardFromSpellTrapZonePatch
 
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
+
+        // Burst Stream (played from set Spell/Trap zone) should silently ask for Blue-Eyes selection.
+        if (card is Burst_Stream_of_Destruction && target == null)
+        {
+            target = await Burst_Stream_of_Destruction.PickBlueEyesOnFieldAsync(action.Player, cancelable: true);
+            if (target == null)
+            {
+                action.Cancel();
+                return;
+            }
+        }
 
         bool needsTarget = card.TargetType == TargetType.AnyEnemy || card.TargetType == TargetType.AnyAlly;
         if (needsTarget && target == null)

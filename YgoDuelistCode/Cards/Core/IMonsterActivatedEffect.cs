@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -32,9 +33,10 @@ public interface IMonsterActivatedEffect
 
 public static class MonsterActivatedEffectRuntime
 {
-    public static Creature? FindPetForSourceMonster(NormalMonsterCard source)
+    /// <param name="ownerFallback">When the source monster card's Owner is unset, use the Activate Effect command card's owner.</param>
+    public static Creature? FindPetForSourceMonster(NormalMonsterCard source, Player? ownerFallback = null)
     {
-        var player = source.Owner;
+        Player? player = source.Owner ?? ownerFallback;
         if (player?.PlayerCombatState == null)
             return null;
 

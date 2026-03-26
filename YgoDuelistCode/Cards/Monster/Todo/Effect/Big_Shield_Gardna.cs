@@ -15,7 +15,7 @@ public sealed class Big_Shield_Gardna : EffectMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
-            baseAtk: 100,
+            baseAtk: 1,
             baseDef: 26,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior)

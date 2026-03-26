@@ -5,7 +5,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Mystical_Sheep_1 : EffectMonsterCard
+public sealed class Mystical_Sheep_1 : EffectMonsterCard, IFusionMaterialSubstitute
 {
     public Mystical_Sheep_1()
         : base(

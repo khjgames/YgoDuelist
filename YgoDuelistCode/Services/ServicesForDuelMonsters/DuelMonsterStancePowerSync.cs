@@ -58,6 +58,8 @@ public static class DuelMonsterStancePowerSync
         if (card.FaceDown)
             await PowerCmd.Apply<FaceDownStancePower>(pet, 1m, app, src);
 
+        await AmazonessSwordsWomanThornsSync.SyncForPetAsync(pet, card, app, src);
+
         DuelMonsterPortraitDecorations.RefreshPet(pet);
     }
 

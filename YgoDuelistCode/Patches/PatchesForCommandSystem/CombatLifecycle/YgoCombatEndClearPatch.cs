@@ -23,7 +23,6 @@ public static class YgoCombatEndClearPatch
     {
         DuelMonsterFieldRegistry.ClearAll();
         MonsterCommandRegistry.ClearAll();
-        YgoDarkSnakeSyndromeTargetState.ClearAll();
         YgoDarkSpiritSilentState.ClearAll();
         NormalSummonTracker.ClearAll();
         TributeSummonPlayPayload.ClearAll();
@@ -36,6 +35,7 @@ public static class YgoCombatEndClearPatch
         RushReliablePlayPayload.ClearAll();
         YgoEquipSpellRegistry.ClearAll();
         YgoCurseOfDarknessSpellHook.ClearAll();
+        YgoDesCounterblowThornsSync.ClearAll();
 
         if (combatState != null)
         {

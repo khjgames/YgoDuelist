@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -12,6 +14,9 @@ public sealed class Yellow_Luster_Shield : BaseContinuousSpellCard
 {
     private const int PrintedDefBonus = 3;
     private int _bonusDef = PrintedDefBonus;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", (decimal)PrintedDefBonus) };
 
     public Yellow_Luster_Shield()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
@@ -30,7 +35,8 @@ public sealed class Yellow_Luster_Shield : BaseContinuousSpellCard
 
     protected override void OnUpgrade()
     {
-        _bonusDef = PrintedDefBonus + YgoStatUpgradeScaling.GetStatUpgradeBonus(PrintedDefBonus);
+        _bonusDef = PrintedDefBonus + YgoStatUpgradeScaling.GetSpellTrapStatBonusUpgradeDelta(PrintedDefBonus);
         EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].BaseValue = _bonusDef;
     }
 }

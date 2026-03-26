@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -14,6 +15,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Spellbook_Organization : BaseSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 0m) };
+
     public Spellbook_Organization()
         : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
     {
@@ -68,7 +72,10 @@ public sealed class Spellbook_Organization : BaseSpellCard
         for (int i = chosenTopToBottom.Count - 1; i >= 0; i--)
             await CardPileCmd.Add(new[] { chosenTopToBottom[i] }, drawPile, CardPilePosition.Top, this, false);
 
-        if (IsUpgraded)
-            await CardPileCmd.Draw(choiceContext, 1, player);
+        int bonusDraw = (int)DynamicVars["Mgc"].BaseValue;
+        if (bonusDraw > 0)
+            await CardPileCmd.Draw(choiceContext, bonusDraw, player);
     }
+
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
 }

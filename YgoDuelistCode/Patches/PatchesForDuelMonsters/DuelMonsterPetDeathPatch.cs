@@ -17,6 +17,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
@@ -92,6 +93,16 @@ public static class DuelMonsterPetDeathPatch
                     YgoOptionHandBridge.SyncFromOptionPile(player);
                     GD.Print("[ZGO] DuelMonsterPetDeathPatch: cleared option pile (was for dead monster).");
                 }
+            }
+
+            if (card is Amazoness_Swords_Woman aws && player.Creature != null)
+                TaskHelper.RunSafely(AmazonessSwordsWomanThornsSync.StripBeforeFieldUnregisterAsync(aws, player.Creature));
+
+            if (card is Zone_Eater)
+            {
+                var cs = pet.CombatState;
+                if (cs != null)
+                    TaskHelper.RunSafely(ZoneEaterMarkPower.RemoveAllFromSourceCardAsync(cs, card));
             }
 
             var graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);

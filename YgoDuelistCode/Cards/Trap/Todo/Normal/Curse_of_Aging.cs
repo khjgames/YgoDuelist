@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -15,6 +17,13 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Curse_of_Aging : BaseTrapCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[]
+        {
+            new DynamicVar("Mgc", 1m),
+            new DynamicVar("Mgc2", 1m)
+        };
+
     public Curse_of_Aging()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
@@ -43,14 +52,15 @@ public sealed class Curse_of_Aging : BaseTrapCard
         {
             if (!enemy.IsAlive)
                 continue;
-            await PowerCmd.Apply<WeakPower>(enemy, 1m, Owner.Creature, this);
-            await PowerCmd.Apply<VulnerablePower>(enemy, 1m, Owner.Creature, this);
+            await PowerCmd.Apply<WeakPower>(enemy, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
+            await PowerCmd.Apply<VulnerablePower>(enemy, DynamicVars["Mgc2"].BaseValue, Owner.Creature, this);
         }
     }
 
     protected override void OnUpgrade()
     {
-        base.OnUpgrade();
+        DynamicVars["Mgc"].UpgradeValueBy(1m);
+        DynamicVars["Mgc2"].UpgradeValueBy(1m);
     }
 
     private async Task TryDestroyOneHandCardToGraveyard(PlayerChoiceContext choiceContext)

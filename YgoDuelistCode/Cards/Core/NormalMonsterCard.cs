@@ -163,9 +163,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
     protected override void OnUpgrade()
     {
-        int atkBonus = YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseAtk);
-        int defBonus = YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseDef);
-        int mgcBonus = YgoStatUpgradeScaling.GetStatUpgradeBonus(BaseMgc);
+        int atkBonus = YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseAtk);
+        int defBonus = YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseDef);
+        int mgcBonus = YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseMgc);
         DynamicVars.Damage.UpgradeValueBy(atkBonus);
         DynamicVars["Def"].UpgradeValueBy(defBonus);
         if (DynamicVars.Block != null)

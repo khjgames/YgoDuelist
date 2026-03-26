@@ -1,9 +1,7 @@
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -16,11 +14,5 @@ public sealed class Des_Counterblow : BaseContinuousTrapCard
     {
     }
 
-    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        if (Owner?.Creature == null)
-            return;
-
-        await PowerCmd.Apply<ThornsPower>(Owner.Creature, 4m, Owner.Creature, this);
-    }
+    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) => Task.CompletedTask;
 }

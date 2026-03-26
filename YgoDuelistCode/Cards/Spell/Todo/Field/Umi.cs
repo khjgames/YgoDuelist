@@ -1,14 +1,23 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 
 public sealed class Umi : BaseFieldSpellCard
 {
+    private const int PrintedBuffMag = 2;
+    private const int PrintedDebuffMag = -2;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", (decimal)PrintedBuffMag) };
+
     public Umi()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
@@ -18,9 +27,13 @@ public sealed class Umi : BaseFieldSpellCard
     {
         DuelMonsterRace r = target.DuelMonsterRace;
         if (r is DuelMonsterRace.Fish or DuelMonsterRace.SeaSerpent or DuelMonsterRace.Thunder or DuelMonsterRace.Aqua)
-            return new StatEffectTotal(2, 2);
+            return new StatEffectTotal(
+                YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedBuffMag, IsUpgraded),
+                YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedBuffMag, IsUpgraded));
         if (r is DuelMonsterRace.Machine or DuelMonsterRace.Pyro)
-            return new StatEffectTotal(-2, -2);
+            return new StatEffectTotal(
+                YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedDebuffMag, IsUpgraded),
+                YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedDebuffMag, IsUpgraded));
         return StatEffectTotal.None;
     }
 
@@ -30,5 +43,7 @@ public sealed class Umi : BaseFieldSpellCard
     protected override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].BaseValue = System.Math.Abs(
+            YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedBuffMag, true));
     }
 }

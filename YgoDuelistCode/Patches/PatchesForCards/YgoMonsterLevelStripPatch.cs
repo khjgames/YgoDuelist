@@ -55,6 +55,18 @@ public static class YgoMonsterLevelStripPatch
     /// <summary>Race icon: horizontal nudge from card/banner right (positive = move left), same sense as <see cref="StripHorizontalNudgePx"/>.</summary>
     private const float RaceHorizontalNudgePx = 48f;
 
+    /// <summary>Command-card portraits need race icon slightly lower than normal cards.</summary>
+    private const float CommandCardRaceVerticalNudgePx = 68f;
+
+    /// <summary>Extra downward nudge for command-card race icon only.</summary>
+    private const float CommandCardRaceExtraVerticalNudgePx = 5f;
+
+    /// <summary>Command cards: move attribute and race icons left (same sense as <see cref="RaceHorizontalNudgePx"/>).</summary>
+    private const float CommandCardIconHorizontalNudgePx = 2f;
+
+    /// <summary>Command cards: extra horizontal gap between attribute and race (attribute moves left).</summary>
+    private const float CommandCardAttributeRaceInterIconGapPx = 2f;
+
     /// <summary>Attribute sits to the left of the race; its right edge is this many px left of the race’s right edge.</summary>
     private const float AttributeRightEdgeLeftOfRaceRightPx = 31f;
     private const float AttributeSetAlpha = 0.75f;
@@ -246,7 +258,14 @@ public static class YgoMonsterLevelStripPatch
         attr.StretchMode = TextureRect.StretchModeEnum.Scale;
         attr.Modulate = new Color(1f, 1f, 1f, useSetTransparency ? AttributeSetAlpha : 1f);
 
-        LayoutIconInRow(attr, banner, tex, RaceHorizontalNudgePx + AttributeRightEdgeLeftOfRaceRightPx);
+        float attrRightOffset = RaceHorizontalNudgePx + AttributeRightEdgeLeftOfRaceRightPx;
+        if (model is MonsterCommandCard)
+        {
+            attrRightOffset += CommandCardIconHorizontalNudgePx;
+            attrRightOffset += CommandCardAttributeRaceInterIconGapPx;
+        }
+
+        LayoutIconInRow(attr, banner, tex, attrRightOffset);
         attr.Show();
         TrySetHoverTip(attr, GetAttributeHoverTipKey(attribute), model);
     }
@@ -265,7 +284,16 @@ public static class YgoMonsterLevelStripPatch
         race.StretchMode = TextureRect.StretchModeEnum.Scale;
         race.Modulate = new Color(1f, 1f, 1f, useSetTransparency ? RaceSetAlpha : 1f);
 
-        LayoutIconInRow(race, banner, tex, RaceHorizontalNudgePx);
+        float raceRightOffset = RaceHorizontalNudgePx;
+        if (model is MonsterCommandCard)
+            raceRightOffset += CommandCardIconHorizontalNudgePx;
+        LayoutIconInRow(race, banner, tex, raceRightOffset);
+        if (model is MonsterCommandCard)
+        {
+            race.OffsetTop += CommandCardRaceVerticalNudgePx + CommandCardRaceExtraVerticalNudgePx;
+            race.OffsetBottom += CommandCardRaceVerticalNudgePx + CommandCardRaceExtraVerticalNudgePx;
+        }
+
         race.Show();
         TrySetHoverTip(race, GetRaceHoverTipKey(raceType), model);
     }

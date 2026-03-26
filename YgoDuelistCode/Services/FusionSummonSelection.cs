@@ -165,10 +165,18 @@ public static class FusionSummonSelection
     {
         if (requiredTypes.Count != picked.Count)
             return false;
-        return TryMatch(requiredTypes, picked, 0, new bool[picked.Count]);
+        int substituteCount = picked.Count(IsFusionSubstitute);
+        if (substituteCount > 1)
+            return false;
+        return TryMatch(requiredTypes, picked, 0, new bool[picked.Count], substituteUsed: false);
     }
 
-    private static bool TryMatch(IReadOnlyList<Type> req, List<BaseMonsterCard> pick, int i, bool[] used)
+    private static bool TryMatch(
+        IReadOnlyList<Type> req,
+        List<BaseMonsterCard> pick,
+        int i,
+        bool[] used,
+        bool substituteUsed)
     {
         if (i >= req.Count)
             return true;
@@ -177,16 +185,31 @@ public static class FusionSummonSelection
         {
             if (used[j])
                 continue;
-            if (!need.IsInstanceOfType(pick[j]))
+            BaseMonsterCard card = pick[j];
+
+            if (need.IsInstanceOfType(card))
+            {
+                used[j] = true;
+                if (TryMatch(req, pick, i + 1, used, substituteUsed))
+                    return true;
+                used[j] = false;
                 continue;
-            used[j] = true;
-            if (TryMatch(req, pick, i + 1, used))
-                return true;
-            used[j] = false;
+            }
+
+            if (!substituteUsed && IsFusionSubstitute(card))
+            {
+                used[j] = true;
+                if (TryMatch(req, pick, i + 1, used, substituteUsed: true))
+                    return true;
+                used[j] = false;
+            }
         }
 
         return false;
     }
+
+    private static bool IsFusionSubstitute(BaseMonsterCard card) =>
+        card is IFusionMaterialSubstitute substitute && substitute.CanSubstituteAsFusionMaterial;
 
     private static IEnumerable<List<BaseMonsterCard>> Combinations(IReadOnlyList<BaseMonsterCard> pool, int k)
     {

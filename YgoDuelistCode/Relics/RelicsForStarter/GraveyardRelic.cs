@@ -126,13 +126,19 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
         if (GetGraveyardCards(player).Any(c => c is Darklord_Marie) && TryConsumeAnnual("DARKLORD_MARIE_GY"))
             await CreatureCmd.Heal(player.Creature, 1m);
+
+        await YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(player);
+        await YgoBlindDestructionContinuous.TryResolvePlayerTurnStart(choiceContext, player);
     }
 
-    public override Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {
         if (side == CombatSide.Player && Owner?.PlayerCombatState != null)
+        {
             MonsterCommandRegistry.ClearPerTurnExtrasForPlayer(Owner);
-        return Task.CompletedTask;
+            if (Owner != null)
+                await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
+        }
     }
 
     /// <summary>Once-per-turn (annual) gate keyed by string; returns true the first call each player turn.</summary>
@@ -143,6 +149,8 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         _annualKeysConsumedThisTurn.Add(key);
         return true;
     }
+
+    public bool IsAnnualAvailable(string key) => !_annualKeysConsumedThisTurn.Contains(key);
 
     /// <summary>Chunk Z: Splinter (50% splash to other enemies) and Blight (50% of unblocked as stacks) after duel monster <see cref="AttackCommand"/>.</summary>
     public override async Task AfterAttack(AttackCommand command)
@@ -174,7 +182,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         {
             foreach (var eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))
             {
-                if (eq is BaseEquipSpellCard be && be.GrantsSplinterDamage)
+                if (eq is BaseEquipSpellCard be && be.GrantsSplinterTo(monster))
                 {
                     splinter = true;
                     break;

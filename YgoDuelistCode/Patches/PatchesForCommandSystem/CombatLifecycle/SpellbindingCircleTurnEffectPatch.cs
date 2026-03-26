@@ -26,20 +26,22 @@ public static class SpellbindingCircleTurnEffectPatch
         if (zonePile == null)
             return;
 
-        int activeCopies = zonePile.Cards.OfType<Spellbinding_Circle>().Count(c => !c.FaceDown);
-        if (activeCopies <= 0)
+        var circles = zonePile.Cards.OfType<Spellbinding_Circle>().Where(c => !c.FaceDown).ToList();
+        if (circles.Count == 0)
             return;
 
         var enemies = combatState.HittableEnemies.Where(c => c.IsAlive).ToList();
         if (enemies.Count == 0)
             return;
 
-        for (int i = 0; i < activeCopies; i++)
+        foreach (Spellbinding_Circle sc in circles)
         {
+            decimal strLoss = sc.DynamicVars["Mgc"].BaseValue;
+            decimal spellbound = sc.DynamicVars["Mgc2"].BaseValue;
             foreach (Creature e in enemies)
             {
-                await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, 1m, player.Creature, null);
-                await PowerCmd.Apply<SpellboundPower>(e, 1m, player.Creature, null);
+                await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, strLoss, player.Creature, null);
+                await PowerCmd.Apply<SpellboundPower>(e, spellbound, player.Creature, null);
             }
         }
     }

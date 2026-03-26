@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
@@ -6,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -15,6 +17,10 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Enchanted_Javelin : BaseTrapCard
 {
+    /// <summary>Divisor for incoming attack damage (heal = incoming / Mgc). Lower Mgc after upgrade = more heal.</summary>
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 9m) };
+
     public Enchanted_Javelin()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
@@ -43,13 +49,10 @@ public sealed class Enchanted_Javelin : BaseTrapCard
         if (incoming <= 0)
             return;
 
-        await CreatureCmd.Heal(Owner.Creature, incoming / 9m);
+        await CreatureCmd.Heal(Owner.Creature, incoming / DynamicVars["Mgc"].BaseValue);
     }
 
-    protected override void OnUpgrade()
-    {
-        base.OnUpgrade();
-    }
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(-1m);
 
     private static bool AnyEnemyWithAttackIntent(Player player)
     {

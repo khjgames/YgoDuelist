@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Nodes;
@@ -122,6 +123,9 @@ internal static class MonsterCardRightClickPatch
     {
         if (card is AbstractMonsterCard monster)
             return monster.GetDescriptionLocString();
+
+        if (card is YgoDuelistCard { UsesCombatHandDescription: true } ygoHandDesc)
+            return ygoHandDesc.GetCombatHandDescriptionLocString();
 
         // Only swap description for Attack/Defend; leave Toggle_Die_For_You, Exit_Monster_Options unchanged.
         if (card is Command_Attack && ((MonsterCommandCard)card).SourceMonster is BaseMonsterCard atkSource)

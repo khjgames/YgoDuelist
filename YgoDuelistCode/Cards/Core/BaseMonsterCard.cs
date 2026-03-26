@@ -143,8 +143,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             }
         }
 
-        if (SourcePetHasPower<RushRecklesslyPower>())
-            atk += RushRecklesslyPower.AtkBonus;
+        RushRecklesslyPower? rush = GetSourcePetRushRecklesslyPower();
+        if (rush != null)
+            atk += (int)rush.Amount;
         if (SourcePetHasPower<ReliableDefenderPower>())
             def += ReliableDefenderPower.DefBonus;
 
@@ -266,5 +267,20 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         }
 
         return false;
+    }
+
+    private RushRecklesslyPower? GetSourcePetRushRecklesslyPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<RushRecklesslyPower>();
+        }
+
+        return null;
     }
 }

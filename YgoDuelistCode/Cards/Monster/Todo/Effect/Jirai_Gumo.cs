@@ -19,8 +19,15 @@ public sealed class Jirai_Gumo : EffectMonsterCard
             baseDef: 1,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Insect,
-            duelMonsterAttackPlayEnergyOverride: 1)
+            duelMonsterAttackPlayEnergyOverride: 0)
     {
     }
 
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(8m);
+        DynamicVars["Def"].UpgradeValueBy(4m);
+        if (DynamicVars.Block != null)
+            DynamicVars.Block.UpgradeValueBy(4m);
+    }
 }

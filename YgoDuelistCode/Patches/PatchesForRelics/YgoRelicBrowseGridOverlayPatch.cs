@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Tracks <see cref="NSimpleCardSelectScreen"/> instances opened from Graveyard / Extra Deck relics so the same relic click can dismiss them.
+/// Tracks <see cref="NSimpleCardSelectScreen"/> instances opened from Graveyard / Shadow Realm / Extra Deck relics so the same relic click can dismiss them.
 /// </summary>
 public static class YgoRelicBrowseGridOverlayPatch
 {
@@ -15,6 +15,7 @@ public static class YgoRelicBrowseGridOverlayPatch
     {
         None,
         Graveyard,
+        ShadowRealm,
         ExtraDeck
     }
 

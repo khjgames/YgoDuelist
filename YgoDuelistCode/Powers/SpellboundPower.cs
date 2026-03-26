@@ -1,11 +1,15 @@
 using System.Threading.Tasks;
+using System.Linq;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.ValueProps;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -34,6 +38,11 @@ public sealed class SpellboundPower : YgoDuelistPower
             return;
 
         await CreatureCmd.Damage(choiceContext, Owner, Amount, ValueProp.Unpowered | ValueProp.SkipHurtAnim, dealer: null, cardSource: null);
+
+        bool hasFaceUpSpellbindingCircle = Owner.CombatState.Players.Any(p =>
+            SpellTrapZonePile.CustomType.GetPile(p)?.Cards.OfType<Spellbinding_Circle>().Any(c => !c.FaceDown) == true);
+        if (!hasFaceUpSpellbindingCircle)
+            await PowerCmd.Remove(this);
     }
 }
 

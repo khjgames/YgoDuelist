@@ -187,7 +187,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         if (this is BaseMonsterCard bm && MonsterCommandRegistry.SourceMonsterHasDieForYouForcedActive(Owner, bm))
             return;
 
-        if (!SupportsHandEffectForm)
+        bool twoModeOnly = !SupportsHandEffectForm || YgoMonsterFormPreviewContext.RestrictMonsterToggleToAttackDefenseOnly;
+        if (twoModeOnly)
         {
             _displayForm = _displayForm == MonsterDisplayForm.Attack
                 ? MonsterDisplayForm.Defense

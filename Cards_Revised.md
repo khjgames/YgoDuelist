@@ -152,11 +152,124 @@ Z >= 61 cost 3.
 Some cards can have a Forced permanent or temporary die for you state via the power Reckless Blocker
 (during which time the toggle is disabled for that card) 
 
-Piercing damage changes to Splinter effect implementation change ->
-Splinter: “When this deals unblocked damage, all other enemies are hit for 50% of that damage.”
+**Piercing (YGO)** maps to **Splinter** in code: after a duel monster’s attack resolves, for each enemy that took **unblocked** hit damage, **other** enemies take **50%** of that amount (floored, same damage pipeline). Implemented via `BaseMonsterCard.AttackDealsSplinterDamage`, equips’ `GrantsSplinterTo`, and `GraveyardRelic.AfterAttack`.
 
-this monster can Attack Directly changes to Blighted effect -> Deal an additional 50% damage as Blight. 
- Blight X: “At end of turn, lose X health. Ignores block. Remove Blight.”
+**Attack directly (YGO)** maps to **Blighted** in code: for **unblocked** damage on the enemy hit, add **Blight** stacks equal to **50%** of that damage (floored). **Blight X:** at end of your turn, lose X HP (ignores Block), then remove Blight. Implemented via `BaseMonsterCard.AttackDealsBlightedDamage`, equips’ `GrantsBlightTo`, and `GraveyardRelic.AfterAttack`.
+
+*(The earlier one-line summary in this file used “half their damage”; the running implementation matches the unblocked damage rules above and `BlightPower`.)*
+
+---
+
+## Inventory batch 1 — first 100 `implemented` entries (`docs/card_inventory_data.json`)
+
+Ordered **as in the JSON** (same order as `card_inventory_scan.py`). This pass records **Blighted / Splinter** wiring, **CanonicalVars / OnUpgrade** status at a glance, and notable fixes.
+
+| # | Class | Kind | Blighted | Splinter | Notes |
+|---|--------|------|------------|-----------|--------|
+| 1–9 | Archfiend_s_Oath … Yellow_Luster_Shield | Continuous spell | — | — | Ongoing effects; no duel attack keywords. |
+| 10–44 | Amazoness_Blowpiper … Zone_Eater | Effect monster | See below | See below | Per-card overrides on `BaseMonsterCard` / equips. |
+| 45–59 | Axe_of_Despair … Sword_of_Dragon_S_Soul | Equip spell | — | Dragon_Nails only | **Dragon Nails:** `GrantsSplinterTo` for Dragon (Splinter). **Insect Armor with Laser Cannon:** removed incorrect Splinter tied to Beast races (DB has no piercing). |
+| 60–74 | A_Legendary_Ocean … Yami | Field spell | — | — | Field auras. |
+| 75 | Polymerization | Fusion spell | — | — | |
+| 76–99 | Activate_Effect … Goblin_Fan | Misc / trap / spell | — | — | Includes `Command_*` helpers — not duel monsters. |
+
+**Effect monsters in this batch with Blighted (`AttackDealsBlightedDamage`):** Jinzo #7, Toon Dark Magician Girl, Toon Mermaid, Toon Summoned Skull (already). **Zombyra the Dark** is **not** Blighted: `cards_database.json` lists “This card cannot attack your opponent directly,” so direct-attack → Blighted does not apply (negated wording).
+
+**Second pass (TCG text vs mod flags, batch-100 effect monsters):** When auditing against `cards_database.json`, treat lines like “cannot attack … directly” as **no** Blighted. Prefer explicit TCG names from the DB entry title when reconciling Splinter vs Blighted.
+
+**Splinter:** **Dragon Nails** equip (Dragon); **GraveyardRelic** now checks `GrantsSplinterTo(monster)` so conditional equips work (previously only `GrantsSplinterDamage` was tested and Dragon Nails never activated).
+
+**CanonicalVars / OnUpgrade:** Most entries in this batch already had template or full implementations from earlier work; no blanket `OnUpgrade` changes were required for batch 1. Further batches will continue the same checklist.
+
+---
+
+## Inventory batch 2 — second 100 `implemented` entries (`docs/card_inventory_data.json`, indices 100–199)
+
+Ordered **as in the JSON**. This batch is **all spells, ritual spells, and traps** — **no `EffectMonster` rows**, so there is **no monster-level Blighted / Splinter audit** in the inventory slice itself.
+
+**TCG `cards_database.json` pierce/direct scan (explicit TCG names):**
+
+- **Big Bang Shot** (`Big_Bang_Shot`): TCG text includes *piercing battle damage* → mod uses **Splinter** via `BaseEquipSpellCard` (`Big_Bang_Shot` refactored to real equip: +{Mgc} ATK, `GrantsSplinterTo` always true).
+- **Dark-Piercing Light** (`Dark_Piercing_Light`): name only — TCG effect is not “piercing battle damage” in the keyword sense used for Splinter mapping; **no Splinter** from that card name alone.
+- **Gravity Axe - Grarl** (`Gravity_Axe_Grarl`): TCG **no piercing** — +500 ATK equip only (`tools/tcg_batch2_audit.py` had no DB match for the class name; DB name uses a hyphen: `Gravity Axe - Grarl`).
+
+**CanonicalVars / OnUpgrade (this batch, where wired):**
+
+| Class | Notes |
+|--------|--------|
+| Chaos_End | {Mgc} damage per Shadow Realm card; upgrade +1 multiplier. |
+| Dark_Hole | {Mgc} AoE damage; upgrade +5. |
+| Dark_Magic_Attack | {Mgc} Weak, {Mgc2} Vulnerable; upgrade +1 each. |
+| Diffusion_Wave_Motion | Alternate upgraded description; 1.5× ATK damage when upgraded (Burst Stream pattern). |
+| Emergency_Provisions | {Mgc} heal per Spell/Trap destroyed (base 1, +1 on upgrade); keeps prior upgrade (−1 energy cost). |
+| Spellbinding_Circle | {Mgc} temp Strength down, {Mgc2} Spellbound; turn effect patch reads per face-up copy. Upgrade still −1 cost. |
+| Tornado_Wall | Field power uses trap’s {Mgc} as Strength loss magnitude; upgrade −1 cost and +1 {Mgc}. |
+| Big_Bang_Shot | Equip +{Mgc} ATK (4→5), Splinter. |
+| Gravity_Axe_Grarl | Equip +{Mgc} ATK (5→6). |
+
+---
+
+## Inventory batch 3 — third 100 `implemented` entries (`docs/card_inventory_data.json`, indices 200–299)
+
+All **100** rows are **Spell** cards (Gryphon’s Feather Duster through Sword of Deep-Seated). **TCG piercing / direct-attack second pass:** **no duel monsters** in this index range — **Splinter / Blighted:** **N/A** (explicit TCG monster names: none in this batch).
+
+Most entries are still `ExecuteSpellEffectPlaceholder` stubs. **Six** have real `CardPileCmd` / `CreatureCmd` / `PowerCmd` logic:
+
+| Class | Notes |
+|--------|--------|
+| **Pot_Of_Greed** | Already `CardsVar` + draw upgrade. |
+| **Monster_Reborn** | Energy-only upgrade. |
+| **Sparks** | `Mgc` 2 → 5 (`UpgradeValueBy(3)`); damage and `cards.json` use `{Mgc}`. |
+| **Spellbook_Organization** | `Mgc` 0 → 1 bonus draw; upgraded-only line uses `{Mgc}`. |
+| **Super_Rejuvenation** | `Mgc` 0 → 1 for locale (matches power upgrade bonus). |
+| **Rush_Recklessly** | `Mgc` **7** on the spell drives `RushRecklesslyPower.Amount`; `BaseMonsterCard` adds `(int)rush.Amount`; power tooltip `{Amount}`. Upgrade still **−1** energy only. |
+
+---
+
+## Inventory batch 4 — fourth 100 `implemented` entries (`docs/card_inventory_data.json`, indices 300–399)
+
+**Kind:** All **Spell** and **Trap** cards — **no `EffectMonster` rows**. **Blighted / Splinter** are **N/A** (no duel monsters in this slice).
+
+**Second pass — TCG `cards_database.json` piercing / direct (explicit names):** *No monsters in this batch to audit one-by-one.* Trap/Spell entries in Yugioh do not use the same “piercing battle damage” / “attack directly” monster-attack phrases that map to Splinter/Blighted for duel monsters.
+
+**CanonicalVars / `cards.json` (wired in this pass):**
+
+| Class | Notes |
+|--------|--------|
+| Anti_Spell | Already had `Mgc` / `Mgc2` + X-cost (Spell Barrier). |
+| Bottomless_Trap_Hole | Already wired; `Mgc` threshold / `Mgc2` damage. |
+| Burst_Breath | `UseAlternateUpgradedDescription`; 1.5× dragon ATK when upgraded. |
+| Compulsory_Evacuation_Device | `Mgc` temp Strength loss (5 → 7). |
+| Curse_of_Aging | `Mgc` Weak, `Mgc2` Vulnerable (1/1 → 2/2). |
+| Cursed_Seal_of_the_Forbidden_Spell | `Mgc` Artifact (3 → 4). |
+| Deal_of_Phantom | `Mgc` block per monster in GY (1 → 2). |
+| Draining_Shield | `Mgc` heal per attacking enemy (1 → 2). |
+| Enchanted_Javelin | Heal = incoming ÷ `Mgc` (9 → 8). |
+| Energy_Drain | `Mgc` Strength per hand card (2); upgrade is **−1 energy** only. |
+| The_Law_of_the_Normal | Multiplier `Mgc` (4 → 5). |
+| Amazoness_Archers | `Mgc` Weak on attackers (2); upgrade is **−1 energy** (unchanged from prior behavior). |
+| Tribute_to_the_Doomed | `Mgc` damage (25 → 30) plus **−1 energy** on upgrade. |
+| Upstart_Goblin | Draw `Mgc` (2 → 3), enemy heal `Mgc2` (10). |
+
+---
+
+## Inventory batch 5 — entries 401–449 (last 49 `implemented`; there is no 401–500)
+
+The inventory lists **449** implemented cards total, so “batch 5 of 100” is **this final 49-card slice** (same order as `docs/card_inventory_data.json`).
+
+**Kind:** All **Trap** cards (Continuous / Normal / Counter). **No Effect/Normal monsters** in this range — **Blighted / Splinter** do not apply (those map duel-monster attack mechanics; see prose before batch 1).
+
+**`cards.json` + C#:** Each trap has a TCG-grounded English description (numbers scaled ÷100 where applicable). Cards with tunable numbers use `[blue]{Mgc}[/blue]` / `[blue]{Mgc2}[/blue]` and matching `CanonicalVars` + `OnUpgrade` in the `.cs` file. Cards without numeric knobs have plain text and no `CanonicalVars` override.
+
+**`Spell Shield Type-8` (`Spell_Shield_Type_8.cs`):** Implemented effect uses **Mgc** (7 → 10) and **Mgc2** (14 → 20) for the two branches (flat Block vs. discard a Spell for the branch value), aligned with **Spell Shield Type-B** in chunk **O**.
+
+**TCG text spot-check (`cards_database.json`):** **Narrow Pass** and **Skull Invitation** strings were aligned to the database (activation/summon cap text; Skull Invitation damages the **owner** of cards sent to the Graveyard). Other entries follow the ÷100 scaling rule (e.g. Skull Invitation **300** → **Mgc** 3).
+
+**Second pass — piercing / direct (explicit TCG names):** For every **monster** in this batch — **none.** For traps, official text does not use piercing or direct-attack wording in the monster-combat sense, so **Splinter / Blighted** are **N/A** here. Spot-check: **Narrow Pass**, **Sakuretsu Armor**, **Windstorm of Etaqua** — Trap Card entries; no pierce/direct mapping.
+
+| # | Class (inventory order) | Blighted | Splinter | Notes |
+|---|-------------------------|----------|----------|--------|
+| 401–449 | Narrow_Pass … Windstorm_of_Etaqua | — | — | All traps; see `tools/apply_batch5_inventory.py` for description/var mapping |
 
 ---
 
@@ -200,4 +313,4 @@ this monster can Attack Directly changes to Blighted effect -> Deal an additiona
 | **W** | Generic upgrade scaling (+2 / +3 / +4 / +5 tiers) |
 | **X** | Monster attack/defense energy formula (all level bands) |
 | **Y** | Forced die-for-you / toggle lock note |
-| **Z** | Splinter + Blight behavior |
+| **Z** | Splinter + Blighted (see prose block before “Inventory batch 1”); `GraveyardRelic`, `BaseMonsterCard`, equips |

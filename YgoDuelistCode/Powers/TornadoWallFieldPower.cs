@@ -43,7 +43,8 @@ public sealed class TornadoWallFieldPower : YgoDuelistPower
         if (cs == null)
             return;
 
+        decimal strLoss = Amount;
         foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
-            await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, 1m, Owner, null);
+            await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, strLoss, Owner, null);
     }
 }

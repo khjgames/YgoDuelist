@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
@@ -47,23 +48,32 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
     public TargetType ActivatedEffectTarget => TargetType.AnyEnemy;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-ARCANE_ARCHER_OF_THE_FOREST.activated_effect.description";
 
-    public bool IsActivatedEffectAvailable =>
-        Owner?.PlayerCombatState?.Pets.Any(p =>
+    public bool IsActivatedEffectAvailable => IsEarthTributeAvailable(Owner);
+
+    /// <summary>Another Earth duel monster on the field to tribute (not this card). Uses <paramref name="playerContext"/> when the field card's Owner is not set.</summary>
+    internal bool IsEarthTributeAvailable(Player? playerContext)
+    {
+        Player? player = playerContext ?? Owner;
+        if (player?.PlayerCombatState == null)
+            return false;
+
+        return player.PlayerCombatState.Pets.Any(p =>
             p.IsAlive
             && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard c
             && c.DuelMonsterAttribute == DuelMonsterAttribute.Earth
-            && !ReferenceEquals(c, this)) == true;
+            && !ReferenceEquals(c, this));
+    }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
-        var player = source.Owner;
+        Player? player = source.Owner ?? cardPlay.Card?.Owner;
         if (player?.PlayerCombatState?.Pets == null)
             return;
 
         if (cardPlay.Target == null)
             return;
 
-        Creature? sourcePet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source);
+        Creature? sourcePet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source, player);
         if (sourcePet == null)
             return;
 

@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -14,6 +16,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 3m) };
+
     public Cursed_Seal_of_the_Forbidden_Spell()
         : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapCounter)
     {
@@ -45,14 +50,10 @@ public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
 
         await CardCmd.Discard(choiceContext, spell);
 
-        decimal artifact = IsUpgraded ? 4m : 3m;
-        await PowerCmd.Apply<ArtifactPower>(Owner.Creature, artifact, Owner.Creature, this);
+        await PowerCmd.Apply<ArtifactPower>(Owner.Creature, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade()
-    {
-        base.OnUpgrade();
-    }
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
 
     private async Task<CardModel?> ChooseSpellToDiscard(PlayerChoiceContext choiceContext)
     {

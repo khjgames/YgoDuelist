@@ -1,9 +1,4 @@
-using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -11,6 +6,12 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Amazoness_Swords_Woman : EffectMonsterCard
 {
+    /// <summary>Thorns from this card currently stacked on the player (removed when face-down or when this leaves the field).</summary>
+    internal decimal PendingThornsOnPlayer;
+
+    /// <summary>After the one-time grant for this field presence, flips to face-down do not re-grant on flip-up.</summary>
+    internal bool ThornsGrantExhaustedForThisField;
+
     public Amazoness_Swords_Woman()
         : base(
             cost: 1,
@@ -24,13 +25,6 @@ public sealed class Amazoness_Swords_Woman : EffectMonsterCard
             baseMgc: 3,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
-    }
-
-    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        if (Owner?.Creature == null)
-            return;
-        await PowerCmd.Apply<ThornsPower>(Owner.Creature, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

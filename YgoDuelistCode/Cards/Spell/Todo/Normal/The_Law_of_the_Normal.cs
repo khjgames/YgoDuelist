@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -21,6 +22,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 /// </summary>
 public sealed class The_Law_of_the_Normal : BaseSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 4m) };
+
     public The_Law_of_the_Normal()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
@@ -38,7 +42,7 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
         foreach (Creature e in enemies)
             combined += YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, player.Creature);
 
-        int mult = IsUpgraded ? 5 : 4;
+        int mult = (int)DynamicVars["Mgc"].BaseValue;
         decimal dmgEach = combined * mult;
         if (dmgEach > 0)
         {
@@ -100,4 +104,6 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
             }
         }
     }
+
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
 }

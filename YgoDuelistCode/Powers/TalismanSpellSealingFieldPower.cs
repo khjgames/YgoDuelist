@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -24,7 +25,11 @@ public sealed class TalismanSpellSealingFieldPower : YgoDuelistPower
         if (player != Owner.Player)
             return;
 
-        await PowerCmd.Apply<ArtifactPower>(Owner, 2m, Owner, null);
-        await PowerCmd.Apply<YgoScheduledArtifactRemovalPower>(Owner, 2m, Owner, null);
+        await YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(player);
+        if (!YgoSealmasterMeiseiGate.HasFaceUpSealmaster(player))
+            return;
+
+        await PowerCmd.Apply<ArtifactPower>(Owner, Amount, Owner, null);
+        await PowerCmd.Apply<YgoScheduledArtifactRemovalPower>(Owner, Amount, Owner, null);
     }
 }

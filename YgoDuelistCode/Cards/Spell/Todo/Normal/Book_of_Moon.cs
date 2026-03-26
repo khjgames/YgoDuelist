@@ -5,9 +5,9 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -30,7 +30,7 @@ public sealed class Book_of_Moon : BaseSpellCard
         if (target == null || !target.IsAlive)
             return;
 
-        await PowerCmd.Apply<StrengthPower>(target, -DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(target, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(2m);
