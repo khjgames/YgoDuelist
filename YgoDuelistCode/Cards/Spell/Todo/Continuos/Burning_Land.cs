@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -16,6 +17,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
 public sealed class Burning_Land : BaseContinuousSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 5m) };
+
     public Burning_Land()
         : base(1, CardRarity.Common, TargetType.Self)
     {
@@ -60,5 +64,9 @@ public sealed class Burning_Land : BaseContinuousSpellCard
             await PowerCmd.Apply<BurningLandFieldPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].UpgradeValueBy(2m);
+    }
 }

@@ -17,6 +17,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Burst_Breath : BaseTrapCard
 {
+    public override bool UseAlternateUpgradedDescription => true;
+
     public Burst_Breath()
         : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
@@ -68,8 +70,9 @@ public sealed class Burst_Breath : BaseTrapCard
                 return;
         }
 
-        // Damage uses the dragon's current ATK (including other field effects) before tributing.
         decimal dragonAtk = selectedDragon.CalcDuelMonsterStats(field).Atk;
+        if (IsUpgraded)
+            dragonAtk *= 1.5m;
 
         Creature? tributePet = TributeSummonSelection.ResolvePetForFieldCard(player, selectedDragon);
         if (tributePet == null || !tributePet.IsAlive)
@@ -85,10 +88,5 @@ public sealed class Burst_Breath : BaseTrapCard
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
         }
-    }
-
-    protected override void OnUpgrade()
-    {
-        base.OnUpgrade();
     }
 }

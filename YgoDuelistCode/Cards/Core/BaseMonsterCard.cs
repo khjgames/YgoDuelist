@@ -11,8 +11,11 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
 /// <summary>
-/// YgoDuelist monster card with base ATK/DEF/MGC stats. Mirrors Java BaseMonsterCard.
+/// YgoDuelist monster card with base ATK/DEF/MGC stats. Field auras use <see cref="GetStatEffect"/>; own non-aura scaling uses <see cref="GetSecondaryStats"/>.
 /// </summary>
+/// <remarks>
+/// <see cref="GetSecondaryStats"/> feeds the <c>CalculatedATK</c>/<c>CalculatedDEF</c> preview vars on <see cref="NormalMonsterCard"/> (e.g. Muka Muka hand size).
+/// </remarks>
 public abstract class BaseMonsterCard : AbstractMonsterCard
 {
     public override YgoCardType YgoCardType => YgoCardType.Monster;

@@ -15,6 +15,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Burst_Stream_of_Destruction : BaseSpellCard
 {
+    public override bool UseAlternateUpgradedDescription => true;
+
     public Burst_Stream_of_Destruction()
         : base(cost: 0, rarity: CardRarity.Common, target: TargetType.AnyAlly, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
@@ -44,6 +46,8 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
 
         var fieldCards = DuelMonsterFieldRegistry.GetFieldMonsters(Owner).ToList();
         decimal dmg = blueEyesCard.CalcDuelMonsterStats(fieldCards).Atk;
+        if (IsUpgraded)
+            dmg *= 1.5m;
 
         foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive).ToList())
             await CreatureCmd.Damage(choiceContext, enemy, dmg, ValueProp.Unpowered, Owner.Creature, this);

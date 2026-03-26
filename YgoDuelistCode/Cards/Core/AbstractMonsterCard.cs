@@ -266,7 +266,22 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 suffix += "_combat";
         }
 
-        return new LocString("cards", Id.Entry + suffix);
+        var baseLoc = new LocString("cards", Id.Entry + suffix);
+        if (ShouldUseAlternateUpgradedDescription())
+        {
+            var upgraded = new LocString("cards", Id.Entry + suffix + "_upgraded");
+            if (upgraded.Exists())
+                return upgraded;
+        }
+
+        return baseLoc;
+    }
+
+    private bool ShouldUseAlternateUpgradedDescription()
+    {
+        if (!UseAlternateUpgradedDescription)
+            return false;
+        return IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
     }
 
     private bool IsInHand()

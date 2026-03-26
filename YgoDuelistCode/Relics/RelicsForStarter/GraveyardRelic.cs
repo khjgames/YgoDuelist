@@ -316,9 +316,9 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
                 foreach (BaseEquipSpellCard eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))
                 {
-                    if (eq is Cestus_of_Dagla)
+                    if (eq is Cestus_of_Dagla cestus)
                     {
-                        await CreatureCmd.Heal(atkPlayer.Creature, 1m);
+                        await CreatureCmd.Heal(atkPlayer.Creature, cestus.DynamicVars["Mgc"].BaseValue);
                         break;
                     }
                 }

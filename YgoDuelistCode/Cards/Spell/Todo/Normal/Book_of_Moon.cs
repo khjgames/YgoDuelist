@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -11,6 +13,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Book_of_Moon : BaseSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 4m) };
+
     public Book_of_Moon()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
     {
@@ -25,11 +30,8 @@ public sealed class Book_of_Moon : BaseSpellCard
         if (target == null || !target.IsAlive)
             return;
 
-        await PowerCmd.Apply<StrengthPower>(target, -4m, Owner.Creature, this);
+        await PowerCmd.Apply<StrengthPower>(target, -DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade()
-    {
-        base.OnUpgrade();
-    }
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(2m);
 }

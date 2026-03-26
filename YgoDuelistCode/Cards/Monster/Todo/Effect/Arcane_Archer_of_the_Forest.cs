@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -33,10 +34,13 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 9,
             baseDef: 14,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", 2m) });
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;
@@ -79,9 +83,8 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
         if (graveyard != null)
             await CardPileCmd.Add(new[] { chosen }, graveyard, CardPilePosition.Top, chosen, false);
 
-        // Apply statuses to the targeted enemy.
-        await PowerCmd.Apply<WeakPower>(cardPlay.Target, 1m, sourcePet, source);
-        await PowerCmd.Apply<VulnerablePower>(cardPlay.Target, 3m, sourcePet, source);
+        await PowerCmd.Apply<WeakPower>(cardPlay.Target, source.DynamicVars["Mgc"].BaseValue, sourcePet, source);
+        await PowerCmd.Apply<VulnerablePower>(cardPlay.Target, source.DynamicVars["Mgc2"].BaseValue, sourcePet, source);
     }
 
     public async Task<bool> TryPrepareActivatedEffectPlayAsync(MegaCrit.Sts2.Core.Entities.Players.Player player, NormalMonsterCard source)
@@ -131,5 +134,10 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
         return true;
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 2m;
+        DynamicVars["Mgc2"].BaseValue = 4m;
+    }
 }

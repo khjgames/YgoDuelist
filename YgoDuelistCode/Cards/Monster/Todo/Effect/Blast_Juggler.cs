@@ -26,7 +26,7 @@ public sealed class Blast_Juggler : EffectMonsterCard, IMonsterActivatedEffect
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
             baseAtk: 8,
             baseDef: 9,
-            baseMgc: 0,
+            baseMgc: 10,
             duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
@@ -56,7 +56,8 @@ public sealed class Blast_Juggler : EffectMonsterCard, IMonsterActivatedEffect
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
-        await DamageCmd.Attack(10m)
+        decimal dmg = source.DynamicVars["Mgc"].BaseValue;
+        await DamageCmd.Attack(dmg)
             .FromCard(source)
             .Targeting(first)
             .WithHitFx("vfx/vfx_attack_slash")
@@ -78,12 +79,16 @@ public sealed class Blast_Juggler : EffectMonsterCard, IMonsterActivatedEffect
         if (second == null || !second.IsAlive)
             return;
 
-        await DamageCmd.Attack(10m)
+        await DamageCmd.Attack(dmg)
             .FromCard(source)
             .Targeting(second)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 13m;
+    }
 }

@@ -80,6 +80,13 @@ public static class YgoEnergyIconNodePatch
             icon.Visible = true;
             customTexturePath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
         }
+        else if (model is BaseContinuousTrapCard zoneContinuousTrap
+                 && model.Pile?.Type == SpellTrapZonePile.CustomType
+                 && !zoneContinuousTrap.FaceDown)
+        {
+            icon.Visible = true;
+            customTexturePath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
+        }
         else if (model is IYgoCard ygo)
         {
             icon.Visible = true;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -69,11 +70,18 @@ public sealed class Crass_Clown : EffectMonsterCard
         if (target == null || !target.IsAlive)
             return;
 
-        await PowerCmd.Apply<WeakPower>(target, 1m, pet, this);
-        await DamageCmd.Attack(6m)
+        await PowerCmd.Apply<WeakPower>(target, DynamicVars["Mgc"].BaseValue, pet, this);
+        await DamageCmd.Attack(DynamicVars["Mgc2"].BaseValue)
             .FromCard(this)
             .Targeting(target)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
+    }
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 2m;
+        DynamicVars["Mgc2"].BaseValue = 9m;
     }
 }

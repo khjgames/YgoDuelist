@@ -54,8 +54,6 @@ public static class YgoMonsterLevelStripPatch
 
     /// <summary>Race icon: horizontal nudge from card/banner right (positive = move left), same sense as <see cref="StripHorizontalNudgePx"/>.</summary>
     private const float RaceHorizontalNudgePx = 48f;
-    /// <summary>Command-card portraits need race icon slightly lower than normal cards.</summary>
-    private const float CommandCardRaceVerticalNudgePx = 48f;
 
     /// <summary>Attribute sits to the left of the race; its right edge is this many px left of the race’s right edge.</summary>
     private const float AttributeRightEdgeLeftOfRaceRightPx = 31f;
@@ -268,11 +266,6 @@ public static class YgoMonsterLevelStripPatch
         race.Modulate = new Color(1f, 1f, 1f, useSetTransparency ? RaceSetAlpha : 1f);
 
         LayoutIconInRow(race, banner, tex, RaceHorizontalNudgePx);
-        if (model is MonsterCommandCard)
-        {
-            race.OffsetTop += CommandCardRaceVerticalNudgePx;
-            race.OffsetBottom += CommandCardRaceVerticalNudgePx;
-        }
         race.Show();
         TrySetHoverTip(race, GetRaceHoverTipKey(raceType), model);
     }
@@ -447,6 +440,7 @@ public static class YgoMonsterLevelStripPatch
         useFaceDownStrip = false;
         return false;
     }
+
 
     private static AtlasTexture[]? EnsureAtlases(Texture2D? strip, bool useFaceDownStrip)
     {

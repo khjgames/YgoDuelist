@@ -21,7 +21,7 @@ public sealed class Amazoness_Swords_Woman : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 15,
             baseDef: 16,
-            baseMgc: 0,
+            baseMgc: 3,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
@@ -30,7 +30,12 @@ public sealed class Amazoness_Swords_Woman : EffectMonsterCard
     {
         if (Owner?.Creature == null)
             return;
-        await PowerCmd.Apply<ThornsPower>(Owner.Creature, 3m, Owner.Creature, this);
+        await PowerCmd.Apply<ThornsPower>(Owner.Creature, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 4m;
+    }
 }

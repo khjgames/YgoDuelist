@@ -21,7 +21,7 @@ public sealed class Cat_s_Ear_Tribe : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 2,
             baseDef: 1,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
@@ -34,8 +34,12 @@ public sealed class Cat_s_Ear_Tribe : EffectMonsterCard
             return;
 
         // "Temp strength -1" implemented as a temporary strength loss debuff.
-        await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(cardPlay.Target, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(cardPlay.Target, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 2m;
+    }
 }

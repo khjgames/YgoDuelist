@@ -37,9 +37,12 @@ public sealed class BottomlessShiftingSandFieldPower : YgoDuelistPower
         if (pl == null)
             return;
 
+        Bottomless_Shifting_Sand? sand = SpellTrapZonePile.CustomType.GetPile(pl)?.Cards.OfType<Bottomless_Shifting_Sand>().FirstOrDefault();
+        int handThreshold = sand != null ? (int)sand.DynamicVars["Mgc"].BaseValue : 4;
+
         CardPile? hand = PileType.Hand.GetPile(pl);
         int handCount = hand?.Cards.Count ?? 0;
-        if (handCount < 4)
+        if (handCount < handThreshold)
         {
             await DestroyTrapAndRemovePowerAsync(pl);
             return;
@@ -68,9 +71,9 @@ public sealed class BottomlessShiftingSandFieldPower : YgoDuelistPower
         if (best == null || bestIntent <= 0)
             return;
 
-        decimal dmg = Math.Min(bestIntent, 30);
-        Bottomless_Shifting_Sand? src = SpellTrapZonePile.CustomType.GetPile(pl)?.Cards.OfType<Bottomless_Shifting_Sand>().FirstOrDefault();
-        await CreatureCmd.Damage(choiceContext, best, dmg, ValueProp.Unpowered, Owner, src);
+        decimal cap = sand != null ? sand.DynamicVars["Mgc2"].BaseValue : 30m;
+        decimal dmg = Math.Min(bestIntent, cap);
+        await CreatureCmd.Damage(choiceContext, best, dmg, ValueProp.Unpowered, Owner, sand);
     }
 
     private async Task DestroyTrapAndRemovePowerAsync(Player pl)

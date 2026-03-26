@@ -21,7 +21,7 @@ public sealed class Amazoness_Blowpiper : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 8,
             baseDef: 15,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
@@ -29,8 +29,12 @@ public sealed class Amazoness_Blowpiper : EffectMonsterCard
     protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Type == CardType.Attack && cardPlay.Target != null && Owner?.Creature != null)
-            await PowerCmd.Apply<WeakPower>(cardPlay.Target, 1m, Owner.Creature, this);
+            await PowerCmd.Apply<WeakPower>(cardPlay.Target, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 2m;
+    }
 }

@@ -93,6 +93,23 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         FaceDown = false;
     }
 
+    /// <summary>
+    /// Trap cards present as facedown by default (including compendium/library views).
+    /// They only present as face-up while actively face-up in the spell/trap zone.
+    /// </summary>
+    public bool ShouldUseFaceDownPresentation()
+    {
+        var pileType = Pile?.Type;
+        if (pileType == SpellTrapZonePile.CustomType)
+            return WasSetIntoSpellTrapZone || FaceDown;
+
+        if (pileType == PileType.Hand)
+            return !CanActivateDirectlyFromHand || FaceDown;
+
+        // Everywhere else (compendium, draw/discard, etc.) defaults to facedown presentation.
+        return true;
+    }
+
     private async Task SendThisTrapToGraveyard(PlayerChoiceContext choiceContext)
     {
         var player = Owner;
@@ -123,7 +140,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                     SetKeyword,
                     TrapKeyword,
                 };
-                if (WasSetIntoSpellTrapZone || (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand))
+                if (ShouldUseFaceDownPresentation())
                     keywords.Add(FaceDownKeyword);
                 return keywords;
             }
@@ -133,7 +150,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 SetKeyword,
                 TrapKeyword,
             };
-            if (WasSetIntoSpellTrapZone || (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand))
+            if (ShouldUseFaceDownPresentation())
                 fallback.Add(FaceDownKeyword);
             return fallback;
         }
@@ -151,7 +168,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                     HoverTipFactory.FromKeyword(SetKeyword),
                     HoverTipFactory.FromKeyword(TrapKeyword),
                 };
-                if (WasSetIntoSpellTrapZone || (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand))
+                if (ShouldUseFaceDownPresentation())
                     tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
                 return tips;
             }
@@ -161,7 +178,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 HoverTipFactory.FromKeyword(SetKeyword),
                 HoverTipFactory.FromKeyword(TrapKeyword),
             };
-            if (WasSetIntoSpellTrapZone || (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand))
+            if (ShouldUseFaceDownPresentation())
                 fallback.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
             return fallback;
         }

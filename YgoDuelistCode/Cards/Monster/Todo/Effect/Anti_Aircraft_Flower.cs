@@ -33,7 +33,7 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 0,
             baseDef: 16,
-            baseMgc: 0,
+            baseMgc: 8,
             duelMonsterRace: DuelMonsterRace.Plant)
     {
     }
@@ -80,8 +80,9 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
         if (cs == null)
             return;
 
+        decimal dmg = source.DynamicVars["Mgc"].BaseValue;
         foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
-            await CreatureCmd.Damage(choiceContext, e, 8m, ValueProp.Unpowered, sourcePet, source);
+            await CreatureCmd.Damage(choiceContext, e, dmg, ValueProp.Unpowered, sourcePet, source);
     }
 
     public async Task<bool> TryPrepareActivatedEffectPlayAsync(Player player, NormalMonsterCard source)
@@ -131,5 +132,9 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
         return true;
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 12m;
+    }
 }

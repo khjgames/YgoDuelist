@@ -149,7 +149,7 @@ Z >= 61 cost 3.
 
 
 
-Some cards can have a Forced permanent or temporary die for you state 
+Some cards can have a Forced permanent or temporary die for you state via the power Reckless Blocker
 (during which time the toggle is disabled for that card) 
 
 Piercing damage changes to Splinter effect implementation change ->

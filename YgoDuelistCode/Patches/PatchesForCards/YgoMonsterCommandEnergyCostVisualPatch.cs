@@ -15,6 +15,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// <summary>
 /// After <see cref="NCard"/> energy UI updates: for command cards with <see cref="MonsterCommandCard.CustomCommandEnergyTexturePath"/>,
 /// face-up <see cref="BaseFieldSpellCard"/> in the Spell/Trap zone, face-up <see cref="BaseContinuousSpellCard"/> in that zone,
+/// face-up <see cref="BaseContinuousTrapCard"/> in that zone,
 /// and face-up equipped <see cref="BaseEquipSpellCard"/> in that zone,
 /// swaps the unplayable overlay to the invisible orb texture
 /// and blanks the cost label (same as Exit_Monster_Options).
@@ -55,6 +56,11 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
                  && model.Pile?.Type == SpellTrapZonePile.CustomType
                  && !zoneEq.FaceDown
                  && zoneEq.EquippedMonster != null)
+            customPath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
+        else if (string.IsNullOrEmpty(customPath)
+                 && model is BaseContinuousTrapCard zoneCt
+                 && model.Pile?.Type == SpellTrapZonePile.CustomType
+                 && !zoneCt.FaceDown)
             customPath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
 
         var useCustomUnplayable = !string.IsNullOrEmpty(customPath);
@@ -104,6 +110,10 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
                                              && model.Pile?.Type == SpellTrapZonePile.CustomType
                                              && !eq.FaceDown
                                              && eq.EquippedMonster != null;
+        zoneHideEnergyLikeFaceUpField = zoneHideEnergyLikeFaceUpField
+                                        || model is BaseContinuousTrapCard ctTrap
+                                        && model.Pile?.Type == SpellTrapZonePile.CustomType
+                                        && !ctTrap.FaceDown;
 
         if (!zoneHideEnergyLikeFaceUpField)
         {

@@ -16,9 +16,16 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
 /// <summary>
-/// ZGO normal monster: deals ATK as damage. Basic structure only — single DamageVar.
-/// (Complex calculated damage / GetDamageAmount override commented out for temp art.)
+/// YgoDuelist monster: printed ATK/DEF/MGC, combat actions from stats, and dynamic card text.
 /// </summary>
+/// <remarks>
+/// <b>cards.json</b> placeholders (match <see cref="CanonicalVars"/>):
+/// <c>Damage</c> (printed ATK), <c>Block</c> / <c>Def</c> (printed DEF), <c>Mgc</c>, <c>CalculatedATK</c>, <c>CalculatedDEF</c>, <c>Stars</c>.
+/// Use four keys: <c>description</c>, <c>description_combat</c>, <c>description_skill</c>, <c>description_skill_combat</c> (hand-effect monsters also use <c>description_hand_effect</c> / <c>_combat</c>).
+/// When <see cref="YgoDuelistCard.UseAlternateUpgradedDescription"/> is true, optional <c>_upgraded</c> variants of each active suffix are resolved when upgraded or in upgrade preview (e.g. <c>description_combat_upgraded</c>).
+/// Effect monsters add extra <see cref="DynamicVar"/> names via <c>protected override IEnumerable&lt;DynamicVar&gt; CanonicalVars</c> (often <c>base.CanonicalVars.Concat(...)</c>).
+/// Hand-scaling totals feed <see cref="ComputedDecimalVar"/> via <see cref="BaseMonsterCard.GetSecondaryStats"/>.
+/// </remarks>
 
 public abstract class NormalMonsterCard : BaseMonsterCard
 {

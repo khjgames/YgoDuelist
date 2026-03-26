@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -12,6 +14,13 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Bottomless_Trap_Hole : BaseTrapCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[]
+        {
+            new DynamicVar("Mgc", 15m),
+            new DynamicVar("Mgc2", 25m)
+        };
+
     public Bottomless_Trap_Hole()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
@@ -27,14 +36,15 @@ public sealed class Bottomless_Trap_Hole : BaseTrapCard
             return;
 
         int incoming = YgoIntentAttackDamage.GetTotalAttackIntentDamage(target, Owner.Creature);
-        if (incoming < 15)
+        if ((decimal)incoming < DynamicVars["Mgc"].BaseValue)
             return;
 
-        await CreatureCmd.Damage(choiceContext, target, 30m, ValueProp.Unpowered, Owner.Creature, this);
+        await CreatureCmd.Damage(choiceContext, target, DynamicVars["Mgc2"].BaseValue, ValueProp.Unpowered, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        base.OnUpgrade();
+        DynamicVars["Mgc"].UpgradeValueBy(-5m);
+        DynamicVars["Mgc2"].UpgradeValueBy(10m);
     }
 }

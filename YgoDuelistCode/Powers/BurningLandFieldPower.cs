@@ -2,12 +2,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.ValueProps;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -31,7 +34,13 @@ public sealed class BurningLandFieldPower : YgoDuelistPower
         if (cs == null)
             return;
 
+        Player? pl = Owner.Player;
+        Burning_Land? src = pl == null
+            ? null
+            : SpellTrapZonePile.CustomType.GetPile(pl)?.Cards.OfType<Burning_Land>().FirstOrDefault();
+        decimal dmg = src != null ? src.DynamicVars["Mgc"].BaseValue : 5m;
+
         foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
-            await CreatureCmd.Damage(choiceContext, e, 5m, ValueProp.Unpowered, Owner, null);
+            await CreatureCmd.Damage(choiceContext, e, dmg, ValueProp.Unpowered, Owner, src);
     }
 }

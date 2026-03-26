@@ -1,6 +1,7 @@
 using Godot;
 using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
@@ -40,13 +41,21 @@ internal static class YgoSetCardVisualHelper
 
         if (model is BaseTrapCard trap)
         {
-            if (trap.FaceDown || trap.WasSetIntoSpellTrapZone)
-                return true;
-            if (trap.Pile?.Type == PileType.Hand)
+            if (trap.ShouldUseFaceDownPresentation() || IsCardCurrentlyInOwnersHand(trap))
                 return true;
         }
 
         return false;
+    }
+
+    private static bool IsCardCurrentlyInOwnersHand(CardModel card)
+    {
+        var owner = card.Owner;
+        if (owner == null)
+            return false;
+
+        var hand = PileType.Hand.GetPile(owner);
+        return hand?.Cards?.Any(c => ReferenceEquals(c, card)) == true;
     }
 
     private static void LogMonsterSetVisualStateOnce(AbstractMonsterCard monster)

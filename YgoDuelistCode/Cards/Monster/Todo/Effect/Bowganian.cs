@@ -22,7 +22,7 @@ public sealed class Bowganian : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 13,
             baseDef: 10,
-            baseMgc: 0,
+            baseMgc: 6,
             duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
@@ -48,7 +48,7 @@ public sealed class Bowganian : EffectMonsterCard
 
         if (target != null)
         {
-            await DamageCmd.Attack(6m)
+            await DamageCmd.Attack(DynamicVars["Mgc"].BaseValue)
                 .FromCard(this)
                 .Targeting(target)
                 .WithHitFx("vfx/vfx_attack_slash")
@@ -56,5 +56,9 @@ public sealed class Bowganian : EffectMonsterCard
         }
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 9m;
+    }
 }

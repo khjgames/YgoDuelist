@@ -50,7 +50,7 @@ public class YgoDuelist : PlaceholderCharacterModel
         ModelDb.Card<Arsenal_Robber>(),
         ModelDb.Card<Blast_Juggler>(),
         ModelDb.Card<Blind_Destruction>(),
-        StartingUpgradedBadReactionToSimochi(),
+        ModelDb.Card<Bad_Reaction_to_Simochi>(),
         ModelDb.Card<Upstart_Goblin>(),
         ModelDb.Card<Upstart_Goblin>(),
         ModelDb.Card<Upstart_Goblin>(),
@@ -203,11 +203,4 @@ public class YgoDuelist : PlaceholderCharacterModel
     public override string CustomCharacterSelectLockedIconPath => "char_select_char_name_locked.png".CharacterUiPath();
     public override string CustomMapMarkerPath => "map_marker_char_name.png".CharacterUiPath();
 
-    private static CardModel StartingUpgradedBadReactionToSimochi()
-    {
-        var card = (Bad_Reaction_to_Simochi)ModelDb.Card<Bad_Reaction_to_Simochi>().ToMutable();
-        card.UpgradeInternal();
-        card.FinalizeUpgradeInternal();
-        return card;
-    }
 }

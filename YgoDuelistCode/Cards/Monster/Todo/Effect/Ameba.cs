@@ -23,7 +23,7 @@ public sealed class Ameba : EffectMonsterCard, IMonsterActivatedEffect
             duelMonsterAttribute: DuelMonsterAttribute.Water,
             baseAtk: 3,
             baseDef: 3,
-            baseMgc: 0,
+            baseMgc: 20,
             duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
@@ -50,12 +50,16 @@ public sealed class Ameba : EffectMonsterCard, IMonsterActivatedEffect
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
-        await DamageCmd.Attack(20m)
+        await DamageCmd.Attack(source.DynamicVars["Mgc"].BaseValue)
             .FromCard(source)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 25m;
+    }
 }

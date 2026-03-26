@@ -41,7 +41,8 @@ public sealed class BlindDestructionFieldPower : YgoDuelistPower
         Blind_Destruction? src = SpellTrapZonePile.CustomType.GetPile(player)?.Cards.OfType<Blind_Destruction>().FirstOrDefault();
         ulong mix = YgoDeterministicRng.MixSpellTrapZoneSlot(player, src);
         int roll = YgoDeterministicRng.RollDie(cs, 6, "BLIND_DESTRUCTION-D6", mix);
-        decimal dmg = roll == 6 ? 12m : roll;
+        decimal sixCase = src != null ? src.DynamicVars["Mgc"].BaseValue : 12m;
+        decimal dmg = roll == 6 ? sixCase : roll;
 
         foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
             await CreatureCmd.Damage(choiceContext, e, dmg, ValueProp.Unpowered, Owner, src);

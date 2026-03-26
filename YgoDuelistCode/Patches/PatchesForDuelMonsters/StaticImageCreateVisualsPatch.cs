@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Assets;
@@ -17,8 +16,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// </summary>
 public static class StaticImageCreateVisualsPatch
 {
-    private const float StaticPortraitAttributeRaceIconScaleMultiplier = 4.0f;
-    private const int DeferredScalePasses = 12;
+    private const float StaticPortraitAttributeRaceIconScaleMultiplier = 0.5f;
     private const string StaticPortraitScaledMetaKey = "YgoStaticPortraitIconScaled";
 
     private static readonly MethodInfo _visualsPathGetter = typeof(MonsterModel)
@@ -63,27 +61,16 @@ public static class StaticImageCreateVisualsPatch
 
         raw.QueueFree();
         ScaleAttributeAndRaceIconsForStaticPortrait(visuals);
-        _ = ScaleAttributeAndRaceIconsDeferredAsync(visuals);
+        visuals.ChildEnteredTree += OnStaticPortraitChildEnteredTree;
         __result = visuals;
         return false;
     }
 
-    private static async Task ScaleAttributeAndRaceIconsDeferredAsync(Node root)
+    private static void OnStaticPortraitChildEnteredTree(Node child)
     {
-        if (!GodotObject.IsInstanceValid(root))
+        if (!GodotObject.IsInstanceValid(child))
             return;
-
-        var tree = root.GetTree();
-        if (tree == null)
-            return;
-
-        for (int i = 0; i < DeferredScalePasses; i++)
-        {
-            await root.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
-            if (!GodotObject.IsInstanceValid(root))
-                return;
-            ScaleAttributeAndRaceIconsForStaticPortrait(root);
-        }
+        ScaleAttributeAndRaceIconsForStaticPortrait(child);
     }
 
     private static void ScaleAttributeAndRaceIconsForStaticPortrait(Node root)

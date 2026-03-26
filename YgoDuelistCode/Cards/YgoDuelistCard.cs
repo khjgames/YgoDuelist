@@ -1,4 +1,4 @@
-﻿using BaseLib.Abstracts;
+using BaseLib.Abstracts;
 using BaseLib.Extensions;
 using BaseLib.Utils;
 using YgoDuelist.YgoDuelistCode.Character;
@@ -11,6 +11,11 @@ namespace YgoDuelist.YgoDuelistCode.Cards;
 public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity, TargetType target) :
     CustomCardModel(cost, type, rarity, target)
 {
+    /// <summary>
+    /// When true, upgraded cards (and upgrade preview) use <c>cards.json</c> key <c>.description_upgraded</c> instead of <c>.description</c>.
+    /// </summary>
+    public virtual bool UseAlternateUpgradedDescription => false;
+
     //Image size:
     //Normal art: 1000x760 (Using 500x380 should also work, it will simply be scaled.)
     //Full art: 606x852

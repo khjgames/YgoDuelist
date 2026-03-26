@@ -12,6 +12,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
 public sealed class Bad_Reaction_to_Simochi : BaseContinuousTrapCard
 {
+    public override bool UseAlternateUpgradedDescription => true;
+
     public Bad_Reaction_to_Simochi()
         : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {

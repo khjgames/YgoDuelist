@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ygoduelist.local/schemas/card_database_import_row.json",
+  "title": "YgoDuelist card_database import row",
+  "description": "One logical card for export into C# CanonicalVars + YgoDuelist localization. cardId must match CustomCardModel id entry (YGODUELIST-<CLASS_NAME>).",
+  "type": "object",
+  "required": ["cardId", "title"],
+  "properties": {
+    "cardId": {
+      "type": "string",
+      "pattern": "^YGODUELIST-[A-Z][A-Z0-9_]*$",
+      "description": "Uppercase class token, e.g. YGODUELIST-MUKA_MUKA"
+    },
+    "title": { "type": "string" },
+    "descriptionTemplate": {
+      "type": "string",
+      "description": "Base attack-mode text; use {Damage}, {Mgc}, … matching varBindings"
+    },
+    "descriptionCombatTemplate": { "type": "string" },
+    "descriptionSkillTemplate": { "type": "string" },
+    "descriptionSkillCombatTemplate": { "type": "string" },
+    "varBindings": {
+      "type": "object",
+      "additionalProperties": { "type": "number" },
+      "description": "Maps DynamicVar name to numeric base (e.g. Mgc, Mgc2, Damage). Omitted names use C# defaults from the card class."
+    },
+    "extraLocKeys": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Optional dotted suffixes, e.g. activated_effect.description"
+    },
+    "sourceRowId": {
+      "type": "string",
+      "description": "Optional id from cards_database.json for traceability"
+    }
+  }
+}
