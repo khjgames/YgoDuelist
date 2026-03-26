@@ -24,6 +24,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     public YgoCardType YgoCardType => YgoCardType.Trap;
     public bool FaceDown { get; set; } = false;
     public bool WasSetIntoSpellTrapZone { get; protected set; } = false;
+    protected virtual bool CanActivateDirectlyFromHand => false;
 
     public DuelMonsterRace DuelMonsterRace { get; }
 
@@ -53,10 +54,10 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             if (!base.IsPlayable)
                 return false;
 
-            if (Pile?.Type == PileType.Hand)
+            if (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand)
                 return false;
 
-            if (Pile?.Type == PileType.Hand && Owner != null && !YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
+            if (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand && Owner != null && !YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
                 return false;
 
             return true;
@@ -67,6 +68,29 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     {
         WasSetIntoSpellTrapZone = true;
         FaceDown = true;
+    }
+
+    public void NormalizeFaceDownStateForCurrentPile()
+    {
+        var pileType = Pile?.Type;
+
+        if (pileType == PileType.Hand)
+        {
+            // Trap cards in hand should always render as set/facedown unless explicitly exempt.
+            WasSetIntoSpellTrapZone = false;
+            FaceDown = !CanActivateDirectlyFromHand;
+            return;
+        }
+
+        if (pileType == SpellTrapZonePile.CustomType)
+        {
+            FaceDown = WasSetIntoSpellTrapZone;
+            return;
+        }
+
+        // Outside spell/trap zone, trap cards are never considered set into zone.
+        WasSetIntoSpellTrapZone = false;
+        FaceDown = false;
     }
 
     private async Task SendThisTrapToGraveyard(PlayerChoiceContext choiceContext)
@@ -99,7 +123,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                     SetKeyword,
                     TrapKeyword,
                 };
-                if (WasSetIntoSpellTrapZone)
+                if (WasSetIntoSpellTrapZone || (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand))
                     keywords.Add(FaceDownKeyword);
                 return keywords;
             }
@@ -109,7 +133,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 SetKeyword,
                 TrapKeyword,
             };
-            if (WasSetIntoSpellTrapZone)
+            if (WasSetIntoSpellTrapZone || (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand))
                 fallback.Add(FaceDownKeyword);
             return fallback;
         }
@@ -127,7 +151,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                     HoverTipFactory.FromKeyword(SetKeyword),
                     HoverTipFactory.FromKeyword(TrapKeyword),
                 };
-                if (WasSetIntoSpellTrapZone)
+                if (WasSetIntoSpellTrapZone || (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand))
                     tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
                 return tips;
             }
@@ -137,7 +161,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 HoverTipFactory.FromKeyword(SetKeyword),
                 HoverTipFactory.FromKeyword(TrapKeyword),
             };
-            if (WasSetIntoSpellTrapZone)
+            if (WasSetIntoSpellTrapZone || (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand))
                 fallback.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
             return fallback;
         }

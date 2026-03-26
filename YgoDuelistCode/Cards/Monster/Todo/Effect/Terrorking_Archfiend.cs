@@ -18,11 +18,15 @@ public sealed class Terrorking_Archfiend : EffectMonsterCard
             baseAtk: 20,
             baseDef: 15,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fiend)
+            duelMonsterRace: DuelMonsterRace.Fiend,
+            duelMonsterAttackPlayEnergyOverride: 3)
     {
     }
 
     public override int PermanentAtkDeltaOnEnemyExecute => IsUpgraded ? 4 : 3;
+
+    public override int GetDuelMonsterPlayEnergyDiscount() =>
+        IsUpgraded && IsAttackBattlePosition ? 1 : 0;
 
     protected override void OnUpgrade() => base.OnUpgrade();
 }

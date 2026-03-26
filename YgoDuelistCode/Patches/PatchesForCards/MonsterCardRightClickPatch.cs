@@ -31,6 +31,21 @@ public static class MonsterCardHandPatch
         // Option holders are pooled and re-added; connecting again causes "already connected". They don't need monster-form toggle.
         if (holder is NYgoOptionCardHolder)
             return;
+
+        // Save-load safety: normalize persisted card model state to the current hand-facing visual mode.
+        // This prevents stale face-down overlays after deserialize / hand republish.
+        switch (holder.CardNode?.Model)
+        {
+            case AbstractMonsterCard monster:
+                monster.NormalizeFaceDownStateForCurrentDisplayMode();
+                holder.UpdateCard();
+                break;
+            case BaseTrapCard trap:
+                trap.NormalizeFaceDownStateForCurrentPile();
+                holder.UpdateCard();
+                break;
+        }
+
         holder.Connect(NCardHolder.SignalName.AltPressed, Callable.From<NCardHolder>(OnHandHolderAltPressed));
     }
 

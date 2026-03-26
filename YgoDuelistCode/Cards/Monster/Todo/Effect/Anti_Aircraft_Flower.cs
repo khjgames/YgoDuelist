@@ -19,6 +19,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedEffect
+    , IMonsterActivatedEffectPrePlaySelection
 {
     private static readonly LocString TributePrompt = new("combat_messages", "TRIBUTE_SUMMON_SELECT");
 
@@ -59,51 +60,11 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
         if (sourcePet == null)
             return;
 
-        // Tribute any 1 Earth monster on your side (excluding this monster itself).
-        var candidates = new List<(Creature pet, BaseMonsterCard card)>();
-        foreach (Creature pet in player.PlayerCombatState.Pets)
-        {
-            if (!pet.IsAlive)
-                continue;
-
-            BaseMonsterCard? card = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
-            if (card == null)
-                continue;
-
-            if (card.DuelMonsterAttribute != DuelMonsterAttribute.Earth)
-                continue;
-
-            if (ReferenceEquals(card, source))
-                continue;
-
-            candidates.Add((pet, card));
-        }
-
-        if (candidates.Count == 0)
+        if (!ActivatedEffectTributeSelectionPayload.TryTakePending(source, out var chosen) || chosen == null)
             return;
 
-        var candidateCards = candidates.Select(c => c.card).ToList();
-        var prefs = new CardSelectorPrefs(TributePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(choiceContext, candidateCards, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
-        if (chosen == null)
-            return;
-
-        Creature? tributePet = candidates.FirstOrDefault(c => ReferenceEquals(c.card, chosen)).pet;
+        Creature? tributePet = player.PlayerCombatState.Pets
+            .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), chosen));
         if (tributePet == null || !tributePet.IsAlive)
             return;
 
@@ -121,6 +82,53 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
 
         foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
             await CreatureCmd.Damage(choiceContext, e, 8m, ValueProp.Unpowered, sourcePet, source);
+    }
+
+    public async Task<bool> TryPrepareActivatedEffectPlayAsync(Player player, NormalMonsterCard source)
+    {
+        if (player.PlayerCombatState?.Pets == null)
+            return false;
+
+        var candidates = new List<BaseMonsterCard>();
+        foreach (Creature pet in player.PlayerCombatState.Pets)
+        {
+            if (!pet.IsAlive)
+                continue;
+
+            BaseMonsterCard? card = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            if (card == null || ReferenceEquals(card, source))
+                continue;
+            if (card.DuelMonsterAttribute != DuelMonsterAttribute.Earth)
+                continue;
+
+            candidates.Add(card);
+        }
+
+        if (candidates.Count == 0)
+            return false;
+
+        var prefs = new CardSelectorPrefs(TributePrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = true,
+        };
+
+        IEnumerable<CardModel> picked;
+        try
+        {
+            picked = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+
+        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
+        if (chosen == null)
+            return false;
+
+        ActivatedEffectTributeSelectionPayload.SetPending(source, chosen);
+        return true;
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();

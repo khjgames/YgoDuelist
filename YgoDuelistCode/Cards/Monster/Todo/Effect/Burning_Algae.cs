@@ -22,7 +22,5 @@ public sealed class Burning_Algae : EffectMonsterCard
     {
     }
 
-    public override bool AttackDealsSplinterDamage => true;
-
     protected override void OnUpgrade() => base.OnUpgrade();
 }

@@ -23,5 +23,4 @@ public sealed class Pitch_Dark_Dragon : EffectMonsterCard
     {
     }
 
-    public override bool AttackDealsSplinterDamage => true;
 }

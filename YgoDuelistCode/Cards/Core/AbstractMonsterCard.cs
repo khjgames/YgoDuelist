@@ -408,6 +408,17 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     }
 
     /// <summary>
+    /// Recomputes <see cref="FaceDown"/> from the current display mode and <see cref="WillSet"/>.
+    /// Useful after load/deserialize to avoid stale face-down overlays in hand UI.
+    /// </summary>
+    public void NormalizeFaceDownStateForCurrentDisplayMode()
+    {
+        bool shouldBeFaceDown = _displayForm == MonsterDisplayForm.Defense && WillSet;
+        FaceDown = shouldBeFaceDown;
+        UpdateFaceDownKeywordFromBool();
+    }
+
+    /// <summary>
     /// Call this after changing <see cref="DuelMonsterLevel"/> so the card's keyword hover tooltips
     /// stay correct. Removes and re-applies 20033/20034/20035 based on current level.
     /// </summary>

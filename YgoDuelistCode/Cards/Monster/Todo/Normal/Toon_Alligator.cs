@@ -22,5 +22,4 @@ public sealed class Toon_Alligator : NormalMonsterCard
     {
     }
 
-    public override bool AttackDealsBlightedDamage => true;
 }

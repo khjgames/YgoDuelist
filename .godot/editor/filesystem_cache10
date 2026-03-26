@@ -1,7 +1,7 @@
 63f7b34db8d8cdea90c76aacccf841ec
 ::res://::1774407082
 cards_database.json::JSON::-1::1774407371::0::1::::<><><>0<>0<><>::
-Cards_Revised.md::TextFile::-1::1774469625::0::1::::<><><>0<>0<><>::
+Cards_Revised.md::TextFile::-1::1774539671::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1773513087::0::1::::<><><>0<>0<><>::
 MainFile.cs::CSharpScript::4205972269297282253::1774499455::0::1::::<><><>0<>0<><>::
 PATCHES_COMMAND_SYSTEM_DIFF_VS_ZGO.md::TextFile::-1::1773597268::0::1::::<><><>0<>0<><>::
@@ -10,8 +10,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1774539184
-YgoDuelist.deps.json::JSON::-1::1774539184::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1774540800
+YgoDuelist.deps.json::JSON::-1::1774540800::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
 ::res://packages/alchyr.sts2.baselib/::1774449439
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
@@ -2254,8 +2254,8 @@ relic.png::CompressedTexture2D::2946342146000448801::1773513086::1773589494::1::
 ::res://YgoDuelist/localization/::1773513086
 ::res://YgoDuelist/localization/eng/::1774407082
 ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
-cards.json::JSON::-1::1774539120::0::1::::<><><>0<>0<><>::
-card_keywords.json::JSON::-1::1774538800::0::1::::<><><>0<>0<><>::
+cards.json::JSON::-1::1774540753::0::1::::<><><>0<>0<><>::
+card_keywords.json::JSON::-1::1774540708::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 combat_messages.json::JSON::-1::1774235065::0::1::::<><><>0<>0<><>::
 monsters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
@@ -2281,7 +2281,7 @@ Exit_Monster_Options.cs::CSharpScript::889353100451011932::1774321920::0::1::::<
 MonsterCommandCard.cs::CSharpScript::2141012884981456081::1774457539::0::1::::<><><>0<>0<><>::
 Toggle_Die_For_You.cs::CSharpScript::777169850227679302::1774374745::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Core/::1774487539
-AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774538779::0::1::::<><><>0<>0<><>::
+AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1774540695::0::1::::<><><>0<>0<><>::
 BaseContinuousSpellCard.cs::CSharpScript::5725153647441206473::1774474496::0::1::::<><><>0<>0<><>::
 BaseContinuousTrapCard.cs::CSharpScript::6316315533953657295::1774375053::0::1::::<><><>0<>0<><>::
 BaseEquipSpellCard.cs::CSharpScript::2961052010747773401::1774481728::0::1::::<><><>0<>0<><>::
@@ -2382,7 +2382,7 @@ Cocoon_of_Evolution.cs::CSharpScript::1268177764678372534::1774377907::0::1::::<
 Command_Knight.cs::CSharpScript::3723616799427821284::1774403324::0::1::::<><><>0<>0<><>::
 Copycat.cs::CSharpScript::7002406349993057975::1774403324::0::1::::<><><>0<>0<><>::
 Crass_Clown.cs::CSharpScript::2984049066379765295::1774476655::0::1::::<><><>0<>0<><>::
-Cure_Mermaid.cs::CSharpScript::2303449892718236167::1774474046::0::1::::<><><>0<>0<><>::
+Cure_Mermaid.cs::CSharpScript::2303449892718236167::1774540704::0::1::::<><><>0<>0<><>::
 Cyber_Harpie_Lady.cs::CSharpScript::1763026552015443576::1774403324::0::1::::<><><>0<>0<><>::
 Cyber_Jar.cs::CSharpScript::6770452435418364032::1774538792::0::1::::<><><>0<>0<><>::
 Cyber_Stein.cs::CSharpScript::1255499620890752586::1774377907::0::1::::<><><>0<>0<><>::

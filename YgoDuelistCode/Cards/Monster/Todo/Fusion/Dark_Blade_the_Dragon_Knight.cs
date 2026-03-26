@@ -24,5 +24,4 @@ public sealed class Dark_Blade_the_Dragon_Knight : FusionMonsterCard
     {
     }
 
-    public override bool AttackDealsSplinterDamage => true;
 }

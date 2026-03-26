@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -19,6 +21,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 /// </summary>
 public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
 {
+    private const int AttributeKeywordBase = 10000;
+    private const int RaceKeywordBase = 20000;
+
     public NormalMonsterCard? SourceMonster { get; private set; }
 
     /// <summary>
@@ -74,6 +79,46 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     /// to <see cref="VisualCardPool"/> so UI code never hits <see cref="InvalidProgramException"/> ("not in any card pool").
     /// </summary>
     public override CardPoolModel Pool => VisualCardPool;
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords
+    {
+        get
+        {
+            var source = SourceMonster;
+            if (source == null)
+                return base.CanonicalKeywords;
+
+            var result = new List<CardKeyword>(4)
+            {
+                (CardKeyword)(AttributeKeywordBase + (int)source.DuelMonsterAttribute),
+                (CardKeyword)(RaceKeywordBase + (int)source.DuelMonsterRace)
+            };
+
+            int level = source.GetEffectiveDuelMonsterLevel();
+            if (level >= 7)
+                result.Add((CardKeyword)20035); // Tribute Summon (2)
+            else if (level >= 5)
+                result.Add((CardKeyword)20034); // Tribute Summon (1)
+
+            return result;
+        }
+    }
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            var source = SourceMonster;
+            if (source == null)
+                return base.ExtraHoverTips;
+
+            var tips = new List<IHoverTip>(4);
+            foreach (var kw in CanonicalKeywords)
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+
+            return tips;
+        }
+    }
 
     /// <summary>
     /// Helper identical in spirit to BaseSpellCard.SendThisSpellToGraveyard,

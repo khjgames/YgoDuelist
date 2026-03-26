@@ -16,6 +16,8 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// </summary>
 public static class StaticImageCreateVisualsPatch
 {
+    private const float StaticPortraitAttributeRaceIconScaleMultiplier = 2.0f;
+
     private static readonly MethodInfo _visualsPathGetter = typeof(MonsterModel)
         .GetProperty("VisualsPath", BindingFlags.Instance | BindingFlags.NonPublic)!
         .GetGetMethod(true)!;
@@ -57,7 +59,32 @@ public static class StaticImageCreateVisualsPatch
         }
 
         raw.QueueFree();
+        ScaleAttributeAndRaceIconsForStaticPortrait(visuals);
         __result = visuals;
         return false;
+    }
+
+    private static void ScaleAttributeAndRaceIconsForStaticPortrait(Node root)
+    {
+        foreach (Node child in root.GetChildren())
+        {
+            ScaleAttributeAndRaceIconsForStaticPortrait(child);
+
+            string name = child.Name.ToString().ToLowerInvariant();
+            bool isAttributeOrRaceIcon =
+                name.Contains("attribute") || name.Contains("race");
+            if (!isAttributeOrRaceIcon)
+                continue;
+
+            switch (child)
+            {
+                case Node2D n2d:
+                    n2d.Scale *= Vector2.One * StaticPortraitAttributeRaceIconScaleMultiplier;
+                    break;
+                case Control control:
+                    control.Scale *= Vector2.One * StaticPortraitAttributeRaceIconScaleMultiplier;
+                    break;
+            }
+        }
     }
 }

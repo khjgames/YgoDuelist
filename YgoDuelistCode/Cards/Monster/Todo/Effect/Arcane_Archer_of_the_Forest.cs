@@ -19,6 +19,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterActivatedEffect
+    , IMonsterActivatedEffectPrePlaySelection
 {
     private static readonly LocString TributePrompt = new("combat_messages", "TRIBUTE_SUMMON_SELECT");
 
@@ -62,51 +63,11 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
         if (sourcePet == null)
             return;
 
-        // Tribute any 1 Earth monster on your side (excluding this monster itself).
-        var candidates = new List<(Creature pet, BaseMonsterCard card)>();
-        foreach (Creature pet in player.PlayerCombatState.Pets)
-        {
-            if (!pet.IsAlive)
-                continue;
-
-            BaseMonsterCard? card = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
-            if (card == null)
-                continue;
-
-            if (card.DuelMonsterAttribute != DuelMonsterAttribute.Earth)
-                continue;
-
-            if (ReferenceEquals(card, source))
-                continue;
-
-            candidates.Add((pet, card));
-        }
-
-        if (candidates.Count == 0)
+        if (!ActivatedEffectTributeSelectionPayload.TryTakePending(source, out var chosen) || chosen == null)
             return;
 
-        var candidateCards = candidates.Select(c => c.card).ToList();
-        var prefs = new CardSelectorPrefs(TributePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(choiceContext, candidateCards, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
-        if (chosen == null)
-            return;
-
-        Creature? tributePet = candidates.FirstOrDefault(c => ReferenceEquals(c.card, chosen)).pet;
+        Creature? tributePet = player.PlayerCombatState.Pets
+            .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), chosen));
         if (tributePet == null || !tributePet.IsAlive)
             return;
 
@@ -121,6 +82,53 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
         // Apply statuses to the targeted enemy.
         await PowerCmd.Apply<WeakPower>(cardPlay.Target, 1m, sourcePet, source);
         await PowerCmd.Apply<VulnerablePower>(cardPlay.Target, 3m, sourcePet, source);
+    }
+
+    public async Task<bool> TryPrepareActivatedEffectPlayAsync(MegaCrit.Sts2.Core.Entities.Players.Player player, NormalMonsterCard source)
+    {
+        if (player.PlayerCombatState?.Pets == null)
+            return false;
+
+        var candidates = new List<BaseMonsterCard>();
+        foreach (Creature pet in player.PlayerCombatState.Pets)
+        {
+            if (!pet.IsAlive)
+                continue;
+
+            BaseMonsterCard? card = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            if (card == null || ReferenceEquals(card, source))
+                continue;
+            if (card.DuelMonsterAttribute != DuelMonsterAttribute.Earth)
+                continue;
+
+            candidates.Add(card);
+        }
+
+        if (candidates.Count == 0)
+            return false;
+
+        var prefs = new CardSelectorPrefs(TributePrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = true,
+        };
+
+        IEnumerable<CardModel> picked;
+        try
+        {
+            picked = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+
+        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
+        if (chosen == null)
+            return false;
+
+        ActivatedEffectTributeSelectionPayload.SetPending(source, chosen);
+        return true;
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();

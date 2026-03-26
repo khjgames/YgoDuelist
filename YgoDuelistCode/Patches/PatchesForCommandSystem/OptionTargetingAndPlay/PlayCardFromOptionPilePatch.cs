@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Helpers;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Nodes;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -71,6 +72,8 @@ public static class PlayCardFromOptionPilePatch
         try
         {
             var card = action.NetCombatCard.ToCardModel();
+            NormalMonsterCard? preplaySource = null;
+            bool preparedPreplaySelection = false;
             if (card == null)
             {
                 GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is null, exiting");
@@ -86,6 +89,19 @@ public static class PlayCardFromOptionPilePatch
                 return;
             }
 
+            if (card is Activate_Effect activate
+                && activate.SourceMonster is IMonsterActivatedEffectPrePlaySelection preplay
+                && activate.SourceMonster is NormalMonsterCard sourceMonster)
+            {
+                preplaySource = sourceMonster;
+                preparedPreplaySelection = await preplay.TryPrepareActivatedEffectPlayAsync(action.Player, sourceMonster);
+                if (!preparedPreplaySelection)
+                {
+                    action.Cancel();
+                    return;
+                }
+            }
+
             NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
             Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
 
@@ -94,6 +110,8 @@ public static class PlayCardFromOptionPilePatch
             {
                 GD.Print("[YgoDuelist] PlayCardFromOptionPile: card requires target but target is null (TargetId=", action.TargetId, ") - skipping play so card is not consumed");
                 Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
+                if (preparedPreplaySelection && preplaySource != null)
+                    ActivatedEffectTributeSelectionPayload.ClearForSource(preplaySource);
                 return;
             }
 
@@ -119,6 +137,8 @@ public static class PlayCardFromOptionPilePatch
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is not a known option-pile click handler, skipping OnClickedOption");
                 GD.Print("[YgoDuelist] PlayCardFromOptionPile: calling action.Cancel() and returning");
                 action.Cancel();
+                if (preparedPreplaySelection && preplaySource != null)
+                    ActivatedEffectTributeSelectionPayload.ClearForSource(preplaySource);
                 return;
             }
 
