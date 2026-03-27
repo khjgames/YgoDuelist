@@ -9,6 +9,11 @@ public sealed class YgoDieFaceProxyCard : CustomCardModel
 {
     public int Face { get; }
 
+    public YgoDieFaceProxyCard()
+        : this(1)
+    {
+    }
+
     public YgoDieFaceProxyCard(int face)
         : base(0, CardType.Skill, CardRarity.Common, TargetType.Self, showInCardLibrary: false, autoAdd: false)
     {

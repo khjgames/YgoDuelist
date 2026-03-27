@@ -6,16 +6,20 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Spell_Shield_Type_8 : BaseTrapCard
 {
+    private static readonly LocString SendSpellToGraveyardPrompt =
+        new("cards", "YGODUELIST-SPELL_SHIELD_TYPE_8.spell_selection");
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new DynamicVar[]
         {
@@ -35,18 +39,22 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
 
         decimal block = DynamicVars["Mgc"].BaseValue;
 
-        // "Choose 1" implemented as: you may discard a Spell from hand; cancel = take the base block.
-        CardModel? chosenSpell = await TryChooseSpellToDiscard(choiceContext, Owner);
-        if (chosenSpell != null)
+        CardPile? graveyard = GraveyardPile.CustomType.GetPile(Owner);
+        if (graveyard != null)
         {
-            await CardCmd.Discard(choiceContext, chosenSpell);
-            block = DynamicVars["Mgc2"].BaseValue;
+            // Optional: send a Spell from hand to Graveyard; cancel = base block only.
+            CardModel? chosenSpell = await TryChooseSpellToSendToGraveyard(choiceContext, Owner);
+            if (chosenSpell != null)
+            {
+                await CardPileCmd.Add(new[] { chosenSpell }, graveyard, CardPilePosition.Top, this, false);
+                block = DynamicVars["Mgc2"].BaseValue;
+            }
         }
 
         await CreatureCmd.GainBlock(Owner.Creature, block, default, cardPlay);
     }
 
-    private async Task<CardModel?> TryChooseSpellToDiscard(PlayerChoiceContext choiceContext, Player player)
+    private async Task<CardModel?> TryChooseSpellToSendToGraveyard(PlayerChoiceContext choiceContext, Player player)
     {
         var hand = PileType.Hand.GetPile(player);
         if (hand == null || hand.Cards.Count == 0)
@@ -56,7 +64,7 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
         if (!anySpell)
             return null;
 
-        var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
+        var prefs = new CardSelectorPrefs(SendSpellToGraveyardPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true,

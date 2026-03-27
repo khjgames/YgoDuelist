@@ -46,6 +46,16 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
         ModelDb.Card<Command_Attack>(),
         ModelDb.Card<Command_Defend>(),
         ModelDb.Card<Activate_Effect>(),
+        ModelDb.Card<Heads>(),
+        ModelDb.Card<Tails>(),
+        ModelDb.Card<Rolled_1>(),
+        ModelDb.Card<Rolled_2>(),
+        ModelDb.Card<Rolled_3>(),
+        ModelDb.Card<Rolled_4>(),
+        ModelDb.Card<Rolled_5>(),
+        ModelDb.Card<Rolled_6>(),
+        ModelDb.Card<Fairy_Box_Upkeep_Take_Damage>(),
+        ModelDb.Card<Fairy_Box_Upkeep_Destroy>(),
     };
 
     public override bool IsColorless => false;

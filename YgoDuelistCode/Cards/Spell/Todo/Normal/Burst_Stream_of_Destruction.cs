@@ -25,7 +25,7 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
     public override bool UseAlternateUpgradedDescription => true;
 
     public Burst_Stream_of_Destruction()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.AnyAlly, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 

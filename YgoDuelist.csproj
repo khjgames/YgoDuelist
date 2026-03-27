@@ -1,4 +1,4 @@
-﻿<Project Sdk="Godot.NET.Sdk/4.5.1">
+<Project Sdk="Godot.NET.Sdk/4.5.1">
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>true</ImplicitUsings>
@@ -30,27 +30,32 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Alchyr.Sts2.BaseLib" Version="*" PrivateAssets="All"/>
-        <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="*"/>
-        <AdditionalFiles Include="YgoDuelist\localization\**\*.json"/>
+        <PackageReference Include="Alchyr.Sts2.BaseLib" Version="0.2.0" PrivateAssets="All" />
+        <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="*" />
+        <AdditionalFiles Include="YgoDuelist\localization\**\*.json" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <BaseLibPinnedVersion>0.2.0</BaseLibPinnedVersion>
+        <BaseLibPackageRoot>packages\alchyr.sts2.baselib\$(BaseLibPinnedVersion)</BaseLibPackageRoot>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="YgoDuelist\**" />
+        <Compile Remove="materials\**" />
+        <Compile Remove="shaders\**" />
+        <Compile Remove="images\**" />
+        <EmbeddedResource Remove="YgoDuelist\**" />
+        <EmbeddedResource Remove="materials\**" />
+        <EmbeddedResource Remove="shaders\**" />
+        <EmbeddedResource Remove="images\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="YgoDuelist\**"/>
-        <Compile Remove="materials\**"/>
-        <Compile Remove="shaders\**"/>
-        <Compile Remove="images\**"/>
-        <EmbeddedResource Remove="YgoDuelist\**"/>
-        <EmbeddedResource Remove="materials\**"/>
-        <EmbeddedResource Remove="shaders\**"/>
-        <EmbeddedResource Remove="images\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include=".gitignore"/>
-        <None Include="YgoDuelist.json"/>
-        <None Include="project.godot"/>
-        <None Include="YgoDuelist\**"/>
+        <None Include=".gitignore" />
+        <None Include="YgoDuelist.json" />
+        <None Include="project.godot" />
+        <None Include="YgoDuelist\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -65,30 +70,28 @@
         <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Continuos\" />
         <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Equip\" />
         <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Normal\" />
-        <Folder Include="YgoDuelist\images\card_portraits\big\"/>
-        <Folder Include="YgoDuelist\images\powers\big\"/>
-        <Folder Include="YgoDuelist\images\relics\big\"/>
+        <Folder Include="YgoDuelist\images\card_portraits\big\" />
+        <Folder Include="YgoDuelist\images\powers\big\" />
+        <Folder Include="YgoDuelist\images\relics\big\" />
     </ItemGroup>
 
     <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent">
-        <Message Text="Copying .dll and manifest to mods folder." Importance="high"/>
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Path)\mods\$(MSBuildProjectName)\"/>
-        <Copy SourceFiles="YgoDuelist.json" DestinationFolder="$(Sts2Path)\mods\$(MSBuildProjectName)\"/>
-        <Message Text="Copying BaseLib to mods folder." Importance="high"/>
+        <Message Text="Copying .dll and manifest to mods folder." Importance="high" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Path)\mods\$(MSBuildProjectName)\" />
+        <Copy SourceFiles="YgoDuelist.json" DestinationFolder="$(Sts2Path)\mods\$(MSBuildProjectName)\" />
+        <Message Text="Copying BaseLib to mods folder." Importance="high" />
         <ItemGroup>
-            <BaseLibFiles Include="packages\alchyr.sts2.baselib\**\lib\**\BaseLib.dll;packages\alchyr.sts2.baselib\**\Content\BaseLib.pck;packages\alchyr.sts2.baselib\**\Content\BaseLib.json;"/>
+            <BaseLibFiles Include="$(BaseLibPackageRoot)\lib\net9.0\BaseLib.dll;$(BaseLibPackageRoot)\Content\BaseLib.pck;$(BaseLibPackageRoot)\Content\BaseLib.json;" />
         </ItemGroup>
-        <Copy SourceFiles="@(BaseLibFiles)" DestinationFolder="$(Sts2Path)\mods\BaseLib\"/>
+        <Copy SourceFiles="@(BaseLibFiles)" DestinationFolder="$(Sts2Path)\mods\BaseLib\" />
     </Target>
 
     <Target Name="GodotPublish" AfterTargets="Publish" Condition="'$(GodotPath)' != '' and Exists('$(GodotPath)') and '$(IsInnerGodotExport)' != 'true'">
-        <Message Text="Exporting Godot .pck to mods folder" Importance="high"/>
-        <Exec Command="&quot;$(GodotPath)&quot; --headless --export-pack &quot;BasicExport&quot; &quot;$(Sts2Path)\mods\$(MSBuildProjectName)\$(MSBuildProjectName).pck&quot;"
-              EnvironmentVariables="IsInnerGodotExport=true;MSBUILDDISABLENODEREUSE=1"
-              ContinueOnError="WarnAndContinue"/>
+        <Message Text="Exporting Godot .pck to mods folder" Importance="high" />
+        <Exec Command="&quot;$(GodotPath)&quot; --headless --export-pack &quot;BasicExport&quot; &quot;$(Sts2Path)\mods\$(MSBuildProjectName)\$(MSBuildProjectName).pck&quot;" EnvironmentVariables="IsInnerGodotExport=true;MSBUILDDISABLENODEREUSE=1" ContinueOnError="WarnAndContinue" />
     </Target>
 
     <Target Name="GodotPublishSkipped" AfterTargets="Publish" Condition="'$(GodotPath)' == '' or !Exists('$(GodotPath)')">
-        <Message Text="Skipping Godot .pck export because GodotPath is not configured." Importance="high"/>
+        <Message Text="Skipping Godot .pck export because GodotPath is not configured." Importance="high" />
     </Target>
 </Project>

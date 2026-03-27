@@ -14,8 +14,8 @@ using YgoDuelist.YgoDuelistCode.Relics;
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
 /// <summary>
-/// End of the turn you played this: latch draw count (dragons destroyed that turn + upgrade bonus).
-/// Start of your next turn: draw that many cards, then remove.
+/// End of the turn you played this: latch draw count (dragons destroyed that turn). Upgraded: also latch energy equal to that count.
+/// Start of your next turn: draw, optionally gain energy, then remove.
 /// </summary>
 public sealed class SuperRejuvenationPower : YgoDuelistPower
 {
@@ -27,19 +27,28 @@ public sealed class SuperRejuvenationPower : YgoDuelistPower
 
     public override LocString Title => new("powers", "YGODUELIST-SUPER_REJUVENATION_POWER.title");
 
-    public override LocString Description => new("powers", "YGODUELIST-SUPER_REJUVENATION_POWER.description");
+    public override LocString Description => new("powers",
+        _grantEnergyNextTurn
+            ? "YGODUELIST-SUPER_REJUVENATION_POWER.description_upgraded"
+            : "YGODUELIST-SUPER_REJUVENATION_POWER.description");
+
+    protected override string SmartDescriptionLocKey =>
+        _grantEnergyNextTurn
+            ? "YGODUELIST-SUPER_REJUVENATION_POWER.smartDescription_upgraded"
+            : "YGODUELIST-SUPER_REJUVENATION_POWER.smartDescription";
 
     protected override bool IsVisibleInternal => _latchedDrawCount;
 
-    private int _upgradeDrawBonus;
+    private bool _grantEnergyNextTurn;
+    private int _energyToGain;
     private bool _latchedDrawCount;
     private bool _awaitingDrawOnTurnStart;
 
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
-        await base.AfterApplied(applier, cardSource);
         if (cardSource is { IsUpgraded: true })
-            _upgradeDrawBonus = 1;
+            _grantEnergyNextTurn = true;
+        await base.AfterApplied(applier, cardSource);
     }
 
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -58,7 +67,8 @@ public sealed class SuperRejuvenationPower : YgoDuelistPower
 
         GraveyardRelic? g = player.Relics.OfType<GraveyardRelic>().FirstOrDefault();
         int dragons = g?.DragonMonstersDestroyedThisTurn ?? 0;
-        int total = dragons + _upgradeDrawBonus;
+        int total = dragons;
+        _energyToGain = _grantEnergyNextTurn ? dragons : 0;
 
         if (total <= 0)
         {
@@ -81,6 +91,9 @@ public sealed class SuperRejuvenationPower : YgoDuelistPower
         int n = (int)Amount;
         if (n > 0)
             await CardPileCmd.Draw(choiceContext, n, player);
+
+        if (_energyToGain > 0)
+            await PlayerCmd.GainEnergy(_energyToGain, player);
 
         await PowerCmd.Remove(this);
     }

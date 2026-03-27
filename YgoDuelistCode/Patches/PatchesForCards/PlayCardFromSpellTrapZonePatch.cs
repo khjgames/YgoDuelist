@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -57,10 +58,20 @@ public static class PlayCardFromSpellTrapZonePatch
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
 
-        // Burst Stream (played from set Spell/Trap zone) should silently ask for Blue-Eyes selection.
+        // Burst Stream / Diffusion Wave (played from set Spell/Trap zone): pick field monster when no target id.
         if (card is Burst_Stream_of_Destruction && target == null)
         {
             target = await Burst_Stream_of_Destruction.PickBlueEyesOnFieldAsync(action.Player, cancelable: true);
+            if (target == null)
+            {
+                action.Cancel();
+                return;
+            }
+        }
+
+        if (card is Diffusion_Wave_Motion && target == null)
+        {
+            target = await Diffusion_Wave_Motion.PickLevelSevenSpellcasterOnFieldAsync(action.Player, cancelable: true);
             if (target == null)
             {
                 action.Cancel();
@@ -75,7 +86,7 @@ public static class PlayCardFromSpellTrapZonePatch
             return;
         }
 
-        if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+        if (!card.CanPlay(out _, out _) || !IsValidTargetForSpellTrapZonePlay(card, target))
         {
             action.Cancel();
             return;
@@ -95,5 +106,35 @@ public static class PlayCardFromSpellTrapZonePatch
         await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
 
         YgoSpellTrapZoneAfterPlayUi.ScheduleCleanup(action.Player, card);
+    }
+
+    /// <summary>
+    /// Vanilla <see cref="CardModel.IsValidTarget"/> returns false for non-null targets when
+    /// <see cref="TargetType"/> is not AnyEnemy/AnyAlly. Field-monster spells use <see cref="TargetType.None"/>
+    /// so <see cref="CardModel.CanPlay"/> is not blocked by the AnyAlly "2+ PlayerCreatures" rule
+    /// (duel pets are often not in that list); we still require a valid field monster here.
+    /// </summary>
+    private static bool IsValidTargetForSpellTrapZonePlay(CardModel card, Creature? target)
+    {
+        if (card is Burst_Stream_of_Destruction)
+        {
+            if (target == null || !target.IsAlive || card.Owner?.Creature == null)
+                return false;
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not Blue_Eyes_White_Dragon)
+                return false;
+            return target.Side == card.Owner.Creature.Side;
+        }
+
+        if (card is Diffusion_Wave_Motion)
+        {
+            if (target == null || !target.IsAlive || card.Owner?.Creature == null)
+                return false;
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not BaseMonsterCard m
+                || !Diffusion_Wave_Motion.IsLevelSevenPlusSpellcaster(m))
+                return false;
+            return target.Side == card.Owner.Creature.Side;
+        }
+
+        return card.IsValidTarget(target);
     }
 }

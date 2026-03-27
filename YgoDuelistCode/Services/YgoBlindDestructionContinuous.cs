@@ -38,18 +38,16 @@ public static class YgoBlindDestructionContinuous
         ulong mix = YgoDeterministicRng.MixSpellTrapZoneSlot(player, src);
         int roll = YgoDeterministicRng.RollDie(cs, 6, "BLIND_DESTRUCTION-D6", mix);
 
-        var faceCards = new List<CardModel>();
-        for (int f = 1; f <= 6; f++)
-            faceCards.Add(new YgoDieFaceProxyCard(f));
+        CardModel resultCard = YgoDeterministicRngResultDisplay.CreateD6RollResultCard(cs, player, roll);
 
-        var prompt = new LocString("cards", "YGODUELIST-BLIND_DESTRUCTION.die_faces.selection");
+        var prompt = new LocString("cards", "YGODUELIST-BLIND_DESTRUCTION.die_result.selection");
         prompt.Add("Roll", (decimal)roll);
         var prefs = new CardSelectorPrefs(prompt, 0, 0)
         {
             RequireManualConfirmation = true,
             Cancelable = false
         };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, faceCards, player, prefs);
+        await CardSelectCmd.FromSimpleGrid(choiceContext, new List<CardModel> { resultCard }, player, prefs);
 
         decimal sixCase = src.DynamicVars["Mgc"].BaseValue;
         decimal dmg = roll == 6 ? sixCase : roll;

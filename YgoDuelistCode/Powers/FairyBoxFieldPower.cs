@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -10,9 +11,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -45,9 +45,13 @@ public sealed class FairyBoxFieldPower : YgoDuelistPower
             return;
         }
 
-        CardModel payDamage = ModelDb.Card<Sparks>();
-        CardModel destroyTrap = ModelDb.Card<Compulsory_Evacuation_Device>();
-        var upkeepOptions = new List<CardModel> { payDamage, destroyTrap };
+        CombatState? cs = player.Creature?.CombatState;
+        if (cs == null)
+            return;
+
+        CardModel takeDamage = cs.CreateCard<Fairy_Box_Upkeep_Take_Damage>(player);
+        CardModel destroyTrap = cs.CreateCard<Fairy_Box_Upkeep_Destroy>(player);
+        var upkeepOptions = new List<CardModel> { takeDamage, destroyTrap };
 
         CardModel? pick = await CardSelectCmd.FromChooseACardScreen(
             choiceContext,
@@ -58,13 +62,14 @@ public sealed class FairyBoxFieldPower : YgoDuelistPower
         if (pick == null)
             return;
 
-        if (pick.Id.Entry == payDamage.Id.Entry)
+        if (pick is Fairy_Box_Upkeep_Take_Damage)
         {
             await CreatureCmd.Damage(choiceContext, Owner, 5m, ValueProp.Unpowered, Owner, src);
+            await YgoFairyBoxHeadsTailsWeak.RunAfterUpkeepPaidAsync(choiceContext, cs, player, Owner, src);
             return;
         }
 
-        if (pick.Id.Entry == destroyTrap.Id.Entry)
+        if (pick is Fairy_Box_Upkeep_Destroy)
             await DestroyTrapAndRemovePowerAsync(player);
     }
 

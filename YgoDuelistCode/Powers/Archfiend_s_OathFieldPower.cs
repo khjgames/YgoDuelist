@@ -9,7 +9,6 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
@@ -24,7 +23,7 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 /// Archfiend's Oath: once per turn, take 5 blockable damage, declare a card type,
 /// then resolve your draw-pile top card into hand or graveyard based on the declaration.
 /// </summary>
-public sealed class Archfiend_s_OathFieldPower : YgoDuelistPower
+public sealed class Archfiend_s_Oath_FieldPower : YgoDuelistPower
 {
     public override PowerType Type => PowerType.Debuff;
 

@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -14,10 +19,13 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Diffusion_Wave_Motion : BaseSpellCard
 {
+    private static readonly LocString SpellcasterSelectionPrompt =
+        new("combat_messages", "DIFFUSION_WAVE_PICK_SPELLCASTER");
+
     public override bool UseAlternateUpgradedDescription => true;
 
     public Diffusion_Wave_Motion()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.AnyAlly, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
@@ -48,6 +56,39 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard
             await CreatureCmd.Damage(choiceContext, enemy, dmg, ValueProp.Unpowered, Owner.Creature, this);
     }
 
-    private static bool IsLevelSevenPlusSpellcaster(BaseMonsterCard m) =>
+    public static bool IsLevelSevenPlusSpellcaster(BaseMonsterCard m) =>
         m.DuelMonsterRace == DuelMonsterRace.Spellcaster && m.GetEffectiveDuelMonsterLevel() >= 7;
+
+    public static async Task<Creature?> PickLevelSevenSpellcasterOnFieldAsync(Player player, bool cancelable)
+    {
+        if (player.PlayerCombatState == null)
+            return null;
+
+        List<Creature> eligible = player.PlayerCombatState.Pets
+            .Where(p => p.IsAlive
+                && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard m
+                && IsLevelSevenPlusSpellcaster(m))
+            .ToList();
+
+        if (eligible.Count == 0)
+            return null;
+        if (eligible.Count == 1)
+            return eligible[0];
+
+        List<YgoEnemyIntentProxyCard> proxies = eligible.Select(c => new YgoEnemyIntentProxyCard(c)).ToList();
+        var prefs = new CardSelectorPrefs(SpellcasterSelectionPrompt, 1, 1) { Cancelable = cancelable };
+        IEnumerable<CardModel> selected;
+        try
+        {
+            selected = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), proxies, player, prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+
+        YgoEnemyIntentProxyCard? pick = selected.OfType<YgoEnemyIntentProxyCard>().FirstOrDefault();
+        Creature? chosen = pick?.TargetCreature;
+        return chosen != null && chosen.IsAlive && eligible.Contains(chosen) ? chosen : null;
+    }
 }
