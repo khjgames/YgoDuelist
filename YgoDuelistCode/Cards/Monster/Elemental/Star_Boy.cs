@@ -3,7 +3,12 @@ using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -27,6 +32,44 @@ public sealed class Star_Boy : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Fish)
     {
     }
+
+    // Dictates the card pack tags this card will be included in.
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Starter;
+
+    // You will always see bundled cards when RNG rolls this card, but not the other way around.
+    //public override Type[] BundledCards => new[]
+    //{
+    //    typeof(This_Card),
+    //    typeof(Another_Bundled_Card)
+    //};
+
+    // You will see these related cards more often with this card in your deck or side deck.
+    public override Type[] RelatedCards => new[]
+    {
+        typeof(Star_Boy),
+        typeof(Umi),
+        typeof(Umiiruka),
+        typeof(A_Legendary_Ocean),
+        typeof(Axe_of_Despair),
+        typeof(Big_Bang_Shot),
+        typeof(Black_Pendant),
+        typeof(Butterfly_Dagger_Elma),
+        typeof(Fusion_Sword_Murasame_Blade),
+        typeof(Gravity_Axe_Grarl),
+        typeof(Horn_of_Light),
+        typeof(Horn_of_the_Unicorn),
+        typeof(Lightning_Blade),
+        typeof(Mage_Power),
+        typeof(Malevolent_Nuzzler),
+        typeof(Mask_of_Brutality),
+        typeof(Megamorph),
+        typeof(United_We_Stand),
+        typeof(Yellow_Luster_Shield),
+        typeof(The_A_Forces),
+        typeof(Rush_Recklessly),
+        typeof(The_Reliable_Guardian),
+    };
 
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
     {

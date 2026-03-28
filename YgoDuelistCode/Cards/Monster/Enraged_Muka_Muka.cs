@@ -1,10 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Spell;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster;
@@ -30,6 +35,28 @@ public sealed class Enraged_Muka_Muka : EffectMonsterCard
             duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
+
+    // Dictates the card pack tags this card will be included in.
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw | YgoCardPackTags.Normal;
+
+    // You will always see bundled cards when RNG rolls this card, but not the other way around.
+    //public override Type[] BundledCards => new[]
+    //{
+    //    typeof(This_Card),
+    //    typeof(Another_Bundled_Card)
+    //};
+
+    // You will see these related cards more often with this card in your deck or side deck.
+    public override Type[] RelatedCards => new[]
+    {
+        typeof(Muka_Muka),
+        typeof(Enraged_Muka_Muka),
+        typeof(Pot_Of_Greed),
+        typeof(Upstart_Goblin),
+        typeof(Thunder_Dragon),
+        typeof(Spellbook_Organization),
+        typeof(Rush_Recklessly),
+    };
 
     /// <summary>Vars computed from base stats; CalculatedATK/CalculatedDEF come from NormalMonsterCard.</summary>
     protected override IEnumerable<DynamicVar> CanonicalVars => base.CanonicalVars;

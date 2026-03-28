@@ -21,6 +21,7 @@ public sealed class Sparks : BaseSpellCard
     {
     }
 
+    // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Burn | YgoCardPackTags.Spell | YgoCardPackTags.Fire | YgoCardPackTags.Starter;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.

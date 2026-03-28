@@ -18,9 +18,9 @@ basically, 2, sometimes 3 or 4, 5 and 6 are more special scenario / occasion siz
 I also want to have a bundle system with certain cards , wherein RNG choosing any one of the bundled cards would guarantee the other bundled cards are also awarded in that pack, overwriting lowest rarity non bundled cards in the packs slots to make room if necessary.   
 
 Bundles can be up to 4 cards but most will only be 2 or 3.  
-(So if you were originally rng rolled to get 4 cards in a pack, 2 commons, 1 uncommon, and 1 rare),  
+(So if you were originally rng rolled to get 4 cards in a pack, 2 commons, 1 Uncommon, and 1 rare),  
 but one of the cards you rolled among those was part of a 3 card bundle,  
-say one of the commons, it would replace the other common and uncommon with the cards in the bundle.)   
+say one of the commons, it would replace the other common and Uncommon with the cards in the bundle.)   
 
 The bundle system cannot overwrite rare cards, that pack would grow to a minimum size able to accomodate the bundle & the rare cards  
 (making it a lucky pack with bonus cards, the grown pack size has a max limit of 10 after which it would be allowed to get rid of random non-bundled rare cards until they are left with 10)  
@@ -56,8 +56,8 @@ PossibleTags[] = {
     YgoCardPackTags.Fiend,
     YgoCardPackTags.Spellcaster,
     YgoCardPackTags.Warrior,
-    YgoCardPackTags.Healing,
-    YgoCardPackTags.Draw_Search,
+    YgoCardPackTags.Heal,
+    YgoCardPackTags.Draw,
     YgoCardPackTags.Chance,
     YgoCardPackTags.Burn,
     YgoCardPackTags.Normal,
@@ -73,17 +73,21 @@ PossibleSubTags[] = {
 For choosing a packs first tag always choose at random one of the possible tags then remove it from the list.  
 For choosing a packs second or third tags choose at random from a combined list of PossibleTags and PossibleSubTags and remove whatever you chose from the list.   
 
+Then for your chosen pack size, for example for all packs are 6 cards. // NumPackCardSlots = 6
+
+First roll every slot in the card pack for its rarity 
+if OwedRareCardVouchers >= 1 assign the current slot to CardRarity.Rare and then OwedRareCardVouchers -= 1;
+otherwise, roll for that slots rarity using functions from the base game class CardRarityOdds.cs  
+```csharp
+CardRarity RolledCardRarities[] = {CardRarity.Common, CardRarity.Uncommon, CardRarity.Common, CardRarity.Uncommon, CardRarity.Rare, CardRarity.Common}
+```
+The rarities of the slots are rolled once then shared by the 3 card packs (so they all contain the same distribution of commons / Uncommons / rares), 
+
 When selecting the cards for a pack. The pseudocode for the logic is like this. ->  
 
 PackCardPool[] = GetPoolOfAllCardsWithAnyOfTheseTags(PackTags)
 
-First for your chosen pack size, for example for a pack of 6 cards. // NumPackCardSlots = 6
-
-First roll every slot in the card pack for its rarity using functions from the base game class CardRarityOdds.cs  
-(example: common, uncommon, common, uncommon, rare, common)  
-
 ```csharp
-CardRarity ChosenCardRarities[] = {CardRarity.Common, CardRarity.Uncommon, CardRarity.Common, CardRarity.Uncommon, CardRarity.Rare, CardRarity.Common}
 
 ChosenPackCards = [];
 
@@ -95,6 +99,8 @@ for (i = 0, i < NumPackCardSlots; i++;) GetRandomCardForSlot(i);
 -->> in GetRandomCardForSlot()   
 -> Get the pool of all cards of that slots rarity.  
 -> Iterate through the pool of all cards of that slots rarity -> CalculateIndividualCardWeight(card) for that card to build
+
+-> If the players chosen pack doesn't contain any cards of the CardRarity.Rare rarity and it was supposed to award a rare card according to RolledCardRarities, give them an Uncommon instead (if they don't have any Uncommons, give a Common instead) and record that they gain +1 OwedRareCardVouchers.
 
 -->> In CalculateIndividualCardWeight you would do  
 int BaseWeight = 20;  // The higher you make base weight the less impact other systems make on a cards odds.

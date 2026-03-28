@@ -3,8 +3,16 @@
 ## 
 
 ## Monster
+    Enraged_Muka_Muka.cs
+    Muka_Muka.cs
 
 ## Monster/Elemental
+    Bladefly.cs
+    Hoshiningen.cs
+    Little_Chimera.cs
+    Milus_Radiant.cs
+    Star_Boy.cs
+    Witchs_Apprentice.cs
 
 ## Monster/Todo/Normal
 

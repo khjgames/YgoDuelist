@@ -1,6 +1,8 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -24,6 +26,22 @@ public sealed class Zombyra_the_Dark : EffectMonsterCard
             duelMonsterAttackPlayEnergyOverride: 1)
     {
     }
+
+    // Dictates the card pack tags this card will be included in.
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Burn | YgoCardPackTags.Normal;
+
+    // You will always see bundled cards when RNG rolls this card, but not the other way around.
+    //public override Type[] BundledCards => new[]
+    //{
+    //    typeof(This_Card),
+    //    typeof(Another_Bundled_Card)
+    //};
+
+    // You will see these related cards more often with this card in your deck or side deck.
+    public override Type[] RelatedCards => new[]
+    {
+        typeof(Zombyra_the_Dark),
+    };
 
     public override int PermanentAtkDeltaOnEnemyExecute => IsUpgraded ? -1 : -2;
 
