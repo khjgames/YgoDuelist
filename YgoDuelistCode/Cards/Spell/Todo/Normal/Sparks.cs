@@ -21,6 +21,18 @@ public sealed class Sparks : BaseSpellCard
     {
     }
 
+    public override Type[] BundledCards => new[]
+    {
+        typeof(Sparks),
+        typeof(Hinotama),
+    };
+
+    public override Type[] RelatedCards => new[]
+    {
+        typeof(Sparks),
+        typeof(Hinotama),
+    };
+
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)

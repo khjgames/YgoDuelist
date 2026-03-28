@@ -26,12 +26,12 @@ public enum YgoCardPackTags : long // up to 64 flags
     Dark = 1L << 5,
     Light = 1L << 6,
     Fusion = 1L << 7,
-    Ritual = 1L << 8, 
+    Ritual = 1L << 8,
     Ocean = 1L << 9,
     Insect = 1L << 10,
     Machine = 1L << 11,
     Dragon = 1L << 12,
-    Zombie = 1L << 13,        
+    Zombie = 1L << 13,
     Fiend = 1L << 14,
     Spellcaster = 1L << 15,
     Warrior = 1L << 16,
@@ -44,6 +44,7 @@ public enum YgoCardPackTags : long // up to 64 flags
     Trap = 1L << 23,
     WinCondition = 1L << 24,
     God = 1L << 25,
+    Bundled = 1L << 26,
 }
 
 /// <summary>

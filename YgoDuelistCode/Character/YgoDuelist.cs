@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
+using YgoDuelist.YgoDuelistCode.Cards.Basic;
 using YgoDuelist.YgoDuelistCode.Cards.Monster;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
@@ -38,6 +39,15 @@ public class YgoDuelist : PlaceholderCharacterModel
 
     public override IEnumerable<CardModel> StartingDeck =>
     [
+        ModelDb.Card<Strike_YgoDuelist>(),
+        ModelDb.Card<Strike_YgoDuelist>(),
+        ModelDb.Card<Strike_YgoDuelist>(),
+        ModelDb.Card<Defend_YgoDuelist>(),
+        ModelDb.Card<Defend_YgoDuelist>(),
+        ModelDb.Card<Defend_YgoDuelist>()
+    ];
+
+    /*
         ModelDb.Card<Amazoness_Blowpiper>(),
         ModelDb.Card<Amazoness_Swords_Woman>(),
         ModelDb.Card<Amazoness_Tiger>(),
@@ -88,14 +98,12 @@ public class YgoDuelist : PlaceholderCharacterModel
         ModelDb.Card<Des_Kangaroo>(),
         ModelDb.Card<Diffusion_Wave_Motion>(),
         ModelDb.Card<Draining_Shield>(),
-        ModelDb.Card<Dream_Clown>(),
         ModelDb.Card<Dust_Barrier>(),
         ModelDb.Card<Elephant_Statue_of_Blessing>(),
         ModelDb.Card<Elephant_Statue_of_Disaster>(),
         ModelDb.Card<Energy_Drain>(),
         ModelDb.Card<Fairy_Box>(),
         ModelDb.Card<Fairy_Guardian>(),
-        ModelDb.Card<Sparks>(),
         ModelDb.Card<Spell_Shield_Type_8>(),
         ModelDb.Card<Spellbinding_Circle>(),
         ModelDb.Card<Spellbook_Organization>(),
@@ -159,7 +167,7 @@ public class YgoDuelist : PlaceholderCharacterModel
         ModelDb.Card<Blue_Eyes_White_Dragon>(),
         ModelDb.Card<Blue_Eyes_White_Dragon>(),
         ModelDb.Card<Blue_Eyes_Ultimate_Dragon>()
-    ];
+    */
 
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
