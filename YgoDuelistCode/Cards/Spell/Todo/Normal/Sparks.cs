@@ -17,7 +17,7 @@ public sealed class Sparks : BaseSpellCard
         new[] { new DynamicVar("Mgc", 2m) };
 
     public Sparks()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
@@ -35,5 +35,5 @@ public sealed class Sparks : BaseSpellCard
         await CardPileCmd.Draw(choiceContext, 1, Owner);
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(3m);
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(4m);
 }

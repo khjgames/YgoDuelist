@@ -14,6 +14,10 @@ namespace YgoDuelist.YgoDuelistCode.Cards;
 public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity, TargetType target) :
     CustomCardModel(cost, type, rarity, target)
 {
+    public virtual YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public virtual Type[] BundledCards => Array.Empty<Type>();
+    public virtual Type[] RelatedCards => Array.Empty<Type>(); // Every other card is weighted at 1, these are weighted at 2.
+
     /// <summary>
     /// When true, upgraded cards (and upgrade preview) use <c>cards.json</c> key <c>.description_upgraded</c> instead of <c>.description</c>.
     /// </summary>

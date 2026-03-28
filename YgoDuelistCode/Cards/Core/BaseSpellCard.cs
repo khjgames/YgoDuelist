@@ -37,6 +37,13 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         DuelMonsterRace = duelMonsterRace;
     }
 
+    
+    protected BaseSpellCard(int cost, CardType cardType, CardRarity rarity, TargetType target, DuelMonsterRace duelMonsterRace)
+        : base(cost, cardType, rarity, target)
+    {
+        DuelMonsterRace = duelMonsterRace;
+    }
+
     /// <summary>
     /// Implement the actual effect of the spell here. Base class handles cast anim + sending to graveyard.
     /// </summary>

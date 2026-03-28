@@ -15,6 +15,37 @@ public enum YgoCardType
     RitualMonster
 }
 
+[Flags]
+public enum YgoCardPackTags : long // up to 64 flags
+{
+    None = 0,
+    Earth = 1L << 1,
+    Water = 1L << 2,
+    Wind = 1L << 3,
+    Fire = 1L << 4,
+    Dark = 1L << 5,
+    Light = 1L << 6,
+    Fusion = 1L << 7,
+    Ritual = 1L << 8, 
+    Ocean = 1L << 9,
+    Insect = 1L << 10,
+    Machine = 1L << 11,
+    Dragon = 1L << 12,
+    Zombie = 1L << 13,        
+    Fiend = 1L << 14,
+    Spellcaster = 1L << 15,
+    Warrior = 1L << 16,
+    Healing = 1L << 17,
+    Draw_Search = 1L << 18,
+    Chance = 1L << 19,
+    Burn = 1L << 20,
+    Normal = 1L << 21,
+    Spell = 1L << 22,
+    Trap = 1L << 23,
+    WinCondition = 1L << 24,
+    God = 1L << 25,
+}
+
 /// <summary>
 /// Implement on card models that use ZGO-style card frames/backgrounds.
 /// </summary>
