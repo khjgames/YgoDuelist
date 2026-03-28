@@ -592,7 +592,8 @@
 
 ## Monster/Todo/Effect
     Dream_Clown.cs
-
+    Yamata_Dragon.cs // Code & Check behaviour
+    Jirai_Gumo.cs // Code & Check behaviour
 
 
 ## Monster/Todo/Fusion

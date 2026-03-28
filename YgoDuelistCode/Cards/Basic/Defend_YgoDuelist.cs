@@ -11,6 +11,14 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Basic;
 
 public sealed class Defend_YgoDuelist : YgoDuelistCard
 {
+    public override (float H, float S, float V)? CustomFrameTintHsv => (0f, 0f, 0.6f);
+
+    public override string CustomPortraitPath => SilentStarterPortraitPaths.PackedPng(SilentStarterPortraitPaths.DefendEntry);
+
+    public override string PortraitPath => SilentStarterPortraitPaths.AtlasTres(SilentStarterPortraitPaths.DefendEntry);
+
+    public override string BetaPortraitPath => SilentStarterPortraitPaths.BetaAtlasTres(SilentStarterPortraitPaths.DefendEntry);
+
     public override bool GainsBlock => true;
 
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Defend };

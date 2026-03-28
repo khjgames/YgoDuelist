@@ -45,6 +45,7 @@ public enum YgoCardPackTags : long // up to 64 flags
     WinCondition = 1L << 24,
     God = 1L << 25,
     Bundled = 1L << 26,
+    Starter = 1L << 27
 }
 
 /// <summary>

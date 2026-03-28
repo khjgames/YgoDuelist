@@ -12,6 +12,14 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Basic;
 
 public sealed class Strike_YgoDuelist : YgoDuelistCard
 {
+    public override (float H, float S, float V)? CustomFrameTintHsv => (0f, 0f, 0.6f);
+
+    public override string CustomPortraitPath => SilentStarterPortraitPaths.PackedPng(SilentStarterPortraitPaths.StrikeEntry);
+
+    public override string PortraitPath => SilentStarterPortraitPaths.AtlasTres(SilentStarterPortraitPaths.StrikeEntry);
+
+    public override string BetaPortraitPath => SilentStarterPortraitPaths.BetaAtlasTres(SilentStarterPortraitPaths.StrikeEntry);
+
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

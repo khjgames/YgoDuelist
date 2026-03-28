@@ -29,6 +29,11 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual bool UsesCombatHandDescription => false;
 
     /// <summary>
+    /// When set, <see cref="YgoDuelist.YgoDuelistCode.Patches.YgoDuelistCustomFrameHsvPatch"/> replaces the pool frame shader with this H/S/V (same convention as <see cref="Character.YgoDuelistCardPool"/>).
+    /// </summary>
+    public virtual (float H, float S, float V)? CustomFrameTintHsv => null;
+
+    /// <summary>
     /// Resolves <c>description</c> vs <c>description_combat</c> and optional <c>_upgraded</c> suffixes; used by <see cref="Patches.MonsterCardRightClickPatch.GetDescriptionLocString"/>.
     /// </summary>
     public LocString GetCombatHandDescriptionLocString()

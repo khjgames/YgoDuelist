@@ -7,6 +7,8 @@
   "YGODUELIST-YGO_ENEMY_INTENT_PROXY_CARD.title": "Enemy",
   "YGODUELIST-YGO_DIE_FACE_PROXY_CARD.description": "",
   "YGODUELIST-YGO_DIE_FACE_PROXY_CARD.title": "d6",
+  "YGODUELIST-YGO_SAVE_TRUNK_SIDE_MARKER_CARD.description": "",
+  "YGODUELIST-YGO_SAVE_TRUNK_SIDE_MARKER_CARD.title": "",
   "YGODUELIST-AMEBA.activated_effect.description": "Tribute this monster.\nDeal [blue]{Mgc}[/blue] damage.",
   "YGODUELIST-POSSESSED_DARK_SOUL.activated_effect.description": "Tribute this monster.\nApply 1 Weak to ALL enemies.",
   "YGODUELIST-ABSORBING_KID_FROM_THE_SKY.description": "Deal [blue]{Damage}[/blue] damage.\\nWhen this card destroys a monster and sends it to the Graveyard as a result of battle, increase your Life Points by the Level of the destroyed monster x 300 points.\\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",

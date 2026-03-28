@@ -41,5 +41,6 @@ public static class YgoRelicInventoryRightClickPatch
         SpellTrapZoneRelic.IsSpellTrapZoneRelic(model)
         || GraveyardRelic.IsGraveyardRelic(model)
         || ShadowRealmRelic.IsShadowRealmRelic(model)
-        || ExtraDeckRelic.IsExtraDeckRelic(model);
+        || ExtraDeckRelic.IsExtraDeckRelic(model)
+        || TrunkSideDeckRelic.IsTrunkSideDeckRelic(model);
 }

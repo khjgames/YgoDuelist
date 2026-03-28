@@ -174,6 +174,7 @@ public class YgoDuelist : PlaceholderCharacterModel
         ModelDb.Relic<GraveyardRelic>(),
         ModelDb.Relic<ShadowRealmRelic>(),
         ModelDb.Relic<ExtraDeckRelic>(),
+        ModelDb.Relic<TrunkSideDeckRelic>(),
         ModelDb.Relic<SpellTrapZoneRelic>()
     ];
 

@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
@@ -22,6 +23,22 @@ public sealed class Jirai_Gumo : EffectMonsterCard
             duelMonsterAttackPlayEnergyOverride: 0)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Insect | YgoCardPackTags.Burn | YgoCardPackTags.Chance;
+
+    // You will always see bundled cards when RNG rolls this card, but not the other way around.
+    public override Type[] BundledCards => new[]
+    {
+        typeof(Jirai_Gumo),
+        typeof(Second_Coin_Toss)
+    };
+
+    // You will see these related cards more often with this card in your deck or side deck.
+    public override Type[] RelatedCards => new[]
+    {
+        typeof(Jirai_Gumo),
+        typeof(Second_Coin_Toss)
+    };
 
     protected override void OnUpgrade()
     {

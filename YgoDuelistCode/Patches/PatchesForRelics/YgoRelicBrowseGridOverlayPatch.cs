@@ -3,6 +3,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -16,7 +17,8 @@ public static class YgoRelicBrowseGridOverlayPatch
         None,
         Graveyard,
         ShadowRealm,
-        ExtraDeck
+        ExtraDeck,
+        TrunkSideDeckSelect
     }
 
     private static RelicGridKind _pendingKind;
@@ -42,6 +44,7 @@ public static class YgoRelicBrowseGridOverlayPatch
     /// <summary>Opening a different relic browse screen stacks on the overlay; dismiss any active browse grid first.</summary>
     public static void CloseAnyActiveBrowseGrid()
     {
+        TrunkSideDeckGuiService.CloseShellIfOpen();
         if (_activeScreen == null || !GodotObject.IsInstanceValid(_activeScreen))
             return;
         CompleteSelection?.Invoke(_activeScreen, null);

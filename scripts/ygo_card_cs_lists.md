@@ -108,7 +108,6 @@
     Don_Turtle.cs
     Double_Coston.cs
     Dragon_Seeker.cs
-    Dream_Clown.cs
     Drill_Bug.cs
     Drillago.cs
     Earth_Effigy.cs
@@ -205,7 +204,6 @@
     Jigen_Bakudan.cs
     Jinzo.cs
     Jinzo_7.cs
-    Jirai_Gumo.cs
     Jowgen_the_Spiritualist.cs
     Jowls_of_Dark_Demise.cs
     KA_2_Des_Scissors.cs
@@ -453,7 +451,6 @@
     Woodland_Sprite.cs
     Y_Dragon_Head.cs
     Yado_Karu.cs
-    Yamata_Dragon.cs
     Yata_Garasu.cs
     Yomi_Ship.cs
     Z_Metal_Tank.cs
@@ -783,7 +780,6 @@
     Soul_of_the_Pure.cs
     Soul_Release.cs
     Soul_Reversal.cs
-    Sparks.cs
     Spell_Reproduction.cs
     Spellbook_Organization.cs
     Spiritualism.cs

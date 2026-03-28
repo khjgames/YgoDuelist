@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Basic;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -27,6 +28,25 @@ public static class YgoEnergyIconNodePatch
         var icon = __instance.GetNodeOrNull<TextureRect>("%EnergyIcon");
         if (icon == null)
             return;
+
+        if (model is Strike_YgoDuelist)
+        {
+            icon.Visible = true;
+            var tex = ResourceLoader.Load<Texture2D>(AttackMonsterEnergyPath, null, ResourceLoader.CacheMode.Reuse);
+            if (tex != null)
+                icon.Texture = tex;
+            return;
+        }
+
+        if (model is Defend_YgoDuelist)
+        {
+            icon.Visible = true;
+            string defectEnergyPath = EnergyIconHelper.GetPath("defect");
+            var defectTex = ResourceLoader.Load<Texture2D>(defectEnergyPath, null, ResourceLoader.CacheMode.Reuse);
+            if (defectTex != null)
+                icon.Texture = defectTex;
+            return;
+        }
 
         string? energyPrefix = null;
         string? customTexturePath = null;

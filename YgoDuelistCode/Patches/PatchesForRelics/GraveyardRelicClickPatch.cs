@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Relics;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -30,6 +31,9 @@ public static class GraveyardRelicClickPatch
 
         if (ExtraDeckRelic.IsExtraDeckRelic(model))
             return !TryOpenExtraDeckGrid(model);
+
+        if (TrunkSideDeckRelic.IsTrunkSideDeckRelic(model))
+            return !TryTrunkSideDeckRelicClick(model);
 
         return true;
     }
@@ -104,6 +108,33 @@ public static class GraveyardRelicClickPatch
             return false;
 
         return TryOpenRelicCardGrid(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ExtraDeck, model, player, cards);
+    }
+
+    private static bool TryTrunkSideDeckRelicClick(RelicModel model)
+    {
+        if (TrunkSideDeckRelic.AsTrunkSideDeck(model) == null)
+            return false;
+
+        if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.TrunkSideDeckSelect))
+        {
+            TrunkSideDeckGuiService.CloseShellIfOpen();
+            return true;
+        }
+
+        if (TrunkSideDeckGuiService.TryToggleCloseShell())
+            return true;
+
+        IRunState? runState = RunManager.Instance.DebugOnlyGetState();
+        if (runState == null)
+            return false;
+
+        Player? player = LocalContext.GetMe((IPlayerCollection)runState);
+        if (player == null)
+            return false;
+
+        YgoRelicBrowseGridOverlayPatch.CloseAnyActiveBrowseGrid();
+        TrunkSideDeckGuiService.OpenShell(player);
+        return true;
     }
 
     private static bool TryOpenRelicCardGrid(
