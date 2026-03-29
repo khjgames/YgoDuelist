@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,17 +35,38 @@ public static class NMouseCardPlayStartAsyncOptionPilePatch
         return holder is NYgoOptionCardHolder || modelName == "Activate_Effect";
     }
 
+    private static bool SafeInTree(Node? node)
+    {
+        if (node == null)
+            return false;
+        try
+        {
+            return GodotObject.IsInstanceValid(node) && node.IsInsideTree();
+        }
+        catch (ObjectDisposedException)
+        {
+            return false;
+        }
+    }
+
     private static void LogLifecycle(string point, NMouseCardPlay self, string extra = "")
     {
-        var holder = self?.Holder;
-        if (!IsLifecycleDebugHolder(holder))
-            return;
-        GD.Print("[YgoLifecycle] MouseStartAsync ", point,
-            " holderId=", holder?.GetInstanceId() ?? 0,
-            " model=", holder?.CardModel?.GetType().Name ?? "null",
-            " holderInTree=", holder?.IsInsideTree() ?? false,
-            " selfInTree=", self?.IsInsideTree() ?? false,
-            " extra=", extra);
+        try
+        {
+            var holder = self?.Holder;
+            if (!IsLifecycleDebugHolder(holder))
+                return;
+            GD.Print("[YgoLifecycle] MouseStartAsync ", point,
+                " holderId=", holder?.GetInstanceId() ?? 0,
+                " model=", holder?.CardModel?.GetType().Name ?? "null",
+                " holderInTree=", SafeInTree(holder),
+                " selfInTree=", SafeInTree(self),
+                " extra=", extra);
+        }
+        catch (ObjectDisposedException)
+        {
+            // self/holder may be freed after TargetSelection; avoid crashing the async continuation
+        }
     }
 
     private static readonly MethodInfo StartCardDragMethod =
@@ -102,7 +124,7 @@ public static class NMouseCardPlayStartAsyncOptionPilePatch
         LogLifecycle("M1_Enter", self);
         if (holder is NYgoOptionCardHolder opt)
         {
-            if (!GodotObject.IsInstanceValid(opt) || !opt.IsInsideTree())
+            if (!SafeInTree(opt))
             {
                 LogLifecycle("M2_OptionHolderInvalid_Cancel", self);
                 self.CancelPlayCard();
@@ -120,7 +142,7 @@ public static class NMouseCardPlayStartAsyncOptionPilePatch
         await (Task)StartCardDragMethod.Invoke(self, null)!;
         LogLifecycle("M5_StartCardDrag_EndAwait", self);
 
-        if (!GodotObject.IsInstanceValid(self) || !self.IsInsideTree())
+        if (!SafeInTree(self))
         {
             LogLifecycle("M6_SelfInvalid_AfterDrag", self);
             return;

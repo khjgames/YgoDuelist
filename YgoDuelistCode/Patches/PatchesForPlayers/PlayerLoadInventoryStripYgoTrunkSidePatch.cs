@@ -12,7 +12,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Strips trunk/side trailer from <see cref="SerializablePlayer.Deck"/> before <see cref="Player.PopulateDeck"/>; restores piles after load.
+/// Strips extra/trunk/side trailer from <see cref="SerializablePlayer.Deck"/> before <see cref="Player.PopulateDeck"/>; restores piles after load.
 /// </summary>
 [HarmonyPatch(typeof(Player), "LoadInventory")]
 public static class PlayerLoadInventoryStripYgoTrunkSidePatch
@@ -32,10 +32,9 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         if (!YgoSaveTrunkSideMarkerCard.IsMarker(last, markerId))
             return;
 
-        if (!YgoSaveTrunkSideMarkerCard.TryReadCounts(last, out int trunkCount, out int sideCount))
-            return;
+        YgoSaveTrunkSideMarkerCard.ReadTrailerCounts(last, out int extraCount, out int trunkCount, out int sideCount);
 
-        int need = 1 + trunkCount + sideCount;
+        int need = 1 + extraCount + trunkCount + sideCount;
         if (deck.Count < need)
             return;
 
@@ -54,6 +53,12 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
             deck.RemoveAt(deck.Count - 1);
         }
 
+        for (int i = 0; i < extraCount; i++)
+        {
+            pending.Extra.Insert(0, deck[^1]);
+            deck.RemoveAt(deck.Count - 1);
+        }
+
         __state = pending;
     }
 
@@ -61,6 +66,12 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
     {
         if (__state is not YgoTrunkSideDeckLoadPending pending)
             return;
+
+        foreach (SerializableCard sc in pending.Extra)
+        {
+            CardModel card = __instance.RunState.LoadCard(sc, __instance);
+            PlayerRunExtraDeck.GetOrCreatePile(__instance).AddInternal(card, -1, silent: true);
+        }
 
         foreach (SerializableCard sc in pending.Trunk)
         {

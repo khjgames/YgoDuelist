@@ -1,3 +1,4 @@
+using System;
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
@@ -6,15 +7,16 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Save-file trailer only: never offered or played. Marks appended trunk/side blocks in <see cref="SerializablePlayer.Deck"/>.
-/// Counts are stored on <see cref="SerializableCard.CurrentUpgradeLevel"/> (trunk) and <see cref="SerializableCard.FloorAddedToDeck"/> (side)
-/// so combat replay <see cref="SerializableCard.Serialize"/> never writes custom <see cref="SavedProperties"/> names (those require <see cref="SavedPropertiesTypeCache"/> net IDs).
-/// Legacy saves may still use int props <see cref="TrunkCountProp"/> / <see cref="SideCountProp"/>.
+/// Save-file trailer only: never offered or played. Marks appended extra/trunk/side blocks in <see cref="SerializablePlayer.Deck"/>.
+/// Trunk/side counts use <see cref="SerializableCard.CurrentUpgradeLevel"/> / <see cref="SerializableCard.FloorAddedToDeck"/> (no custom prop names in combat replay).
+/// Extra deck count uses <see cref="ExtraDeckCountProp"/> on <see cref="SavedProperties"/> (save trailer only).
+/// Legacy saves may still use int props <see cref="TrunkCountProp"/> / <see cref="SideCountProp"/> for trunk/side.
 /// </summary>
 public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
 {
     public const string TrunkCountProp = "ygo_trunk_count";
     public const string SideCountProp = "ygo_side_count";
+    public const string ExtraDeckCountProp = "ygo_extra_count";
 
     public const int MaxSerializedPileCount = 255;
 
@@ -30,8 +32,9 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
         return card.Id.Equals(markerId);
     }
 
-    public static bool TryReadCounts(SerializableCard marker, out int trunkCount, out int sideCount)
+    public static void ReadTrailerCounts(SerializableCard marker, out int extraDeckCount, out int trunkCount, out int sideCount)
     {
+        extraDeckCount = 0;
         trunkCount = 0;
         sideCount = 0;
         bool legacy = false;
@@ -39,7 +42,9 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
         {
             foreach (SavedProperties.SavedProperty<int> p in marker.Props.ints)
             {
-                if (p.name == TrunkCountProp)
+                if (p.name == ExtraDeckCountProp)
+                    extraDeckCount = Math.Clamp(p.value, 0, MaxSerializedPileCount);
+                else if (p.name == TrunkCountProp)
                 {
                     trunkCount = p.value;
                     legacy = true;
@@ -52,11 +57,19 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
             }
         }
 
-        if (legacy)
-            return true;
+        if (!legacy)
+        {
+            trunkCount = marker.CurrentUpgradeLevel;
+            sideCount = marker.FloorAddedToDeck ?? 0;
+        }
 
-        trunkCount = marker.CurrentUpgradeLevel;
-        sideCount = marker.FloorAddedToDeck ?? 0;
+        trunkCount = Math.Clamp(trunkCount, 0, MaxSerializedPileCount);
+        sideCount = Math.Clamp(sideCount, 0, MaxSerializedPileCount);
+    }
+
+    public static bool TryReadCounts(SerializableCard marker, out int trunkCount, out int sideCount)
+    {
+        ReadTrailerCounts(marker, out _, out trunkCount, out sideCount);
         return true;
     }
 }

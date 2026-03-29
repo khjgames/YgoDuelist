@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
@@ -103,7 +104,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public virtual bool AttackDealsBlightedDamage => false;
 
     /// <summary>
-    /// ATK permanently added to <see cref="NormalMonsterCard.DynamicVars"/>.Damage when this card's duel monster kills an enemy with an attack (revised execute effects).
+    /// ATK change per qualifying execute kill; applied via <see cref="ApplyPermanentExecuteAtkDelta"/> and persisted in <see cref="PermanentAtkBonusFromExecutes"/>.
+    /// Exposed as <c>Increase</c> in <see cref="NormalMonsterCard.CanonicalVars"/> for <c>{Increase:diff()}</c> text (cf. <c>TheScythe</c>).
     /// </summary>
     public virtual int PermanentAtkDeltaOnEnemyExecute => 0;
 
@@ -111,6 +113,51 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// If false for a given kill, <see cref="PermanentAtkDeltaOnEnemyExecute"/> does not apply for that target (e.g. only real monsters).
     /// </summary>
     public virtual bool AppliesPermanentAtkDeltaOnEnemyKill(Creature killedEnemy) => true;
+
+    /// <summary>
+    /// Sum of ATK gained or lost from execute kills this run (same persistence pattern as <c>TheScythe</c> / <c>[SavedProperty]</c>).
+    /// </summary>
+    [SavedProperty]
+    public int PermanentAtkBonusFromExecutes { get; set; }
+
+    /// <summary>
+    /// Applies a permanent printed-ATK change from an execute kill and mirrors it to <see cref="CardModel.DeckVersion"/> when set.
+    /// </summary>
+    public void ApplyPermanentExecuteAtkDelta(int delta)
+    {
+        if (delta == 0)
+            return;
+        AssertMutable();
+        PermanentAtkBonusFromExecutes += delta;
+        if (DynamicVars?.Damage != null)
+            DynamicVars.Damage.BaseValue += delta;
+        if (DeckVersion is BaseMonsterCard deck && !ReferenceEquals(deck, this))
+        {
+            deck.PermanentAtkBonusFromExecutes += delta;
+            if (deck.DynamicVars?.Damage != null)
+                deck.DynamicVars.Damage.BaseValue += delta;
+        }
+    }
+
+    /// <summary>
+    /// Re-applies <see cref="PermanentAtkBonusFromExecutes"/> to <see cref="DynamicVars.Damage"/> (load / downgrade / clone init).
+    /// </summary>
+    protected void ApplySavedExecuteAtkBonusToPrintedDamage()
+    {
+        if (PermanentAtkBonusFromExecutes == 0 || DynamicVars?.Damage == null)
+            return;
+        DynamicVars.Damage.BaseValue += PermanentAtkBonusFromExecutes;
+    }
+
+    /// <summary>
+    /// Keeps the <c>Increase</c> dynamic var aligned with <see cref="PermanentAtkDeltaOnEnemyExecute"/> after upgrade (cf. <c>TheScythe</c>).
+    /// </summary>
+    protected void SyncPermanentExecuteIncreaseVar()
+    {
+        if (PermanentAtkDeltaOnEnemyExecute == 0 || DynamicVars == null || !DynamicVars.ContainsKey("Increase"))
+            return;
+        DynamicVars["Increase"].BaseValue = PermanentAtkDeltaOnEnemyExecute;
+    }
 
     /// <summary>
     /// Field aura: stat change this monster grants to <paramref name="target"/> while both are on the field (attribute, race, etc.).
@@ -243,7 +290,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>
     /// ATK/DEF as shown on the card: <see cref="DynamicVars"/> (upgrades, runtime changes) when present, else <see cref="BaseAtk"/>/<see cref="BaseDef"/>.
     /// </summary>
-    private void GetDynamicPrintedAtkDef(out int atk, out int def)
+    protected void GetDynamicPrintedAtkDef(out int atk, out int def)
     {
         atk = BaseAtk;
         def = BaseDef;
@@ -286,14 +333,17 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     }
 
     /// <summary>Data for summoning a duel monster from this card (level, ATK, DEF, portrait path, name).</summary>
-    public virtual DuelMonsterData GetDuelMonsterData() =>
-        new DuelMonsterData(
+    public virtual DuelMonsterData GetDuelMonsterData()
+    {
+        GetDynamicPrintedAtkDef(out int atk, out int def);
+        return new DuelMonsterData(
             DuelMonsterLevel,
-            BaseAtk,
-            BaseDef,
+            atk,
+            def,
             "cards",
             Id.Entry + ".title",
             PortraitPath);
+    }
 
     private bool SourcePetHasCurseOfAnubis()
     {

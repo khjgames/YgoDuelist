@@ -13,7 +13,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Appends trunk, side, then marker trailer after main deck and Extra Deck fusion cards.
+/// Appends trunk, side, then marker after main deck and extra-deck cards. Marker stores extra count in props when needed.
 /// </summary>
 [HarmonyPatch(typeof(Player), nameof(Player.ToSerializable))]
 [HarmonyAfter("YgoDuelist.YgoDuelistCode.Patches.PlayerToSerializableAppendYgoExtraDeckPatch")]
@@ -28,7 +28,9 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
         CardPile side = PlayerRunSideDeck.GetOrCreatePile(__instance);
         int tc = trunk.Cards.Count;
         int sc = side.Cards.Count;
-        if (tc == 0 && sc == 0)
+        int ec = PlayerRunExtraDeck.GetPileIfExists(__instance)?.Cards.Count ?? 0;
+        ec = Math.Clamp(ec, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount);
+        if (tc == 0 && sc == 0 && ec == 0)
             return;
 
         List<SerializableCard> deck = __result.Deck;
@@ -44,6 +46,17 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
             CurrentUpgradeLevel = Math.Clamp(tc, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount),
             FloorAddedToDeck = Math.Clamp(sc, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount)
         };
+        if (ec > 0)
+        {
+            marker.Props = new SavedProperties
+            {
+                ints =
+                [
+                    new SavedProperties.SavedProperty<int>(YgoSaveTrunkSideMarkerCard.ExtraDeckCountProp, ec)
+                ]
+            };
+        }
+
         deck.Add(marker);
     }
 }

@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Localization.DynamicVars;
@@ -20,7 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 /// </summary>
 /// <remarks>
 /// <b>cards.json</b> placeholders (match <see cref="CanonicalVars"/>):
-/// <c>Damage</c> (printed ATK), <c>Block</c> / <c>Def</c> (printed DEF), <c>Mgc</c>, <c>CalculatedATK</c>, <c>CalculatedDEF</c>, <c>Stars</c>.
+/// <c>Damage</c> (printed ATK), <c>Block</c> / <c>Def</c> (printed DEF), <c>Mgc</c>, <c>CalculatedATK</c>, <c>CalculatedDEF</c>, <c>Stars</c>, <c>Increase</c> (execute ATK delta per kill, cf. <c>TheScythe</c>).
 /// Use four keys: <c>description</c>, <c>description_combat</c>, <c>description_skill</c>, <c>description_skill_combat</c> (hand-effect monsters also use <c>description_hand_effect</c> / <c>_combat</c>).
 /// When <see cref="YgoDuelistCard.UseAlternateUpgradedDescription"/> is true, optional <c>_upgraded</c> variants of each active suffix are resolved when upgraded or in upgrade preview (e.g. <c>description_combat_upgraded</c>).
 /// Effect monsters add extra <see cref="DynamicVar"/> names via <c>protected override IEnumerable&lt;DynamicVar&gt; CanonicalVars</c> (often <c>base.CanonicalVars.Concat(...)</c>).
@@ -47,17 +47,41 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     {
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    protected override IEnumerable<DynamicVar> CanonicalVars
     {
-        new StarsVar(MonsterConduitStarCost),
-        new DamageVar((decimal)BaseAtk, ValueProp.Move),
-        new BlockVar((decimal)BaseDef, ValueProp.Move),
-        new DynamicVar("Def", (decimal)BaseDef),
-        new DynamicVar("Mgc", (decimal)BaseMgc),
-        // Combat preview totals (base + own effect + field auras).
-        new ComputedDecimalVar("CalculatedATK", GetTotalAtkForPreview, (decimal)BaseAtk),
-        new ComputedDecimalVar("CalculatedDEF", GetTotalDefForPreview, (decimal)BaseDef)
-    };
+        get
+        {
+            foreach (DynamicVar v in GetNormalMonsterCoreCanonicalVars())
+                yield return v;
+            int executeDelta = PermanentAtkDeltaOnEnemyExecute;
+            if (executeDelta != 0)
+                yield return new IntVar("Increase", executeDelta);
+        }
+    }
+
+    private IEnumerable<DynamicVar> GetNormalMonsterCoreCanonicalVars()
+    {
+        yield return new StarsVar(MonsterConduitStarCost);
+        yield return new DamageVar((decimal)BaseAtk, ValueProp.Move);
+        yield return new BlockVar((decimal)BaseDef, ValueProp.Move);
+        yield return new DynamicVar("Def", (decimal)BaseDef);
+        yield return new DynamicVar("Mgc", (decimal)BaseMgc);
+        yield return new ComputedDecimalVar("CalculatedATK", GetTotalAtkForPreview, (decimal)BaseAtk);
+        yield return new ComputedDecimalVar("CalculatedDEF", GetTotalDefForPreview, (decimal)BaseDef);
+    }
+
+    protected override void AfterDeserialized()
+    {
+        base.AfterDeserialized();
+        ApplySavedExecuteAtkBonusToPrintedDamage();
+    }
+
+    protected override void AfterDowngraded()
+    {
+        base.AfterDowngraded();
+        ApplySavedExecuteAtkBonusToPrintedDamage();
+        SyncPermanentExecuteIncreaseVar();
+    }
 
     /// <summary>One normal summon per turn; special summons (e.g. Monster Reborn) bypass this.</summary>
     //protected override bool IsPlayable =>
@@ -175,6 +199,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         if (DynamicVars.Block != null)
             DynamicVars.Block.UpgradeValueBy(defBonus);
         DynamicVars["Mgc"].UpgradeValueBy(mgcBonus);
+        SyncPermanentExecuteIncreaseVar();
     }
 
     public static decimal GetTotalAtkForPreview(CardModel card)

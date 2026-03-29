@@ -29,11 +29,12 @@ public sealed class FairyBoxFieldPower : YgoDuelistPower
 
     public override LocString Description => new("powers", "YGODUELIST-FAIRY_BOX_FIELD_POWER.description");
 
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {
-        if (player != Owner.Player)
+        if (side != CombatSide.Player || Owner.Side != CombatSide.Player)
             return;
 
+        Player player = Owner.Player;
         if (!YgoAnnualTracker.TryConsumeAnnual(player, "FAIRY_BOX_UPKEEP"))
             return;
 

@@ -39,7 +39,7 @@ public sealed class Fairy_Box : BaseContinuousTrapCard
         if (Owner?.Creature == null)
             return;
 
-        // Heads/Tails + Weak is once per turn after you pay upkeep (see FairyBoxFieldPower), not on activation.
+        // Heads/Tails + Weak is once per turn after you pay upkeep at end of your turn (see FairyBoxFieldPower), not on activation.
         await PowerCmd.Apply<FairyBoxFieldPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 }

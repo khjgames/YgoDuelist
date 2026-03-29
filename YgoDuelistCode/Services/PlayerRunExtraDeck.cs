@@ -7,7 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
 /// Run/map Extra Deck: fusion monsters live here instead of <see cref="Player.Deck"/>.
-/// Persisted by merging into save <c>deck</c> entries in <see cref="Patches.PlayerToSerializableAppendYgoExtraDeckPatch"/>.
+/// Persisted in save <c>deck</c> via <see cref="Patches.PlayerToSerializableAppendYgoExtraDeckPatch"/> and stripped on load by <see cref="Patches.PlayerLoadInventoryStripYgoTrunkSidePatch"/>.
 /// </summary>
 public static class PlayerRunExtraDeck
 {

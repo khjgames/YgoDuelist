@@ -252,7 +252,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     continue;
                 if (!monster.AppliesPermanentAtkDeltaOnEnemyKill(r.Receiver))
                     continue;
-                monster.DynamicVars.Damage.BaseValue += killBonus;
+                monster.ApplyPermanentExecuteAtkDelta(killBonus);
             }
         }
 

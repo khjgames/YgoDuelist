@@ -94,7 +94,7 @@ public static class ConvulsionOfNaturePreviewUiPatch
             return;
         }
 
-        Player me = LocalContext.GetMe(state);
+        Player? me = LocalContext.GetMe(state.Players);
         if (me?.Creature == null)
         {
             _preview.Visible = false;

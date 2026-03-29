@@ -41,7 +41,7 @@ public sealed class Terrorking_Archfiend : EffectMonsterCard
         typeof(Terrorking_Archfiend),
     };
 
-    public override int PermanentAtkDeltaOnEnemyExecute => IsUpgraded ? 4 : 3;
+    public override int PermanentAtkDeltaOnEnemyExecute => IsUpgraded ? 3 : 2;
 
     public override int GetDuelMonsterPlayEnergyDiscount() =>
         IsUpgraded && IsAttackBattlePosition ? 1 : 0;
