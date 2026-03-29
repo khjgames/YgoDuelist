@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BaseLib.Abstracts;
 using HarmonyLib;
@@ -40,14 +41,8 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
         var marker = new SerializableCard
         {
             Id = markerId,
-            Props = new SavedProperties
-            {
-                ints =
-                [
-                    new SavedProperties.SavedProperty<int>(YgoSaveTrunkSideMarkerCard.TrunkCountProp, tc),
-                    new SavedProperties.SavedProperty<int>(YgoSaveTrunkSideMarkerCard.SideCountProp, sc)
-                ]
-            }
+            CurrentUpgradeLevel = Math.Clamp(tc, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount),
+            FloorAddedToDeck = Math.Clamp(sc, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount)
         };
         deck.Add(marker);
     }
