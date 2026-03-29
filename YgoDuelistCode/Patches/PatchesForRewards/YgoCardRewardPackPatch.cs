@@ -5,7 +5,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForRewards;
 
 /// <summary>
-/// YgoDuelist: combat card rewards (non-boss) use three YGO tag packs and <see cref="MegaCrit.Sts2.Core.Commands.CardSelectCmd.FromChooseABundleScreen"/>.
+/// YgoDuelist: encounter card rewards use three YGO tag packs, then deck / side-deck / trunk grids (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackRewardFlow"/>).
 /// </summary>
 [HarmonyPatch(typeof(CardReward), "OnSelect")]
 public static class YgoCardRewardPackPatch

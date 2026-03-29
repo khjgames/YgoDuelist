@@ -1,21 +1,30 @@
 using System.Reflection;
+using HarmonyLib;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Rewards;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Runs.History;
+using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// YgoDuelist card reward: three packs via <see cref="CardSelectCmd.FromChooseABundleScreen"/>, then deck adds + run history/sync (vanilla <see cref="CardReward.OnSelect"/> responsibilities).
+/// YgoDuelist encounter card reward: pack size by encounter tier, three packs, then cancelable grids for deck → side deck → trunk.
+/// Returns <c>true</c> from <see cref="CardReward.OnSelect"/> when finished so the combat reward is consumed (vanilla behavior).
 /// </summary>
 public static class YgoCardPackRewardFlow
 {
@@ -28,8 +37,6 @@ public static class YgoCardPackRewardFlow
             return false;
         CardCreationOptions options = GetCardCreationOptions(reward);
         if (options.Source != CardCreationSource.Encounter)
-            return false;
-        if (options.RarityOdds == CardRarityOddsType.BossEncounter)
             return false;
         return true;
     }
@@ -45,9 +52,10 @@ public static class YgoCardPackRewardFlow
         }
 
         CardCreationOptions options = GetCardCreationOptions(reward);
-        int slotCount = GetOptionCount(reward);
-
+        int slotCount = GetPackSlotCount(options, reward);
         Rng rng = player.PlayerRng.Rewards;
+        var choiceContext = new BlockingPlayerChoiceContext();
+
         List<List<CardModel>> templatePacks = YgoCardPackGenerator.GenerateThreePackTemplates(
             player,
             rng,
@@ -59,38 +67,122 @@ public static class YgoCardPackRewardFlow
         {
             var row = new List<CardModel>(pack.Count);
             foreach (CardModel template in pack)
-            {
                 row.Add(player.RunState.CreateCard(template, player));
-            }
-
             bundles.Add(row);
         }
 
-        IEnumerable<CardModel> chosenEnumerable = await CardSelectCmd.FromChooseABundleScreen(player, bundles);
-        List<CardModel> chosenCards = chosenEnumerable.ToList();
+        List<CardModel> chosenPack;
+        int chosenBundleIndex;
 
+    PickBundle:
+        try
+        {
+            chosenPack = (await CardSelectCmd.FromChooseABundleScreen(player, bundles)).ToList();
+        }
+        catch (OperationCanceledException)
+        {
+            RemoveAllCreatedCards(bundles, player);
+            return false;
+        }
+
+        if (chosenPack.Count == 0)
+        {
+            RemoveAllCreatedCards(bundles, player);
+            return false;
+        }
+
+        chosenBundleIndex = IndexOfBundleByInstanceSequence(bundles, chosenPack);
+
+        var deckPrefs = new CardSelectorPrefs(
+            new LocString("combat_messages", "YGODUELIST-PACK_REWARD_DECK.prompt"),
+            0,
+            chosenPack.Count)
+        {
+            RequireManualConfirmation = true
+        };
+
+        List<CardModel> deckPicks;
+
+    AssignDeck:
+        try
+        {
+            deckPicks = (await CardSelectCmd.FromSimpleGrid(choiceContext, chosenPack, player, deckPrefs)).ToList();
+        }
+        catch (OperationCanceledException)
+        {
+            goto PickBundle;
+        }
+
+        var deckSet = new HashSet<CardModel>(deckPicks);
+        List<CardModel> remainder = chosenPack.Where(c => !deckSet.Contains(c)).ToList();
+        List<CardModel> sidePicks;
+        if (remainder.Count == 0)
+        {
+            sidePicks = [];
+            goto ApplyPackReward;
+        }
+
+        var sidePrefs = new CardSelectorPrefs(
+            new LocString("combat_messages", "YGODUELIST-PACK_REWARD_SIDE.prompt"),
+            0,
+            remainder.Count)
+        {
+            RequireManualConfirmation = true
+        };
+
+        try
+        {
+            sidePicks = (await CardSelectCmd.FromSimpleGrid(choiceContext, remainder, player, sidePrefs)).ToList();
+        }
+        catch (OperationCanceledException)
+        {
+            goto AssignDeck;
+        }
+
+    ApplyPackReward:
         UnsubscribeRelicHandler(reward, player);
 
-        int chosenIndex = IndexOfBundleByInstanceSequence(bundles, chosenCards);
-        var history = player.RunState.CurrentMapPointHistoryEntry.GetEntry(LocalContext.NetId!.Value);
+        var history = player.RunState.CurrentMapPointHistoryEntry!.GetEntry(LocalContext.NetId!.Value);
+        var deckSetFinal = new HashSet<CardModel>(deckPicks);
 
-        foreach (CardModel card in chosenCards)
+        foreach (CardModel card in deckPicks)
         {
             CardPileAddResult add = await CardPileCmd.Add(card, PileType.Deck);
             if (!add.success)
                 continue;
-
             CardModel added = add.cardAdded;
-            Log.Info($"[YgoDuelist] Pack reward obtained {added.Id}");
+            Log.Info($"[YgoDuelist] Pack reward deck {added.Id}");
             RunManager.Instance!.RewardSynchronizer.SyncLocalObtainedCard(added);
             history.CardChoices.Add(new CardChoiceHistoryEntry(added, wasPicked: true));
         }
 
-        if (chosenIndex >= 0)
+        CardPile sidePile = PlayerRunSideDeck.GetOrCreatePile(player);
+        foreach (CardModel c in sidePicks)
+        {
+            c.FloorAddedToDeck = player.RunState.TotalFloor;
+            sidePile.AddInternal(c, -1, silent: true);
+            Log.Info($"[YgoDuelist] Pack reward side deck {c.Id}");
+            RunManager.Instance!.RewardSynchronizer.SyncLocalObtainedCard(c);
+            history.CardChoices.Add(new CardChoiceHistoryEntry(c, wasPicked: true));
+        }
+
+        var sideSet = new HashSet<CardModel>(sidePicks);
+        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
+        foreach (CardModel c in chosenPack)
+        {
+            if (deckSetFinal.Contains(c) || sideSet.Contains(c))
+                continue;
+            c.FloorAddedToDeck = player.RunState.TotalFloor;
+            trunk.AddInternal(c, -1, silent: true);
+            history.CardChoices.Add(new CardChoiceHistoryEntry(c, wasPicked: false));
+            RunManager.Instance!.RewardSynchronizer.SyncLocalSkippedCard(c);
+        }
+
+        if (chosenBundleIndex >= 0)
         {
             for (int i = 0; i < bundles.Count; i++)
             {
-                if (i == chosenIndex)
+                if (i == chosenBundleIndex)
                     continue;
                 foreach (CardModel c in bundles[i])
                 {
@@ -99,19 +191,50 @@ public static class YgoCardPackRewardFlow
                 }
             }
         }
-        else if (chosenCards.Count == 0)
-        {
-            foreach (IReadOnlyList<CardModel> b in bundles)
-            {
-                foreach (CardModel c in b)
-                {
-                    history.CardChoices.Add(new CardChoiceHistoryEntry(c, wasPicked: false));
-                    RunManager.Instance!.RewardSynchronizer.SyncLocalSkippedCard(c);
-                }
-            }
-        }
 
-        return false;
+        player.Deck.InvokeCardAddFinished();
+        TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
+        return true;
+    }
+
+    private static void RemoveAllCreatedCards(List<IReadOnlyList<CardModel>> bundles, Player player)
+    {
+        foreach (IReadOnlyList<CardModel> b in bundles)
+        {
+            foreach (CardModel c in b)
+                player.RunState.RemoveCard(c);
+        }
+    }
+
+    private static int GetPackSlotCount(CardCreationOptions options, CardReward reward)
+    {
+        return options.RarityOdds switch
+        {
+            CardRarityOddsType.BossEncounter => 6,
+            CardRarityOddsType.EliteEncounter => 5,
+            CardRarityOddsType.RegularEncounter => RegularEncounterPackSlots(reward.Player),
+            _ => Math.Clamp(GetOptionCount(reward), 2, 6),
+        };
+    }
+
+    private static int RegularEncounterPackSlots(Player player)
+    {
+        int floorTier = Math.Min(2, (Math.Max(1, player.RunState.TotalFloor) - 1) / 6);
+        EncounterModel? enc = TryGetCombatEncounterForRewardsScreen();
+        bool weak = enc?.IsWeak ?? false;
+        int baseSlots = weak ? 2 : 3;
+        return Math.Clamp(baseSlots + floorTier, 2, 4);
+    }
+
+    private static EncounterModel? TryGetCombatEncounterForRewardsScreen()
+    {
+        NCombatRoom? ncr = NRun.Instance?.CombatRoom;
+        if (ncr == null)
+            return null;
+        FieldInfo? f = AccessTools.Field(typeof(NCombatRoom), "_visuals");
+        if (f?.GetValue(ncr) is ICombatRoomVisuals v)
+            return v.Encounter;
+        return null;
     }
 
     private static int IndexOfBundleByInstanceSequence(
