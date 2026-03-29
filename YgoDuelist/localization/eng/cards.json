@@ -1308,7 +1308,7 @@
   "YGODUELIST-DARK_SHADE.description_skill": "Gain [blue]{Block}[/blue] block.\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-DARK_SHADE.description_skill_combat": "Gain [blue]{CalculatedDEF}[/blue] block.\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
   "YGODUELIST-DARK_SHADE.title": "Dark Shade",
-  "YGODUELIST-DARK_SNAKE_SYNDROME.description": "Choose an enemy; Dark Snake Syndrome attaches to that enemy. At the end of your turn it takes 1 damage, then that damage doubles each turn (max 64).",
+  "YGODUELIST-DARK_SNAKE_SYNDROME.description": "Choose an enemy; Dark Snake Syndrome attaches to that enemy. At the end of your turn it takes 1 damage, then that damage doubles each turn (max [blue]{Mgc}[/blue]).",
   "YGODUELIST-DARK_SNAKE_SYNDROME.title": "Dark Snake Syndrome",
   "YGODUELIST-DARK_SPIRIT_OF_THE_SILENT.description": "Playable only if at least 2 enemies have attack intents. Target one enemy to Stun, then choose a different enemy with an attack intent — that enemy performs its attack against you twice.",
   "YGODUELIST-DARK_SPIRIT_OF_THE_SILENT.title": "Dark Spirit of the Silent",

@@ -22,15 +22,67 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     private int _duelMonsterLevel;
 
+    private readonly int? _duelMonsterAttackPlayEnergyOverride;
+    private readonly int? _duelMonsterDefensePlayEnergyOverride;
+    private readonly int _rawDuelMonsterAttackPlayEnergy;
+    private readonly int _rawDuelMonsterDefensePlayEnergy;
+
     public int BaseAtk { get; }
     public int BaseDef { get; }
     public int BaseMgc { get; }
 
-    /// <summary>Energy to play from hand / summon in attack stance (Z = BaseAtk).</summary>
-    public int DuelMonsterAttackPlayEnergy { get; }
+    private bool DuelMonsterPlayEnergyUpgradedOrPreview =>
+        IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
 
-    /// <summary>Energy to play from hand / summon in defense stance (Z = BaseDef).</summary>
-    public int DuelMonsterDefensePlayEnergy { get; }
+    /// <summary>Energy to play from hand / summon in attack stance (Z = BaseAtk). High ATK low-level band may be 2 until upgraded.</summary>
+    public int DuelMonsterAttackPlayEnergy => GetDuelMonsterAttackPlayEnergy(DuelMonsterPlayEnergyUpgradedOrPreview);
+
+    /// <summary>Energy to play from hand / summon in defense stance (Z = BaseDef). High DEF low-level band may be 2 until upgraded.</summary>
+    public int DuelMonsterDefensePlayEnergy => GetDuelMonsterDefensePlayEnergy(DuelMonsterPlayEnergyUpgradedOrPreview);
+
+    /// <summary>Attack-stance play energy for a given upgraded/preview state (e.g. compendium without preview).</summary>
+    public int GetDuelMonsterAttackPlayEnergy(bool upgradedOrPreview)
+    {
+        if (_duelMonsterAttackPlayEnergyOverride.HasValue)
+            return _duelMonsterAttackPlayEnergyOverride.Value;
+        return MonsterEnergyCostCalculator.ApplyHighStatEfficiencyTax(
+            _duelMonsterLevel,
+            BaseAtk,
+            isAttackStat: true,
+            _rawDuelMonsterAttackPlayEnergy,
+            upgradedOrPreview,
+            DuelMonsterStatsAreUnknown);
+    }
+
+    /// <summary>Defense-stance play energy for a given upgraded/preview state.</summary>
+    public int GetDuelMonsterDefensePlayEnergy(bool upgradedOrPreview)
+    {
+        if (_duelMonsterDefensePlayEnergyOverride.HasValue)
+            return _duelMonsterDefensePlayEnergyOverride.Value;
+        return MonsterEnergyCostCalculator.ApplyHighStatEfficiencyTax(
+            _duelMonsterLevel,
+            BaseDef,
+            isAttackStat: false,
+            _rawDuelMonsterDefensePlayEnergy,
+            upgradedOrPreview,
+            DuelMonsterStatsAreUnknown);
+    }
+
+    /// <summary>
+    /// When true, printed ATK must not gain <see cref="YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus"/> on upgrade — unupgraded attack stance is 2 energy from tax, upgraded is 1.
+    /// </summary>
+    protected bool SuppressPrintedAttackUpgradeForEfficiencyTax =>
+        !_duelMonsterAttackPlayEnergyOverride.HasValue
+        && MonsterEnergyCostCalculator.EfficiencyTaxRaisesPlayEnergyUnupgraded(
+            _duelMonsterLevel, YgoCardType, BaseAtk, isAttackStat: true, DuelMonsterStatsAreUnknown);
+
+    /// <summary>
+    /// When true, printed DEF must not gain the normal upgrade bonus — unupgraded defense stance is 2 energy from tax, upgraded is 1.
+    /// </summary>
+    protected bool SuppressPrintedDefenseUpgradeForEfficiencyTax =>
+        !_duelMonsterDefensePlayEnergyOverride.HasValue
+        && MonsterEnergyCostCalculator.EfficiencyTaxRaisesPlayEnergyUnupgraded(
+            _duelMonsterLevel, YgoCardType, BaseDef, isAttackStat: false, DuelMonsterStatsAreUnknown);
 
     /// <summary>Subtracts from attack/defense play energy (e.g. The Legendary Fisherman while Umi is up). Clamped to 0.</summary>
     public virtual int GetDuelMonsterPlayEnergyDiscount() => 0;
@@ -97,9 +149,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
         _duelMonsterLevel = duelMonsterLevel;
 
-        DuelMonsterAttackPlayEnergy = duelMonsterAttackPlayEnergyOverride ?? MonsterEnergyCostCalculator.Compute(
+        _duelMonsterAttackPlayEnergyOverride = duelMonsterAttackPlayEnergyOverride;
+        _duelMonsterDefensePlayEnergyOverride = duelMonsterDefensePlayEnergyOverride;
+        _rawDuelMonsterAttackPlayEnergy = MonsterEnergyCostCalculator.Compute(
             duelMonsterLevel, YgoCardType, baseAtk, DuelMonsterStatsAreUnknown);
-        DuelMonsterDefensePlayEnergy = duelMonsterDefensePlayEnergyOverride ?? MonsterEnergyCostCalculator.Compute(
+        _rawDuelMonsterDefensePlayEnergy = MonsterEnergyCostCalculator.Compute(
             duelMonsterLevel, YgoCardType, baseDef, DuelMonsterStatsAreUnknown);
 
         // Start in defense position (Skill card) when DEF > ATK.

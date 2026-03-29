@@ -27,6 +27,59 @@ public static class MonsterEnergyCostCalculator
         return CostLevel11Plus(z);
     }
 
+    /// <summary>
+    /// When level+Z mapping yields 1 energy but ATK/DEF is high for that level band, use 2 until the card is upgraded
+    /// (or upgrade preview). Unknown stats skip this — they already use a flat 1 from <see cref="Compute"/>.
+    /// </summary>
+    public static int ApplyHighStatEfficiencyTax(
+        int level,
+        int statValue,
+        bool isAttackStat,
+        int computedEnergy,
+        bool upgradedOrPreview,
+        bool statsUnknown)
+    {
+        if (statsUnknown || computedEnergy != 1)
+            return computedEnergy;
+
+        bool highEfficiencyBand = false;
+        if (level <= 4)
+        {
+            if (isAttackStat && statValue >= 9)
+                highEfficiencyBand = true;
+            else if (!isAttackStat && statValue >= 8)
+                highEfficiencyBand = true;
+        }
+        else if (level <= 6)
+        {
+            if (isAttackStat && statValue >= 14)
+                highEfficiencyBand = true;
+            else if (!isAttackStat && statValue >= 13)
+                highEfficiencyBand = true;
+        }
+
+        if (!highEfficiencyBand)
+            return computedEnergy;
+
+        return upgradedOrPreview ? 1 : 2;
+    }
+
+    /// <summary>
+    /// True when unupgraded play energy for this stat is raised from 1 to 2 by the efficiency tax (upgrade then drops it back to 1).
+    /// Used to skip printed ATK/DEF upgrade bonuses — the energy discount is the upgrade for that stance.
+    /// </summary>
+    public static bool EfficiencyTaxRaisesPlayEnergyUnupgraded(
+        int level,
+        YgoCardType ygoType,
+        int statValue,
+        bool isAttackStat,
+        bool statsUnknown)
+    {
+        int raw = Compute(level, ygoType, statValue, statsUnknown);
+        int taxedUnupgraded = ApplyHighStatEfficiencyTax(level, statValue, isAttackStat, raw, upgradedOrPreview: false, statsUnknown);
+        return raw == 1 && taxedUnupgraded == 2;
+    }
+
     private static int CostNormalLow(int z)
     {
         if (z <= 3) return 0;

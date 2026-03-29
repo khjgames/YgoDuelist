@@ -30,6 +30,18 @@ public partial class MainFile : Node
         // so no patches from this mod would register. Always scan our assembly explicitly.
         harmony.PatchAll(typeof(MainFile).Assembly);
 
+        MethodInfo? ancientSetInitial = AccessTools.DeclaredMethod(typeof(MegaCrit.Sts2.Core.Models.AncientEventModel), "SetInitialEventState");
+        if (ancientSetInitial != null)
+        {
+            Patches patchInfo = Harmony.GetPatchInfo(ancientSetInitial);
+            int prefixCount = patchInfo.Prefixes.Count;
+            Logger.Info($"[YgoDuelist] Harmony AncientEventModel.SetInitialEventState prefix patches: {prefixCount}");
+            if (prefixCount == 0)
+                Logger.Warn("[YgoDuelist] No prefixes on SetInitialEventState — Neow starter draft patch may not be applied.");
+        }
+        else
+            Logger.Warn("[YgoDuelist] Could not resolve AncientEventModel.SetInitialEventState for patch diagnostics.");
+
         harmony.Patch(
             AccessTools.Method(typeof(MonsterModel), nameof(MonsterModel.CreateVisuals)),
             prefix: new HarmonyMethod(typeof(StaticImageCreateVisualsPatch), nameof(StaticImageCreateVisualsPatch.Prefix)));

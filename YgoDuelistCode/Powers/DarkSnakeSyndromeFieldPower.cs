@@ -16,7 +16,7 @@ using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>Continuous <see cref="Dark_Snake_Syndrome"/>: on the enemy; end of your turn it takes damage; counter doubles (max 64). Removed if the spell leaves the zone.</summary>
+/// <summary>Continuous <see cref="Dark_Snake_Syndrome"/>: on the enemy; end of your turn it takes damage; counter doubles, capped by the field spell's <c>Mgc</c> (32 base, 64 upgraded). Removed if the spell leaves the zone.</summary>
 public sealed class DarkSnakeSyndromeFieldPower : YgoDuelistPower
 {
     public override PowerType Type => PowerType.Debuff;
@@ -73,13 +73,21 @@ public sealed class DarkSnakeSyndromeFieldPower : YgoDuelistPower
         }
 
         Dark_Snake_Syndrome? src = zone.Cards.OfType<Dark_Snake_Syndrome>().FirstOrDefault();
-        decimal dmg = Amount;
+        decimal cap = GetStackDamageCap(src);
+        decimal dmg = System.Math.Min(Amount, cap);
         if (dmg > 0m)
             await CreatureCmd.Damage(choiceContext, Owner, dmg, ValueProp.Unpowered, applier, src);
 
-        decimal next = System.Math.Min(dmg * 2m, 64m);
+        decimal next = System.Math.Min(dmg * 2m, cap);
         decimal delta = next - Amount;
         if (delta != 0m)
             await PowerCmd.ModifyAmount(this, delta, null, null);
+    }
+
+    private static decimal GetStackDamageCap(Dark_Snake_Syndrome? src)
+    {
+        if (src?.DynamicVars != null && src.DynamicVars.ContainsKey("Mgc"))
+            return src.DynamicVars["Mgc"].BaseValue;
+        return 32m;
     }
 }

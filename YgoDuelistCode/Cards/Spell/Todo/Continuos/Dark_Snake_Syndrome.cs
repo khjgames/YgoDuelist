@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -14,6 +16,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
 public sealed class Dark_Snake_Syndrome : BaseContinuousSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 32m) };
+
     public Dark_Snake_Syndrome()
         : base(3, CardRarity.Rare, TargetType.AnyEnemy)
     {
@@ -56,5 +61,9 @@ public sealed class Dark_Snake_Syndrome : BaseContinuousSpellCard
         await PowerCmd.Apply<DarkSnakeSyndromeFieldPower>(target, 1m, creature, this);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].UpgradeValueBy(32m);
+    }
 }
