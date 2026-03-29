@@ -33,6 +33,9 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
             return;
 
         YgoSaveTrunkSideMarkerCard.ReadTrailerCounts(last, out int extraCount, out int trunkCount, out int sideCount);
+        int loadedMinDeck = YgoSaveTrunkSideMarkerCard.ReadMinimumDeckSizeOrDefault(
+            last,
+            YgoPlayerMinimumDeck.StartingMinimum);
 
         int need = 1 + extraCount + trunkCount + sideCount;
         if (deck.Count < need)
@@ -40,7 +43,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
 
         deck.RemoveAt(deck.Count - 1);
 
-        var pending = new YgoTrunkSideDeckLoadPending();
+        var pending = new YgoTrunkSideDeckLoadPending { LoadedMinimumDeckSize = loadedMinDeck };
         for (int i = 0; i < sideCount; i++)
         {
             pending.Side.Insert(0, deck[^1]);
@@ -86,5 +89,6 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         }
 
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(__instance);
+        YgoPlayerMinimumDeck.SetLoadedFromSave(__instance, pending.LoadedMinimumDeckSize);
     }
 }

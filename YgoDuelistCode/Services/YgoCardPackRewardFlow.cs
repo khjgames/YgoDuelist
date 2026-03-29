@@ -98,7 +98,8 @@ public static class YgoCardPackRewardFlow
             0,
             chosenPack.Count)
         {
-            RequireManualConfirmation = true
+            RequireManualConfirmation = true,
+            Cancelable = true
         };
 
         List<CardModel> deckPicks;
@@ -127,7 +128,8 @@ public static class YgoCardPackRewardFlow
             0,
             remainder.Count)
         {
-            RequireManualConfirmation = true
+            RequireManualConfirmation = true,
+            Cancelable = true
         };
 
         try
@@ -141,6 +143,8 @@ public static class YgoCardPackRewardFlow
 
     ApplyPackReward:
         UnsubscribeRelicHandler(reward, player);
+
+        YgoPlayerMinimumDeck.IncreaseAfterPackRewardConfirmed(player);
 
         var history = player.RunState.CurrentMapPointHistoryEntry!.GetEntry(LocalContext.NetId!.Value);
         var deckSetFinal = new HashSet<CardModel>(deckPicks);

@@ -17,6 +17,7 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
     public const string TrunkCountProp = "ygo_trunk_count";
     public const string SideCountProp = "ygo_side_count";
     public const string ExtraDeckCountProp = "ygo_extra_count";
+    public const string MinDeckSizeProp = "ygo_min_deck_size";
 
     public const int MaxSerializedPileCount = 255;
 
@@ -65,6 +66,20 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
 
         trunkCount = Math.Clamp(trunkCount, 0, MaxSerializedPileCount);
         sideCount = Math.Clamp(sideCount, 0, MaxSerializedPileCount);
+    }
+
+    public static int ReadMinimumDeckSizeOrDefault(SerializableCard marker, int defaultMinimum)
+    {
+        if (marker.Props?.ints == null)
+            return defaultMinimum;
+
+        foreach (SavedProperties.SavedProperty<int> p in marker.Props.ints)
+        {
+            if (p.name == MinDeckSizeProp)
+                return Math.Max(defaultMinimum, p.value);
+        }
+
+        return defaultMinimum;
     }
 
     public static bool TryReadCounts(SerializableCard marker, out int trunkCount, out int sideCount)

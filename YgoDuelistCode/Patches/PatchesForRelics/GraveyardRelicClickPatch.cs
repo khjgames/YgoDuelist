@@ -116,12 +116,6 @@ public static class GraveyardRelicClickPatch
             return false;
 
         if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.TrunkSideDeckSelect))
-        {
-            TrunkSideDeckGuiService.CloseShellIfOpen();
-            return true;
-        }
-
-        if (TrunkSideDeckGuiService.TryToggleCloseShell())
             return true;
 
         IRunState? runState = RunManager.Instance.DebugOnlyGetState();
@@ -129,11 +123,11 @@ public static class GraveyardRelicClickPatch
             return false;
 
         Player? player = LocalContext.GetMe((IPlayerCollection)runState);
-        if (player == null)
+        if (player == null || !TrunkSideDeckGuiService.HasAnyTrunkOrSideCards(player))
             return false;
 
         YgoRelicBrowseGridOverlayPatch.CloseAnyActiveBrowseGrid();
-        TrunkSideDeckGuiService.OpenShell(player);
+        TaskHelper.RunSafely(TrunkSideDeckGuiService.RunEditorAsync(player));
         return true;
     }
 

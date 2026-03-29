@@ -8,4 +8,6 @@ internal sealed class YgoTrunkSideDeckLoadPending
     public List<SerializableCard> Extra { get; } = new();
     public List<SerializableCard> Trunk { get; } = new();
     public List<SerializableCard> Side { get; } = new();
+
+    public int LoadedMinimumDeckSize { get; set; }
 }

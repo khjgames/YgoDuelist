@@ -30,7 +30,9 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
         int sc = side.Cards.Count;
         int ec = PlayerRunExtraDeck.GetPileIfExists(__instance)?.Cards.Count ?? 0;
         ec = Math.Clamp(ec, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount);
-        if (tc == 0 && sc == 0 && ec == 0)
+        int minDeck = YgoPlayerMinimumDeck.Get(__instance);
+        bool needTrailer = tc > 0 || sc > 0 || ec > 0 || minDeck > YgoPlayerMinimumDeck.StartingMinimum;
+        if (!needTrailer)
             return;
 
         List<SerializableCard> deck = __result.Deck;
@@ -46,15 +48,15 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
             CurrentUpgradeLevel = Math.Clamp(tc, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount),
             FloorAddedToDeck = Math.Clamp(sc, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount)
         };
+        var intProps = new List<SavedProperties.SavedProperty<int>>();
         if (ec > 0)
+            intProps.Add(new SavedProperties.SavedProperty<int>(YgoSaveTrunkSideMarkerCard.ExtraDeckCountProp, ec));
+        if (minDeck > YgoPlayerMinimumDeck.StartingMinimum)
+            intProps.Add(new SavedProperties.SavedProperty<int>(YgoSaveTrunkSideMarkerCard.MinDeckSizeProp, minDeck));
+
+        if (intProps.Count > 0)
         {
-            marker.Props = new SavedProperties
-            {
-                ints =
-                [
-                    new SavedProperties.SavedProperty<int>(YgoSaveTrunkSideMarkerCard.ExtraDeckCountProp, ec)
-                ]
-            };
+            marker.Props = new SavedProperties { ints = intProps };
         }
 
         deck.Add(marker);

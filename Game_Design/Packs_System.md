@@ -145,3 +145,13 @@ cards from the pack they want in their deck.
 
 The minimum deck size increase and new cards piles are only set after they have confirmed the side deck cards.
 
+### Trunk / Side Deck relic (outside of pack flow)
+
+After cards land in Trunk or Side, the **Trunk / Side Deck** starter relic opens **one** full-screen card grid (vanilla `NSimpleCardSelectScreen`)—no separate menu window. The last-used **page** (Trunk edit, Side edit, or Split editor) is restored when possible.
+
+- **Trunk page:** move Trunk → Side. Top buttons: *Edit side deck*, *Split editor*.
+- **Side page:** move Side → Trunk. Top buttons: *Edit trunk*, *Split editor*.
+- **Split page:** one combined grid; each selected card **swaps** piles. Top buttons: *Edit trunk*, *Edit side deck*.
+
+Relic click again closes the grid **without** applying. Remaining pack-system items (tag pools, bundle rules, shop/event integration, `OwedRareCardVouchers`, etc.) are specified above and are implemented separately from this UI.
+

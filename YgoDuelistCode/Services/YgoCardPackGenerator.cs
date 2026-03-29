@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -88,8 +90,7 @@ public static class YgoCardPackGenerator
         int slotCount,
         YgoPackRewardProgressState progress)
     {
-        var chosen = new List<CardModel>();
-        var bundleMemberIds = new HashSet<ModelId>();
+        var cards = new List<CardModel>();
         bool excludeBundledTagFromPool = false;
 
         var trunkCounts = CountIds(PlayerRunTrunk.GetOrCreatePile(player).Cards);
@@ -103,7 +104,7 @@ public static class YgoCardPackGenerator
                 rng,
                 tagMask,
                 ref rarity,
-                chosen,
+                cards,
                 excludeBundledTagFromPool,
                 trunkCounts,
                 relatedBonus,
@@ -112,47 +113,122 @@ public static class YgoCardPackGenerator
             if (pick == null)
                 continue;
 
-            chosen.Add(pick);
+            cards.Add(pick);
 
             if (pick is YgoDuelistCard yPick && yPick.BundledCards.Length > 0)
-            {
                 excludeBundledTagFromPool = true;
-                foreach (Type bt in yPick.BundledCards)
-                {
-                    if (bt == pick.GetType())
-                        continue;
-                    CardModel mate = YgoPackCardCatalog.CardFromType(bt);
-                    if (chosen.All(c => c.Id != mate.Id))
-                    {
-                        chosen.Add(mate);
-                        bundleMemberIds.Add(mate.Id);
-                    }
-                }
-
-                bundleMemberIds.Add(pick.Id);
-            }
-
-            EnforceMaxPackSize(chosen, bundleMemberIds);
         }
 
-        return chosen;
+        ApplyBundleResolution(rng, cards);
+        return cards;
     }
 
-    private static void EnforceMaxPackSize(List<CardModel> chosen, HashSet<ModelId> bundleMemberIds)
+    /// <summary>
+    /// After all slot rolls, inject bundle mates by replacing lowest-rarity non-bundled non-rare cards; grow if needed; trim at 10 by dropping random non-bundled rares (Packs_System design).
+    /// </summary>
+    private static void ApplyBundleResolution(Rng rng, List<CardModel> cards)
     {
-        while (chosen.Count > MaxCardsPerPack)
+        CardModel? anchor = null;
+        YgoDuelistCard? yAnchor = null;
+        foreach (CardModel c in cards)
         {
-            int idx = chosen.FindIndex(c =>
-                !bundleMemberIds.Contains(c.Id) && c.Rarity != CardRarity.Rare);
-            if (idx < 0)
-                idx = chosen.FindIndex(c => !bundleMemberIds.Contains(c.Id));
-            if (idx < 0)
+            if (c is YgoDuelistCard y && y.BundledCards.Length > 0)
             {
-                chosen.RemoveAt(chosen.Count - 1);
+                anchor = c;
+                yAnchor = y;
+                break;
+            }
+        }
+
+        if (anchor == null || yAnchor == null)
+            return;
+
+        HashSet<ModelId> bundleIds = CollectBundleIds(anchor, yAnchor);
+
+        foreach (CardModel mate in EnumerateBundleMatesExceptAnchor(anchor, yAnchor))
+        {
+            if (cards.Exists(c => c.Id == mate.Id))
                 continue;
+
+            int victim = FindLowestRarityNonBundledNonRareVictimIndex(cards, bundleIds);
+            if (victim >= 0)
+                cards[victim] = mate;
+            else
+                cards.Add(mate);
+
+            TrimExceededMaxPackSize(cards, bundleIds, rng);
+        }
+    }
+
+    private static HashSet<ModelId> CollectBundleIds(CardModel anchor, YgoDuelistCard y)
+    {
+        var set = new HashSet<ModelId> { anchor.Id };
+        foreach (Type bt in y.BundledCards)
+            set.Add(YgoPackCardCatalog.CardFromType(bt).Id);
+
+        return set;
+    }
+
+    private static IEnumerable<CardModel> EnumerateBundleMatesExceptAnchor(CardModel anchor, YgoDuelistCard y)
+    {
+        foreach (Type bt in y.BundledCards)
+        {
+            if (bt == anchor.GetType())
+                continue;
+            yield return YgoPackCardCatalog.CardFromType(bt);
+        }
+    }
+
+    private static int NonRareRaritySortKey(CardRarity r) =>
+        r switch
+        {
+            CardRarity.Common => 0,
+            CardRarity.Uncommon => 1,
+            _ => 99
+        };
+
+    private static int FindLowestRarityNonBundledNonRareVictimIndex(List<CardModel> cards, HashSet<ModelId> bundleIds)
+    {
+        int best = -1;
+        int bestKey = 999;
+        for (int i = 0; i < cards.Count; i++)
+        {
+            CardModel c = cards[i];
+            if (bundleIds.Contains(c.Id))
+                continue;
+            if (c.Rarity == CardRarity.Rare)
+                continue;
+
+            int key = NonRareRaritySortKey(c.Rarity);
+            if (key < bestKey)
+            {
+                bestKey = key;
+                best = i;
+            }
+        }
+
+        return best;
+    }
+
+    private static void TrimExceededMaxPackSize(List<CardModel> cards, HashSet<ModelId> bundleIds, Rng rng)
+    {
+        while (cards.Count > MaxCardsPerPack)
+        {
+            var rareNonBundled = new List<int>();
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (!bundleIds.Contains(cards[i].Id) && cards[i].Rarity == CardRarity.Rare)
+                    rareNonBundled.Add(i);
             }
 
-            chosen.RemoveAt(idx);
+            if (rareNonBundled.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "Ygo pack exceeds max size with no non-bundled rare to remove (Packs_System bundle cap).");
+            }
+
+            int pick = rareNonBundled[rng.NextInt(rareNonBundled.Count)];
+            cards.RemoveAt(pick);
         }
     }
 

@@ -9,22 +9,17 @@ The silent starts with 12 cards because of pacing (more draw turn 1, and lots of
 Our class has effectively everything exhaust (graveyard or shadow realm) and is pacing equivalent to silent due to field persistence.
 
 
-Our class has a Trunk & Side Deck. They share one relic, you can click it to toggle the GUI visibility.
+Our class has a Trunk & Side Deck. They share one relic: click opens the **same** cancelable card grid the rest of the game uses (no extra window).
 
-The Trunk & Side Deck GUI has 3 pages, the open page stays selected between visibility toggles.
+The editor remembers which of **3 pages** you last used (persists for the run). Each page opens **immediately** to that grid when the source pile has at least one card; if the remembered page is empty, the first page with cards is used (Trunk, then Side, then Split).
 
-The first page is viewing only Side Deck cards and being able to select any number of them 
-and hit confirm to move those cards to the Trunk.
+**Page 1 — Trunk:** grid = Trunk only. Confirm moves selected cards to Side Deck. Top row: **[Edit side deck]** **[Split editor]**.
 
-The second page is viewing only Trunk cards and being able to select any number of them 
-and hit confirm to move those cards to the Side Deck.
+**Page 2 — Side deck:** grid = Side only. Confirm moves selected cards to Trunk. Top row: **[Edit trunk]** **[Split editor]**.
 
-The third page will be a left-right split-screen view with a selection grid on the left half pile 
-of your screen being able to select any number of them and hit confirm to move those cards to the pile on the right half.
-There is a swap icon to swap between the Side deck being on the left or the Trunk being on the left.
+**Page 3 — Split editor:** grid = all cards in Trunk and Side together. Confirm **swaps** each selected card to the other pile (Trunk ↔ Side). Top row: **[Edit trunk]** **[Edit side deck]**.
 
-To clarify, the third page has a "selection" grid for one pile on the left half of your screen, 
-and a purely Viewing grid for the other pile on the right half of your screen.
+Clicking a top button closes the current grid without applying and reopens on the chosen page (still no separate shell UI). Clicking the relic again while the grid is open closes it with **no** moves applied.
 
 
 The Trunk & Side Deck are storage for cards you obtain from card packs 
