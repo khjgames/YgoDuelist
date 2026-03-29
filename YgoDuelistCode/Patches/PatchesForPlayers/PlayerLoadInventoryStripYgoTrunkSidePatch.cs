@@ -36,6 +36,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         int loadedMinDeck = YgoSaveTrunkSideMarkerCard.ReadMinimumDeckSizeOrDefault(
             last,
             YgoPlayerMinimumDeck.StartingMinimum);
+        int loadedOwedRare = YgoSaveTrunkSideMarkerCard.ReadOwedRareCardVouchersOrDefault(last);
 
         int need = 1 + extraCount + trunkCount + sideCount;
         if (deck.Count < need)
@@ -43,7 +44,11 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
 
         deck.RemoveAt(deck.Count - 1);
 
-        var pending = new YgoTrunkSideDeckLoadPending { LoadedMinimumDeckSize = loadedMinDeck };
+        var pending = new YgoTrunkSideDeckLoadPending
+        {
+            LoadedMinimumDeckSize = loadedMinDeck,
+            LoadedOwedRareCardVouchers = loadedOwedRare
+        };
         for (int i = 0; i < sideCount; i++)
         {
             pending.Side.Insert(0, deck[^1]);
@@ -90,5 +95,6 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
 
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(__instance);
         YgoPlayerMinimumDeck.SetLoadedFromSave(__instance, pending.LoadedMinimumDeckSize);
+        YgoPackRewardProgress.SetOwedRareLoadedFromSave(__instance, pending.LoadedOwedRareCardVouchers);
     }
 }

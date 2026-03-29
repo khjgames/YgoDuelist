@@ -119,7 +119,13 @@ public static class YgoCardPackGenerator
                 excludeBundledTagFromPool = true;
         }
 
+        bool hadBundleAnchor = cards.Exists(c => c is YgoDuelistCard y && y.BundledCards.Length > 0);
+        int rareBeforeBundle = CountRaresInPack(cards);
         ApplyBundleResolution(rng, cards);
+        int rareAfterBundle = CountRaresInPack(cards);
+        if (hadBundleAnchor && rareAfterBundle < rareBeforeBundle)
+            progress.OwedRareCardVouchers += rareBeforeBundle - rareAfterBundle;
+
         return cards;
     }
 
@@ -222,10 +228,7 @@ public static class YgoCardPackGenerator
             }
 
             if (rareNonBundled.Count == 0)
-            {
-                throw new InvalidOperationException(
-                    "Ygo pack exceeds max size with no non-bundled rare to remove (Packs_System bundle cap).");
-            }
+                break;
 
             int pick = rareNonBundled[rng.NextInt(rareNonBundled.Count)];
             cards.RemoveAt(pick);
@@ -273,7 +276,8 @@ public static class YgoCardPackGenerator
         if (pool == null || pool.Count == 0)
             return YgoPackCardCatalog.GetUnlockedPool(player, tagMask).FirstOrDefault();
 
-        CardModel? pick = rng.WeightedNextItem(pool, m => CalculateWeight(m!, chosenSoFar, trunkCounts, relatedBonus));
+        CardModel? pick = rng.WeightedNextItem(pool, m =>
+            Math.Max(1f, CalculateWeight(m!, chosenSoFar, trunkCounts, relatedBonus)));
         return pick ?? pool[rng.NextInt(pool.Count)];
     }
 
@@ -304,6 +308,9 @@ public static class YgoCardPackGenerator
             q = q.Where(c => c is not YgoDuelistCard y || (y.PackTags & YgoCardPackTags.Bundled) == 0);
         return q.ToList();
     }
+
+    private static int CountRaresInPack(List<CardModel> cards) =>
+        cards.Count(c => c.Rarity == CardRarity.Rare);
 
     private static float CalculateWeight(
         CardModel model,

@@ -23,7 +23,11 @@ but one of the cards you rolled among those was part of a 3 card bundle,
 say one of the commons, it would replace the other common and Uncommon with the cards in the bundle.)   
 
 The bundle system cannot overwrite rare cards, that pack would grow to a minimum size able to accomodate the bundle & the rare cards  
-(making it a lucky pack with bonus cards, the grown pack size has a max limit of 10 after which it would be allowed to get rid of random non-bundled rare cards until they are left with 10)  
+(making it a lucky pack with bonus cards, the grown pack size has a max limit of 10 after which it would be allowed to get rid of random non-bundled rare cards until they are left with 10).  
+
+Bundle mates first take slots by replacing **non-bundled** cards in **lowest rarity order** (Commons, then Uncommons); rares in the bundle are never overwritten by that replacement step. Only if the pack still has more than 10 cards after bundle resolution do we remove **random non-bundled rares** until the count is 10. With at most **4** bundle cards and at most **6** rolled slots before growth, the pack cannot exceed 10 in normal use; the rare-trim step is the documented cap, not a separate “edge case” path.
+
+Each **Rare** card removed in that trim (to get back to 10) grants **+1 `OwedRareCardVouchers`**—the same run-state counter used when a Rare slot cannot be filled from the pool. That way, if bundle growth forces rares off the pack, the player is credited for those lost rares on a later pack roll. Demotions from an empty Rare pool already grant a voucher in **GetRandomCardForSlot**; trim vouchers are **only** for rares that were actually in the pack before trim.
 
 A pack cannot pull cards from multiple different bundles, once a card from a bundle has been rng selected,  
 all the remaining non-bundled cards in the pack are chosen from cards without the Bundled tag.  
@@ -32,14 +36,15 @@ Packs can have 1-3 tags, normally just 1, sometimes 2, 3 is rare. They will pull
 
 When players get a card reward they will be offered 3 packs.   
 
-First you decide the number of tags for all 3 packs. How this works is.  
+**For each of the three packs independently**, roll how many tags that pack has (same probabilities for each pack):
 
 48% chance of being a single tag pack, 37% chance of being a double tag pack, 15% chance of being a tripple tag pack.  
 
+The three packs **share** the same working tag lists: whenever a tag is chosen for any pack, it is removed from the lists so later packs cannot reuse it.
+
 ```csharp
-// Tag lists are set right after deciding
+// Tag lists — do not include None; None is not a rolled theme.
 PossibleTags[] = {
-    YgoCardPackTags.None,
     YgoCardPackTags.Earth,
     YgoCardPackTags.Water,
     YgoCardPackTags.Wind,
@@ -65,7 +70,7 @@ PossibleTags[] = {
     YgoCardPackTags.Trap
 }
 PossibleSubTags[] = {
-    YgoCardPackTags.WinCondition,
+    YgoCardPackTags.WinCon,
     YgoCardPackTags.God
 }
 ```
@@ -78,6 +83,9 @@ Then for your chosen pack size, for example for all packs are 6 cards. // NumPac
 First roll every slot in the card pack for its rarity 
 if OwedRareCardVouchers >= 1 assign the current slot to CardRarity.Rare and then OwedRareCardVouchers -= 1;
 otherwise, roll for that slots rarity using functions from the base game class CardRarityOdds.cs  
+
+`OwedRareCardVouchers` is **run state**: it persists across save/load (stored on the YGO save trailer marker with other run fields).
+
 ```csharp
 CardRarity RolledCardRarities[] = {CardRarity.Common, CardRarity.Uncommon, CardRarity.Common, CardRarity.Uncommon, CardRarity.Rare, CardRarity.Common}
 ```
@@ -98,7 +106,7 @@ for (i = 0, i < NumPackCardSlots; i++;) GetRandomCardForSlot(i);
 
 -->> in GetRandomCardForSlot()   
 -> Get the pool of all cards of that slots rarity.  
--> Iterate through the pool of all cards of that slots rarity -> CalculateIndividualCardWeight(card) for that card to build
+-> Iterate through the pool of all cards of that slots rarity -> CalculateIndividualCardWeight(card) for that card to build the weight list. **Immediately before** the weighted RNG consumes each weight, apply `max(1, weight)` so no card’s pick weight is below 1.
 
 -> If the players chosen pack doesn't contain any cards of the CardRarity.Rare rarity and it was supposed to award a rare card according to RolledCardRarities, give them an Uncommon instead (if they don't have any Uncommons, give a Common instead) and record that they gain +1 OwedRareCardVouchers.
 
@@ -107,7 +115,9 @@ int BaseWeight = 20;  // The higher you make base weight the less impact other s
 
 int CurrentWeight = BaseWeight;
 
-you factor in -2 weight for each copy of that individual card in the trunk. (so CurrentWeight = math.max(1,BaseWeight);
+Subtract **2** from the weight for each copy of that **individual card** in the **trunk**, then clamp:  
+`CurrentWeight = max(1, BaseWeight - 2 * trunkCopiesOfThisCardId)`  
+(before adding related-card bonuses and duplicate-in-pack scaling below).
 
 Cards also have a have a RelatedCards system, where they can define a list of other related cards who'se weighted rng chance to obtain you would like to increase. 
 
@@ -115,14 +125,14 @@ Every card in your deck's related cards have their weighted chances increase by 
 
 That means you have to iterate through every ygo card in your deck and side deck and see if any of them give RelatedCards weight bonuses to this individual card.
 
-It is also possible to get multiple copies of the same card from a pack but the weighted odds for a card goes down to one third of its odds when chosen, meaning they are 1/3rd as likely, then 1/9th as likely to be chosen within the same pack.   
-So for the number of times this card shows up in ChosenPackCards do   
-```csharp
-NumCopiesOfThisCardInChosenPackCards = CountNumCopiesOfThisCardInChosenPackCards(); // write this.
+It is also possible to get multiple copies of the same card from a pack but the weighted odds for a card goes down to one third of its odds when chosen, meaning they are 1/3rd as likely, then 1/9th as likely to be chosen within the same pack.  
 
-CurrentWeight = CurrentWeight / (1 * (3 * NumCopiesOfThisCardInChosenPackCards))  
-  
-CurrentWeight = math.max(1, CurrentWeight); // Minimum card weight scales down to 1  
+Let `k` = number of copies of this card **already** in `ChosenPackCards` when evaluating weight for another copy (`k` is 0 for the first copy). Then:
+
+```csharp
+CurrentWeight = CurrentWeight / Pow(3, k);   // k == 0 => unchanged; k == 1 => /3; k == 2 => /9; ...
+
+CurrentWeight = max(1, CurrentWeight); // Minimum card weight scales down to 1  
 ```  
 
 The player can either skip card packs or choose to take one of them, 
@@ -153,5 +163,4 @@ After cards land in Trunk or Side, the **Trunk / Side Deck** starter relic opens
 - **Side page:** move Side → Trunk. Top buttons: *Edit trunk*, *Split editor*.
 - **Split page:** one combined grid; each selected card **swaps** piles. Top buttons: *Edit trunk*, *Edit side deck*.
 
-Relic click again closes the grid **without** applying. Remaining pack-system items (tag pools, bundle rules, shop/event integration, `OwedRareCardVouchers`, etc.) are specified above and are implemented separately from this UI.
-
+Relic click again closes the grid **without** applying. Remaining pack-system items (tag pools, bundle rules, shop/event integration, etc.) are specified above and are implemented separately from this UI where noted.
