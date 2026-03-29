@@ -24,7 +24,7 @@ public sealed class Science_Soldier : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark |
         YgoCardPackTags.Warrior |
         YgoCardPackTags.Normal;
 

@@ -18,7 +18,7 @@ public sealed class Bottomless_Trap_Hole : BaseTrapCard
         new[]
         {
             new DynamicVar("Mgc", 15m),
-            new DynamicVar("Mgc2", 25m)
+            new DynamicVar("Mgc2", 22m)
         };
 
     public Bottomless_Trap_Hole()
@@ -45,6 +45,6 @@ public sealed class Bottomless_Trap_Hole : BaseTrapCard
     protected override void OnUpgrade()
     {
         DynamicVars["Mgc"].UpgradeValueBy(-5m);
-        DynamicVars["Mgc2"].UpgradeValueBy(10m);
+        DynamicVars["Mgc2"].UpgradeValueBy(11m);
     }
 }

@@ -34,7 +34,8 @@ public sealed class Command_Defend : MonsterCommandCard
             Creature? pet = FindPetForMonster(SourceMonster);
             if (pet != null && MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn)
                 return 0;
-            return SourceMonster.DuelMonsterDefensePlayEnergy;
+            int baseCost = SourceMonster.DuelMonsterDefensePlayEnergy;
+            return baseCost + YgoNarrowPassField.GetMonsterCommandEnergyAdd(SourceMonster.Owner);
         }
     }
 
@@ -57,7 +58,7 @@ public sealed class Command_Defend : MonsterCommandCard
             if (!base.IsPlayable || SourceMonster == null) return false;
             var pet = FindPetForMonster(SourceMonster);
             if (pet == null) return false;
-            return !MonsterCommandRegistry.GetOrCreate(pet).HasUsedCommandThisTurn;
+            return MonsterCommandRegistry.CanUseMonsterDefendCommand(pet, SourceMonster);
         }
     }
 
@@ -70,7 +71,8 @@ public sealed class Command_Defend : MonsterCommandCard
         var pet = FindPetForMonster(SourceMonster);
         if (pet != null)
         {
-            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, true, player.Creature, SourceMonster);
+            await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, player, pet);
+            await MonsterCommandRegistry.CommitMonsterCommandAfterPlay(pet, isAttackCommand: false, player.Creature, SourceMonster);
         }
 
         SourceMonster.SetBattlePositionFromDuelCommand(attackPosition: false);

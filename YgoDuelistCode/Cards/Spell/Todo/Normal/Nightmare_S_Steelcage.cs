@@ -10,7 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 public sealed class Nightmare_S_Steelcage : BaseSpellCard
 {
     public Nightmare_S_Steelcage()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 2, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
@@ -19,5 +19,6 @@ public sealed class Nightmare_S_Steelcage : BaseSpellCard
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
     }
 }

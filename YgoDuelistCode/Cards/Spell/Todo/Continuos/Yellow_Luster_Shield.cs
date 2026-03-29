@@ -19,7 +19,7 @@ public sealed class Yellow_Luster_Shield : BaseContinuousSpellCard
         new[] { new DynamicVar("Mgc", (decimal)PrintedDefBonus) };
 
     public Yellow_Luster_Shield()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
 

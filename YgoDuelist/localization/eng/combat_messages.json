@@ -20,5 +20,9 @@
   "YGODUELIST-CAMPFIRE_DECK_REMOVE.prompt": "Remove a YGO card from your deck (bonus campfire edit).",
   "YGODUELIST-CAMPFIRE_DECK_ADD.prompt": "Add a YGO card to your deck from trunk, side, or your unlocked pool (respects max deck size).",
   "YGODUELIST-CAMPFIRE_DECK_REPLACE.pick_old": "Replace a YGO deck card — choose the card to remove.",
-  "YGODUELIST-CAMPFIRE_DECK_REPLACE.pick_new": "Choose the replacement (trunk, side, or unlocked pool)."
+  "YGODUELIST-CAMPFIRE_DECK_REPLACE.pick_new": "Choose the replacement (trunk, side, or unlocked pool).",
+  "OMINOUS_FORTUNETELLING_GUESS_PROMPT": "Guess the type of the top card of your draw pile.",
+  "OMINOUS_FORTUNETELLING_GUESS_SPELL": "Spell",
+  "OMINOUS_FORTUNETELLING_GUESS_TRAP": "Trap",
+  "OMINOUS_FORTUNETELLING_GUESS_MONSTER": "Monster"
 }

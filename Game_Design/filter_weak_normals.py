@@ -4,12 +4,12 @@ import json
 from pathlib import Path
 
 DB = Path(__file__).resolve().parent / "cards_database.json"
-OUT_MD = Path(__file__).resolve().parent / "weak_normal_monsters_atk1900_def1700_level56.md"
+OUT_MD = Path(__file__).resolve().parent / "weak_normal_monsters_atk1000_def900_level34.md"
 
-ATK_MAX_EXCL = 1900
-DEF_MAX_EXCL = 1700
-LEVEL_MIN = 5
-LEVEL_MAX = 6
+ATK_MAX_EXCL = 1000
+DEF_MAX_EXCL = 900
+LEVEL_MIN = 3
+LEVEL_MAX = 4
 
 
 def main() -> None:

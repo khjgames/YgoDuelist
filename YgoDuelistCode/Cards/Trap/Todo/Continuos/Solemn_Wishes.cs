@@ -14,7 +14,7 @@ public sealed class Solemn_Wishes : BaseTrapCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new DynamicVar[]
         {
-            new DynamicVar("Mgc", 5m),
+            new DynamicVar("Mgc", 1m),
         };
 
     public Solemn_Wishes()
@@ -27,6 +27,7 @@ public sealed class Solemn_Wishes : BaseTrapCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Mgc"].UpgradeValueBy(3m);
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].UpgradeValueBy(2m);
     }
 }

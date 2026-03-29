@@ -36,7 +36,12 @@ public abstract class BaseContinuousTrapCard : BaseTrapCard
         await CreatureCmd.TriggerAnim(player.Creature, "Cast", player.Character.CastAnimDelay);
         await OnTrapPlay(choiceContext, cardPlay);
         await YgoSpellTrapZoneBridge.ActivateContinuousTrapAsync(this);
+        await OnAfterContinuousTrapEnteredSpellTrapZoneAsync(choiceContext, cardPlay);
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
     }
+
+    /// <summary>After the card is in the Spell/Trap zone (e.g. <see cref="YgoSpellTrapEquipLinkRegistry"/> attach).</summary>
+    protected virtual Task OnAfterContinuousTrapEnteredSpellTrapZoneAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 }

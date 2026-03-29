@@ -37,7 +37,8 @@ public sealed class Command_Attack : MonsterCommandCard
             Creature? pet = FindPetForMonster(SourceMonster);
             if (pet != null && MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn)
                 return 0;
-            return SourceMonster.DuelMonsterAttackPlayEnergy;
+            int baseCost = SourceMonster.DuelMonsterAttackPlayEnergy;
+            return baseCost + YgoNarrowPassField.GetMonsterCommandEnergyAdd(SourceMonster.Owner);
         }
     }
 
@@ -75,7 +76,7 @@ public sealed class Command_Attack : MonsterCommandCard
                     return false;
             }
 
-            return !MonsterCommandRegistry.GetOrCreate(pet).HasUsedCommandThisTurn;
+            return MonsterCommandRegistry.CanUseMonsterAttackCommand(pet, SourceMonster);
         }
     }
 
@@ -88,11 +89,34 @@ public sealed class Command_Attack : MonsterCommandCard
         var pet = FindPetForMonster(SourceMonster);
         if (pet != null)
         {
-            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, true, player.Creature, SourceMonster);
+            await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, player, pet);
+            await MonsterCommandRegistry.CommitMonsterCommandAfterPlay(pet, isAttackCommand: true, player.Creature, SourceMonster);
         }
 
+        bool wasFaceDownDefense =
+            SourceMonster is Stealth_Bird
+            && !SourceMonster.IsAttackBattlePosition
+            && SourceMonster.FaceDown;
+
         SourceMonster.SetBattlePositionFromDuelCommand(attackPosition: true);
-        await SourceMonster.CombatAction(choiceContext, cardPlay);
+
+        if (SourceMonster is Stealth_Bird bird && wasFaceDownDefense && cardPlay.Target != null)
+        {
+            await Stealth_Bird.DealFlipSummonDamageIfEligibleAsync(
+                choiceContext,
+                bird,
+                wasFaceDownDefense,
+                cardPlay.Target,
+                player.Creature);
+        }
+
+        if (SourceMonster is Jirai_Gumo gumo)
+            await Jirai_Gumo.RunAttackDeclarationCoinIfEligibleAsync(choiceContext, player, player.Creature, gumo, cardPlay);
+
+        if (SourceMonster is Dice_Jar diceJar)
+            await diceJar.RunDiceJarAttackAsync(choiceContext, cardPlay);
+        else
+            await SourceMonster.CombatAction(choiceContext, cardPlay);
     }
 
     private static Creature? FindPetForMonster(NormalMonsterCard source)

@@ -55,7 +55,7 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             if (!pet.IsAlive)
                 continue;
 
-            if (!MonsterCommandRegistry.GetOrCreate(pet).HasUsedCommandThisTurn)
+            if (!MonsterCommandRegistry.PetHasUsedAnyCommandSlotThisTurn(pet))
                 continue;
 
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not AbstractMonsterCard card)

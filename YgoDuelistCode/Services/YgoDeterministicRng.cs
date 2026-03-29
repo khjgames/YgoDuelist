@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -46,6 +47,17 @@ public static class YgoDeterministicRng
             uint cid = c.CombatId ?? 0u;
             return ((ulong)cid << 32) | (uint)idx;
         }
+    }
+
+    /// <summary>Isolates coin outcomes per attack play and duel monster pet (Jirai Gumo).</summary>
+    public static ulong MixDuelMonsterAttack(Creature? playerCreature, Creature? pet, CardPlay cardPlay)
+    {
+        ulong mix = (ulong)(uint)RuntimeHelpers.GetHashCode(cardPlay);
+        if (playerCreature != null)
+            mix ^= (ulong)(playerCreature.CombatId ?? 0u) << 32;
+        if (pet != null)
+            mix ^= (ulong)(pet.CombatId ?? 0u);
+        return mix;
     }
 
     public static int RollDie(CombatState combatState, int sides, string salt, ulong mix = 0)

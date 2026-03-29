@@ -189,15 +189,24 @@ public static class DuelMonsterPortraitDecorations
         node.Visible = true;
     }
 
+    private static bool ZoneEquipOrLinkTargetsMonster(CardModel zoneCard, BaseMonsterCard source)
+    {
+        if (zoneCard is BaseEquipSpellCard eq)
+            return ReferenceEquals(YgoEquipSpellRegistry.GetEquippedMonster(eq), source);
+        if (zoneCard is IYgoSpellTrapEquipLink)
+            return ReferenceEquals(YgoSpellTrapEquipLinkRegistry.GetLinkedMonster(zoneCard), source);
+        return false;
+    }
+
     private static void ApplyEquipLinkOverlay(Sprite2D portrait, BaseMonsterCard source)
     {
         var node = EnsureSpriteChild(portrait, NodeEquip, 8);
         _equipTex ??= ResourceLoader.Load<Texture2D>(EquipLinkPath, null, ResourceLoader.CacheMode.Reuse);
 
-        var hoveredEquip = YgoZoneEquipHandHoverState.HoveredOrSelectedZoneEquip;
-        bool showMonsterSide = hoveredEquip != null
-                               && YgoSpellTrapZoneBridge.IsInZone(hoveredEquip)
-                               && ReferenceEquals(YgoEquipSpellRegistry.GetEquippedMonster(hoveredEquip), source);
+        var hoveredZone = YgoZoneEquipHandHoverState.HoveredOrSelectedZoneEquipLink;
+        bool showMonsterSide = hoveredZone != null
+                               && YgoSpellTrapZoneBridge.IsInZone(hoveredZone)
+                               && ZoneEquipOrLinkTargetsMonster(hoveredZone, source);
 
         if (_equipTex == null || !showMonsterSide)
         {

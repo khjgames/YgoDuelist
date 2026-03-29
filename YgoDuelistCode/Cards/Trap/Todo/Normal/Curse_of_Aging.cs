@@ -15,20 +15,20 @@ using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
+/// <summary>
+/// Destroy 1 card in hand (to Graveyard). All enemies gain <c>{Mgc}</c> Weak and Vulnerable. Upgrade: <c>{Mgc}</c> is 2.
+/// </summary>
 public sealed class Curse_of_Aging : BaseTrapCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[]
-        {
-            new DynamicVar("Mgc", 1m),
-            new DynamicVar("Mgc2", 1m)
-        };
+        new[] { new DynamicVar("Mgc", 1m) };
 
     public Curse_of_Aging()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 
+    
     protected override bool IsPlayable
     {
         get
@@ -48,20 +48,18 @@ public sealed class Curse_of_Aging : BaseTrapCard
 
         await TryDestroyOneHandCardToGraveyard(choiceContext);
 
+        decimal stacks = DynamicVars["Mgc"].BaseValue;
+
         foreach (var enemy in Owner.Creature.CombatState.HittableEnemies)
         {
             if (!enemy.IsAlive)
                 continue;
-            await PowerCmd.Apply<WeakPower>(enemy, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
-            await PowerCmd.Apply<VulnerablePower>(enemy, DynamicVars["Mgc2"].BaseValue, Owner.Creature, this);
+            await PowerCmd.Apply<WeakPower>(enemy, stacks, Owner.Creature, this);
+            await PowerCmd.Apply<VulnerablePower>(enemy, stacks, Owner.Creature, this);
         }
     }
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars["Mgc"].UpgradeValueBy(1m);
-        DynamicVars["Mgc2"].UpgradeValueBy(1m);
-    }
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
 
     private async Task TryDestroyOneHandCardToGraveyard(PlayerChoiceContext choiceContext)
     {

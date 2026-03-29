@@ -1,4 +1,5 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -18,6 +19,19 @@ public static class YgoEnemyIntentProxyCardTitlePatch
         if (__instance is YgoDieFaceProxyCard d)
         {
             __result = $"d6: {d.Face}";
+            return false;
+        }
+
+        if (__instance is YgoFortunetellingGuessProxyCard g)
+        {
+            string key = g.GuessKind switch
+            {
+                YgoFortuneGuessKind.Spell => "OMINOUS_FORTUNETELLING_GUESS_SPELL",
+                YgoFortuneGuessKind.Trap => "OMINOUS_FORTUNETELLING_GUESS_TRAP",
+                YgoFortuneGuessKind.Monster => "OMINOUS_FORTUNETELLING_GUESS_MONSTER",
+                _ => "OMINOUS_FORTUNETELLING_GUESS_MONSTER"
+            };
+            __result = new LocString("combat_messages", key).GetFormattedText();
             return false;
         }
 

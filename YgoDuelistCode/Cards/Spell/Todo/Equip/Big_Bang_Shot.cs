@@ -4,18 +4,17 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
-/// <summary>TCG: +400 ATK; piercing (battle) maps to Splinter on the equipped monster's attacks.</summary>
+/// <summary>Equip: +{Mgc} ATK; equipped monster's attacks deal Splinter (piercing) splash.</summary>
 public sealed class Big_Bang_Shot : BaseEquipSpellCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 4m) };
 
     public Big_Bang_Shot()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.Self)
     {
     }
 
@@ -26,9 +25,5 @@ public sealed class Big_Bang_Shot : BaseEquipSpellCard
 
     public override bool GrantsSplinterTo(BaseMonsterCard equipped) => true;
 
-    protected override void OnUpgrade()
-    {
-        int printed = (int)DynamicVars["Mgc"].BaseValue;
-        DynamicVars["Mgc"].BaseValue = printed + YgoStatUpgradeScaling.GetSpellTrapStatBonusUpgradeDelta(printed);
-    }
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(4m);
 }

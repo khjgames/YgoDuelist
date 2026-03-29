@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -33,6 +34,11 @@ public static class MonsterCommandTurnResetPatch
         }
 
         NormalSummonTracker.ResetForPlayer(combatPlayer);
+        LegionFiendJesterSpellcasterConduit.ResetForPlayer(combatPlayer);
+
+        Ominous_Fortunetelling.RefillAllInSpellTrapZoneForPlayer(combatPlayer);
+
+        MonsterCommandRegistry.RefillNarrowPassReplayChargesForPlayer(combatPlayer);
 
         await Task.CompletedTask;
     }

@@ -25,6 +25,7 @@ public static class YgoCombatEndClearPatch
         MonsterCommandRegistry.ClearAll();
         YgoDarkSpiritSilentState.ClearAll();
         NormalSummonTracker.ClearAll();
+        LegionFiendJesterSpellcasterConduit.ClearAll();
         TributeSummonPlayPayload.ClearAll();
         EquipSpellPlayPayload.ClearAll();
         RitualSpellPlayPayload.ClearAll();
@@ -34,6 +35,7 @@ public static class YgoCombatEndClearPatch
         ActivatedEffectTributeSelectionPayload.ClearAll();
         RushReliablePlayPayload.ClearAll();
         YgoEquipSpellRegistry.ClearAll();
+        YgoSpellTrapEquipLinkRegistry.ClearAll();
         YgoCurseOfDarknessSpellHook.ClearAll();
         YgoDesCounterblowThornsSync.ClearAll();
 

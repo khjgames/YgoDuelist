@@ -1,35 +1,43 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
-public sealed class Banner_of_Courage : BaseSpellCard
+public sealed class Banner_of_Courage : BaseContinuousSpellCard
 {
+    private const int PrintedAtkBonus = 2;
+    private int _bonusAtk = PrintedAtkBonus;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", (decimal)PrintedAtkBonus) };
+
     public Banner_of_Courage()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellContinuous)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner == null || target.Owner != Owner)
+            return StatEffectTotal.None;
+        return new StatEffectTotal(_bonusAtk, 0);
     }
+
+    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
+        _bonusAtk = PrintedAtkBonus + YgoStatUpgradeScaling.GetSpellTrapStatBonusUpgradeDelta(PrintedAtkBonus);
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].BaseValue = _bonusAtk;
     }
 
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

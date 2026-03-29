@@ -104,6 +104,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public virtual bool AttackDealsBlightedDamage => false;
 
     /// <summary>
+    /// When true, Command Attack and Command Defend each use a separate once-per-turn allowance; stiff/fatigue applies after both are used.
+    /// </summary>
+    public virtual bool AllowsSeparateAttackAndDefendCommandsPerTurn => false;
+
+    /// <summary>
     /// ATK change per qualifying execute kill; applied via <see cref="ApplyPermanentExecuteAtkDelta"/> and persisted in <see cref="PermanentAtkBonusFromExecutes"/>.
     /// Exposed as <c>Increase</c> in <see cref="NormalMonsterCard.CanonicalVars"/> for <c>{Increase:diff()}</c> text (cf. <c>TheScythe</c>).
     /// </summary>
@@ -171,6 +176,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// </summary>
     protected virtual (int atk, int def) GetSecondaryStats() => (0, 0);
 
+    /// <summary>
+    /// Multiplier on this monster's ATK/DEF after printed values and <see cref="GetSecondaryStats"/>, before field auras and other bonuses.
+    /// </summary>
+    protected virtual StatEffectTotalMultiplier GetSelfStatMultiplier() => StatEffectTotalMultiplier.Identity;
+
     /// <param name="duelMonsterAttackPlayEnergyOverride">When set, replaces <see cref="MonsterEnergyCostCalculator"/> for attack stance / Command Attack.</param>
     /// <param name="duelMonsterDefensePlayEnergyOverride">When set, replaces calculator for defense stance / Command Defend.</param>
     protected BaseMonsterCard(
@@ -231,6 +241,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         atk += secAtk;
         def += secDef;
 
+        StatEffectTotalMultiplier selfMult = GetSelfStatMultiplier();
+        if (selfMult.Atk != 1m || selfMult.Def != 1m)
+        {
+            atk = (int)(atk * selfMult.Atk);
+            def = (int)(def * selfMult.Def);
+        }
+
         if (fieldMonsters != null)
         {
             foreach (BaseMonsterCard? source in fieldMonsters)
@@ -253,6 +270,16 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         // Owner getter asserts mutable; canonical/library card templates must not touch it.
         if (!IsCanonical && Owner != null)
         {
+            if (Owner.Creature != null)
+            {
+                ReinforcementsPower? reinforcements = Owner.Creature.GetPower<ReinforcementsPower>();
+                if (reinforcements != null)
+                    atk += (int)reinforcements.Amount;
+                CastleWallsPower? castleWalls = Owner.Creature.GetPower<CastleWallsPower>();
+                if (castleWalls != null)
+                    def += (int)castleWalls.Amount;
+            }
+
             foreach (BaseFieldSpellCard fieldSpell in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))
             {
                 StatEffectTotal fe = fieldSpell.GetFieldStatEffect(this);
@@ -269,11 +296,34 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
                 def += ee.BonusDef;
             }
 
+            foreach (BaseEquipSpellCard equip in YgoEquipSpellRegistry.GetEquipsForMonster(this))
+            {
+                if (equip.Pile?.Type != SpellTrapZonePile.CustomType || equip.FaceDown)
+                    continue;
+                StatEffectTotalMultiplier em = equip.GetEquipStatMultiplier(this);
+                if (em.Atk != 1m || em.Def != 1m)
+                {
+                    atk = (int)(atk * em.Atk);
+                    def = (int)(def * em.Def);
+                }
+            }
+
             foreach (BaseContinuousSpellCard continuous in YgoFieldSpellStatAggregator.GetActiveFaceUpContinuousSpells(Owner))
             {
                 StatEffectTotal ce = continuous.GetContinuousStatEffect(this);
                 atk += ce.BonusAtk;
                 def += ce.BonusDef;
+            }
+
+            if (DuelMonsterRace == DuelMonsterRace.Machine && Owner.Creature != null)
+            {
+                LimiterRemovalPower? limiter = Owner.Creature.GetPower<LimiterRemovalPower>();
+                if (limiter != null)
+                {
+                    StatEffectTotalMultiplier mult = limiter.MachineDuelMonsterStatMultiplier;
+                    atk = (int)(atk * mult.Atk);
+                    def = (int)(def * mult.Def);
+                }
             }
         }
 

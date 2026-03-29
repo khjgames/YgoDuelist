@@ -48,16 +48,17 @@ standardize starter deck rng
 --------------------------------
 same number of spells, traps,
 commons, uncommons, rares,
-level > 5 monsters
+and monsters by level band (see counts below).
 
-19 cards
+19 cards total
 
 1 rare
 6 uncommons
 12 commons
 
-3 level 5+ monsters
-8 level 4 and lower monsters
+3 level >= 5 monsters (Mon_High)
+4 level 3 or 4 monsters (Mon_Mid)
+4 level 1 or 2 monsters (Mon_Low)
 4 spells
 4 traps
 

@@ -25,7 +25,14 @@ public sealed class Activate_Effect : MonsterCommandCard
 
     public override TargetType TargetType => Effect?.ActivatedEffectTarget ?? TargetType.Self;
 
-    protected override int CanonicalEnergyCost => Effect?.ActivatedEffectEnergyCost ?? 0;
+    protected override int CanonicalEnergyCost
+    {
+        get
+        {
+            int baseCost = Effect?.ActivatedEffectEnergyCost ?? 0;
+            return baseCost + YgoNarrowPassField.GetMonsterCommandEnergyAdd(SourceMonster?.Owner);
+        }
+    }
 
     protected override bool IsPlayable
     {
@@ -40,7 +47,14 @@ public sealed class Activate_Effect : MonsterCommandCard
             var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
             if (pet == null)
                 return false;
-            return !MonsterCommandRegistry.GetOrCreate(pet).HasUsedActivatedEffectThisTurn;
+            if (impl.ActivatedEffectConsumesOncePerTurnSlot)
+            {
+                MonsterCommandState reg = MonsterCommandRegistry.GetOrCreate(pet);
+                if (reg.HasUsedActivatedEffectThisTurn
+                    && (!YgoNarrowPassField.IsActive(Owner) || reg.NarrowPassActivatedEffectReplayRemaining <= 0))
+                    return false;
+            }
+            return true;
         }
     }
 
@@ -48,6 +62,13 @@ public sealed class Activate_Effect : MonsterCommandCard
     {
         if (Owner == null || SourceMonster is not IMonsterActivatedEffect impl || SourceMonster.FaceDown)
             return;
+
+        var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
+        if (pet != null)
+        {
+            MonsterCommandRegistry.TryConsumeNarrowPassActivatedEffectReplayBeforePlay(Owner, pet);
+            await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
+        }
 
         await impl.OnActivatedEffect(choiceContext, cardPlay, SourceMonster);
     }
@@ -61,6 +82,8 @@ public sealed class Activate_Effect : MonsterCommandCard
             return aa.IsEarthTributeAvailable(commandOwner);
         if (source is Anti_Aircraft_Flower af)
             return af.IsEarthTributeAvailable(commandOwner);
+        if (source is The_Little_Swordsman_of_Aile little)
+            return little.IsAnotherMonsterControlled(commandOwner);
         return impl.IsActivatedEffectAvailable;
     }
 }

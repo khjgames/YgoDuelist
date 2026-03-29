@@ -2,12 +2,15 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>While on the field: Dragon-type monsters gain +2 ATK and +2 DEF (YGO 200 ÷ 100).</summary>
+/// <summary>While on the field: Dragon-type monsters gain +{Mgc} ATK and +{Mgc} DEF (base 2, upgraded 5).</summary>
 public sealed class Lord_of_D : EffectMonsterCard
 {
+    private const int DragonAuraMgcUpgraded = 5;
+
     public Lord_of_D()
         : base(
             cost: 1,
@@ -18,15 +21,23 @@ public sealed class Lord_of_D : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 12,
             baseDef: 11,
-            baseMgc: 0,
+            baseMgc: 2,
             duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
     {
-        if (target.DuelMonsterRace == DuelMonsterRace.Dragon)
-            return new StatEffectTotal(2, 2);
-        return StatEffectTotal.None;
+        if (target.DuelMonsterRace != DuelMonsterRace.Dragon)
+            return StatEffectTotal.None;
+        int mgc = (int)DynamicVars["Mgc"].BaseValue;
+        return new StatEffectTotal(mgc, mgc);
+    }
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        int fromMonsterScaling = BaseMgc + YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseMgc);
+        DynamicVars["Mgc"].UpgradeValueBy(DragonAuraMgcUpgraded - fromMonsterScaling);
     }
 }

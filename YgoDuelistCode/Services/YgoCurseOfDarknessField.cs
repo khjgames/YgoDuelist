@@ -22,4 +22,37 @@ public static class YgoCurseOfDarknessField
 
         return zone.Cards.OfType<Curse_of_Darkness>().Any(c => !c.FaceDown);
     }
+
+    /// <summary>Sum of <c>Mgc</c> from each face-up <see cref="Curse_of_Darkness"/> in the zone (multiple copies stack).</summary>
+    public static decimal GetTotalMgcDamage(Player? player)
+    {
+        if (player == null)
+            return 0m;
+
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zone == null)
+            return 0m;
+
+        decimal sum = 0m;
+        foreach (Curse_of_Darkness c in zone.Cards.OfType<Curse_of_Darkness>())
+        {
+            if (!c.FaceDown)
+                sum += c.DynamicVars["Mgc"].BaseValue;
+        }
+
+        return sum;
+    }
+
+    /// <summary>First face-up curse in zone order, for damage attribution.</summary>
+    public static Curse_of_Darkness? GetFirstActiveCurse(Player? player)
+    {
+        if (player == null)
+            return null;
+
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zone == null)
+            return null;
+
+        return zone.Cards.OfType<Curse_of_Darkness>().FirstOrDefault(c => !c.FaceDown);
+    }
 }

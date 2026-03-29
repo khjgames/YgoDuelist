@@ -49,11 +49,9 @@ public sealed class Monster_Reborn : BaseSpellCard
 
     protected override void OnUpgrade()
     {
-        // Match base game (see Eidolon): upgrade energy cost, not Cost field.
         EnergyCost.UpgradeBy(-1);
     }
 
-    // Match base game pattern (see Clash): gate playability via IsPlayable.
     protected override bool IsPlayable =>
         base.IsPlayable &&
         Owner != null &&

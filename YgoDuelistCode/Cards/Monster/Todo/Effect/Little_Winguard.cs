@@ -22,4 +22,6 @@ public sealed class Little_Winguard : EffectMonsterCard
     {
     }
 
+    public override bool AllowsSeparateAttackAndDefendCommandsPerTurn => true;
+
 }

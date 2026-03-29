@@ -21,7 +21,7 @@ public sealed class Burning_Land : BaseContinuousSpellCard
         new[] { new DynamicVar("Mgc", 5m) };
 
     public Burning_Land()
-        : base(1, CardRarity.Common, TargetType.Self)
+        : base(1, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -67,6 +67,6 @@ public sealed class Burning_Land : BaseContinuousSpellCard
     protected override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
-        DynamicVars["Mgc"].UpgradeValueBy(2m);
+        DynamicVars["Mgc"].UpgradeValueBy(4m);
     }
 }

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -25,7 +26,7 @@ public static class YgoEquipPortraitOverlaySync
 
         foreach (CardModel c in YgoSpellTrapZoneBridge.GetVisibleCards(player))
         {
-            if (c is not BaseEquipSpellCard)
+            if (c is not BaseEquipSpellCard && c is not IYgoSpellTrapEquipLink)
                 continue;
             NCard? n = NPlayerHand.Instance?.GetCard(c);
             if (n != null && GodotObject.IsInstanceValid(n))

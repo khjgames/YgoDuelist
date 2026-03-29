@@ -24,7 +24,7 @@ public sealed class Nemuriko : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark |
         YgoCardPackTags.Spellcaster |
         YgoCardPackTags.Normal;
 

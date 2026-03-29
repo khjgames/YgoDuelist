@@ -2,10 +2,12 @@ using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -27,6 +29,15 @@ internal static class SpellTrapCardRightClickPatch
 
     public static void TryToggleSpellTrapAndRefresh(NCardHolder holder)
     {
+        if (holder is NHandCardHolder handFt
+            && holder.CardNode?.Model is Ominous_Fortunetelling fort
+            && fort.Pile?.Type == SpellTrapZonePile.CustomType
+            && !fort.FaceDown)
+        {
+            if (Ominous_Fortunetelling.TryHandleZoneRightClick(handFt, fort))
+                return;
+        }
+
         if (holder.CardNode?.Model is BaseSpellCard spell)
         {
             if (spell.Pile?.Type != PileType.Hand)
@@ -49,7 +60,7 @@ internal static class SpellTrapCardRightClickPatch
         }
     }
 
-    private static void RefreshHolder(NCardHolder holder)
+    internal static void RefreshHolder(NCardHolder holder)
     {
         var cardNode = holder.CardNode;
         if (holder is NHandCardHolder handHolder)

@@ -22,7 +22,7 @@ public sealed class Dark_Spirit_of_the_Silent : BaseTrapCard
     private static readonly LocString DoubleHitPrompt = new("combat_messages", "DARK_SPIRIT_PICK_DOUBLE_HIT");
 
     public Dark_Spirit_of_the_Silent()
-        : base(cost: 2, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 2, rarity: CardRarity.Uncommon, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 

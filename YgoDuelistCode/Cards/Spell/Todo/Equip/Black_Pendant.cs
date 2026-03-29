@@ -1,35 +1,29 @@
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
-public sealed class Black_Pendant : BaseSpellCard
+public sealed class Black_Pendant : BaseEquipSpellCard
 {
+    private const int PrintedAtkBonus = 5;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", (decimal)PrintedAtkBonus) };
+
     public Black_Pendant()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellEquip)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
-    }
+    public override bool CanEquipTo(BaseMonsterCard target) => true;
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
+    public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) =>
+        new StatEffectTotal(DynamicVars["Mgc"].BaseValue, 0);
 
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(3m);
 }

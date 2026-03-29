@@ -1,23 +1,39 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Castle_Walls : BaseTrapCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new DynamicVar[]
+        {
+            new DynamicVar("Mgc", 5m),
+        };
+
     public Castle_Walls()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        Task.CompletedTask;
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner?.Creature == null)
+            return;
+        await PowerCmd.Apply<CastleWallsPower>(Owner.Creature, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
+    }
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].UpgradeValueBy(3m);
     }
 }

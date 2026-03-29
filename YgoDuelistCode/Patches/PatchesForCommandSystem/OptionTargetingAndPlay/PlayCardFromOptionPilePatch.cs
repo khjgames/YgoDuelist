@@ -126,7 +126,7 @@ public static class PlayCardFromOptionPilePatch
                 else if (card is Command_Change_Battle_Position changePos)
                 {
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Command_Change_Battle_Position.OnClickedOption()");
-                    TaskHelper.RunSafely(changePos.OnClickedOption());
+                    TaskHelper.RunSafely(changePos.OnClickedOption(target));
                 }
                 else if (card is Toggle_Die_For_You toggle)
                 {

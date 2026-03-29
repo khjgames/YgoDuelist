@@ -11,15 +11,20 @@ public sealed class Electric_Snake : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 8,
             baseDef: 9,
-            baseMgc: 0,
+            baseMgc: 2,
             duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
 
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 3m;
+    }
 }

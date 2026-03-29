@@ -18,7 +18,7 @@ public sealed class Soul_Resurrection : BaseTrapCard
         };
 
     public Soul_Resurrection()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapContinuous)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapContinuous)
     {
     }
 

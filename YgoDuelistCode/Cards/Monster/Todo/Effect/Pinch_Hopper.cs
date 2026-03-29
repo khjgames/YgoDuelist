@@ -5,6 +5,9 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>
+/// Graveyard trigger: optional activation then Special Summon 1 Insect from hand — <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPinchHopperGraveyard"/>.
+/// </summary>
 public sealed class Pinch_Hopper : EffectMonsterCard
 {
     public Pinch_Hopper()

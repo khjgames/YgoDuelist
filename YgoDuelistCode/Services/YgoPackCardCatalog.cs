@@ -32,7 +32,7 @@ public static class YgoPackCardCatalog
 
     public static readonly YgoCardPackTags[] PackThemeSubTags =
     {
-        YgoCardPackTags.WinCon, YgoCardPackTags.God
+        YgoCardPackTags.Banish, YgoCardPackTags.WinCon, YgoCardPackTags.God
     };
 
     public static IReadOnlyList<CardModel> GetAllYgoTemplates()

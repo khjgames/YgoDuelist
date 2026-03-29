@@ -105,6 +105,22 @@ public static class DuelMonsterPetDeathPatch
                     TaskHelper.RunSafely(ZoneEaterMarkPower.RemoveAllFromSourceCardAsync(cs, card));
             }
 
+            if (card is Yomi_Ship yomi
+                && MonsterCommandRegistry.TryGet(pet, out var cmdState)
+                && cmdState.DestroyedByEnemyBattleDamage)
+                TaskHelper.RunSafely(Yomi_Ship.ApplyBlightWhenDestroyedByBattleAsync(player, yomi));
+
+            if (card is Electric_Lizard electricLizard
+                && MonsterCommandRegistry.TryGet(pet, out var cmdElectric)
+                && cmdElectric.DestroyedByEnemyBattleDamage
+                && cmdElectric.BattleDamageKillerEnemy != null)
+                TaskHelper.RunSafely(Electric_Lizard.ApplyWhenDestroyedByBattleAsync(player, electricLizard, cmdElectric.BattleDamageKillerEnemy));
+
+            if (card is Rigorous_Reaver rigorous
+                && MonsterCommandRegistry.TryGet(pet, out var cmdRigorous)
+                && cmdRigorous.DestroyedByEnemyBattleDamage)
+                TaskHelper.RunSafely(Rigorous_Reaver.ApplyWhenDestroyedByBattleAsync(player, rigorous));
+
             var graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
             bool bounceToHand = YgoDuelMonsterBounceToHand.TryConsume(pet);
 
@@ -119,8 +135,16 @@ public static class DuelMonsterPetDeathPatch
             }
             else if (graveyard != null && card.Pile != graveyard)
             {
-                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
-                TaskHelper.RunSafely(MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, graveyard, graveyard));
+                if (card is Keldo keldo)
+                {
+                    GD.Print($"[ZGO] DuelMonsterPetDeathPatch: Keldo {card.Id.Entry} — move to GY then graveyard→discard effect.");
+                    TaskHelper.RunSafely(Keldo.RunAfterDestroyedOnFieldAsync(player, keldo, graveyard));
+                }
+                else
+                {
+                    GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
+                    TaskHelper.RunSafely(MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, graveyard, graveyard));
+                }
             }
 
             // Remove from field/command registries so it no longer affects stats or menus.
@@ -165,7 +189,7 @@ public static class DuelMonsterPetDeathPatch
             await CreatureCmd.Heal(enemy, amount);
     }
 
-    private static async Task MoveEquipsToGraveyardThenMonsterToPileAsync(
+    internal static async Task MoveEquipsToGraveyardThenMonsterToPileAsync(
         Player player,
         BaseMonsterCard card,
         CardPile monsterDestination,
@@ -181,6 +205,20 @@ public static class DuelMonsterPetDeathPatch
                     graveyardForEquips,
                     CardPilePosition.Top,
                     eq,
+                    false);
+            }
+        }
+
+        IReadOnlyList<CardModel> linkTraps = YgoSpellTrapEquipLinkRegistry.TakeAllLinksFromMonster(card);
+        foreach (CardModel trap in linkTraps)
+        {
+            if (trap.Pile?.Type == SpellTrapZonePile.CustomType)
+            {
+                await CardPileCmd.Add(
+                    new CardModel[] { trap },
+                    graveyardForEquips,
+                    CardPilePosition.Top,
+                    trap,
                     false);
             }
         }

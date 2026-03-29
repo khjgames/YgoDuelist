@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -43,12 +44,8 @@ public sealed class Sparks : BaseSpellCard
         if (Owner?.Creature?.CombatState == null)
             return;
 
-        var target = cardPlay.Target;
-        if (target == null)
-            return;
-
-        decimal dmg = DynamicVars["Mgc"].BaseValue;
-        await CreatureCmd.Damage(choiceContext, target, dmg, ValueProp.Unpowered, Owner.Creature, this);
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        await PowerCmd.Apply<BlightPower>(cardPlay.Target, DynamicVars["Mgc"].BaseValue, base.Owner.Creature, this);
         await CardPileCmd.Draw(choiceContext, 1, Owner);
     }
 

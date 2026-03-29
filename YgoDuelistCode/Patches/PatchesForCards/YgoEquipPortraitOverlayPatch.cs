@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -45,15 +46,19 @@ public static class YgoEquipPortraitOverlayPatch
         _equipPortraitOverlayTexture ??= ResourceLoader.Load<Texture2D>(EquipPortraitPath, null, ResourceLoader.CacheMode.Reuse);
         overlay.Texture = _equipPortraitOverlayTexture;
 
-        bool showEquipLink = model is BaseEquipSpellCard eq
-                             && YgoSpellTrapZoneBridge.IsInZone(model)
-                             && model.Owner != null
-                             && ShouldShowEquipLinkOverlay(model.Owner, eq);
+        bool showEquipLink = false;
+        if (YgoSpellTrapZoneBridge.IsInZone(model) && model.Owner != null)
+        {
+            if (model is BaseEquipSpellCard eq)
+                showEquipLink = ShouldShowEquipLinkOverlayForEquip(model.Owner, eq);
+            else if (model is IYgoSpellTrapEquipLink)
+                showEquipLink = ShouldShowEquipLinkOverlayForLinkTrap(model.Owner, model);
+        }
 
         overlay.Visible = showEquipLink && portrait.Visible && _equipPortraitOverlayTexture != null;
     }
 
-    private static bool ShouldShowEquipLinkOverlay(Player player, BaseEquipSpellCard equip)
+    private static bool ShouldShowEquipLinkOverlayForEquip(Player player, BaseEquipSpellCard equip)
     {
         var pet = DuelMonsterHoverTrackerPatch.CurrentHoveredPet;
         if (pet == null || pet.PetOwner != player)
@@ -64,6 +69,19 @@ public static class YgoEquipPortraitOverlayPatch
             return false;
 
         return ReferenceEquals(YgoEquipSpellRegistry.GetEquippedMonster(equip), sourceMonster);
+    }
+
+    private static bool ShouldShowEquipLinkOverlayForLinkTrap(Player player, CardModel trapModel)
+    {
+        var pet = DuelMonsterHoverTrackerPatch.CurrentHoveredPet;
+        if (pet == null || pet.PetOwner != player)
+            return false;
+
+        var sourceMonster = DuelMonsterFieldRegistry.GetSourceCardForPet(pet) as BaseMonsterCard;
+        if (sourceMonster == null)
+            return false;
+
+        return ReferenceEquals(YgoSpellTrapEquipLinkRegistry.GetLinkedMonster(trapModel), sourceMonster);
     }
 
     private static TextureRect? EnsurePortraitOverlayNode(Control body, TextureRect portrait)

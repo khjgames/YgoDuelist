@@ -135,6 +135,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         if (side == CombatSide.Player && Owner?.PlayerCombatState != null)
         {
+            await MonsterCommandRegistry.ResolveKarateManEndOfTurnDestructionAsync(Owner);
             MonsterCommandRegistry.ClearPerTurnExtrasForPlayer(Owner);
             if (Owner != null)
                 await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
@@ -336,6 +337,9 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     int draw = butcher.IsUpgraded ? 2 : 1;
                     await CardPileCmd.Draw(ctx, draw, atkPlayer);
                 }
+
+                if (monster is Masked_Sorcerer)
+                    await CardPileCmd.Draw(ctx, 1, atkPlayer);
             }
         }
     }

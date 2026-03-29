@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -27,21 +29,41 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
     [HarmonyPostfix]
     public static void Postfix(CardPile newPile, List<(CardModel Card, PileType? From)>? __state)
     {
-        if (__state == null || newPile.Type != GraveyardPile.CustomType)
+        if (__state == null)
             return;
+
+        bool toGraveyard = newPile.Type == GraveyardPile.CustomType;
 
         foreach ((CardModel card, PileType? from) in __state)
         {
-            if (card is not BaseEquipSpellCard eq)
-                continue;
             if (from != SpellTrapZonePile.CustomType)
                 continue;
 
-            YgoEquipSpellRegistry.Detach(eq);
-            if (eq.Owner != null)
+            if (card is BaseEquipSpellCard eq)
             {
-                YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(eq.Owner);
-                YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(eq.Owner);
+                if (!toGraveyard)
+                    continue;
+
+                YgoEquipSpellRegistry.Detach(eq);
+                if (eq.Owner != null)
+                {
+                    YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(eq.Owner);
+                    YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(eq.Owner);
+                }
+
+                continue;
+            }
+
+            if (card is IYgoSpellTrapEquipLink)
+            {
+                if (toGraveyard)
+                {
+                    BaseMonsterCard? linked = YgoSpellTrapEquipLinkRegistry.DetachAndConsumeLinkedMonster(card);
+                    if (linked != null && card.Owner != null)
+                        TaskHelper.RunSafely(YgoSpellTrapEquipLinkCombat.DestroyLinkedMonsterIfOnFieldAsync(card.Owner, linked));
+                }
+                else if (newPile.Type != SpellTrapZonePile.CustomType)
+                    YgoSpellTrapEquipLinkRegistry.Detach(card);
             }
         }
     }

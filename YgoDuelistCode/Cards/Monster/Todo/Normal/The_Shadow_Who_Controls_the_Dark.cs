@@ -24,7 +24,7 @@ public sealed class The_Shadow_Who_Controls_the_Dark : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark |
         YgoCardPackTags.Fiend |
         YgoCardPackTags.Normal;
 

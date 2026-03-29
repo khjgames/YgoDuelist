@@ -14,7 +14,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 /// Implemented by monster cards that expose a field "Activate Effect" command.
 /// The shared <see cref="Command.Activate_Effect"/> card reads cost, type, target, and localization from the source monster.
 /// <see cref="OnActivatedEffect"/> must call <see cref="MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn"/> with
-/// <c>true</c> once the effect is committed (same timing as when you used to call <c>SetHasUsedCommandThisTurn</c>).
+/// <c>true</c> once the effect is committed when <see cref="ActivatedEffectConsumesOncePerTurnSlot"/> is true.
 /// </summary>
 public interface IMonsterActivatedEffect
 {
@@ -27,6 +27,13 @@ public interface IMonsterActivatedEffect
 
     /// <summary>Gates whether the shared <see cref="Command.Activate_Effect"/> option appears playable (e.g. need a spell in GY).</summary>
     bool IsActivatedEffectAvailable => true;
+
+    /// <summary>
+    /// When true (default), <see cref="Command.Activate_Effect"/> uses <see cref="MonsterCommandRegistry"/> once-per-turn
+    /// and <see cref="OnActivatedEffect"/> should call <see cref="MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn"/> when the effect resolves.
+    /// When false, the option stays available for multiple plays per turn and must not set that flag.
+    /// </summary>
+    bool ActivatedEffectConsumesOncePerTurnSlot => true;
 
     Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source);
 }

@@ -56,6 +56,7 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
         ModelDb.Card<Rolled_6>(),
         ModelDb.Card<Fairy_Box_Upkeep_Take_Damage>(),
         ModelDb.Card<Fairy_Box_Upkeep_Destroy>(),
+        ModelDb.Card<YgoTransientSpellOptionCommandCard>(),
     };
 
     public override bool IsColorless => false;

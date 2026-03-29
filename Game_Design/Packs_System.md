@@ -70,6 +70,7 @@ PossibleTags[] = {
     YgoCardPackTags.Trap
 }
 PossibleSubTags[] = {
+    YgoCardPackTags.Banish,
     YgoCardPackTags.WinCon,
     YgoCardPackTags.God
 }
@@ -89,6 +90,7 @@ otherwise, roll for that slots rarity using functions from the base game class C
 ```csharp
 CardRarity RolledCardRarities[] = {CardRarity.Common, CardRarity.Uncommon, CardRarity.Common, CardRarity.Uncommon, CardRarity.Rare, CardRarity.Common}
 ```
+
 The rarities of the slots are rolled once then shared by the 3 card packs (so they all contain the same distribution of commons / Uncommons / rares), 
 
 When selecting the cards for a pack. The pseudocode for the logic is like this. ->  
@@ -104,7 +106,7 @@ EncounteredBundledCards = [];
 for (i = 0, i < NumPackCardSlots; i++;) GetRandomCardForSlot(i);
 ```
 
--->> in GetRandomCardForSlot()   
+-->> in GetRandomCardForSlot()  
 -> Get the pool of all cards of that slots rarity.  
 -> Iterate through the pool of all cards of that slots rarity -> CalculateIndividualCardWeight(card) for that card to build the weight list. **Immediately before** the weighted RNG consumes each weight, apply `max(1, weight)` so no card’s pick weight is below 1.
 
@@ -133,7 +135,7 @@ Let `k` = number of copies of this card **already** in `ChosenPackCards` when ev
 CurrentWeight = CurrentWeight / Pow(3, k);   // k == 0 => unchanged; k == 1 => /3; k == 2 => /9; ...
 
 CurrentWeight = max(1, CurrentWeight); // Minimum card weight scales down to 1  
-```  
+```
 
 The player can either skip card packs or choose to take one of them, 
 

@@ -20,14 +20,14 @@ using YgoDuelist.YgoDuelistCode.Relics;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Before Neow blessing options, YgoDuelist picks 10–18 cards from an 18-card grid of <see cref="YgoCardPackTags.Starter"/> cards.
+/// Before Neow blessing options, YgoDuelist picks 10–<see cref="YgoStarterCardCatalog.GridSize"/> cards from a structured <see cref="YgoStarterCardCatalog.GridSize"/>-card grid of <see cref="YgoCardPackTags.Starter"/> cards.
 /// Picks go to the deck; the rest go to the <see cref="PlayerRunTrunk"/> (Deck_Trunk_Side_System).
 /// </summary>
 public static class YgoNeowStarterDeckGridService
 {
-    public const int GridSize = 18;
+    public const int GridSize = YgoStarterCardCatalog.GridSize;
     public const int MinPick = 10;
-    public const int MaxPick = 18;
+    public const int MaxPick = YgoStarterCardCatalog.GridSize;
 
     /// <summary>Neow instance for which the next <see cref="AncientEventModel.SetInitialEventState"/> call must not run the starter draft again (async-safe vs ThreadStatic).</summary>
     private static AncientEventModel? sResumeNeowWithoutStarterDraft;

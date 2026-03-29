@@ -91,6 +91,14 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     /// <summary>Star cost for display and payment; matches StarsVar base (<see cref="AbstractMonsterCard.MonsterConduitStarCost"/>) in CanonicalVars.</summary>
     public override int CanonicalStarCost => (int)DynamicVars.Stars.BaseValue;
 
+    /// <summary>
+    /// <see cref="LegionFiendJesterSpellcasterConduit"/>: Spellcaster normal/tribute summons from hand may ignore conduit while Legion count exceeds waivers used this turn.
+    /// </summary>
+    public override int CurrentStarCost =>
+        LegionFiendJesterSpellcasterConduit.ShouldWaiveConduitStarCostForHandSpellcaster(this)
+            ? 0
+            : base.CurrentStarCost;
+
     protected override bool IsPlayable
     {
         get
@@ -143,9 +151,14 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                     (decimal)def,
                     ValueProp.Move,
                     cardPlay);
+                await OnAfterGainBlockFromCombatActionAsync(choiceContext, cardPlay, def);
             }
         }
     }
+
+    /// <summary>After <see cref="CreatureCmd.GainBlock"/> from this card’s skill combat action (defend from hand or command).</summary>
+    protected virtual Task OnAfterGainBlockFromCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay, int blockGranted) =>
+        Task.CompletedTask;
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -76,6 +76,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         if (CountLiveDuelMonsters(player) >= MaxDuelMonstersPerPlayer)
             return false;
 
+        int legionCountBeforeSummon = LegionFiendJesterSpellcasterConduit.CountLegionsOnField(player);
+
         DuelMonsterData data = card.GetDuelMonsterData();
         DuelMonsterModel monster = (DuelMonsterModel)ModelDb.Monster<DuelMonsterModel>().ToMutable();
         monster.Level = data.Level;
@@ -88,6 +90,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         // Track this card as an active field monster for aura/stat calculations and menu commands.
         DuelMonsterFieldRegistry.RegisterSummon(player, card, petCreature);
 
+        if (card is Hourglass_of_Courage && !canAttackThisTurn)
+            await PowerCmd.Apply<HourglassOfCourageHalvedPower>(petCreature, 2m, player.Creature, card);
+
         bool stumblingField = YgoStumblingField.IsActive(player);
         if (stumblingField)
             await PowerCmd.Apply<YgoStumblingDefendOnlyPower>(petCreature, 1m, player.Creature, null);
@@ -95,6 +100,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         bool anubisTurn = player.Creature.HasPower<YgoCurseOfAnubisPlayerMarkerPower>();
         if (anubisTurn && card is EffectMonsterCard && !petCreature.HasPower<YgoCurseOfAnubisEffectMonsterPower>())
             await PowerCmd.Apply<YgoCurseOfAnubisEffectMonsterPower>(petCreature, 1m, player.Creature, null);
+
+        await LimiterRemovalPower.OnMachineDuelMonsterSummonedAsync(player, petCreature, card);
 
         // Normal/tribute summons: mark Command as used this turn. Special summons pass canAttackThisTurn: true.
         // Stumbling: summons may still Command Defend; YgoStumblingDefendOnlyPower blocks Attack only.
@@ -119,6 +126,12 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         // After the summon completes, move the monster card into the MonsterPile
         // so it is no longer in Hand/Discard/etc.
         await MoveCardToMonsterPile(player, card);
+
+        LegionFiendJesterSpellcasterConduit.RegisterWaivedSummonAfterNormalSpellcasterSummon(
+            player,
+            card,
+            canAttackThisTurn,
+            legionCountBeforeSummon);
 
         return true;
     }

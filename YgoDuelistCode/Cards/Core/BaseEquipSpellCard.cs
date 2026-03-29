@@ -32,6 +32,9 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
 
     public abstract StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped);
 
+    /// <summary>Multiplies summed ATK/DEF after flat <see cref="GetEquipStatEffect"/> from this equip (and other equips' flat bonuses) are applied.</summary>
+    public virtual StatEffectTotalMultiplier GetEquipStatMultiplier(BaseMonsterCard equipped) => StatEffectTotalMultiplier.Identity;
+
     /// <summary>When true, the equipped monster's attacks also resolve Splinter splash (see <see cref="Relics.GraveyardRelic"/>).</summary>
     public virtual bool GrantsSplinterDamage => false;
 

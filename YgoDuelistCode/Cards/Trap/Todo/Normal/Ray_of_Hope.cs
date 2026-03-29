@@ -28,5 +28,6 @@ public sealed class Ray_of_Hope : BaseTrapCard
     protected override void OnUpgrade()
     {
         DynamicVars["Mgc"].UpgradeValueBy(-1m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

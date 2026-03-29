@@ -42,10 +42,11 @@ public enum YgoCardPackTags : long // up to 64 flags
     Normal = 1L << 21,
     Spell = 1L << 22,
     Trap = 1L << 23,
-    WinCon = 1L << 24,
-    God = 1L << 25,
-    Bundled = 1L << 26,
-    Starter = 1L << 27
+    Banish = 1L << 24,
+    WinCon = 1L << 25,
+    God = 1L << 26,
+    Bundled = 1L << 27,
+    Starter = 1L << 28
 }
 
 /// <summary>
