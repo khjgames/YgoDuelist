@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -12,22 +11,13 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>Continuous <see cref="Dark_Snake_Syndrome"/>: on the enemy; end of your turn it takes damage; counter doubles, capped by the field spell's <c>Mgc</c> (32 base, 64 upgraded). Removed if the spell leaves the zone.</summary>
-public sealed class DarkSnakeSyndromeFieldPower : YgoDuelistPower
+internal static class DarkSnakeSyndromeFieldPowerShared
 {
-    public override PowerType Type => PowerType.Debuff;
-
-    public override PowerStackType StackType => PowerStackType.Counter;
-
-    public override LocString Title => new("powers", "YGODUELIST-DARK_SNAKE_SYNDROME_FIELD_POWER.title");
-
-    public override LocString Description => new("powers", "YGODUELIST-DARK_SNAKE_SYNDROME_FIELD_POWER.description");
-
-    /// <summary>Removes this power from every enemy that has it from <paramref name="applier"/> (player creature).</summary>
     public static async Task RemoveAllForApplier(Creature applier)
     {
         CombatState? cs = applier.CombatState;
@@ -35,13 +25,15 @@ public sealed class DarkSnakeSyndromeFieldPower : YgoDuelistPower
             return;
         foreach (Creature e in cs.HittableEnemies.ToList())
         {
-            DarkSnakeSyndromeFieldPower? p = e.GetPower<DarkSnakeSyndromeFieldPower>();
-            if (p != null && p.Applier == applier)
-                await PowerCmd.Remove(p);
+            DarkSnakeSyndromeFieldPower? a = e.GetPower<DarkSnakeSyndromeFieldPower>();
+            if (a != null && a.Applier == applier)
+                await PowerCmd.Remove(a);
+            DarkSnakeSyndromeFieldPowerPlus? b = e.GetPower<DarkSnakeSyndromeFieldPowerPlus>();
+            if (b != null && b.Applier == applier)
+                await PowerCmd.Remove(b);
         }
     }
 
-    /// <summary>When the spell is not in the zone (e.g. destroyed), strip matching powers immediately.</summary>
     public static void SyncCleanupIfSpellAbsent(Player player)
     {
         if (player?.Creature == null)
@@ -52,36 +44,36 @@ public sealed class DarkSnakeSyndromeFieldPower : YgoDuelistPower
         TaskHelper.RunSafely(RemoveAllForApplier(player.Creature));
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public static async Task AfterTurnEnd(YgoDuelistPower self, PlayerChoiceContext choiceContext, CombatSide side)
     {
         if (side != CombatSide.Player)
             return;
 
-        Creature? applier = Applier;
+        Creature? applier = self.Applier;
         Player? pl = applier?.Player;
         if (pl == null)
             return;
 
-        if (Owner.Side != CombatSide.Enemy || !Owner.IsAlive)
+        if (self.Owner.Side != CombatSide.Enemy || !self.Owner.IsAlive)
             return;
 
         CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
         if (zone == null || !zone.Cards.OfType<Dark_Snake_Syndrome>().Any())
         {
-            await PowerCmd.Remove(this);
+            await PowerCmd.Remove(self);
             return;
         }
 
         Dark_Snake_Syndrome? src = zone.Cards.OfType<Dark_Snake_Syndrome>().FirstOrDefault();
         decimal cap = GetStackDamageCap(src);
-        decimal dmg = System.Math.Min(Amount, cap);
+        decimal dmg = System.Math.Min(self.Amount, cap);
         if (dmg > 0m)
-            await CreatureCmd.Damage(choiceContext, Owner, dmg, ValueProp.Unpowered, applier, src);
+            await CreatureCmd.Damage(choiceContext, self.Owner, dmg, ValueProp.Unpowered, applier, src);
 
         decimal next = System.Math.Min(dmg * 2m, cap);
-        decimal delta = next - Amount;
+        decimal delta = next - self.Amount;
         if (delta != 0m)
-            await PowerCmd.ModifyAmount(this, delta, null, null);
+            await PowerCmd.ModifyAmount(self, delta, null, null);
     }
 
     private static decimal GetStackDamageCap(Dark_Snake_Syndrome? src)
@@ -90,4 +82,42 @@ public sealed class DarkSnakeSyndromeFieldPower : YgoDuelistPower
             return src.DynamicVars["Mgc"].BaseValue;
         return 32m;
     }
+}
+
+/// <summary>Continuous <see cref="Dark_Snake_Syndrome"/> (base): counter doubles each end of your turn, capped by the field spell's <c>Mgc</c> (32).</summary>
+public sealed class DarkSnakeSyndromeFieldPower : YgoDuelistPower
+{
+    public static Task RemoveAllForApplier(Creature applier) => DarkSnakeSyndromeFieldPowerShared.RemoveAllForApplier(applier);
+
+    public static void SyncCleanupIfSpellAbsent(Player player) => DarkSnakeSyndromeFieldPowerShared.SyncCleanupIfSpellAbsent(player);
+
+    public override PowerType Type => PowerType.Debuff;
+
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override LocString Title => new("powers", "YGODUELIST-DARK_SNAKE_SYNDROME_FIELD_POWER.title");
+
+    public override LocString Description => new("powers", "YGODUELIST-DARK_SNAKE_SYNDROME_FIELD_POWER.description");
+
+    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side) =>
+        await DarkSnakeSyndromeFieldPowerShared.AfterTurnEnd(this, choiceContext, side);
+}
+
+/// <summary>Continuous upgraded <see cref="Dark_Snake_Syndrome"/>: same behavior; UI states 64 cap.</summary>
+public sealed class DarkSnakeSyndromeFieldPowerPlus : YgoDuelistPower
+{
+    public override PowerType Type => PowerType.Debuff;
+
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override LocString Title => new("powers", "YGODUELIST-DARK_SNAKE_SYNDROME_FIELD_POWER_PLUS.title");
+
+    public override LocString Description => new("powers", "YGODUELIST-DARK_SNAKE_SYNDROME_FIELD_POWER_PLUS.description");
+
+    public override string CustomPackedIconPath => "dark_snake_syndrome_field_power.png".PowerImagePath();
+
+    public override string CustomBigIconPath => "dark_snake_syndrome_field_power.png".BigPowerImagePath();
+
+    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side) =>
+        await DarkSnakeSyndromeFieldPowerShared.AfterTurnEnd(this, choiceContext, side);
 }

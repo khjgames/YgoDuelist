@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -18,6 +19,17 @@ public static class YgoAlternateUpgradedDescriptionPatch
     {
         if (__instance is AbstractMonsterCard)
             return true;
+        if (__instance is Fairy_Box_Upkeep_Take_Damage)
+        {
+            bool upkeepShowUpgraded = __instance.IsUpgraded || __instance.UpgradePreviewType != CardUpgradePreviewType.None;
+            if (!upkeepShowUpgraded)
+                return true;
+            var upkeepLoc = new LocString("cards", __instance.Id.Entry + ".description_upgraded");
+            if (!upkeepLoc.Exists())
+                return true;
+            __result = upkeepLoc;
+            return false;
+        }
         if (__instance is not YgoDuelistCard ygo || !ygo.UseAlternateUpgradedDescription)
             return true;
         bool showUpgraded = __instance.IsUpgraded || __instance.UpgradePreviewType != CardUpgradePreviewType.None;

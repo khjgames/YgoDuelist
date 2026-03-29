@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -36,6 +37,21 @@ public sealed class Dark_Mirror_Force : BaseTrapCard
     {
         typeof(Dark_Mirror_Force),
     };
+
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (!base.IsPlayable || Owner?.Creature?.CombatState is not CombatState cs)
+                return false;
+            Creature pc = Owner.Creature;
+            bool hasAttackingEnemy = cs.HittableEnemies.Any(e =>
+                e.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) > 0);
+            bool hasNonAttackingEnemy = cs.HittableEnemies.Any(e =>
+                e.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) <= 0);
+            return hasAttackingEnemy && hasNonAttackingEnemy;
+        }
+    }
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

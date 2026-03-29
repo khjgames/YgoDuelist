@@ -23,11 +23,14 @@ using YgoDuelist.YgoDuelistCode.Relics;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// YgoDuelist encounter card reward: pack size by encounter tier, three packs, then cancelable grids for deck → side deck → trunk.
-/// Returns <c>true</c> from <see cref="CardReward.OnSelect"/> when finished so the combat reward is consumed (vanilla behavior).
+/// YgoDuelist card rewards: combat encounters use pack size by tier; Neow Draft (and the same CardCreationOptions pattern) use
+/// <see cref="NeowBlessingPackSlots"/> per pack. Three packs, then grids for deck → side deck → trunk.
+/// Returns <c>true</c> from <see cref="CardReward.OnSelect"/> when finished so the reward is consumed (vanilla behavior).
 /// </summary>
 public static class YgoCardPackRewardFlow
 {
+    public const int NeowBlessingPackSlots = 3;
+
     private static readonly BindingFlags RewardMemberFlags =
         BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
@@ -36,9 +39,28 @@ public static class YgoCardPackRewardFlow
         if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(reward.Player))
             return false;
         CardCreationOptions options = GetCardCreationOptions(reward);
-        if (options.Source != CardCreationSource.Encounter)
+        if (options.Source == CardCreationSource.Encounter)
+            return true;
+        return IsNeowBlessingStyleCardReward(options, reward);
+    }
+
+    /// <summary>
+    /// Matches vanilla <c>Draft</c> Neow blessing: <see cref="CardCreationSource.Other"/>, <see cref="CardRarityOddsType.RegularEncounter"/>,
+    /// <see cref="CardCreationFlags.NoUpgradeRoll"/>, character card pools only, three options. Excludes Orrery/Lost Coffer (no NoUpgradeRoll).
+    /// </summary>
+    private static bool IsNeowBlessingStyleCardReward(CardCreationOptions options, CardReward reward)
+    {
+        if (options.Source != CardCreationSource.Other)
             return false;
-        return true;
+        if (options.RarityOdds != CardRarityOddsType.RegularEncounter)
+            return false;
+        if (!options.Flags.HasFlag(CardCreationFlags.NoUpgradeRoll))
+            return false;
+        if (options.Flags.HasFlag(CardCreationFlags.ForceRarityOddsChange))
+            return false;
+        if (options.CustomCardPool != null)
+            return false;
+        return GetOptionCount(reward) == NeowBlessingPackSlots;
     }
 
     public static async Task<bool> RunAsync(CardReward reward)
@@ -56,20 +78,26 @@ public static class YgoCardPackRewardFlow
         Rng rng = player.PlayerRng.Rewards;
         var choiceContext = new BlockingPlayerChoiceContext();
 
-        List<List<CardModel>> templatePacks = YgoCardPackGenerator.GenerateThreePackTemplates(
-            player,
-            rng,
-            slotCount,
-            options.RarityOdds);
-
         var bundles = new List<IReadOnlyList<CardModel>>(3);
-        foreach (List<CardModel> pack in templatePacks)
+
+        void BuildBundlesFromGenerator()
         {
-            var row = new List<CardModel>(pack.Count);
-            foreach (CardModel template in pack)
-                row.Add(player.RunState.CreateCard(template, player));
-            bundles.Add(row);
+            bundles.Clear();
+            List<List<CardModel>> templatePacks = YgoCardPackGenerator.GenerateThreePackTemplates(
+                player,
+                rng,
+                slotCount,
+                options.RarityOdds);
+            foreach (List<CardModel> pack in templatePacks)
+            {
+                var row = new List<CardModel>(pack.Count);
+                foreach (CardModel template in pack)
+                    row.Add(player.RunState.CreateCard(template, player));
+                bundles.Add(row);
+            }
         }
+
+        BuildBundlesFromGenerator();
 
         List<CardModel> chosenPack;
         int chosenBundleIndex;
@@ -82,12 +110,24 @@ public static class YgoCardPackRewardFlow
         catch (OperationCanceledException)
         {
             RemoveAllCreatedCards(bundles, player);
+            if (!reward.CanSkip)
+            {
+                BuildBundlesFromGenerator();
+                goto PickBundle;
+            }
+
             return false;
         }
 
         if (chosenPack.Count == 0)
         {
             RemoveAllCreatedCards(bundles, player);
+            if (!reward.CanSkip)
+            {
+                BuildBundlesFromGenerator();
+                goto PickBundle;
+            }
+
             return false;
         }
 
@@ -212,6 +252,9 @@ public static class YgoCardPackRewardFlow
 
     private static int GetPackSlotCount(CardCreationOptions options, CardReward reward)
     {
+        if (IsNeowBlessingStyleCardReward(options, reward))
+            return NeowBlessingPackSlots;
+
         return options.RarityOdds switch
         {
             CardRarityOddsType.BossEncounter => 6,

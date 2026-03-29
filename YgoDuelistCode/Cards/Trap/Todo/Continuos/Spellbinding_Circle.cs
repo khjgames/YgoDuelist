@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -36,15 +37,32 @@ public sealed class Spellbinding_Circle : BaseContinuousTrapCard
         if (Owner?.Creature == null)
             return;
 
-        var target = cardPlay.Target;
+        Creature? target = cardPlay.Target;
         if (target == null || !target.IsAlive)
             return;
 
+        await SpellbindingCircleTargetPower.RemoveAllForApplier(Owner.Creature);
+
         decimal strLoss = DynamicVars["Mgc"].BaseValue;
         decimal spellbound = DynamicVars["Mgc2"].BaseValue;
-        await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(target, strLoss, Owner.Creature, this);
-        await PowerCmd.Apply<SpellboundPower>(target, spellbound, Owner.Creature, this);
+
+        if (IsUpgraded)
+        {
+            await PowerCmd.Apply<SpellbindingTemporaryStrengthPowerPlus>(target, strLoss, Owner.Creature, this);
+            await PowerCmd.Apply<SpellboundPlusPower>(target, spellbound, Owner.Creature, this);
+        }
+        else
+        {
+            await PowerCmd.Apply<SpellbindingTemporaryStrengthPower>(target, strLoss, Owner.Creature, this);
+            await PowerCmd.Apply<SpellboundPower>(target, spellbound, Owner.Creature, this);
+        }
+
+        await PowerCmd.Apply<SpellbindingCircleTargetPower>(target, 1m, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        DynamicVars["Mgc"].UpgradeValueBy(1m);
+        DynamicVars["Mgc2"].UpgradeValueBy(2m);
+    }
 }

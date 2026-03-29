@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -18,31 +19,58 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>While <see cref="Fairy_Box"/> is face-up.</summary>
-public sealed class FairyBoxFieldPower : YgoDuelistPower
+internal static class FairyBoxFieldPowerShared
 {
-    public override PowerType Type => PowerType.Debuff;
+    internal static Fairy_Box? FaceUpTrapForTier(Player player, bool expectPlus) =>
+        SpellTrapZonePile.CustomType.GetPile(player)?.Cards
+            .OfType<Fairy_Box>()
+            .FirstOrDefault(c => !c.FaceDown && c.IsUpgraded == expectPlus);
 
-    public override PowerStackType StackType => PowerStackType.Counter;
-
-    public override LocString Title => new("powers", "YGODUELIST-FAIRY_BOX_FIELD_POWER.title");
-
-    public override LocString Description => new("powers", "YGODUELIST-FAIRY_BOX_FIELD_POWER.description");
-
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    internal static async Task AfterPlayerTurnStartLateAsync(
+        YgoDuelistPower self,
+        PlayerChoiceContext choiceContext,
+        Player player,
+        bool expectPlus)
     {
-        if (side != CombatSide.Player || Owner.Side != CombatSide.Player)
+        Creature ownerCreature = self.Owner;
+        if (player != ownerCreature.Player || ownerCreature.Side != CombatSide.Player)
             return;
 
-        Player player = Owner.Player;
+        if (!YgoAnnualTracker.TryConsumeAnnual(player, "FAIRY_BOX_TURN_COIN"))
+            return;
+
+        Fairy_Box? src = FaceUpTrapForTier(player, expectPlus);
+        if (src == null)
+        {
+            await PowerCmd.Remove(self);
+            return;
+        }
+
+        CombatState? cs = player.Creature?.CombatState;
+        if (cs == null)
+            return;
+
+        await YgoFairyBoxHeadsTailsWeak.RunStartOfYourTurnAsync(choiceContext, cs, player, ownerCreature, src);
+    }
+
+    internal static async Task AfterTurnEndAsync(
+        YgoDuelistPower self,
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        bool expectPlus)
+    {
+        Creature ownerCreature = self.Owner;
+        if (side != CombatSide.Player || ownerCreature.Side != CombatSide.Player)
+            return;
+
+        Player player = ownerCreature.Player;
         if (!YgoAnnualTracker.TryConsumeAnnual(player, "FAIRY_BOX_UPKEEP"))
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
-        Fairy_Box? src = zone?.Cards.OfType<Fairy_Box>().FirstOrDefault(c => !c.FaceDown);
+        Fairy_Box? src = FaceUpTrapForTier(player, expectPlus);
         if (src == null)
         {
-            await PowerCmd.Remove(this);
+            await PowerCmd.Remove(self);
             return;
         }
 
@@ -51,6 +79,9 @@ public sealed class FairyBoxFieldPower : YgoDuelistPower
             return;
 
         CardModel takeDamage = cs.CreateCard<Fairy_Box_Upkeep_Take_Damage>(player);
+        if (src.IsUpgraded)
+            takeDamage.UpgradeInternal();
+
         CardModel destroyTrap = cs.CreateCard<Fairy_Box_Upkeep_Destroy>(player);
         var upkeepOptions = new List<CardModel> { takeDamage, destroyTrap };
 
@@ -65,19 +96,19 @@ public sealed class FairyBoxFieldPower : YgoDuelistPower
 
         if (pick is Fairy_Box_Upkeep_Take_Damage)
         {
-            await CreatureCmd.Damage(choiceContext, Owner, 5m, ValueProp.Unpowered, Owner, src);
-            await YgoFairyBoxHeadsTailsWeak.RunAfterUpkeepPaidAsync(choiceContext, cs, player, Owner, src);
+            decimal upkeepDamage = src.DynamicVars["Mgc2"].BaseValue;
+            await CreatureCmd.Damage(choiceContext, ownerCreature, upkeepDamage, ValueProp.Unpowered, ownerCreature, src);
             return;
         }
 
         if (pick is Fairy_Box_Upkeep_Destroy)
-            await DestroyTrapAndRemovePowerAsync(player);
+            await DestroyTrapAndRemovePowerAsync(player, self, expectPlus);
     }
 
-    private async Task DestroyTrapAndRemovePowerAsync(Player pl)
+    private static async Task DestroyTrapAndRemovePowerAsync(Player pl, YgoDuelistPower self, bool expectPlus)
     {
         CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
-        Fairy_Box? box = zone?.Cards.OfType<Fairy_Box>().FirstOrDefault();
+        Fairy_Box? box = zone?.Cards.OfType<Fairy_Box>().FirstOrDefault(c => !c.FaceDown && c.IsUpgraded == expectPlus);
         CardPile? gy = GraveyardPile.CustomType.GetPile(pl);
         if (box != null && gy != null)
             await CardPileCmd.Add(new[] { box }, gy, CardPilePosition.Top, box, false);
@@ -85,6 +116,43 @@ public sealed class FairyBoxFieldPower : YgoDuelistPower
         YgoSpellTrapZoneBridge.SyncFromZonePile(pl);
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(pl);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(pl);
-        await PowerCmd.Remove(this);
+        await PowerCmd.Remove(self);
     }
+}
+
+/// <summary>While non-upgraded <see cref="Fairy_Box"/> is face-up.</summary>
+public sealed class FairyBoxFieldPower : YgoDuelistPower
+{
+    public override PowerType Type => PowerType.Debuff;
+
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override LocString Title => new("powers", "YGODUELIST-FAIRY_BOX_FIELD_POWER.title");
+
+    public override LocString Description => new("powers", "YGODUELIST-FAIRY_BOX_FIELD_POWER.description");
+
+    /// <summary>Late phase: <see cref="YgoDuelist.YgoDuelistCode.Relics.GraveyardRelic.AfterPlayerTurnStart"/> has cleared annual keys (powers run before relics in the main phase).</summary>
+    public override Task AfterPlayerTurnStartLate(PlayerChoiceContext choiceContext, Player player) =>
+        FairyBoxFieldPowerShared.AfterPlayerTurnStartLateAsync(this, choiceContext, player, expectPlus: false);
+
+    public override Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side) =>
+        FairyBoxFieldPowerShared.AfterTurnEndAsync(this, choiceContext, side, expectPlus: false);
+}
+
+/// <summary>While upgraded <see cref="Fairy_Box"/> is face-up.</summary>
+public sealed class FairyBoxFieldPowerPlus : YgoDuelistPower
+{
+    public override PowerType Type => PowerType.Debuff;
+
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override LocString Title => new("powers", "YGODUELIST-FAIRY_BOX_FIELD_POWER_PLUS.title");
+
+    public override LocString Description => new("powers", "YGODUELIST-FAIRY_BOX_FIELD_POWER_PLUS.description");
+
+    public override Task AfterPlayerTurnStartLate(PlayerChoiceContext choiceContext, Player player) =>
+        FairyBoxFieldPowerShared.AfterPlayerTurnStartLateAsync(this, choiceContext, player, expectPlus: true);
+
+    public override Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side) =>
+        FairyBoxFieldPowerShared.AfterTurnEndAsync(this, choiceContext, side, expectPlus: true);
 }

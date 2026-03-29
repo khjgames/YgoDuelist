@@ -54,11 +54,15 @@ public sealed class Dark_Snake_Syndrome : BaseContinuousSpellCard
         Creature creature = Owner.Creature;
         await DarkSnakeSyndromeFieldPower.RemoveAllForApplier(creature);
 
-        DarkSnakeSyndromeFieldPower? existing = target.GetPower<DarkSnakeSyndromeFieldPower>();
-        if (existing != null)
-            await PowerCmd.Remove(existing);
+        if (target.GetPower<DarkSnakeSyndromeFieldPower>() is { } oldBase)
+            await PowerCmd.Remove(oldBase);
+        if (target.GetPower<DarkSnakeSyndromeFieldPowerPlus>() is { } oldPlus)
+            await PowerCmd.Remove(oldPlus);
 
-        await PowerCmd.Apply<DarkSnakeSyndromeFieldPower>(target, 1m, creature, this);
+        if (IsUpgraded)
+            await PowerCmd.Apply<DarkSnakeSyndromeFieldPowerPlus>(target, 1m, creature, this);
+        else
+            await PowerCmd.Apply<DarkSnakeSyndromeFieldPower>(target, 1m, creature, this);
     }
 
     protected override void OnUpgrade()

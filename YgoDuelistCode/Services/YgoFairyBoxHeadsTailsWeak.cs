@@ -16,16 +16,33 @@ using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Once per turn, after you pay Fairy Box upkeep (Take 5 Damage): call Heads or Tails; if correct, apply 1 Weak to all enemies.
+/// Heads/Tails call + flip; on match, apply this trap's <c>Mgc</c> stacks of Weak to all enemies. RNG salt distinguishes activation vs start-of-turn.
 /// </summary>
 public static class YgoFairyBoxHeadsTailsWeak
 {
-    public static async Task RunAfterUpkeepPaidAsync(
+    public static Task RunImmediateActivationAsync(
         PlayerChoiceContext choiceContext,
         CombatState cs,
         Player player,
         Creature ownerCreature,
-        Fairy_Box trapCard)
+        Fairy_Box trapCard) =>
+        RunCoinCallFlipAndWeakAsync(choiceContext, cs, player, ownerCreature, trapCard, "ACTIVATE");
+
+    public static Task RunStartOfYourTurnAsync(
+        PlayerChoiceContext choiceContext,
+        CombatState cs,
+        Player player,
+        Creature ownerCreature,
+        Fairy_Box trapCard) =>
+        RunCoinCallFlipAndWeakAsync(choiceContext, cs, player, ownerCreature, trapCard, "TURN_START");
+
+    private static async Task RunCoinCallFlipAndWeakAsync(
+        PlayerChoiceContext choiceContext,
+        CombatState cs,
+        Player player,
+        Creature ownerCreature,
+        Fairy_Box trapCard,
+        string coinSaltSegment)
     {
         CardModel headsCall = cs.CreateCard<Heads>(player);
         CardModel tailsCall = cs.CreateCard<Tails>(player);
@@ -41,7 +58,8 @@ public static class YgoFairyBoxHeadsTailsWeak
             return;
 
         bool calledHeads = callPick.Id.Entry == headsCall.Id.Entry;
-        bool flipIsHeads = YgoDeterministicRng.CoinFlip(cs, "FAIRY_BOX-COIN", YgoDeterministicRng.MixSpellTrapZoneSlot(player, trapCard));
+        string coinKey = "FAIRY_BOX-COIN-" + coinSaltSegment;
+        bool flipIsHeads = YgoDeterministicRng.CoinFlip(cs, coinKey, YgoDeterministicRng.MixSpellTrapZoneSlot(player, trapCard));
 
         CardModel resultCard = YgoDeterministicRngResultDisplay.CreateCoinFlipResultCard(cs, player, flipIsHeads);
         var coinPrompt = new LocString("cards", "YGODUELIST-FAIRY_BOX.coin_result.selection");
@@ -55,10 +73,11 @@ public static class YgoFairyBoxHeadsTailsWeak
         if (calledHeads != flipIsHeads)
             return;
 
+        decimal weakStacks = trapCard.DynamicVars["Mgc"].BaseValue;
         foreach (Creature e in cs.HittableEnemies)
         {
             if (e.IsAlive)
-                await PowerCmd.Apply<WeakPower>(e, 1m, ownerCreature, trapCard);
+                await PowerCmd.Apply<WeakPower>(e, weakStacks, ownerCreature, trapCard);
         }
     }
 }

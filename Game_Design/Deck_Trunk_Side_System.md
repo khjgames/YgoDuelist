@@ -42,8 +42,24 @@ For now lets say a starting deck and minimum deck size of 16? (starting with 3 b
 
 Before the player gets to select a Neows Blessing they have to form their starting deck.
 
-Your starting deck will be formed by giving the player a selection grid of 18 random cards with the "starter" tag. 
-(three rows of 6)
+Your starting deck will be formed by giving the player a selection grid of 19 random cards with the "starter" tag. 
+
+standardize starter deck rng
+--------------------------------
+same number of spells, traps,
+commons, uncommons, rares,
+level > 5 monsters
+
+19 cards
+
+1 rare
+6 uncommons
+12 commons
+
+3 level 5+ monsters
+8 level 4 and lower monsters
+4 spells
+4 traps
 
 They must select and add at least 10 of them to their deck. 
 

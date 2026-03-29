@@ -12,5 +12,13 @@
   "DIFFUSION_WAVE_PICK_SPELLCASTER": "Select a Level 7+ [gold]Spellcaster[/gold] on your field.",
   "YGODUELIST-NEOW_STARTER_GRID.prompt": "Build your starter deck: choose at least [blue]{MinCount}[/blue] and up to [blue]{MaxCount}[/blue] cards from the grid (18 random starter cards) to add to your deck before Neow's blessing.",
   "YGODUELIST-PACK_REWARD_DECK.prompt": "Pack opened: choose cards to add to your deck (0–[blue]{MaxCount}[/blue]). Cancel returns to pack choice.",
-  "YGODUELIST-PACK_REWARD_SIDE.prompt": "Choose cards for your side deck from the rest (0–[blue]{MaxCount}[/blue]). Cancel returns to deck selection."
+  "YGODUELIST-PACK_REWARD_SIDE.prompt": "Choose cards for your side deck from the rest (0–[blue]{MaxCount}[/blue]). Cancel returns to deck selection.",
+  "YGODUELIST-CAMPFIRE_DECK_ROW.label": "YGO deck edits: [blue]{Count}[/blue] remaining (usable even after your main campfire action).",
+  "YGODUELIST-CAMPFIRE_DECK_ROW.replace": "Replace",
+  "YGODUELIST-CAMPFIRE_DECK_ROW.add": "Add",
+  "YGODUELIST-CAMPFIRE_DECK_ROW.remove": "Remove",
+  "YGODUELIST-CAMPFIRE_DECK_REMOVE.prompt": "Remove a YGO card from your deck (bonus campfire edit).",
+  "YGODUELIST-CAMPFIRE_DECK_ADD.prompt": "Add a YGO card to your deck from trunk, side, or your unlocked pool (respects max deck size).",
+  "YGODUELIST-CAMPFIRE_DECK_REPLACE.pick_old": "Replace a YGO deck card — choose the card to remove.",
+  "YGODUELIST-CAMPFIRE_DECK_REPLACE.pick_new": "Choose the replacement (trunk, side, or unlocked pool)."
 }

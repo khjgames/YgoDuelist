@@ -2,16 +2,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
 /// <summary>
-/// While <see cref="Cards.Spell.Todo.Continuos.Stumbling"/> is active: on each turn (start of yours and after enemies act), enemies lose 1 temporary Strength.
+/// While <see cref="Stumbling"/> is face-up in the Spell/Trap zone: on each turn (start of yours and after enemies act), enemies lose temporary Strength equal to that spell's <c>Mgc</c>.
 /// </summary>
 public sealed class StumblingFieldPower : YgoDuelistPower
 {
@@ -45,7 +48,25 @@ public sealed class StumblingFieldPower : YgoDuelistPower
         if (cs == null)
             return;
 
+        decimal loss = GetStrengthLossPerTick();
+        if (loss <= 0m)
+            return;
+
         foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
-            await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, 1m, Owner, null);
+            await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, loss, Owner, null);
+    }
+
+    private decimal GetStrengthLossPerTick()
+    {
+        Creature? applier = Applier;
+        Player? pl = applier?.Player;
+        if (pl == null)
+            return 0m;
+
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
+        Stumbling? src = zone?.Cards.OfType<Stumbling>().FirstOrDefault();
+        if (src?.DynamicVars != null && src.DynamicVars.ContainsKey("Mgc"))
+            return src.DynamicVars["Mgc"].BaseValue;
+        return 0m;
     }
 }

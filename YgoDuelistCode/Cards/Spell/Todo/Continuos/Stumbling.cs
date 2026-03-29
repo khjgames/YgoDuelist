@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -13,6 +15,9 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
 public sealed class Stumbling : BaseContinuousSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 2m) };
+
     public Stumbling()
         : base(1, CardRarity.Common, TargetType.Self)
     {
@@ -39,8 +44,12 @@ public sealed class Stumbling : BaseContinuousSpellCard
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature != null)
-            await PowerCmd.Apply<StumblingFieldPower>(Owner.Creature, 1m, Owner.Creature, this);
+            await PowerCmd.Apply<StumblingFieldPower>(
+                Owner.Creature,
+                DynamicVars["Mgc"].BaseValue,
+                Owner.Creature,
+                this);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
 }

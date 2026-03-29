@@ -5,7 +5,8 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForRewards;
 
 /// <summary>
-/// YgoDuelist: encounter card rewards use three YGO tag packs, then deck / side-deck / trunk grids (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackRewardFlow"/>).
+/// YgoDuelist: encounter card rewards and Neow Draft-style card rewards (three options, <c>NoUpgradeRoll</c>) use three YGO tag packs,
+/// then deck / side-deck / trunk grids (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackRewardFlow"/>).
 /// </summary>
 [HarmonyPatch(typeof(CardReward), "OnSelect")]
 public static class YgoCardRewardPackPatch

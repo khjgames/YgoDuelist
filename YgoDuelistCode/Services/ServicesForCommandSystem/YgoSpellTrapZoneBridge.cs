@@ -38,6 +38,7 @@ public static class YgoSpellTrapZoneBridge
             if (removed)
                 YgoSecondHandSourceBridge.NotifySpellTrapZoneChanged(player, Array.Empty<CardModel>());
             DarkSnakeSyndromeFieldPower.SyncCleanupIfSpellAbsent(player);
+            SpellbindingCircleTargetPower.SyncCleanupIfTrapAbsent(player);
             _ = YgoDesCounterblowThornsSync.SyncForPlayerAsync(player);
             return;
         }
@@ -49,6 +50,7 @@ public static class YgoSpellTrapZoneBridge
         VisibleCardsByPlayer[player] = ordered;
         YgoSecondHandSourceBridge.NotifySpellTrapZoneChanged(player, ordered);
         DarkSnakeSyndromeFieldPower.SyncCleanupIfSpellAbsent(player);
+        SpellbindingCircleTargetPower.SyncCleanupIfTrapAbsent(player);
         _ = YgoDesCounterblowThornsSync.SyncForPlayerAsync(player);
     }
 

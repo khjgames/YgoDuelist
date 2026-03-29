@@ -1,18 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
 public sealed class Fairy_Box : BaseContinuousTrapCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 1m), new DynamicVar("Mgc2", 5m) };
+
     public Fairy_Box()
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
@@ -36,10 +42,25 @@ public sealed class Fairy_Box : BaseContinuousTrapCard
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner?.Creature == null)
+        Creature? creature = Owner?.Creature;
+        if (creature == null)
             return;
 
-        // Heads/Tails + Weak is once per turn after you pay upkeep at end of your turn (see FairyBoxFieldPower), not on activation.
-        await PowerCmd.Apply<FairyBoxFieldPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Remove<FairyBoxFieldPower>(creature);
+        await PowerCmd.Remove<FairyBoxFieldPowerPlus>(creature);
+
+        if (IsUpgraded)
+            await PowerCmd.Apply<FairyBoxFieldPowerPlus>(creature, 1m, creature, this);
+        else
+            await PowerCmd.Apply<FairyBoxFieldPower>(creature, 1m, creature, this);
+
+        if (creature.CombatState is { } cs)
+            await YgoFairyBoxHeadsTailsWeak.RunImmediateActivationAsync(choiceContext, cs, Owner!, creature, this);
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars["Mgc"].UpgradeValueBy(1m);
+        DynamicVars["Mgc2"].UpgradeValueBy(-2m);
     }
 }

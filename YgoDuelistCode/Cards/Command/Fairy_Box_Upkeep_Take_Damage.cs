@@ -5,7 +5,7 @@ using YgoDuelist.YgoDuelistCode.Extensions;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
-/// <summary>Fairy Box upkeep option: take 5 blockable damage. Display-only (choose-a-card UI).</summary>
+/// <summary>Fairy Box upkeep option: take blockable damage (trap <c>Mgc2</c>). Display-only (choose-a-card UI).</summary>
 public sealed class Fairy_Box_Upkeep_Take_Damage : MonsterCommandCard
 {
     public Fairy_Box_Upkeep_Take_Damage()

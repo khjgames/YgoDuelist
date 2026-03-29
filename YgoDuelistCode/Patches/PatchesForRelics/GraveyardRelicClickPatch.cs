@@ -126,6 +126,11 @@ public static class GraveyardRelicClickPatch
         if (player == null || !TrunkSideDeckGuiService.HasAnyTrunkOrSideCards(player))
             return false;
 
+        // Avoid stacking editors: pending kind is set only right before the grid opens, so duplicate clicks
+        // in that window used to start a second RunEditorAsync. Toggle is handled above once the overlay exists.
+        if (TrunkSideDeckGuiService.IsEditorSessionRunning())
+            return true;
+
         YgoRelicBrowseGridOverlayPatch.CloseAnyActiveBrowseGrid();
         TaskHelper.RunSafely(TrunkSideDeckGuiService.RunEditorAsync(player));
         return true;

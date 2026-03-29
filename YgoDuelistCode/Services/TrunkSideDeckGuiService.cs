@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -20,6 +21,11 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class TrunkSideDeckGuiService
 {
+    private static int _editorSessionActive;
+
+    /// <summary>True while <see cref="RunEditorAsync"/> is in progress (including before the overlay is pushed). Used to ignore duplicate relic clicks.</summary>
+    public static bool IsEditorSessionRunning() => Volatile.Read(ref _editorSessionActive) != 0;
+
     /// <summary>Set while <see cref="RunEditorAsync"/> is about to push the simple select screen so <c>_Ready</c> can inject nav buttons.</summary>
     public static bool InjectNavButtonsOnNextGrid { get; private set; }
 
@@ -39,6 +45,21 @@ public static class TrunkSideDeckGuiService
         if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
             return;
 
+        if (Interlocked.CompareExchange(ref _editorSessionActive, 1, 0) != 0)
+            return;
+
+        try
+        {
+            await RunEditorAsyncCore(player);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _editorSessionActive, 0);
+        }
+    }
+
+    private static async Task RunEditorAsyncCore(Player player)
+    {
         EnsureActivePageShowsNonEmptyGrid(player);
 
         while (true)
