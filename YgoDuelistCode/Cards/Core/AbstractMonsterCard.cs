@@ -51,6 +51,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword CycleMonsterKeyword => (CardKeyword)20039;
     private static CardKeyword FlipEffectKeyword => (CardKeyword)20041;
     private static CardKeyword RecklessBlockerKeyword => (CardKeyword)20042;
+    private static CardKeyword SplinterKeyword => (CardKeyword)20043;
+    private static CardKeyword BlightKeyword => (CardKeyword)20044;
 
     public abstract YgoCardType YgoCardType { get; }
     public bool FaceDown { get; set; } = false;
@@ -182,11 +184,13 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         Task.CompletedTask;
 
     /// <summary>Cycles attack / defense, or attack / defense / hand effect when supported. Right-click in hand.</summary>
-    public void ToggleAttackSkill()
+    /// <param name="allowCanonicalUiPreview">When true, canonical library/compendium instances may toggle (preview-only).</param>
+    public void ToggleAttackSkill(bool allowCanonicalUiPreview = false)
     {
-        if (IsCanonical)
+        if (IsCanonical && !allowCanonicalUiPreview)
             return;
-        if (this is BaseMonsterCard bm && MonsterCommandRegistry.SourceMonsterHasDieForYouForcedActive(Owner, bm))
+        // Owner getter asserts mutable; canonical / library templates must not touch it (e.g. compendium right-click preview).
+        if (this is BaseMonsterCard bm && IsMutable && MonsterCommandRegistry.SourceMonsterHasDieForYouForcedActive(Owner, bm))
             return;
 
         bool twoModeOnly = !SupportsHandEffectForm || YgoMonsterFormPreviewContext.RestrictMonsterToggleToAttackDefenseOnly;
@@ -245,6 +249,12 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
 
     /// <summary>If true, playing this monster card can summon a duel monster in a zone (max 5 per player).</summary>
     public virtual bool CanSummonDuelMonster => true;
+
+    /// <summary>
+    /// When true, special summon resolution may place a duel monster even if <see cref="CanSummonDuelMonster"/> is false
+    /// (e.g. hand-effect form that disables normal summon for that toggle).
+    /// </summary>
+    public virtual bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => false;
 
     /// <summary>
     /// Monsters released for a normal tribute summon: 0 unless level 5+ non-ritual non-fusion (1 for level 5–6, 2 for 7+).
@@ -367,6 +377,16 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return FaceDownKeyword;
     }
 
+    private IEnumerable<CardKeyword> GetSplinterBlightKeywordsFromMonster()
+    {
+        if (this is not BaseMonsterCard monster)
+            yield break;
+        if (monster.CardShowsSplinterKeyword)
+            yield return SplinterKeyword;
+        if (monster.CardShowsBlightKeyword)
+            yield return BlightKeyword;
+    }
+
     public override IEnumerable<CardKeyword> CanonicalKeywords
     {
         get
@@ -382,6 +402,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             keywords.AddRange(GetFaceDownKeywordsFromBool());
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
+            keywords.AddRange(GetSplinterBlightKeywordsFromMonster());
             return keywords;
         }
     }
@@ -410,6 +431,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (CardKeyword kw in GetSplinterBlightKeywordsFromMonster())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             return tips;
         }

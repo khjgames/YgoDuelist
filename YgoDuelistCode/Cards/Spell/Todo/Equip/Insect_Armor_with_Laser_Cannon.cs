@@ -16,5 +16,12 @@ public sealed class Insect_Armor_with_Laser_Cannon : BaseEquipSpellCard
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;
 
+    public override bool GrantsSplinterTo(BaseMonsterCard equipped) =>
+        equipped.DuelMonsterRace == DuelMonsterRace.Beast
+        || equipped.DuelMonsterRace == DuelMonsterRace.BeastWarrior
+        || equipped.DuelMonsterRace == DuelMonsterRace.WingedBeast;
+
+    protected override bool CardShowsSplinterKeywordHint => true;
+
     protected override void OnUpgrade() { }
 }

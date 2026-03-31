@@ -22,4 +22,8 @@ public sealed class Airknight_Parshath : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsSplinterKeyword => true;
+
+    public override bool AttackDealsSplinterDamage => true;
+
 }

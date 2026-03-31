@@ -22,4 +22,8 @@ public sealed class Rocket_Jumper : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

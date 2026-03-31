@@ -20,6 +20,8 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
     private static CardKeyword SetKeyword => (CardKeyword)10009;
     private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
     private static CardKeyword CycleSpellKeyword => (CardKeyword)20040;
+    private static CardKeyword SplinterKeyword => (CardKeyword)20043;
+    private static CardKeyword BlightKeyword => (CardKeyword)20044;
 
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);
@@ -123,7 +125,15 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         {
             RaceToKeyword(DuelMonsterRace),
             SetKeyword,
-        }.Concat(GetFaceDownKeyword()).Concat(GetCycleSpellKeywordWhenEligible());
+        }.Concat(GetFaceDownKeyword()).Concat(GetCycleSpellKeywordWhenEligible()).Concat(GetSplinterBlightKeywords());
+
+    private IEnumerable<CardKeyword> GetSplinterBlightKeywords()
+    {
+        if (CardShowsSplinterKeyword)
+            yield return SplinterKeyword;
+        if (CardShowsBlightKeyword)
+            yield return BlightKeyword;
+    }
 
     private IEnumerable<CardKeyword> GetFaceDownKeyword()
     {
@@ -149,6 +159,8 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             if (WasSetIntoSpellTrapZone)
                 tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
             foreach (CardKeyword kw in GetCycleSpellKeywordWhenEligible())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (CardKeyword kw in GetSplinterBlightKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             return tips;
         }

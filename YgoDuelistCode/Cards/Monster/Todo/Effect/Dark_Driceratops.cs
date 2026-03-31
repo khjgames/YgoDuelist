@@ -22,4 +22,8 @@ public sealed class Dark_Driceratops : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsSplinterKeyword => true;
+
+    public override bool AttackDealsSplinterDamage => true;
+
 }

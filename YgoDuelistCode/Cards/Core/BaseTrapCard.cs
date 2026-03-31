@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Commands;
@@ -17,6 +18,15 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     private static CardKeyword SetKeyword => (CardKeyword)10009;
     private static CardKeyword TrapKeyword => (CardKeyword)10011;
     private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
+    private static CardKeyword SplinterKeyword => (CardKeyword)20043;
+    private static CardKeyword BlightKeyword => (CardKeyword)20044;
+
+    /// <summary>
+    /// <see cref="CardModel.Keywords"/> only unions <see cref="CanonicalKeywords"/> once; trap presentation depends on pile,
+    /// so we keep keyword 10012 in sync like <see cref="AbstractMonsterCard.UpdateFaceDownKeywordFromBool"/>.
+    /// </summary>
+    private static readonly FieldInfo? CardModelKeywordsField =
+        typeof(CardModel).GetField("_keywords", BindingFlags.NonPublic | BindingFlags.Instance);
 
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);
@@ -42,6 +52,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     {
         WasSetIntoSpellTrapZone = false;
         FaceDown = false;
+        SyncFaceDownPresentationKeyword();
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await OnTrapPlay(choiceContext, cardPlay);
         await SendThisTrapToGraveyard(choiceContext);
@@ -68,6 +79,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     {
         WasSetIntoSpellTrapZone = true;
         FaceDown = true;
+        SyncFaceDownPresentationKeyword();
     }
 
     public void NormalizeFaceDownStateForCurrentPile()
@@ -79,18 +91,38 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             // Trap cards in hand should always render as set/facedown unless explicitly exempt.
             WasSetIntoSpellTrapZone = false;
             FaceDown = !CanActivateDirectlyFromHand;
-            return;
         }
-
-        if (pileType == SpellTrapZonePile.CustomType)
+        else if (pileType == SpellTrapZonePile.CustomType)
         {
             FaceDown = WasSetIntoSpellTrapZone;
+        }
+        else
+        {
+            // Outside spell/trap zone, trap cards are never considered set into zone.
+            WasSetIntoSpellTrapZone = false;
+            FaceDown = false;
+        }
+
+        SyncFaceDownPresentationKeyword();
+    }
+
+    /// <summary>
+    /// Writes <see cref="FaceDownKeyword"/> into <see cref="CardModel.Keywords"/> to match <see cref="ShouldUseFaceDownPresentation"/>.
+    /// Canonical instances cannot use <see cref="AddKeyword"/>; clearing the keyword cache forces a rebuild from <see cref="CanonicalKeywords"/>.
+    /// </summary>
+    public void SyncFaceDownPresentationKeyword()
+    {
+        if (!IsMutable)
+        {
+            CardModelKeywordsField?.SetValue(this, null);
+            _ = Keywords;
             return;
         }
 
-        // Outside spell/trap zone, trap cards are never considered set into zone.
-        WasSetIntoSpellTrapZone = false;
-        FaceDown = false;
+        _ = Keywords;
+        RemoveKeyword(FaceDownKeyword);
+        if (ShouldUseFaceDownPresentation())
+            AddKeyword(FaceDownKeyword);
     }
 
     /// <summary>
@@ -142,6 +174,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 };
                 if (ShouldUseFaceDownPresentation())
                     keywords.Add(FaceDownKeyword);
+                keywords.AddRange(GetSplinterBlightKeywords());
                 return keywords;
             }
 
@@ -152,8 +185,17 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             };
             if (ShouldUseFaceDownPresentation())
                 fallback.Add(FaceDownKeyword);
+            fallback.AddRange(GetSplinterBlightKeywords());
             return fallback;
         }
+    }
+
+    private IEnumerable<CardKeyword> GetSplinterBlightKeywords()
+    {
+        if (CardShowsSplinterKeyword)
+            yield return SplinterKeyword;
+        if (CardShowsBlightKeyword)
+            yield return BlightKeyword;
     }
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
@@ -170,6 +212,8 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 };
                 if (ShouldUseFaceDownPresentation())
                     tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
+                foreach (CardKeyword kw in GetSplinterBlightKeywords())
+                    tips.Add(HoverTipFactory.FromKeyword(kw));
                 return tips;
             }
 
@@ -180,6 +224,8 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             };
             if (ShouldUseFaceDownPresentation())
                 fallback.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
+            foreach (CardKeyword kw in GetSplinterBlightKeywords())
+                fallback.Add(HoverTipFactory.FromKeyword(kw));
             return fallback;
         }
     }

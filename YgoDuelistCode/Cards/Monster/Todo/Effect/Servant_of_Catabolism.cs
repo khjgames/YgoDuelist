@@ -38,4 +38,8 @@ public sealed class Servant_of_Catabolism : EffectMonsterCard
         typeof(Servant_of_Catabolism),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

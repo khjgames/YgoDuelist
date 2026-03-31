@@ -23,4 +23,8 @@ public sealed class Alligator_S_Sword_Dragon : FusionMonsterCard
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Alligator_S_Sword))
     {
     }
+
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
 }

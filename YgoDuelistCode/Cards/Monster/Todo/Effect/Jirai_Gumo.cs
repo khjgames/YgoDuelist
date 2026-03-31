@@ -60,6 +60,13 @@ public sealed class Jirai_Gumo : EffectMonsterCard
     /// Field attack command: call Heads or Tails, then flip. On a wrong call, take blockable damage
     /// equal to <c>floor((current HP − 1) / 2)</c> (0 when current HP is 2 or less).
     /// </summary>
+    protected override async Task BeforeAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner?.Creature == null)
+            return;
+        await RunAttackDeclarationCoinIfEligibleAsync(choiceContext, Owner, Owner.Creature, this, cardPlay);
+    }
+
     public static async Task RunAttackDeclarationCoinIfEligibleAsync(
         PlayerChoiceContext choiceContext,
         Player player,

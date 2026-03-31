@@ -38,5 +38,8 @@ public sealed class Queen_s_Double : EffectMonsterCard
         typeof(Queen_s_Double),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
 
 }

@@ -38,4 +38,8 @@ public sealed class Piranha_Army : EffectMonsterCard
         typeof(Piranha_Army),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BaseLib.Abstracts;
+using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -70,5 +71,8 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
         }
 
         deck.Add(marker);
+        GD.Print(
+            $"[YgoDuelist][SaveLoad] ToSerializable trailer appended netId={__instance.NetId} " +
+            $"extra={ec} trunk={tc} side={sc} minDeck={minDeck} owedRare={owedRare} deckCount={deck.Count}");
     }
 }

@@ -17,10 +17,4 @@ public sealed class YgoSaveTrunkSideMarkerNetPropertyNames
 
     [SavedProperty]
     public int ygo_owed_rare_vouchers { get; set; }
-
-    [SavedProperty]
-    public int ygo_side_count { get; set; }
-
-    [SavedProperty]
-    public int ygo_trunk_count { get; set; }
 }

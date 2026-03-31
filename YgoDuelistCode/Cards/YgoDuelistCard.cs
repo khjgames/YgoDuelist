@@ -33,6 +33,12 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     /// </summary>
     public virtual (float H, float S, float V)? CustomFrameTintHsv => null;
 
+    /// <summary>Spell/trap cards: show Splinter keyword chip when card text references Splinter mechanics.</summary>
+    public virtual bool CardShowsSplinterKeyword => false;
+
+    /// <summary>Spell/trap cards: show Blight keyword chip when card text references Blight.</summary>
+    public virtual bool CardShowsBlightKeyword => false;
+
     /// <summary>
     /// Resolves <c>description</c> vs <c>description_combat</c> and optional <c>_upgraded</c> suffixes; used by <see cref="Patches.MonsterCardRightClickPatch.GetDescriptionLocString"/>.
     /// </summary>

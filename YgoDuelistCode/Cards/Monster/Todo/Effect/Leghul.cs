@@ -38,4 +38,8 @@ public sealed class Leghul : EffectMonsterCard
         typeof(Leghul),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

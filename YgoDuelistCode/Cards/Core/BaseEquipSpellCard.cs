@@ -47,6 +47,14 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
     /// <summary>Per-equip override: Blighted attacks for this attachment (default: <see cref="GrantsBlightedDamage"/>).</summary>
     public virtual bool GrantsBlightTo(BaseMonsterCard equipped) => GrantsBlightedDamage;
 
+    protected virtual bool CardShowsSplinterKeywordHint => GrantsSplinterDamage;
+
+    protected virtual bool CardShowsBlightKeywordHint => GrantsBlightedDamage;
+
+    public override bool CardShowsSplinterKeyword => CardShowsSplinterKeywordHint;
+
+    public override bool CardShowsBlightKeyword => CardShowsBlightKeywordHint;
+
     protected override bool IsPlayable
     {
         get

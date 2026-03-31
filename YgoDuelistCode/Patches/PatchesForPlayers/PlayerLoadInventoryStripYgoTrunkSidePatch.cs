@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using BaseLib.Abstracts;
+using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using YgoChar = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
 using YgoDuelist.YgoDuelistCode.Relics;
@@ -17,6 +19,50 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch(typeof(Player), "LoadInventory")]
 public static class PlayerLoadInventoryStripYgoTrunkSidePatch
 {
+    private static readonly Dictionary<ulong, YgoTrunkSideDeckLoadPending> DeferredLoadByPlayerNetId = new();
+
+    private static bool CanLoadFromRunState(Player player)
+    {
+        return player.RunState is not null and not NullRunState;
+    }
+
+    internal static bool TryConsumeDeferred(Player player, out YgoTrunkSideDeckLoadPending pending)
+    {
+        lock (DeferredLoadByPlayerNetId)
+        {
+            return DeferredLoadByPlayerNetId.Remove(player.NetId, out pending!);
+        }
+    }
+
+    private static void RestoreFromPending(Player player, YgoTrunkSideDeckLoadPending pending, string sourceTag)
+    {
+        GD.Print(
+            $"[YgoDuelist][SaveLoad] RestorePending {sourceTag} netId={player.NetId} " +
+            $"extra={pending.Extra.Count} trunk={pending.Trunk.Count} side={pending.Side.Count} " +
+            $"minDeck={pending.LoadedMinimumDeckSize} owedRare={pending.LoadedOwedRareCardVouchers}");
+        foreach (SerializableCard sc in pending.Extra)
+        {
+            CardModel card = player.RunState.LoadCard(sc, player);
+            PlayerRunExtraDeck.GetOrCreatePile(player).AddInternal(card, -1, silent: true);
+        }
+
+        foreach (SerializableCard sc in pending.Trunk)
+        {
+            CardModel card = player.RunState.LoadCard(sc, player);
+            PlayerRunTrunk.GetOrCreatePile(player).AddInternal(card, -1, silent: true);
+        }
+
+        foreach (SerializableCard sc in pending.Side)
+        {
+            CardModel card = player.RunState.LoadCard(sc, player);
+            PlayerRunSideDeck.GetOrCreatePile(player).AddInternal(card, -1, silent: true);
+        }
+
+        TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
+        YgoPlayerMinimumDeck.SetLoadedFromSave(player, pending.LoadedMinimumDeckSize);
+        YgoPackRewardProgress.SetOwedRareLoadedFromSave(player, pending.LoadedOwedRareCardVouchers);
+    }
+
     public static void Prefix(Player __instance, SerializablePlayer save, ref object? __state)
     {
         __state = null;
@@ -40,7 +86,12 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
 
         int need = 1 + extraCount + trunkCount + sideCount;
         if (deck.Count < need)
+        {
+            GD.Print(
+                $"[YgoDuelist][SaveLoad] LoadInventory trailer rejected netId={__instance.NetId} " +
+                $"deckCount={deck.Count} need={need} extra={extraCount} trunk={trunkCount} side={sideCount}");
             return;
+        }
 
         deck.RemoveAt(deck.Count - 1);
 
@@ -68,6 +119,10 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         }
 
         __state = pending;
+        GD.Print(
+            $"[YgoDuelist][SaveLoad] LoadInventory trailer parsed netId={__instance.NetId} " +
+            $"extra={extraCount} trunk={trunkCount} side={sideCount} " +
+            $"minDeck={loadedMinDeck} owedRare={loadedOwedRare} remainingMainDeck={deck.Count}");
     }
 
     public static void Postfix(Player __instance, object? __state)
@@ -75,26 +130,18 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         if (__state is not YgoTrunkSideDeckLoadPending pending)
             return;
 
-        foreach (SerializableCard sc in pending.Extra)
+        if (CanLoadFromRunState(__instance))
         {
-            CardModel card = __instance.RunState.LoadCard(sc, __instance);
-            PlayerRunExtraDeck.GetOrCreatePile(__instance).AddInternal(card, -1, silent: true);
+            RestoreFromPending(__instance, pending, "LoadInventoryPostfixImmediate");
+            return;
         }
 
-        foreach (SerializableCard sc in pending.Trunk)
+        lock (DeferredLoadByPlayerNetId)
         {
-            CardModel card = __instance.RunState.LoadCard(sc, __instance);
-            PlayerRunTrunk.GetOrCreatePile(__instance).AddInternal(card, -1, silent: true);
+            DeferredLoadByPlayerNetId[__instance.NetId] = pending;
         }
-
-        foreach (SerializableCard sc in pending.Side)
-        {
-            CardModel card = __instance.RunState.LoadCard(sc, __instance);
-            PlayerRunSideDeck.GetOrCreatePile(__instance).AddInternal(card, -1, silent: true);
-        }
-
-        TrunkSideDeckRelic.NotifyRunTrunkSideChanged(__instance);
-        YgoPlayerMinimumDeck.SetLoadedFromSave(__instance, pending.LoadedMinimumDeckSize);
-        YgoPackRewardProgress.SetOwedRareLoadedFromSave(__instance, pending.LoadedOwedRareCardVouchers);
+        GD.Print(
+            $"[YgoDuelist][SaveLoad] Deferred trailer restore due to NullRunState netId={__instance.NetId} " +
+            $"extra={pending.Extra.Count} trunk={pending.Trunk.Count} side={pending.Side.Count}");
     }
 }

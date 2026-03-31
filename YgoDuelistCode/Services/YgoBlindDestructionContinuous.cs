@@ -24,31 +24,72 @@ public static class YgoBlindDestructionContinuous
         if (player.Creature == null)
             return;
 
-        Blind_Destruction? src = SpellTrapZonePile.CustomType.GetPile(player)?.Cards.OfType<Blind_Destruction>().FirstOrDefault();
-        if (src == null)
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zone == null)
+            return;
+
+        List<Blind_Destruction> active = zone.Cards
+            .OfType<Blind_Destruction>()
+            .Where(c => !c.FaceDown)
+            .ToList();
+
+        if (active.Count == 0)
             return;
 
         if (!YgoAnnualTracker.TryConsumeAnnual(player, "BLIND_DESTRUCTION"))
             return;
 
-        var cs = player.Creature.CombatState;
+        CombatState? cs = player.Creature.CombatState;
         if (cs == null)
             return;
 
-        ulong mix = YgoDeterministicRng.MixSpellTrapZoneSlot(player, src);
-        int roll = YgoDeterministicRng.RollDie(cs, 6, "BLIND_DESTRUCTION-D6", mix);
+        var rolls = new List<(Blind_Destruction Src, int Roll)>(active.Count);
+        var resultCards = new List<CardModel>(active.Count);
 
-        CardModel resultCard = YgoDeterministicRngResultDisplay.CreateD6RollResultCard(cs, player, roll);
+        foreach (Blind_Destruction src in active)
+        {
+            ulong mix = YgoDeterministicRng.MixSpellTrapZoneSlot(player, src);
+            int roll = YgoDeterministicRng.RollDie(cs, 6, "BLIND_DESTRUCTION-D6", mix);
+            rolls.Add((src, roll));
+            resultCards.Add(YgoDeterministicRngResultDisplay.CreateD6RollResultCard(cs, player, roll));
+        }
 
-        var prompt = new LocString("cards", "YGODUELIST-BLIND_DESTRUCTION.die_result.selection");
-        prompt.Add("Roll", (decimal)roll);
+        LocString prompt = active.Count == 1
+            ? MakeSingleRollPrompt(rolls[0].Roll)
+            : MakeMultiRollPrompt(rolls);
+
         var prefs = new CardSelectorPrefs(prompt, 0, 0)
         {
             RequireManualConfirmation = true,
             Cancelable = false
         };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, new List<CardModel> { resultCard }, player, prefs);
+        await CardSelectCmd.FromSimpleGrid(choiceContext, resultCards, player, prefs);
 
+        foreach ((Blind_Destruction src, int roll) in rolls)
+            await ApplyOneDie(choiceContext, player, cs, src, roll);
+    }
+
+    private static LocString MakeSingleRollPrompt(int roll)
+    {
+        var p = new LocString("cards", "YGODUELIST-BLIND_DESTRUCTION.die_result.selection");
+        p.Add("Roll", (decimal)roll);
+        return p;
+    }
+
+    private static LocString MakeMultiRollPrompt(IReadOnlyList<(Blind_Destruction Src, int Roll)> rolls)
+    {
+        var p = new LocString("cards", "YGODUELIST-BLIND_DESTRUCTION.die_result.selection_multi");
+        p.Add("Rolls", string.Join(", ", rolls.Select(r => r.Roll.ToString())));
+        return p;
+    }
+
+    private static async Task ApplyOneDie(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        CombatState cs,
+        Blind_Destruction src,
+        int roll)
+    {
         decimal sixCase = src.DynamicVars["Mgc"].BaseValue;
         decimal dmg = roll == 6 ? sixCase : roll;
 

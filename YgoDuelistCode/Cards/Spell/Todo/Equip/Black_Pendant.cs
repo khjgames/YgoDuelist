@@ -41,5 +41,7 @@ public sealed class Black_Pendant : BaseEquipSpellCard
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) =>
         new StatEffectTotal(DynamicVars["Mgc"].BaseValue, 0);
 
+    public override bool CardShowsBlightKeyword => true;
+
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(3m);
 }

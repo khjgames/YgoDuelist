@@ -23,4 +23,8 @@ public sealed class Reaper_on_the_Nightmare : FusionMonsterCard
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Nightmare_Horse))
     {
     }
+
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
 }

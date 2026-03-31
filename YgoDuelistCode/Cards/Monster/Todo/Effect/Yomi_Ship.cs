@@ -44,6 +44,10 @@ public sealed class Yomi_Ship : EffectMonsterCard
         typeof(Yomi_Ship),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
     internal static async Task ApplyBlightWhenDestroyedByBattleAsync(Player player, Yomi_Ship card)
     {
         if (player.Creature?.CombatState == null)

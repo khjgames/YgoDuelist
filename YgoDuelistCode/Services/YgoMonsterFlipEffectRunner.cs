@@ -20,6 +20,8 @@ public static class YgoMonsterFlipEffectRunner
     {
         if (!wasFaceDownBefore || card.FaceDown)
             return;
+        if (!card.IsMutable)
+            return;
         if (card is not BaseMonsterCard bm || bm.Owner == null)
             return;
         if (!DuelMonsterFieldRegistry.GetFieldMonsters(bm.Owner).Contains(bm))

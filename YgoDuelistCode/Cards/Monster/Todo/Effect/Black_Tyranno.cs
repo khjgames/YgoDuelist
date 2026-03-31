@@ -22,4 +22,8 @@ public sealed class Black_Tyranno : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

@@ -35,6 +35,7 @@ public sealed class Dragon_Nails : BaseEquipSpellCard
 
     public override bool GrantsSplinterTo(BaseMonsterCard equipped) => equipped.DuelMonsterRace == DuelMonsterRace.Dragon;
 
+    protected override bool CardShowsSplinterKeywordHint => true;
 
     protected override void OnUpgrade() { }
 }

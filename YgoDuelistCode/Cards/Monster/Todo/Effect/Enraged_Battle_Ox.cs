@@ -22,4 +22,8 @@ public sealed class Enraged_Battle_Ox : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsSplinterKeyword => true;
+
+    public override bool AttackDealsSplinterDamage => true;
+
 }

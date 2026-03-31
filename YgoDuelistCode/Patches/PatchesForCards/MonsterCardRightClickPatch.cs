@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.ControllerInput;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Localization;
@@ -19,9 +20,10 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// Monster attack / defense / hand-effect form cycle on right-click (same basis as Java; third mode when supported).
-/// Uses the game's existing AltPressed signal (right-click release on card holder).
-/// - Hand: we subscribe to AltPressed in AddCardHolder and toggle + refresh.
-/// - Compendium/grid: we run before grid emits HolderAltPressed, toggle + refresh grid card, then detail view shows toggled form.
+/// Uses the game's existing AltPressed signal (right-click release on card holder, or controller inspect).
+/// - Hand: <see cref="NHandCardHolder"/> overrides mouse release; we patch that and AltPressed; canonical instances stay non-toggleable there.
+/// - Other holders (compendium, rewards, pack preview, grid selection): we toggle in Prefix on <see cref="NCardHolder.OnMouseReleased"/> /
+///   <see cref="NCardHolder._GuiInput"/> before AltPressed, with canonical preview allowed.
 /// </summary>
 
 [HarmonyPatch(typeof(NPlayerHand), "AddCardHolder")]
@@ -73,12 +75,58 @@ public static class HandHolderMouseReleasedPatch
     }
 }
 
-[HarmonyPatch(typeof(NCardGrid), "OnHolderAltPressed")]
-public static class MonsterCardGridPatch
+/// <summary>
+/// Mirrors <see cref="NCardHolder.OnMouseReleased"/> conditions for the branch that emits AltPressed (right button).
+/// NHandCardHolder overrides OnMouseReleased without calling base, so this never runs for the combat hand.
+/// </summary>
+[HarmonyPatch(typeof(NCardHolder), "OnMouseReleased")]
+public static class NonHandCardHolderMouseReleasedAltPatch
 {
-    public static void Prefix(NCardHolder holder)
+    public static void Prefix(NCardHolder __instance, InputEvent inputEvent)
     {
-        MonsterCardRightClickPatch.TryToggleMonsterAndRefresh(holder);
+        if (!ShouldToggleMonsterBeforeAltPressed(__instance, inputEvent))
+            return;
+        MonsterCardRightClickPatch.TryToggleMonsterAndRefresh(__instance);
+    }
+
+    private static bool ShouldToggleMonsterBeforeAltPressed(NCardHolder holder, InputEvent inputEvent)
+    {
+        if (holder.CardNode == null)
+            return false;
+        var t = Traverse.Create(holder);
+        if (!t.Field<bool>("_isHovered").Value)
+            return false;
+        var currentPress = t.Field<InputEventMouseButton?>("_currentPressedAction").Value;
+        if (currentPress == null)
+            return false;
+        if (!t.Field<bool>("_isClickable").Value)
+            return false;
+        if (inputEvent is not InputEventMouseButton emb)
+            return false;
+        if (emb.ButtonIndex != currentPress.ButtonIndex)
+            return false;
+        return emb.ButtonIndex == MouseButton.Right;
+    }
+}
+
+/// <summary>
+/// Controller "inspect" on card holders uses MegaInput.accept in _GuiInput, not OnMouseReleased. Toggle before AltPressed; skip hand holders
+/// (they use <see cref="MonsterCardHandPatch"/> / mouse patch only for consistency with existing flow).
+/// </summary>
+[HarmonyPatch(typeof(NCardHolder), "_GuiInput")]
+public static class NonHandCardHolderGuiInputAltPatch
+{
+    public static void Prefix(NCardHolder __instance, InputEvent inputEvent)
+    {
+        if (__instance is NHandCardHolder)
+            return;
+        if (!Traverse.Create(__instance).Field<bool>("_isClickable").Value)
+            return;
+        if (__instance.CardNode == null)
+            return;
+        if (!inputEvent.IsActionPressed(MegaInput.accept))
+            return;
+        MonsterCardRightClickPatch.TryToggleMonsterAndRefresh(__instance);
     }
 }
 
@@ -167,7 +215,8 @@ internal static class MonsterCardRightClickPatch
         if (holder.CardNode?.Model is not AbstractMonsterCard monster)
             return;
 
-        monster.ToggleAttackSkill();
+        bool allowCanonicalUiPreview = holder is not NHandCardHolder;
+        monster.ToggleAttackSkill(allowCanonicalUiPreview);
 
         var cardNode = holder.CardNode;
         if (holder is NHandCardHolder handHolder)

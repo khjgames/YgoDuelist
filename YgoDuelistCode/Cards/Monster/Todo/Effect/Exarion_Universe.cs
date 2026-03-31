@@ -60,6 +60,8 @@ public sealed class Exarion_Universe : EffectMonsterCard, IMonsterActivatedEffec
 
     public override bool AttackDealsSplinterDamage => ExarionPiercingStanceActive();
 
+    public override bool CardShowsSplinterKeyword => true;
+
     protected override (int atk, int def) GetSecondaryStats()
     {
         if (!ExarionPiercingStanceActive())

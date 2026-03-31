@@ -103,6 +103,12 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Blighted (YGO direct attack): 50% of unblocked hit damage applies as Blight stacks on the hit enemy (Blight X ticks at end of your turn, ignores Block, then removes).</summary>
     public virtual bool AttackDealsBlightedDamage => false;
 
+    /// <inheritdoc cref="YgoDuelistCard.CardShowsSplinterKeyword" />
+    public override bool CardShowsSplinterKeyword => AttackDealsSplinterDamage;
+
+    /// <inheritdoc cref="YgoDuelistCard.CardShowsBlightKeyword" />
+    public override bool CardShowsBlightKeyword => AttackDealsBlightedDamage;
+
     /// <summary>
     /// When true, Command Attack and Command Defend each use a separate once-per-turn allowance; stiff/fatigue applies after both are used.
     /// </summary>

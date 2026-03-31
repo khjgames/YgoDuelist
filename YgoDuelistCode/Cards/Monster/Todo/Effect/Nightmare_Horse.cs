@@ -38,4 +38,8 @@ public sealed class Nightmare_Horse : EffectMonsterCard
         typeof(Nightmare_Horse),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

@@ -17,7 +17,7 @@ public sealed class Blind_Destruction : BaseContinuousTrapCard
         new[] { new DynamicVar("Mgc", 12m) };
 
     public Blind_Destruction()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
     // Dictates the card pack tags this card will be included in.
@@ -35,7 +35,11 @@ public sealed class Blind_Destruction : BaseContinuousTrapCard
         typeof(Blind_Destruction),
     };
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(8m);
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].UpgradeValueBy(8m);
+    }
 
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;

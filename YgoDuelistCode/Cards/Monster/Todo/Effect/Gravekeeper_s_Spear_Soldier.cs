@@ -22,4 +22,8 @@ public sealed class Gravekeeper_s_Spear_Soldier : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsSplinterKeyword => true;
+
+    public override bool AttackDealsSplinterDamage => true;
+
 }

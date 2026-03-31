@@ -134,6 +134,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         if (Type == CardType.Attack && cardPlay.Target != null)
         {
+            await BeforeAttackCombatActionAsync(choiceContext, cardPlay);
             WillSet = false;
             await DamageCmd.Attack((decimal)atk)
                 .FromCard(this)
@@ -155,6 +156,10 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             }
         }
     }
+
+    /// <summary>Runs once before attack damage from <see cref="CombatAction"/> (hand summon in ATK, Command Attack, etc.).</summary>
+    protected virtual Task BeforeAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     /// <summary>After <see cref="CreatureCmd.GainBlock"/> from this card’s skill combat action (defend from hand or command).</summary>
     protected virtual Task OnAfterGainBlockFromCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay, int blockGranted) =>

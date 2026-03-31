@@ -22,4 +22,8 @@ public sealed class Mucus_Yolk : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

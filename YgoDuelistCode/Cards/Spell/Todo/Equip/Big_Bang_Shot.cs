@@ -41,5 +41,7 @@ public sealed class Big_Bang_Shot : BaseEquipSpellCard
 
     public override bool GrantsSplinterTo(BaseMonsterCard equipped) => true;
 
+    protected override bool CardShowsSplinterKeywordHint => true;
+
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(4m);
 }

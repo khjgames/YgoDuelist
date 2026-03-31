@@ -38,4 +38,8 @@ public sealed class Ooguchi : EffectMonsterCard
         typeof(Ooguchi),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

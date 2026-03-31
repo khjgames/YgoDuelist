@@ -38,4 +38,8 @@ public sealed class Rainbow_Flower : EffectMonsterCard
         typeof(Rainbow_Flower),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

@@ -42,6 +42,8 @@ public sealed class Poison_of_the_Old_Man : BaseSpellCard
         typeof(Poison_of_the_Old_Man),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState is not { } cs)

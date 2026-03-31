@@ -11,12 +11,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// Trunk/side counts use <see cref="SerializableCard.CurrentUpgradeLevel"/> / <see cref="SerializableCard.FloorAddedToDeck"/> (no custom prop names in combat replay).
 /// Extra deck count uses <see cref="ExtraDeckCountProp"/> on <see cref="SavedProperties"/> (save trailer only).
 /// Minimum deck size and <see cref="OwedRareCardVouchersProp"/> use int props when non-default.
-/// Legacy saves may still use int props <see cref="TrunkCountProp"/> / <see cref="SideCountProp"/> for trunk/side.
 /// </summary>
 public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
 {
-    public const string TrunkCountProp = "ygo_trunk_count";
-    public const string SideCountProp = "ygo_side_count";
     public const string ExtraDeckCountProp = "ygo_extra_count";
     public const string MinDeckSizeProp = "ygo_min_deck_size";
     public const string OwedRareCardVouchersProp = "ygo_owed_rare_vouchers";
@@ -41,32 +38,15 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
     public static void ReadTrailerCounts(SerializableCard marker, out int extraDeckCount, out int trunkCount, out int sideCount)
     {
         extraDeckCount = 0;
-        trunkCount = 0;
-        sideCount = 0;
-        bool legacy = false;
+        trunkCount = marker.CurrentUpgradeLevel;
+        sideCount = marker.FloorAddedToDeck ?? 0;
         if (marker.Props?.ints != null)
         {
             foreach (SavedProperties.SavedProperty<int> p in marker.Props.ints)
             {
                 if (p.name == ExtraDeckCountProp)
                     extraDeckCount = Math.Clamp(p.value, 0, MaxSerializedPileCount);
-                else if (p.name == TrunkCountProp)
-                {
-                    trunkCount = p.value;
-                    legacy = true;
-                }
-                else if (p.name == SideCountProp)
-                {
-                    sideCount = p.value;
-                    legacy = true;
-                }
             }
-        }
-
-        if (!legacy)
-        {
-            trunkCount = marker.CurrentUpgradeLevel;
-            sideCount = marker.FloorAddedToDeck ?? 0;
         }
 
         trunkCount = Math.Clamp(trunkCount, 0, MaxSerializedPileCount);

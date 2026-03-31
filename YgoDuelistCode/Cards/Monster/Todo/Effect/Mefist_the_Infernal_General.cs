@@ -22,4 +22,8 @@ public sealed class Mefist_the_Infernal_General : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsSplinterKeyword => true;
+
+    public override bool AttackDealsSplinterDamage => true;
+
 }

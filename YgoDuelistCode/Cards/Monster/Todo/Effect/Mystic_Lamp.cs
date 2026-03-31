@@ -38,4 +38,8 @@ public sealed class Mystic_Lamp : EffectMonsterCard
         typeof(Mystic_Lamp),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

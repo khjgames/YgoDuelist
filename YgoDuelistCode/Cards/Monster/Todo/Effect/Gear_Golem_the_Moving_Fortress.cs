@@ -23,4 +23,8 @@ public sealed class Gear_Golem_the_Moving_Fortress : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

@@ -22,4 +22,8 @@ public sealed class Amphibious_Bugroth_MK_3 : EffectMonsterCard
     {
     }
 
+    public override bool CardShowsBlightKeyword => true;
+
+    public override bool AttackDealsBlightedDamage => true;
+
 }

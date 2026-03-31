@@ -38,4 +38,8 @@ public sealed class Mad_Sword_Beast : EffectMonsterCard
         typeof(Mad_Sword_Beast),
     };
 
+    public override bool CardShowsSplinterKeyword => true;
+
+    public override bool AttackDealsSplinterDamage => true;
+
 }

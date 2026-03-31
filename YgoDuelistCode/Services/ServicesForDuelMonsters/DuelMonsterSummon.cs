@@ -70,7 +70,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
     /// <param name="canAttackThisTurn">If <c>true</c>, Command Attack/Defend may be used this turn. If <c>false</c> (normal/tribute default), they are exhausted (stiff/fatigued) this turn.</param>
     public static async Task<bool> TrySummonDuelMonster(Player player, BaseMonsterCard card, PlayerChoiceContext _, bool canAttackThisTurn = false)
     {
-        if (player?.Creature?.CombatState == null || !card.CanSummonDuelMonster)
+        if (player?.Creature?.CombatState == null
+            || (!card.CanSummonDuelMonster && !card.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
             return false;
 
         if (CountLiveDuelMonsters(player) >= MaxDuelMonstersPerPlayer)

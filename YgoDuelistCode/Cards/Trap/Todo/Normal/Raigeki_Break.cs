@@ -37,6 +37,8 @@ public sealed class Raigeki_Break : BaseTrapCard
         typeof(Raigeki_Break),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");

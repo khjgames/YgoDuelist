@@ -110,9 +110,6 @@ public sealed class Command_Attack : MonsterCommandCard
                 player.Creature);
         }
 
-        if (SourceMonster is Jirai_Gumo gumo)
-            await Jirai_Gumo.RunAttackDeclarationCoinIfEligibleAsync(choiceContext, player, player.Creature, gumo, cardPlay);
-
         if (SourceMonster is Dice_Jar diceJar)
             await diceJar.RunDiceJarAttackAsync(choiceContext, cardPlay);
         else

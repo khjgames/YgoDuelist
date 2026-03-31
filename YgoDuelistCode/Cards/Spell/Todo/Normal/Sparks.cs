@@ -38,6 +38,8 @@ public sealed class Sparks : BaseSpellCard
         typeof(Hinotama),
     };
 
+    public override bool CardShowsBlightKeyword => true;
+
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)
