@@ -1,3 +1,5 @@
+using YgoDuelist.YgoDuelistCode.Cards;
+using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -23,7 +25,7 @@ public sealed class Jigen_Bakudan : EffectMonsterCard, IMonsterFlipEffect
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
@@ -33,6 +35,20 @@ public sealed class Jigen_Bakudan : EffectMonsterCard, IMonsterFlipEffect
             duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
+    // Dictates the card pack tags this card will be included in.
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn;
+    // You will always see bundled cards when RNG rolls this card, but not the other way around.
+    //public override Type[] BundledCards => new[]
+    //{
+    //    typeof(This_Card),
+    //    typeof(Another_Bundled_Card)
+    //};
+
+    // You will see these related cards more often with this card in your deck or side deck.
+    public override Type[] RelatedCards => new[]
+    {
+        typeof(Jigen_Bakudan),
+    };
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {

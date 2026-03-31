@@ -15,7 +15,6 @@ public sealed class Shield_Sword : BaseSpellCard
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
-
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
@@ -31,6 +30,7 @@ public sealed class Shield_Sword : BaseSpellCard
     {
         typeof(Shield_Sword),
     };
+
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

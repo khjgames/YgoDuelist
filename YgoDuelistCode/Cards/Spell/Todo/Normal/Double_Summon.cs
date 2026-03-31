@@ -21,21 +21,20 @@ public sealed class Double_Summon : BaseSpellCard
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
+    // Dictates the card pack tags this card will be included in.
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+    // You will always see bundled cards when RNG rolls this card, but not the other way around.
+    //public override Type[] BundledCards => new[]
+    //{
+    //    typeof(This_Card),
+    //    typeof(Another_Bundled_Card)
+    //};
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Spell | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Normal;
-
-    public override Type[] RelatedCards =>
-    [
+    // You will see these related cards more often with this card in your deck or side deck.
+    public override Type[] RelatedCards => new[]
+    {
         typeof(Double_Summon),
-        typeof(Legion_the_Fiend_Jester),
-        typeof(Dark_Magician),
-        typeof(Dark_Magician_Girl),
-        typeof(Skilled_Dark_Magician),
-        typeof(Dark_Magician_of_Chaos),
-        typeof(Toon_Dark_Magician_Girl),
-        typeof(Dark_Magic_Attack),
-    ];
+    };
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

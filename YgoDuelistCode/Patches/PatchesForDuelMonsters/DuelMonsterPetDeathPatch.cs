@@ -76,7 +76,7 @@ public static class DuelMonsterPetDeathPatch
                 && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<The_Sanctuary_in_the_Sky>(player))
             {
                 bool dieForYou = pet.HasPower<DieForYouPower>()
-                    || (MonsterCommandRegistry.TryGet(pet, out var cmdState) && cmdState.DieForYouEnabled);
+                    || (MonsterCommandRegistry.TryGet(pet, out var monsterCommandState) && monsterCommandState.DieForYouEnabled);
                 if (dieForYou)
                     GraveyardRelic.ArmSanctuaryHalveNextSpillDamage(player);
             }

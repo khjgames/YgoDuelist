@@ -1,3 +1,5 @@
+using YgoDuelist.YgoDuelistCode.Cards;
+using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -21,14 +23,8 @@ public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapE
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
-
-    public BaseMonsterCard? EquipLinkedMonster => _equipLinkedMonster;
-
-    public void SetEquipLinkedMonster(BaseMonsterCard? monster) => _equipLinkedMonster = monster;
-
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Trap;
-
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
     //public override Type[] BundledCards => new[]
     //{
@@ -39,9 +35,12 @@ public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapE
     // You will see these related cards more often with this card in your deck or side deck.
     public override Type[] RelatedCards => new[]
     {
-        typeof(Monster_Reborn),
-        typeof(Foolish_Burial)
+        typeof(Call_of_the_Haunted),
     };
+
+    public BaseMonsterCard? EquipLinkedMonster => _equipLinkedMonster;
+
+    public void SetEquipLinkedMonster(BaseMonsterCard? monster) => _equipLinkedMonster = monster;
 
     protected override void OnUpgrade()
     {

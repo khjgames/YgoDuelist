@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -43,6 +45,9 @@ public static class LegionFiendJesterSpellcasterConduit
     /// <summary>Hand preview / playability: waive conduit stars for the next eligible Spellcaster normal summon.</summary>
     public static bool ShouldWaiveConduitStarCostForHandSpellcaster(BaseMonsterCard card)
     {
+        // Owner/Pile assert mutable; canonical templates (e.g. card library grid) must not touch them.
+        if (card.IsCanonical)
+            return false;
         if (card.DuelMonsterRace != DuelMonsterRace.Spellcaster || card.Owner == null)
             return false;
         if (card.Pile?.Type != PileType.Hand)

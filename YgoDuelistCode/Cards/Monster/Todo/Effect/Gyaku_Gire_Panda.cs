@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
@@ -23,9 +24,20 @@ public sealed class Gyaku_Gire_Panda : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
+    // Dictates the card pack tags this card will be included in.
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Earth;
+    // You will always see bundled cards when RNG rolls this card, but not the other way around.
+    //public override Type[] BundledCards => new[]
+    //{
+    //    typeof(This_Card),
+    //    typeof(Another_Bundled_Card)
+    //};
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Earth | YgoCardPackTags.Burn | YgoCardPackTags.Normal;
+    // You will see these related cards more often with this card in your deck or side deck.
+    public override Type[] RelatedCards => new[]
+    {
+        typeof(Gyaku_Gire_Panda),
+    };
 
     /// <summary>+printed <c>Mgc</c> ATK per living hittable enemy (YGO: +300 per opponent monster).</summary>
     protected override (int atk, int def) GetSecondaryStats()

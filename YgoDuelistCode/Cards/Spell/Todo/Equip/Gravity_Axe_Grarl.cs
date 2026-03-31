@@ -20,7 +20,6 @@ public sealed class Gravity_Axe_Grarl : BaseEquipSpellCard
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
-
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 

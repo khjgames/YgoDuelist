@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -56,7 +57,7 @@ public static class YgoCurseOfDarknessSpellHook
             return;
 
         Curse_of_Darkness? curse = YgoCurseOfDarknessField.GetFirstActiveCurse(player);
-        CardModel damageSource = curse ?? spell;
+        CardModel damageSource = curse is not null ? curse : spell;
 
         await CreatureCmd.Damage(choiceContext, victim, damage, ValueProp.Unpowered, player.Creature, damageSource);
     }

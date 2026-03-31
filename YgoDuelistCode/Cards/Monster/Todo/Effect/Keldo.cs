@@ -40,7 +40,7 @@ public sealed class Keldo : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Earth | YgoCardPackTags.Normal;
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
 
     /// <summary>
     /// Called from <see cref="DuelMonsterPetDeathPatch"/> after the duel monster dies: move equips + this card to GY, then resolve the optional GY → discard selection.

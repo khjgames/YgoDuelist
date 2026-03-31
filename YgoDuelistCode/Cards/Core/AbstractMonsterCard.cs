@@ -184,6 +184,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// <summary>Cycles attack / defense, or attack / defense / hand effect when supported. Right-click in hand.</summary>
     public void ToggleAttackSkill()
     {
+        if (IsCanonical)
+            return;
         if (this is BaseMonsterCard bm && MonsterCommandRegistry.SourceMonsterHasDieForYouForcedActive(Owner, bm))
             return;
 

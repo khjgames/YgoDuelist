@@ -220,15 +220,21 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         if (card is not BaseMonsterCard monster)
             return 0;
 
-        var owner = card.Owner;
-        var field = DuelMonsterFieldRegistry
-            .GetFieldMonsters(owner)?
-            .ToList() ?? new List<BaseMonsterCard>();
-
-        // For preview, pretend this monster is also on the field
-        // so its own aura (GetStatEffect) applies to itself.
-        if (!field.Contains(monster))
-            field.Add(monster);
+        // Owner asserts mutable; canonical templates (card library, compendium) must not read it.
+        List<BaseMonsterCard> field;
+        if (card.IsCanonical)
+            field = new List<BaseMonsterCard> { monster };
+        else
+        {
+            var owner = card.Owner;
+            field = DuelMonsterFieldRegistry
+                .GetFieldMonsters(owner)?
+                .ToList() ?? new List<BaseMonsterCard>();
+            // For preview, pretend this monster is also on the field
+            // so its own aura (GetStatEffect) applies to itself.
+            if (!field.Contains(monster))
+                field.Add(monster);
+        }
 
         var stats = monster.CalcDuelMonsterStats(field);
         return stats.Atk;
@@ -239,13 +245,18 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         if (card is not BaseMonsterCard monster)
             return 0;
 
-        var owner = card.Owner;
-        var field = DuelMonsterFieldRegistry
-            .GetFieldMonsters(owner)?
-            .ToList() ?? new List<BaseMonsterCard>();
-
-        if (!field.Contains(monster))
-            field.Add(monster);
+        List<BaseMonsterCard> field;
+        if (card.IsCanonical)
+            field = new List<BaseMonsterCard> { monster };
+        else
+        {
+            var owner = card.Owner;
+            field = DuelMonsterFieldRegistry
+                .GetFieldMonsters(owner)?
+                .ToList() ?? new List<BaseMonsterCard>();
+            if (!field.Contains(monster))
+                field.Add(monster);
+        }
 
         var stats = monster.CalcDuelMonsterStats(field);
         return stats.Def;

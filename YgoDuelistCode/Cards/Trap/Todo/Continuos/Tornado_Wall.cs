@@ -22,7 +22,6 @@ public sealed class Tornado_Wall : BaseContinuousTrapCard
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
-
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Trap;
 

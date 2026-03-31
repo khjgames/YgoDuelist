@@ -5,23 +5,23 @@ Enchanted Javelin | Starter | Trap | Heal
 Stumbling | Starter | Trap
 Tornado Wall | Starter | Trap
 Spell Shield Type-B | Starter | Trap
-Skull Invitation | Starter | Spell | Burn
+Skull Invitation | Starter | Trap | Burn
 Shield & Sword | Starter | Spell
 Secret Barrel | Starter | Trap | Burn
-Solemn Wishes | Trap | Heal | Spell |
-Soul Resurrection | Trap | Normal | Draw| 
-The Bistro Butcher | Draw |
-Axe of Despair - Rare | Spell | Burn |
-Blank Pendant - Uncommon | Spell | Burn |
-Banner of Courage - | Spell |
-Yellow Luster Shield - | Spell |
-Call of the Haunted - Uncommon | Trap |
-Castle Walls - | Trap |
-Reinforcements - | Trap |
-Double_Summon - | Spell |
-Megamorph - Rare | Spell | Burn |
-Poison of the Old Man | Spell | Burn | Heal |
-Dark Spirit of the Silent | Trap |
+Solemn Wishes | Starter | Trap | Heal
+Soul Resurrection | Starter | Trap | Normal | Draw
+The Bistro Butcher | Starter | Draw
+Axe of Despair | Starter | Rare | Spell | Burn
+Blank Pendant | Starter | Uncommon | Spell | Burn
+Banner of Courage | Starter | Spell
+Yellow Luster Shield | Starter | Spell
+Call of the Haunted | Starter | Uncommon | Trap
+Castle Walls | Starter | Trap
+Reinforcements | Starter | Trap
+Double_Summon | Starter | Spell
+Megamorph | Starter | Rare | Spell | Burn
+Poison of the Old Man | Starter | Spell | Burn | Heal
+Dark Spirit of the Silent | Starter | Trap
 
 
 Dragon Nails | Starter | Uncommon | Spell | Dragon 
@@ -85,7 +85,7 @@ Jinzo 7 - Uncommon | Burn
 Spirit Reaper - Uncommon
 Aswan Apparition - Uncommon | Draw | Trap
 Magical Plant Mandragola - Uncommon | Spell
-Burglar
+Burglar | Normal
 Ameba | Water | Burn | Ocean
 Great Maju Garzett - 2 Cost - Uncommon | Dark | Fiend | 
 Leghul - Uncommon | Burn |
@@ -114,7 +114,7 @@ Hayabusa Knight - Uncommon | Burn |
 Mad Sword Beast - Uncommon | Burn | (has Splinter damage)
 Mask of Darkness - Uncommon | Trap | Draw |
 Magician of Faith - Uncommon | Spell | Draw |
-Posessed Dark Soul 
+Possessed Dark Soul | Uncommon | Dark | Fiend
 Slate Warrior - Rare | Burn
 Spirit Caller - Uncommon | Draw | Normal
 Rite of Spirit - Uncommon | Trap | Draw | Normal
@@ -170,12 +170,12 @@ Yado Karu - Uncommon | Draw |
 Yomi Ship - Uncommon | Burn |
 Rigorous Reaver - Rare | Trap |
 Jirai_Gumo - Uncommon | Burn |
-Narrow Pass |Trap|
-Copycat | Light | Spellcaster | Chance | Trap |
-Electric Lizard - Uncommon -  
-Karate Man - Uncommon | Burn | 
-King Tiger Wanghu - Uncommon | Burn |
-Dice Jar | Rare | Chance | Burn |
+Narrow Pass | Rare | Trap
+Copycat | Rare | Light | Spellcaster | Chance | Trap
+Electric Lizard | Uncommon | Burn
+Karate Man | Uncommon | Burn | Earth | Warrior
+King Tiger Wanghu | Uncommon | Burn | Earth
+Dice Jar | Rare | Chance | Burn
 
 
 

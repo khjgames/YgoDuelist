@@ -16,6 +16,12 @@ public sealed class YgoFortunetellingGuessProxyCard : CustomCardModel
 {
     public YgoFortuneGuessKind GuessKind { get; }
 
+    /// <summary>ModelDb requires a parameterless ctor; Fortunetelling uses <see cref="YgoFortunetellingGuessProxyCard(YgoFortuneGuessKind)"/> for real picks.</summary>
+    public YgoFortunetellingGuessProxyCard()
+        : this(YgoFortuneGuessKind.Spell)
+    {
+    }
+
     public YgoFortunetellingGuessProxyCard(YgoFortuneGuessKind kind)
         : base(0, CardType.Skill, CardRarity.Common, TargetType.Self, showInCardLibrary: false, autoAdd: false)
     {

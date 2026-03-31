@@ -30,7 +30,6 @@ public sealed class Monster_Reborn : BaseSpellCard
         : base(1, CardRarity.Rare, TargetType.Self, DuelMonsterRace.SpellNormal)
     {
     }
-
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 

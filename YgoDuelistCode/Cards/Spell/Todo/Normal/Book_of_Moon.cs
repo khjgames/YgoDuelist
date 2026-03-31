@@ -22,7 +22,6 @@ public sealed class Book_of_Moon : BaseSpellCard
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
     {
     }
-
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 

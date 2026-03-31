@@ -1,3 +1,5 @@
+using YgoDuelist.YgoDuelistCode.Cards;
+using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -18,7 +20,7 @@ public sealed class Possessed_Dark_Soul : EffectMonsterCard, IMonsterActivatedEf
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
@@ -28,6 +30,20 @@ public sealed class Possessed_Dark_Soul : EffectMonsterCard, IMonsterActivatedEf
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
+    // Dictates the card pack tags this card will be included in.
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+    // You will always see bundled cards when RNG rolls this card, but not the other way around.
+    //public override Type[] BundledCards => new[]
+    //{
+    //    typeof(This_Card),
+    //    typeof(Another_Bundled_Card)
+    //};
+
+    // You will see these related cards more often with this card in your deck or side deck.
+    public override Type[] RelatedCards => new[]
+    {
+        typeof(Possessed_Dark_Soul),
+    };
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;

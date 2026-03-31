@@ -35,9 +35,8 @@ public sealed class Enraged_Muka_Muka : EffectMonsterCard
             duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
-
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Earth;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
     //public override Type[] BundledCards => new[]
@@ -49,13 +48,7 @@ public sealed class Enraged_Muka_Muka : EffectMonsterCard
     // You will see these related cards more often with this card in your deck or side deck.
     public override Type[] RelatedCards => new[]
     {
-        typeof(Muka_Muka),
         typeof(Enraged_Muka_Muka),
-        typeof(Pot_Of_Greed),
-        typeof(Upstart_Goblin),
-        typeof(Thunder_Dragon),
-        typeof(Spellbook_Organization),
-        typeof(Rush_Recklessly),
     };
 
     /// <summary>Vars computed from base stats; CalculatedATK/CalculatedDEF come from NormalMonsterCard.</summary>
@@ -63,7 +56,9 @@ public sealed class Enraged_Muka_Muka : EffectMonsterCard
 
     private static int GetOtherCardsInHand(CardModel card)
     {
-        if (card?.Owner == null)
+        if (card == null || card.IsCanonical)
+            return 0;
+        if (card.Owner == null)
             return 0;
         if (CombatManager.Instance?.IsInProgress != true)
             return 0;

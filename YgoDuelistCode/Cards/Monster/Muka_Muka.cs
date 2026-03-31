@@ -64,7 +64,9 @@ public sealed class Muka_Muka : EffectMonsterCard
     /// <summary>When not in hand (e.g. deck/compendium) this is 0, so displayed values are base ATK/DEF.</summary>
     private static int GetOtherCardsInHand(CardModel card)
     {
-        if (card?.Owner == null)
+        if (card == null || card.IsCanonical)
+            return 0;
+        if (card.Owner == null)
             return 0;
         if (CombatManager.Instance?.IsInProgress != true)
             return 0;

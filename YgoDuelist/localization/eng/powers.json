@@ -146,6 +146,7 @@
   "YGODUELIST-SUMMONER_OF_ILLUSIONS_FUSION_TIMER_POWER.title": "Illusion Fusion",
   "YGODUELIST-SUMMONER_OF_ILLUSIONS_FUSION_TIMER_POWER.description": "This Fusion Monster is destroyed at the end of this combat turn (End Phase).",
   "YGODUELIST-SUMMONER_OF_ILLUSIONS_FUSION_TIMER_POWER.smartDescription": "Destroyed at the end of this combat turn.",
+  "YGODUELIST-YGO_SUMMONER_OF_ILLUSIONS_FUSION_TIMER_POWER.smartDescription": "Destroyed at the end of this combat turn.",
   "YGODUELIST-ELECTRIC_LIZARD_STRENGTH_DOWN_POWER.title": "Electric Shock",
   "YGODUELIST-ELECTRIC_LIZARD_STRENGTH_DOWN_POWER.description": "Lose Strength from Electric Lizard; removed after 2 of your turns end.",
   "YGODUELIST-ELECTRIC_LIZARD_STRENGTH_DOWN_POWER.smartDescription": "Lose [red]{Amount}[/red] [orange]Strength[/orange] until 2 of your turns end."
