@@ -80,6 +80,17 @@ public static class YgoSpellTrapZoneAfterPlayUi
         ScheduleSpellTrapSecondHandRepublish(player);
     }
 
+    /// <summary>
+    /// Switches the second hand to the Spell/Trap zone and republishes on the next frame.
+    /// Call after <see cref="YgoSpellTrapZoneBridge.SyncFromZonePile"/> when a card enters the zone from the hand (set or continuous play).
+    /// </summary>
+    public static void ScheduleSpellTrapSecondHandEnsureVisible(Player? player)
+    {
+        if (player == null)
+            return;
+        ScheduleSpellTrapSecondHandRepublish(player);
+    }
+
     private static void ScheduleSpellTrapSecondHandRepublish(Player player)
     {
         SceneTree? tree = NPlayerHand.Instance?.GetTree();

@@ -1,6 +1,9 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
@@ -24,4 +27,11 @@ public sealed class The_Masked_Beast : RitualMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+
+    public override Type[] BundledCards => new[] { typeof(Curse_of_the_Masked_Beast), typeof(The_Masked_Beast) };
+
+    public override Type[] RelatedCards =>
+        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Curse_of_the_Masked_Beast), typeof(The_Masked_Beast));
 }

@@ -1,6 +1,9 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
@@ -22,4 +25,11 @@ public sealed class Performance_of_Sword : RitualMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+
+    public override Type[] BundledCards => new[] { typeof(Commencement_Dance), typeof(Performance_of_Sword) };
+
+    public override Type[] RelatedCards =>
+        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Commencement_Dance), typeof(Performance_of_Sword));
 }

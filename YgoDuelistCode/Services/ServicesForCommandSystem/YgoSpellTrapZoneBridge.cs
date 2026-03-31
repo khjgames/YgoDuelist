@@ -152,7 +152,7 @@ public static class YgoSpellTrapZoneBridge
         SyncFromZonePile(player);
         if (card is BaseFieldSpellCard)
             YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
-        YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
+        YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandEnsureVisible(player);
         return true;
     }
 
@@ -253,7 +253,8 @@ public static class YgoSpellTrapZoneBridge
         if (from != PileType.Hand && from != PileType.Play && from != SpellTrapZonePile.CustomType)
             return;
 
-        if (from == PileType.Hand || from == PileType.Play)
+        bool enteredFromHandOrPlay = from == PileType.Hand || from == PileType.Play;
+        if (enteredFromHandOrPlay)
         {
             if (!HasSpaceForSetOrPlay(player, card))
                 return;
@@ -269,6 +270,8 @@ public static class YgoSpellTrapZoneBridge
             return;
 
         SyncFromZonePile(player);
+        if (enteredFromHandOrPlay)
+            YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandEnsureVisible(player);
     }
 
     /// <summary>

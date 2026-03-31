@@ -17,6 +17,8 @@ public sealed class Activate_Effect : MonsterCommandCard
 {
     private IMonsterActivatedEffect? Effect => SourceMonster as IMonsterActivatedEffect;
 
+    protected internal override string? CommandEnergyIconPrefix => "silent";
+
     public Activate_Effect()
     {
     }
@@ -84,6 +86,8 @@ public sealed class Activate_Effect : MonsterCommandCard
             return af.IsEarthTributeAvailable(commandOwner);
         if (source is The_Little_Swordsman_of_Aile little)
             return little.IsAnotherMonsterControlled(commandOwner);
+        if (source is Winged_Minion winged)
+            return winged.IsAnotherFiendControlled(commandOwner);
         return impl.IsActivatedEffectAvailable;
     }
 }

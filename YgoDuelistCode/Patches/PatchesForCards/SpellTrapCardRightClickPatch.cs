@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
 
@@ -35,6 +36,15 @@ internal static class SpellTrapCardRightClickPatch
             && !fort.FaceDown)
         {
             if (Ominous_Fortunetelling.TryHandleZoneRightClick(handFt, fort))
+                return;
+        }
+
+        if (holder is NHandCardHolder handFusion
+            && holder.CardNode?.Model is Fusion_Gate fusionGate
+            && fusionGate.Pile?.Type == SpellTrapZonePile.CustomType
+            && !fusionGate.FaceDown)
+        {
+            if (Fusion_Gate.TryHandleZoneRightClick(handFusion, fusionGate))
                 return;
         }
 

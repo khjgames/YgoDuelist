@@ -1,5 +1,7 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -19,6 +21,13 @@ public sealed class Curse_of_the_Masked_Beast : RitualSpellCard
             materialLevelCompare: RitualMaterialLevelCompare.AtLeast)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+
+    public override Type[] BundledCards => new[] { typeof(Curse_of_the_Masked_Beast), typeof(The_Masked_Beast) };
+
+    public override Type[] RelatedCards =>
+        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Curse_of_the_Masked_Beast), typeof(The_Masked_Beast));
 
     protected override void OnUpgrade()
     {

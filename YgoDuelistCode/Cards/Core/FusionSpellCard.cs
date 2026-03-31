@@ -10,14 +10,22 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
-/// <summary>Fusion spell: Fusion Summon from the Extra Deck using hand/field materials that match the fusion monster's recipe.</summary>
-public abstract class FusionSpellCard : BaseSpellCard
+/// <summary>
+/// Fusion spell: Fusion Summon from the Extra Deck using hand/field materials that match the fusion monster's
+/// <see cref="FusionMonsterCard.FusionMaterialSlots"/> (named types, requirement filters, or mixed per slot).
+/// </summary>
+public abstract class FusionSpellCard : BaseSpellCard, IFusionSpellSource
 {
     /// <summary>Valid fusion monsters must be assignable to this type (use <see cref="FusionMonsterCard"/> for generic Polymerization-style spells).</summary>
     public Type FusionTargetMonsterType { get; }
 
     /// <summary>When false: single valid fusion in Extra Deck is auto-chosen; when true or multiple candidates, open the picker.</summary>
     public bool RequiresPlayerFusionTargetSelection { get; }
+
+    /// <summary>
+    /// Polymerization sends materials to the Graveyard; Fusion Gate banishes them (Shadow Realm) instead.
+    /// </summary>
+    public virtual bool BanishesFusionMaterials => false;
 
     protected FusionSpellCard(
         int cost,
@@ -57,7 +65,7 @@ public abstract class FusionSpellCard : BaseSpellCard
             && FusionSpellPlayPayload.TryTakePending(this, out FusionSpellPendingResolution? pending)
             && pending != null)
         {
-            await FusionSummonSelection.ApplyResolvedFusionAsync(Owner, pending, choiceContext);
+            await FusionSummonSelection.ApplyResolvedFusionAsync(Owner, this, pending, choiceContext);
         }
 
         await OnFusionSpellAfterResolution(choiceContext, cardPlay);

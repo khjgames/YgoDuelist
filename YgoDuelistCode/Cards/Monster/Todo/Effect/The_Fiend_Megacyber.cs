@@ -47,26 +47,6 @@ public sealed class The_Fiend_Megacyber : EffectMonsterCard
 
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
-    private int? _energyBaseBeforeHandEffectForm;
-
-    protected override void AfterDisplayFormChanged()
-    {
-        base.AfterDisplayFormChanged();
-        if (!IsMutable)
-            return;
-
-        if (IsHandEffectFormActive)
-        {
-            _energyBaseBeforeHandEffectForm ??= EnergyCost.GetWithModifiers(CostModifiers.Local);
-            EnergyCost.SetCustomBaseCost(0);
-        }
-        else if (_energyBaseBeforeHandEffectForm is int saved)
-        {
-            EnergyCost.SetCustomBaseCost(saved);
-            _energyBaseBeforeHandEffectForm = null;
-        }
-    }
-
     protected override bool IsPlayable
     {
         get

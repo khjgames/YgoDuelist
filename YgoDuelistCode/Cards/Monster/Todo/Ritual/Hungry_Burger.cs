@@ -1,6 +1,9 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
@@ -22,4 +25,11 @@ public sealed class Hungry_Burger : RitualMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
+
+    public override Type[] BundledCards => new[] { typeof(Hamburger_Recipe), typeof(Hungry_Burger) };
+
+    public override Type[] RelatedCards =>
+        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Hamburger_Recipe), typeof(Hungry_Burger));
 }

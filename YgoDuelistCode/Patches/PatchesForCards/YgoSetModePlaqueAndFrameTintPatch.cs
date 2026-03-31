@@ -1,6 +1,8 @@
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 
@@ -18,6 +20,8 @@ public static class YgoSetModePlaqueAndFrameTintPatch
     private const float VanillaTypePlaqueMinXSize = 61f;
     private const string FaceDownPortraitPath = "YgoDuelist/images/card_portraits/Face_Down_2.png";
     private const string FaceDownPortraitOverlayNodeName = "YgoFaceDownPortraitOverlay";
+    private const string CanvasGroupMaskMaterialPath = "res://scenes/cards/card_canvas_group_mask_material.tres";
+    private const string CanvasGroupMaskBlurMaterialPath = "res://scenes/cards/card_canvas_group_mask_blur_material.tres";
 
     private static readonly StringName DefaultPortraitBorderTintMeta = new("YgoDefaultPortraitBorderTint");
     private static readonly StringName DefaultTypePlaqueTintMeta = new("YgoDefaultTypePlaqueTint");
@@ -58,6 +62,29 @@ public static class YgoSetModePlaqueAndFrameTintPatch
         NinePatchRect? typePlaque = body.GetNodeOrNull<NinePatchRect>("%TypePlaque");
         if (typePlaque != null && !typePlaque.HasMeta(BaseTypePlaqueYMeta))
             typePlaque.SetMeta(BaseTypePlaqueYMeta, typePlaque.Position.Y);
+
+        ApplySkillSetFramePortraitCanvasGroupMask(__instance, model, body);
+    }
+
+    /// <summary>
+    /// Set-frame skill cards use <c>Inverted_Lip_Set</c> on <see cref="CardModel.PortraitBorder"/>; vanilla's null
+    /// canvas-group material matches the default skill window, not that lip — use the same mask materials as ancient cards.
+    /// </summary>
+    private static void ApplySkillSetFramePortraitCanvasGroupMask(NCard nCard, CardModel model, Control body)
+    {
+        if (model.Rarity == CardRarity.Ancient)
+            return;
+        if (model.Type != CardType.Skill || !YgoSetCardVisualHelper.ShouldUseSetFrame(model))
+            return;
+
+        CanvasGroup? portraitGroup = body.GetNodeOrNull<CanvasGroup>("%PortraitCanvasGroup");
+        if (portraitGroup == null)
+            return;
+
+        string path = nCard.Visibility != ModelVisibility.Visible
+            ? CanvasGroupMaskBlurMaterialPath
+            : CanvasGroupMaskMaterialPath;
+        portraitGroup.Material = PreloadManager.Cache.GetMaterial(path);
     }
 
     [HarmonyPostfix]

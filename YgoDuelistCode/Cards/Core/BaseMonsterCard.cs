@@ -270,6 +270,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         RushRecklesslyPower? rush = GetSourcePetRushRecklesslyPower();
         if (rush != null)
             atk += (int)rush.Amount;
+        WingedMinionTributeAtkPower? wingedTribute = GetSourcePetWingedMinionTributeAtkPower();
+        if (wingedTribute != null)
+            atk += (int)wingedTribute.Amount;
         if (SourcePetHasPower<ReliableDefenderPower>())
             def += ReliableDefenderPower.DefBonus;
 
@@ -439,6 +442,21 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
             return pet.GetPower<RushRecklesslyPower>();
+        }
+
+        return null;
+    }
+
+    private WingedMinionTributeAtkPower? GetSourcePetWingedMinionTributeAtkPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<WingedMinionTributeAtkPower>();
         }
 
         return null;

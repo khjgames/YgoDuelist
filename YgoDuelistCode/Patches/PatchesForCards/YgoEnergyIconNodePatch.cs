@@ -67,7 +67,10 @@ public static class YgoEnergyIconNodePatch
             else
             {
                 icon.Visible = true;
-                if (model.Type == CardType.Attack)
+                string? commandPrefix = mcc.CommandEnergyIconPrefix;
+                if (!string.IsNullOrEmpty(commandPrefix))
+                    energyPrefix = commandPrefix;
+                else if (model.Type == CardType.Attack)
                     customTexturePath = AttackMonsterEnergyPath;
                 else
                     energyPrefix = "defect";

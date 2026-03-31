@@ -1,6 +1,9 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
@@ -21,4 +24,12 @@ public sealed class Chakra : RitualMonsterCard
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+
+    public override Type[] BundledCards => new[] { typeof(Resurrection_of_Chakra), typeof(Chakra) };
+
+    public override Type[] RelatedCards =>
+        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Resurrection_of_Chakra), typeof(Chakra));
 }

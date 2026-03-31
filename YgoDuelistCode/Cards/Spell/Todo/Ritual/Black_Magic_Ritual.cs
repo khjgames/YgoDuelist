@@ -1,5 +1,7 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -19,6 +21,13 @@ public sealed class Black_Magic_Ritual : RitualSpellCard
             materialLevelCompare: RitualMaterialLevelCompare.AtLeast)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+
+    public override Type[] BundledCards => new[] { typeof(Black_Magic_Ritual), typeof(Magician_of_Black_Chaos) };
+
+    public override Type[] RelatedCards =>
+        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Black_Magic_Ritual), typeof(Magician_of_Black_Chaos));
 
     protected override void OnUpgrade()
     {

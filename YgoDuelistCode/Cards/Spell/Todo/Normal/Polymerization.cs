@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
@@ -33,6 +34,8 @@ public sealed class Polymerization : FusionSpellCard
     public override Type[] RelatedCards => new[]
     {
         typeof(Polymerization),
+        typeof(Fusion_Sage),
+        typeof(Fusion_Gate),
     };
 
     protected override void OnUpgrade()

@@ -41,11 +41,12 @@ public static class FusionSummonSelection
 
     public static void EndCompletingFusionSpellPlay() => CompletingFusionSpellPlay.Value = false;
 
-    public static bool HasFeasibleFusionPlay(Player player, FusionSpellCard spell)
+    public static bool HasFeasibleFusionPlay(Player player, IFusionSpellSource spell)
     {
-        foreach (FusionMonsterCard target in GetFusionTargetsInExtraDeck(player, spell))
+        var spellCard = (CardModel)(object)spell;
+        foreach (FusionMonsterCard target in GetFusionTargetsInExtraDeck(player, spell, spellCard))
         {
-            if (HasFeasibleMaterialsForFusion(player, spell, target))
+            if (HasFeasibleMaterialsForFusion(player, spell, spellCard, target))
                 return true;
         }
 
@@ -53,19 +54,20 @@ public static class FusionSummonSelection
     }
 
     /// <summary>Extra Deck fusion monsters the spell can target and that have at least one legal material set right now.</summary>
-    public static List<FusionMonsterCard> GetFeasibleFusionTargetsInExtraDeck(Player player, FusionSpellCard spell)
+    public static List<FusionMonsterCard> GetFeasibleFusionTargetsInExtraDeck(Player player, IFusionSpellSource spell)
     {
+        var spellCard = (CardModel)(object)spell;
         var list = new List<FusionMonsterCard>();
-        foreach (FusionMonsterCard target in GetFusionTargetsInExtraDeck(player, spell))
+        foreach (FusionMonsterCard target in GetFusionTargetsInExtraDeck(player, spell, spellCard))
         {
-            if (HasFeasibleMaterialsForFusion(player, spell, target))
+            if (HasFeasibleMaterialsForFusion(player, spell, spellCard, target))
                 list.Add(target);
         }
 
         return list;
     }
 
-    public static List<FusionMonsterCard> GetFusionTargetsInExtraDeck(Player player, FusionSpellCard spell)
+    public static List<FusionMonsterCard> GetFusionTargetsInExtraDeck(Player player, IFusionSpellSource spell, CardModel spellCard)
     {
         var list = new List<FusionMonsterCard>();
         CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
@@ -75,7 +77,7 @@ public static class FusionSummonSelection
         Type filter = spell.FusionTargetMonsterType;
         foreach (CardModel c in extra.Cards)
         {
-            if (ReferenceEquals(c, spell))
+            if (ReferenceEquals(c, spellCard))
                 continue;
             if (c is FusionMonsterCard fm && filter.IsInstanceOfType(fm))
                 list.Add(fm);
@@ -114,12 +116,13 @@ public static class FusionSummonSelection
     /// </summary>
     public static List<BaseMonsterCard> BuildValidMaterialCandidatesForGrid(
         Player player,
-        FusionSpellCard spell,
+        IFusionSpellSource spell,
         FusionMonsterCard fusionTarget)
     {
-        List<BaseMonsterCard> mats = BuildMaterialCandidates(player, spell, fusionTarget);
+        var spellCard = (CardModel)(object)spell;
+        List<BaseMonsterCard> mats = BuildMaterialCandidates(player, spellCard, fusionTarget);
         var usable = new HashSet<BaseMonsterCard>(ReferenceCardComparer.Instance);
-        foreach (List<BaseMonsterCard> subset in FeasibleFusionMaterialSubsets(player, spell, fusionTarget, mats))
+        foreach (List<BaseMonsterCard> subset in FeasibleFusionMaterialSubsets(player, spell, spellCard, fusionTarget, mats))
         {
             foreach (BaseMonsterCard c in subset)
                 usable.Add(c);
@@ -137,18 +140,19 @@ public static class FusionSummonSelection
 
     private static IEnumerable<List<BaseMonsterCard>> FeasibleFusionMaterialSubsets(
         Player player,
-        FusionSpellCard spell,
+        IFusionSpellSource spell,
+        CardModel spellCard,
         FusionMonsterCard fusionTarget,
         List<BaseMonsterCard>? mats = null)
     {
-        IReadOnlyList<Type> req = fusionTarget.FusionMaterialTypes;
-        if (req.Count == 0)
+        IReadOnlyList<FusionMaterialSlot> slots = fusionTarget.FusionMaterialSlots;
+        if (slots.Count == 0)
             yield break;
 
-        mats ??= BuildMaterialCandidates(player, spell, fusionTarget);
-        foreach (List<BaseMonsterCard> subset in Combinations(mats, req.Count))
+        mats ??= BuildMaterialCandidates(player, spellCard, fusionTarget);
+        foreach (List<BaseMonsterCard> subset in Combinations(mats, slots.Count))
         {
-            if (!MaterialsMatchMultiset(req, subset))
+            if (!FusionMaterialSlotMatching.MaterialsMatchSlots(slots, subset))
                 continue;
             int fieldTributes = subset.Count(m => TributeSummonSelection.ResolvePetForFieldCard(player, m) != null);
             if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, fieldTributes))
@@ -157,59 +161,12 @@ public static class FusionSummonSelection
         }
     }
 
-    private static bool HasFeasibleMaterialsForFusion(Player player, FusionSpellCard spell, FusionMonsterCard fusionTarget) =>
-        FeasibleFusionMaterialSubsets(player, spell, fusionTarget).Any();
-
-    /// <summary>Assign each required type to a distinct picked monster (multiset).</summary>
-    public static bool MaterialsMatchMultiset(IReadOnlyList<Type> requiredTypes, List<BaseMonsterCard> picked)
-    {
-        if (requiredTypes.Count != picked.Count)
-            return false;
-        int substituteCount = picked.Count(IsFusionSubstitute);
-        if (substituteCount > 1)
-            return false;
-        return TryMatch(requiredTypes, picked, 0, new bool[picked.Count], substituteUsed: false);
-    }
-
-    private static bool TryMatch(
-        IReadOnlyList<Type> req,
-        List<BaseMonsterCard> pick,
-        int i,
-        bool[] used,
-        bool substituteUsed)
-    {
-        if (i >= req.Count)
-            return true;
-        Type need = req[i];
-        for (int j = 0; j < pick.Count; j++)
-        {
-            if (used[j])
-                continue;
-            BaseMonsterCard card = pick[j];
-
-            if (need.IsInstanceOfType(card))
-            {
-                used[j] = true;
-                if (TryMatch(req, pick, i + 1, used, substituteUsed))
-                    return true;
-                used[j] = false;
-                continue;
-            }
-
-            if (!substituteUsed && IsFusionSubstitute(card))
-            {
-                used[j] = true;
-                if (TryMatch(req, pick, i + 1, used, substituteUsed: true))
-                    return true;
-                used[j] = false;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool IsFusionSubstitute(BaseMonsterCard card) =>
-        card is IFusionMaterialSubstitute substitute && substitute.CanSubstituteAsFusionMaterial;
+    private static bool HasFeasibleMaterialsForFusion(
+        Player player,
+        IFusionSpellSource spell,
+        CardModel spellCard,
+        FusionMonsterCard fusionTarget) =>
+        FeasibleFusionMaterialSubsets(player, spell, spellCard, fusionTarget).Any();
 
     private static IEnumerable<List<BaseMonsterCard>> Combinations(IReadOnlyList<BaseMonsterCard> pool, int k)
     {
@@ -234,8 +191,9 @@ public static class FusionSummonSelection
         }
     }
 
-    public static async Task<bool> TrySelectFusionResolutionAsync(Player player, FusionSpellCard spell)
+    public static async Task<bool> TrySelectFusionResolutionAsync(Player player, IFusionSpellSource spell)
     {
+        var spellCard = (CardModel)(object)spell;
         var ctx = new BlockingPlayerChoiceContext();
 
         List<FusionMonsterCard> targets = GetFeasibleFusionTargetsInExtraDeck(player, spell);
@@ -268,18 +226,18 @@ public static class FusionSummonSelection
             fusionCard = targets[0];
         }
 
-        IReadOnlyList<Type> req = fusionCard.FusionMaterialTypes;
-        if (req.Count == 0)
+        IReadOnlyList<FusionMaterialSlot> slots = fusionCard.FusionMaterialSlots;
+        if (slots.Count == 0)
             return false;
 
         List<BaseMonsterCard> materials = BuildValidMaterialCandidatesForGrid(player, spell, fusionCard);
-        if (materials.Count < req.Count)
+        if (materials.Count < slots.Count)
             return false;
 
         var matPrompt = new LocString("combat_messages", "FUSION_SUMMON_PICK_MATERIALS");
-        matPrompt.Add("Count", (decimal)req.Count);
+        matPrompt.Add("Count", (decimal)slots.Count);
 
-        var matPrefs = new CardSelectorPrefs(matPrompt, req.Count, req.Count)
+        var matPrefs = new CardSelectorPrefs(matPrompt, slots.Count, slots.Count)
         {
             RequireManualConfirmation = true,
             Cancelable = true
@@ -296,45 +254,56 @@ public static class FusionSummonSelection
         }
 
         List<BaseMonsterCard> pickedMats = matPick.OfType<BaseMonsterCard>().ToList();
-        if (pickedMats.Count != req.Count)
+        if (pickedMats.Count != slots.Count)
             return false;
         if (pickedMats.Distinct().Count() != pickedMats.Count)
             return false;
         if (pickedMats.Any(p => ReferenceEquals(p, fusionCard)))
             return false;
-        if (!MaterialsMatchMultiset(req, pickedMats))
+        if (!FusionMaterialSlotMatching.MaterialsMatchSlots(slots, pickedMats))
             return false;
 
-        FusionSpellPlayPayload.SetPending(spell, new FusionSpellPendingResolution(fusionCard, pickedMats));
+        FusionSpellPlayPayload.SetPending(spellCard, new FusionSpellPendingResolution(fusionCard, pickedMats));
         return true;
     }
 
     public static async Task ApplyResolvedFusionAsync(
         Player player,
+        IFusionSpellSource spell,
         FusionSpellPendingResolution resolution,
         PlayerChoiceContext choiceContext)
     {
+        bool banish = spell.BanishesFusionMaterials;
         foreach (BaseMonsterCard m in resolution.Materials)
         {
             Creature? pet = TributeSummonSelection.ResolvePetForFieldCard(player, m);
             if (pet != null)
             {
                 await CreatureCmd.Kill(pet, force: true);
+                if (banish)
+                    await YgoShadowRealmService.BanishCard(player, m);
                 continue;
             }
 
             if (m.Pile?.Type == PileType.Hand)
             {
-                CardPile? gy = GraveyardPile.CustomType.GetPile(player);
-                if (gy == null)
-                    return;
+                if (banish)
+                {
+                    await YgoShadowRealmService.BanishCard(player, m);
+                }
+                else
+                {
+                    CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+                    if (gy == null)
+                        return;
 
-                await CardPileCmd.Add(
-                    new CardModel[] { m },
-                    gy,
-                    CardPilePosition.Top,
-                    m,
-                    false);
+                    await CardPileCmd.Add(
+                        new CardModel[] { m },
+                        gy,
+                        CardPilePosition.Top,
+                        m,
+                        false);
+                }
             }
             else
             {

@@ -1,6 +1,9 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
@@ -21,4 +24,12 @@ public sealed class Fiend_S_Mirror : RitualMonsterCard
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+
+    public override Type[] BundledCards => new[] { typeof(Beastly_Mirror_Ritual), typeof(Fiend_S_Mirror) };
+
+    public override Type[] RelatedCards =>
+        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Beastly_Mirror_Ritual), typeof(Fiend_S_Mirror));
 }

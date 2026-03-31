@@ -1,6 +1,9 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
@@ -21,4 +24,12 @@ public sealed class Javelin_Beetle : RitualMonsterCard
             duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Insect;
+
+    public override Type[] BundledCards => new[] { typeof(Javelin_Beetle_Pact), typeof(Javelin_Beetle) };
+
+    public override Type[] RelatedCards =>
+        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Javelin_Beetle_Pact), typeof(Javelin_Beetle));
 }

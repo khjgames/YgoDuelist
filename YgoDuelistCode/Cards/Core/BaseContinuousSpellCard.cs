@@ -41,6 +41,5 @@ public abstract class BaseContinuousSpellCard : BaseSpellCard
         await YgoCurseOfDarknessSpellHook.AfterSpellResolved(choiceContext, this);
         await YgoSpellTrapZoneBridge.ActivateContinuousSpellAsync(this);
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
-        YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
     }
 }

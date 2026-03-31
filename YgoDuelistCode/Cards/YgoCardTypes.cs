@@ -49,6 +49,29 @@ public enum YgoCardPackTags : long // up to 64 flags
     Starter = 1L << 28
 }
 
+/// <summary>How a single fusion material slot accepts materials: exact named card, requirement filter only, or either.</summary>
+public enum FusionMaterialSlotMode : byte
+{
+    /// <summary>Exact <see cref="FusionMaterialSlot.NamedType"/> match, or one global fusion substitute.</summary>
+    NamedOnly,
+    /// <summary>Monster must satisfy <see cref="FusionMaterialSlot.Req"/>; substitutes never apply.</summary>
+    RequirementOnly,
+    /// <summary>Named type or substitute, or requirement match (substitute does not satisfy the requirement path).</summary>
+    NamedOrRequirement
+}
+
+/// <summary>Which stat filters are active on a <see cref="FusionMaterialRequirements"/> instance.</summary>
+[Flags]
+public enum FusionMaterialRequirementFilterMask : byte
+{
+    None = 0,
+    Level = 1 << 0,
+    Attribute = 1 << 1,
+    Atk = 1 << 2,
+    Def = 1 << 3,
+    Race = 1 << 4
+}
+
 /// <summary>
 /// Implement on card models that use ZGO-style card frames/backgrounds.
 /// </summary>

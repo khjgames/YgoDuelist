@@ -7,7 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Five_Headed_Dragon : FusionMonsterCard
 {
-    // DB fusion recipe not parsed as quoted names: '5 Dragon monsters' — no FusionMaterialTypes.
+    /// <summary>YGO: 5 Dragon monsters — requirement-based slots (any Dragon normal/effect that satisfies race).</summary>
     public Five_Headed_Dragon()
         : base(
             cost: 1,
@@ -19,7 +19,12 @@ public sealed class Five_Headed_Dragon : FusionMonsterCard
             baseAtk: 50,
             baseDef: 50,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Dragon)
+            duelMonsterRace: DuelMonsterRace.Dragon,
+            FusionMaterialSlot.ForRequirement(FusionMaterialRequirements.DragonRaceOnly()),
+            FusionMaterialSlot.ForRequirement(FusionMaterialRequirements.DragonRaceOnly()),
+            FusionMaterialSlot.ForRequirement(FusionMaterialRequirements.DragonRaceOnly()),
+            FusionMaterialSlot.ForRequirement(FusionMaterialRequirements.DragonRaceOnly()),
+            FusionMaterialSlot.ForRequirement(FusionMaterialRequirements.DragonRaceOnly()))
     {
     }
 }

@@ -40,6 +40,12 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     /// </summary>
     protected internal virtual string? CustomCommandEnergyTexturePath => null;
 
+    /// <summary>
+    /// When non-null and <see cref="CustomCommandEnergyTexturePath"/> is empty, <see cref="Patches.YgoEnergyIconNodePatch"/> uses this
+    /// prefix with <see cref="MegaCrit.Sts2.Core.Helpers.EnergyIconHelper.GetPath"/> (e.g. <c>"silent"</c> for spell-like commands).
+    /// </summary>
+    protected internal virtual string? CommandEnergyIconPrefix => null;
+
     // Parameterless ctor for reflection / scanners – never used at runtime for real commands.
     protected MonsterCommandCard()
         : base(0, CardType.Skill, CardRarity.Event, TargetType.Self)
