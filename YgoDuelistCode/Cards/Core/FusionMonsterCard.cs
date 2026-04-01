@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
@@ -48,7 +50,8 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         int? duelMonsterAttackPlayEnergyOverride = null,
         int? duelMonsterDefensePlayEnergyOverride = null)
         : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace,
-            duelMonsterAttackPlayEnergyOverride, duelMonsterDefensePlayEnergyOverride)
+            ResolveFusionAttackStancePlayEnergy(baseAtk, duelMonsterAttackPlayEnergyOverride),
+            ResolveFusionDefenseStancePlayEnergy(baseDef, duelMonsterDefensePlayEnergyOverride))
     {
         ArgumentNullException.ThrowIfNull(fusionMaterialSlots);
         _fusionMaterialSlots = (FusionMaterialSlot[])fusionMaterialSlots.Clone();
@@ -90,6 +93,22 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         : this(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace,
             fusionMaterialSlots, null, null)
     {
+    }
+
+    /// <summary>Low printed ATK fusions: attack stance / Command Attack costs 0 unless an explicit override is set.</summary>
+    private static int? ResolveFusionAttackStancePlayEnergy(int baseAtk, int? explicitOverride)
+    {
+        if (explicitOverride.HasValue)
+            return explicitOverride.Value;
+        return baseAtk <= 9 ? 0 : null;
+    }
+
+    /// <summary>Low printed DEF fusions: defense stance costs 0 unless an explicit override is set.</summary>
+    private static int? ResolveFusionDefenseStancePlayEnergy(int baseDef, int? explicitOverride)
+    {
+        if (explicitOverride.HasValue)
+            return explicitOverride.Value;
+        return baseDef <= 8 ? 0 : null;
     }
 
     private static FusionMaterialSlot[] MapNamedTypesToSlots(Type[] fusionMaterialTypes)
@@ -170,6 +189,38 @@ public abstract class FusionMonsterCard : EffectMonsterCard
             if (CombatManager.Instance?.IsInProgress == true && Pile?.Type == PileType.Hand)
                 return false;
             return base.IsPlayable;
+        }
+    }
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip tip in base.ExtraHoverTips)
+                yield return tip;
+
+            foreach (IHoverTip tip in BuildNamedFusionMaterialPreviewTips())
+                yield return tip;
+        }
+    }
+
+    /// <summary>
+    /// One full-card hover tip per distinct named material (<see cref="FusionMaterialSlot.NamedType"/>),
+    /// same pattern as ritual previews (<see cref="HoverTipFactory.FromCard"/> on catalog templates).
+    /// </summary>
+    private IEnumerable<IHoverTip> BuildNamedFusionMaterialPreviewTips()
+    {
+        var seen = new HashSet<Type>();
+        foreach (FusionMaterialSlot slot in _fusionMaterialSlots)
+        {
+            Type? named = slot.NamedType;
+            if (named == null || !seen.Add(named))
+                continue;
+            if (!typeof(BaseMonsterCard).IsAssignableFrom(named) || named.IsAbstract)
+                continue;
+
+            CardModel template = YgoPackCardCatalog.CardFromType(named);
+            yield return HoverTipFactory.FromCard(template);
         }
     }
 }

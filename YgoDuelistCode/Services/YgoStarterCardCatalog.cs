@@ -32,10 +32,17 @@ public enum StarterCategory
 /// <summary>
 /// Cards with <see cref="YgoCardPackTags.Starter"/> for the pre-Neow starter grid.
 /// Fills <see cref="GridSize"/> slots with fixed rarity order and fixed per-category counts, rotating through a shuffled <see cref="CategoryPrecedenceBase"/>.
+/// If the grid contains a <see cref="RitualSpellCard"/>, its ritual target monster is inserted immediately after that spell (not counted toward category quotas).
+/// Otherwise, if the grid contains a named <see cref="RitualMonsterCard"/> with a paired spell in <see cref="RitualArchetypeMeta"/>, that spell is inserted immediately after the monster.
+/// At most one such bonus row runs so the list stays at <see cref="MaxGridSize"/> when a bonus applies.
 /// </summary>
 public static class YgoStarterCardCatalog
 {
+    /// <summary>Structured Neow draft slots (before optional ritual bundled monster).</summary>
     public const int GridSize = 19;
+
+    /// <summary>Maximum cards shown when a paired ritual bonus row is added: spell→monster or monster→spell (<see cref="GridSize"/> + 1).</summary>
+    public const int MaxGridSize = 20;
 
     /// <summary>Default category rotation order before <see cref="Rng"/> shuffle (one full permutation per run).</summary>
     public static readonly StarterCategory[] CategoryPrecedenceBase =
@@ -93,6 +100,8 @@ public static class YgoStarterCardCatalog
             throw new InvalidOperationException($"YgoStarterCardCatalog: category slot sum {sum} != {nameof(GridSize)} {GridSize}.");
         if (StarterCardRarities.Length != GridSize)
             throw new InvalidOperationException($"{nameof(StarterCardRarities)}.Length must equal {nameof(GridSize)}.");
+        if (MaxGridSize != GridSize + 1)
+            throw new InvalidOperationException($"{nameof(MaxGridSize)} must be {nameof(GridSize)} + 1.");
     }
 
     /// <summary>Counts of Starter-tagged card <em>types</em> per category and rarity (canonical models).</summary>
@@ -141,9 +150,101 @@ public static class YgoStarterCardCatalog
             grid.Add(mutable);
         }
 
-        GD.Print($"[YgoDuelist NeowDraft] CreateRandomGrid: structured fill categoryOrder=[{string.Join(",", categoryOrder)}] distinctIds={grid.Select(c => c.Id.Entry).Distinct().Count()}");
-        MainFile.Logger.Info($"[NeowDraft catalog] structured grid built distinctIds={grid.Select(c => c.Id.Entry).Distinct().Count()}");
+        bool spellBundledMonster = TryInsertBundledRitualMonsterAfterFirstSpell(grid);
+        bool monsterBundledSpell = !spellBundledMonster && TryInsertBundledRitualSpellAfterFirstMonster(grid);
+        bool ritualBundled = spellBundledMonster || monsterBundledSpell;
+
+        GD.Print(
+            $"[YgoDuelist NeowDraft] CreateRandomGrid: structured fill categoryOrder=[{string.Join(",", categoryOrder)}] " +
+            $"finalCount={grid.Count} ritualBundledBonus={ritualBundled} spellBundledMonster={spellBundledMonster} monsterBundledSpell={monsterBundledSpell} " +
+            $"distinctIds={grid.Select(c => c.Id.Entry).Distinct().Count()}");
+        MainFile.Logger.Info(
+            $"[NeowDraft catalog] structured grid built finalCount={grid.Count} ritualBundledBonus={ritualBundled} spellBundledMonster={spellBundledMonster} monsterBundledSpell={monsterBundledSpell} distinctIds={grid.Select(c => c.Id.Entry).Distinct().Count()}");
         return grid;
+    }
+
+    /// <summary>
+    /// Inserts the paired <see cref="RitualSpellCard"/> from <see cref="RitualArchetypeMeta.PairedRitualSpellType"/> immediately after the first such <see cref="RitualMonsterCard"/> in <paramref name="grid"/>,
+    /// only if that spell is not already present. Does not use starter buckets or category quotas.
+    /// </summary>
+    /// <returns>True if one bonus card was inserted (grid size becomes <see cref="MaxGridSize"/>).</returns>
+    private static bool TryInsertBundledRitualSpellAfterFirstMonster(List<CardModel> grid)
+    {
+        if (grid.Count >= MaxGridSize)
+            return false;
+
+        for (int i = 0; i < grid.Count; i++)
+        {
+            if (grid[i] is not RitualMonsterCard monster)
+                continue;
+
+            Type? spellType = RitualArchetypeMeta.PairedRitualSpellType(monster.GetType());
+            if (spellType == null || spellType.IsAbstract || !typeof(RitualSpellCard).IsAssignableFrom(spellType))
+                continue;
+
+            CardModel bundledCanonical;
+            try
+            {
+                bundledCanonical = CardFromType(spellType);
+            }
+            catch
+            {
+                continue;
+            }
+
+            string entry = bundledCanonical.Id.Entry;
+            if (grid.Any(c => c.Id.Entry == entry))
+                continue;
+
+            CardModel bundled = bundledCanonical.ToMutable();
+            bundled.FloorAddedToDeck = 1;
+            grid.Insert(i + 1, bundled);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Inserts the <see cref="RitualSpellCard.RitualTargetMonsterType"/> model immediately after the first ritual spell in <paramref name="grid"/>,
+    /// only if that monster is not already present. Does not use starter buckets or category quotas.
+    /// </summary>
+    /// <returns>True if one bonus card was inserted (grid size becomes <see cref="MaxGridSize"/>).</returns>
+    private static bool TryInsertBundledRitualMonsterAfterFirstSpell(List<CardModel> grid)
+    {
+        if (grid.Count >= MaxGridSize)
+            return false;
+
+        for (int i = 0; i < grid.Count; i++)
+        {
+            if (grid[i] is not RitualSpellCard ritual)
+                continue;
+
+            Type mt = ritual.RitualTargetMonsterType;
+            if (mt.IsAbstract || !typeof(RitualMonsterCard).IsAssignableFrom(mt))
+                continue;
+
+            CardModel bundledCanonical;
+            try
+            {
+                bundledCanonical = CardFromType(mt);
+            }
+            catch
+            {
+                continue;
+            }
+
+            string entry = bundledCanonical.Id.Entry;
+            if (grid.Any(c => c.Id.Entry == entry))
+                continue;
+
+            CardModel bundled = bundledCanonical.ToMutable();
+            bundled.FloorAddedToDeck = 1;
+            grid.Insert(i + 1, bundled);
+            return true;
+        }
+
+        return false;
     }
 
     private static CardModel GetNextUniqueCardOfRarity(

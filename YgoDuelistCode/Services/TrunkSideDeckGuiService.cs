@@ -1,23 +1,32 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
+using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Opens <see cref="CardSelectCmd.FromSimpleGrid"/> for trunk/side/split editing; nav buttons are injected on the grid via Harmony.
+/// Opens <see cref="NDeckCardSelectScreen"/> for trunk/side/split editing (deck-style multi-select + confirm); sort + nav UI is injected via Harmony.
 /// </summary>
 public static class TrunkSideDeckGuiService
 {
@@ -26,8 +35,13 @@ public static class TrunkSideDeckGuiService
     /// <summary>True while <see cref="RunEditorAsync"/> is in progress (including before the overlay is pushed). Used to ignore duplicate relic clicks.</summary>
     public static bool IsEditorSessionRunning() => Volatile.Read(ref _editorSessionActive) != 0;
 
-    /// <summary>Set while <see cref="RunEditorAsync"/> is about to push the simple select screen so the trunk/side nav bar patch can inject buttons (after overlay open).</summary>
+    /// <summary>Set while <see cref="RunEditorAsync"/> is about to push <see cref="NDeckCardSelectScreen"/> so the trunk/side chrome patch can inject sort + nav controls.</summary>
     public static bool InjectNavButtonsOnNextGrid { get; private set; }
+
+    /// <summary>
+    /// While true, <see cref="NDeckCardSelectScreen"/> completes on the main Confirm (or on hitting max selection) without the preview overlay step.
+    /// </summary>
+    public static bool SkipDeckSelectPreviewLayer { get; private set; }
 
     public static bool HasAnyTrunkOrSideCards(Player player)
     {
@@ -39,6 +53,8 @@ public static class TrunkSideDeckGuiService
     }
 
     public static void SetInjectNavForNextGrid(bool value) => InjectNavButtonsOnNextGrid = value;
+
+    public static void SetSkipDeckSelectPreviewLayer(bool value) => SkipDeckSelectPreviewLayer = value;
 
     public static async Task RunEditorAsync(Player player)
     {
@@ -64,23 +80,19 @@ public static class TrunkSideDeckGuiService
 
         while (true)
         {
-            if (!TryBuildCardList(player, TrunkSideDeckEditorSession.ActivePage, out List<CardModel> cards)
-                || cards.Count == 0)
+            if (!TryBuildCardList(player, TrunkSideDeckEditorSession.ActivePage, out List<CardModel> cards))
             {
                 return;
             }
 
             CardSelectorPrefs prefs = BuildPrefs(TrunkSideDeckEditorSession.ActivePage, cards.Count);
             SetInjectNavForNextGrid(true);
+            SetSkipDeckSelectPreviewLayer(true);
             YgoRelicBrowseGridOverlayPatch.SetPendingKind(YgoRelicBrowseGridOverlayPatch.RelicGridKind.TrunkSideDeckSelect);
             IEnumerable<CardModel> pickedEnumerable;
             try
             {
-                pickedEnumerable = await CardSelectCmd.FromSimpleGrid(
-                    new BlockingPlayerChoiceContext(),
-                    cards,
-                    player,
-                    prefs);
+                pickedEnumerable = await AwaitTrunkSideDeckGridSelection(player, cards, prefs);
             }
             catch (System.OperationCanceledException)
             {
@@ -90,6 +102,7 @@ public static class TrunkSideDeckGuiService
             finally
             {
                 SetInjectNavForNextGrid(false);
+                SetSkipDeckSelectPreviewLayer(false);
                 YgoRelicBrowseGridOverlayPatch.ClearPendingKind();
             }
 
@@ -105,6 +118,52 @@ public static class TrunkSideDeckGuiService
             TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
             return;
         }
+    }
+
+    private static bool ShouldSelectLocalCard(Player player) =>
+        LocalContext.IsMe(player) && RunManager.Instance.NetService.Type != NetGameType.Replay;
+
+    /// <summary>Same contract as <see cref="CardSelectCmd.FromSimpleGrid"/> (multiplayer sync + test selector), but uses <see cref="NDeckCardSelectScreen"/>.</summary>
+    private static async Task<IEnumerable<CardModel>> AwaitTrunkSideDeckGridSelection(
+        Player player,
+        List<CardModel> cards,
+        CardSelectorPrefs prefs)
+    {
+        if (CombatManager.Instance.IsEnding)
+            return Array.Empty<CardModel>();
+
+        if (!prefs.RequireManualConfirmation && cards.Count <= prefs.MinSelect)
+            return cards.ToList();
+
+        var context = new BlockingPlayerChoiceContext();
+        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
+        await context.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
+        List<CardModel> result;
+        if (ShouldSelectLocalCard(player))
+        {
+            if (CardSelectCmd.Selector != null)
+            {
+                result = (await CardSelectCmd.Selector.GetSelectedCards(cards, prefs.MinSelect, prefs.MaxSelect)).ToList();
+            }
+            else
+            {
+                NPlayerHand.Instance?.CancelAllCardPlay();
+                NDeckCardSelectScreen screen = NDeckCardSelectScreen.Create(cards, prefs);
+                NOverlayStack.Instance.Push(screen);
+                result = (await screen.CardsSelected()).ToList();
+            }
+
+            List<int> indexes = result.Select(c => cards.IndexOf(c)).ToList();
+            RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(player, choiceId, PlayerChoiceResult.FromIndexes(indexes));
+        }
+        else
+        {
+            result = (from i in (await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(player, choiceId)).AsIndexes()
+                select cards[i]).ToList();
+        }
+
+        await context.SignalPlayerChoiceEnded();
+        return result;
     }
 
     private static void EnsureActivePageShowsNonEmptyGrid(Player player)
@@ -148,13 +207,13 @@ public static class TrunkSideDeckGuiService
         {
             case TrunkSideDeckEditorPage.Trunk:
                 cards = trunk.Cards.ToList();
-                return cards.Count > 0;
+                return true;
             case TrunkSideDeckEditorPage.Side:
                 cards = side.Cards.ToList();
-                return cards.Count > 0;
+                return true;
             case TrunkSideDeckEditorPage.Split:
                 cards = trunk.Cards.Concat(side.Cards).ToList();
-                return cards.Count > 0;
+                return true;
             default:
                 cards = [];
                 return false;

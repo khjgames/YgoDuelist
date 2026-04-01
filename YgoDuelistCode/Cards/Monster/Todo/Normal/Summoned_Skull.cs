@@ -12,7 +12,7 @@ public sealed class Summoned_Skull : NormalMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
@@ -24,7 +24,8 @@ public sealed class Summoned_Skull : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter |
+        YgoCardPackTags.Dark |
         YgoCardPackTags.Fiend |
         YgoCardPackTags.Normal;
 

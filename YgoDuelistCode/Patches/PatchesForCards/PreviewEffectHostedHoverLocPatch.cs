@@ -12,8 +12,9 @@ using YgoDuelist.YgoDuelistCode.Cards.Command;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForCards;
 
 /// <summary>
-/// <see cref="PreviewEffect"/> keeps its own card id; hosted smart tips use the host’s
-/// <c>.preview_effect.title</c> / <c>.preview_effect.description</c> keys and the host’s dynamic vars.
+/// <see cref="PreviewEffect"/> keeps its own card id. Optional <c>.preview_effect.title</c> /
+/// <c>.preview_effect.description</c> override the hosted card’s title/body; otherwise the host’s
+/// normal title and <see cref="CardModel.GetDescriptionForPile"/> text are used.
 /// </summary>
 [HarmonyPatch(typeof(CardModel), nameof(CardModel.Title), MethodType.Getter)]
 public static class PreviewEffectHostedHoverTitlePatch
@@ -25,10 +26,7 @@ public static class PreviewEffectHostedHoverTitlePatch
             return;
 
         var titleLoc = new LocString("cards", host.Id.Entry + ".preview_effect.title");
-        if (!titleLoc.Exists())
-            return;
-
-        __result = titleLoc.GetFormattedText();
+        __result = titleLoc.Exists() ? titleLoc.GetFormattedText() : host.Title;
     }
 }
 
@@ -48,7 +46,10 @@ public static class PreviewEffectHostedHoverDescriptionPatch
         string key = host.Id.Entry + ".preview_effect.description";
         var probe = new LocString("cards", key);
         if (!probe.Exists())
+        {
+            __result = host.GetDescriptionForPile(pileType, target);
             return;
+        }
 
         var description = new LocString("cards", key);
         host.DynamicVars.AddTo(description);

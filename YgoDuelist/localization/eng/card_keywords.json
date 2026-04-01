@@ -132,6 +132,6 @@
   "20043.description": "When this deals unblocked damage to an enemy, each other enemy takes 50% of that damage (rounded down).",
 
   "20044.title": "Blight",
-  "20044.description": "When this deals unblocked damage to an enemy, that enemy gains Blight stacks equal to 50% of that damage (100% where stated). Blight ticks at end of turn, ignores Block, then falls off."
+  "20044.description": "Blight ticks at end of turn, ignores Block, then falls off."
 
 }

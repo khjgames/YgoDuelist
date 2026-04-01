@@ -153,7 +153,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     public bool IsAnnualAvailable(string key) => !_annualKeysConsumedThisTurn.Contains(key);
 
-    /// <summary>Chunk Z: Splinter (50% splash to other enemies) and Blight (50% of unblocked as stacks) after duel monster <see cref="AttackCommand"/>.</summary>
+    /// <summary>Chunk Z: Splinter (50% splash to other enemies) and Blight (50% of hit damage as stacks, including blocked) after duel monster <see cref="AttackCommand"/>.</summary>
     public override async Task AfterAttack(AttackCommand command)
     {
         if (Owner == null || command.Attacker?.Player != Owner)
@@ -233,10 +233,10 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         {
             foreach (DamageResult r in command.Results)
             {
-                if (r.Receiver.Side != CombatSide.Enemy || r.UnblockedDamage <= 0)
+                if (r.Receiver.Side != CombatSide.Enemy || r.TotalDamage <= 0)
                     continue;
 
-                int blight = (int)decimal.Floor(r.UnblockedDamage * 0.5m);
+                int blight = (int)decimal.Floor(r.TotalDamage * 0.5m);
                 if (blight <= 0)
                     continue;
 

@@ -8,7 +8,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForEvents;
 
 /// <summary>
-/// Intercepts Neow's first <see cref="AncientEventModel.SetInitialEventState"/> for YgoDuelist: structured starter grid (<see cref="YgoStarterCardCatalog.GridSize"/> Starter-tagged cards, pick 10–max) then Neow blessing UI.
+/// Intercepts Neow's first <see cref="AncientEventModel.SetInitialEventState"/> for YgoDuelist: structured starter grid (<see cref="YgoStarterCardCatalog.GridSize"/>–<see cref="YgoStarterCardCatalog.MaxGridSize"/> cards, pick 10–max) then Neow blessing UI.
 /// </summary>
 [HarmonyPatch(typeof(AncientEventModel), "SetInitialEventState")]
 public static class NeowYgoStarterDeckGridPatch

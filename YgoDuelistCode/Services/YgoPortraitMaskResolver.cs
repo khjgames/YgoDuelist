@@ -24,7 +24,9 @@ public static class YgoPortraitMaskResolver
     {
         if (model is BaseSpellCard spell && (spell.FaceDown || spell.IsSetModeInHand))
             return YgoPortraitMaskKind.Set;
-        if (model is BaseTrapCard trap && trap.FaceDown)
+        // Match hand / zone presentation: FaceDown is cleared outside hand & spell zone (compendium, deck grid) but
+        // traps still use set portrait chrome via ShouldUseFaceDownPresentation — same as YgoSetCardVisualHelper.
+        if (model is BaseTrapCard trap && trap.ShouldUseFaceDownPresentation())
             return YgoPortraitMaskKind.Set;
 
         // Monsters in set / face-down defense use Skill type but need the set mask (not skill portrait shape).

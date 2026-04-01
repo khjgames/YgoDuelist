@@ -15,7 +15,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 public sealed class Sparks : BaseSpellCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[] { new DynamicVar("Mgc", 2m) };
+        new[] { new DynamicVar("Mgc", 3m) };
 
     public Sparks()
         : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellNormal)
@@ -50,5 +50,5 @@ public sealed class Sparks : BaseSpellCard
         await CardPileCmd.Draw(choiceContext, 1, Owner);
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(4m);
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(5m);
 }

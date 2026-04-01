@@ -10,8 +10,9 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
 /// <summary>
-/// Display-only card shell for <c>HoverTipFactory.FromCard</c> smart tips; bind <see cref="PreviewHost"/> to mirror a card's portrait.
-/// Matches <see cref="Heads"/> styling; optional <see cref="PreviewHost"/> reuses that card's portrait for the preview face.
+/// Command-style shell for extra smart tips where you want a <b>different</b> title/body than the real card id (via
+/// <c>preview_effect</c> loc keys + Harmony), while borrowing the host’s portrait. Do <b>not</b> use this to preview a
+/// whole existing card type — use <c>HoverTipFactory.FromCard(ModelDb.Card&lt;T&gt;())</c> so frame, level, attributes, and keywords render.
 /// </summary>
 public sealed class PreviewEffect : MonsterCommandCard
 {
@@ -38,10 +39,8 @@ public sealed class PreviewEffect : MonsterCommandCard
     }
 
     /// <summary>
-    /// Smart card hover tip using this type’s frame; portrait from <see cref="PreviewHost"/>; title/body from
-    /// <c>cards.json</c> <c>{host.Id.Entry}.preview_effect.title</c> / <c>.preview_effect.description</c>
-    /// (game <c>CardModel</c> id stays <c>PREVIEW_EFFECT</c>, so hosted strings are applied by Harmony in
-    /// <c>PreviewEffectHostedHoverLocPatch</c>).
+    /// Hosted <see cref="PreviewEffect"/> smart tip: extended effect copy under <c>{host.Id.Entry}.preview_effect.*</c>
+    /// (or fallback title / <see cref="CardModel.GetDescriptionForPile"/>). Not for full-card previews of another type.
     /// </summary>
     public static IHoverTip CreateHostedSmartTip(YgoDuelistCard host)
     {

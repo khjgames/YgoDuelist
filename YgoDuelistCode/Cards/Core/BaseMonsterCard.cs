@@ -103,12 +103,12 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Splinter (YGO piercing): when this deals unblocked damage, each other enemy takes 50% of that damage.</summary>
     public virtual bool AttackDealsSplinterDamage => false;
 
-    /// <summary>Blighted (YGO direct attack): 50% of unblocked hit damage applies as Blight stacks on the hit enemy (Blight X ticks at end of your turn, ignores Block, then removes).</summary>
+    /// <summary>Blighted (YGO direct attack): 50% of hit damage (blocked and unblocked) applies as Blight stacks on the struck enemy (Blight X ticks at end of your turn, ignores Block, then removes).</summary>
     public virtual bool AttackDealsBlightedDamage => false;
 
     /// <summary>
     /// Low-ATK blight attackers: when upgraded (or upgrade preview), attack stance / Command Attack costs 0 energy.
-    /// Printed ATK upgrade scaling is unchanged.
+    /// Printed ATK upgrade scaling is unchanged. (makes them worth comboing with atk boosts)
     /// </summary>
     protected virtual bool ZeroAttackPlayEnergyWhenUpgradedForLowAtkBlight =>
         AttackDealsBlightedDamage && BaseAtk <= 6;
@@ -297,6 +297,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
                 CastleWallsPower? castleWalls = Owner.Creature.GetPower<CastleWallsPower>();
                 if (castleWalls != null)
                     def += (int)castleWalls.Amount;
+                GracefulDicePower? gracefulDice = Owner.Creature.GetPower<GracefulDicePower>();
+                if (gracefulDice != null)
+                {
+                    int diceBonus = (int)gracefulDice.Amount;
+                    atk += diceBonus;
+                    def += diceBonus;
+                }
             }
 
             foreach (BaseFieldSpellCard fieldSpell in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))

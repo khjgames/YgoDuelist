@@ -1,7 +1,12 @@
+using System;
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 
@@ -38,5 +43,28 @@ public abstract class RitualMonsterCard : EffectMonsterCard
                 return false;
             return base.IsPlayable;
         }
+    }
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (var tip in base.ExtraHoverTips)
+                yield return tip;
+
+            var spellPreview = BuildPairedRitualSpellPreviewTip();
+            if (spellPreview != null)
+                yield return spellPreview;
+        }
+    }
+
+    private IHoverTip? BuildPairedRitualSpellPreviewTip()
+    {
+        Type? spellType = RitualArchetypeMeta.PairedRitualSpellType(GetType());
+        if (spellType == null || !typeof(RitualSpellCard).IsAssignableFrom(spellType))
+            return null;
+
+        CardModel template = YgoPackCardCatalog.CardFromType(spellType);
+        return HoverTipFactory.FromCard(template);
     }
 }

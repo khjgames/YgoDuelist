@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -93,4 +96,27 @@ public abstract class RitualSpellCard : BaseSpellCard
     /// <summary>Optional spell text after ritual resolution; default is no-op.</summary>
     protected virtual Task OnRitualSpellAfterResolution(PlayerChoiceContext choiceContext, CardPlay cardPlay)
         => Task.CompletedTask;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (var tip in base.ExtraHoverTips)
+                yield return tip;
+
+            var monsterPreview = BuildNamedRitualTargetMonsterPreviewTip();
+            if (monsterPreview != null)
+                yield return monsterPreview;
+        }
+    }
+
+    private IHoverTip? BuildNamedRitualTargetMonsterPreviewTip()
+    {
+        Type targetType = RitualTargetMonsterType;
+        if (!targetType.IsSubclassOf(typeof(RitualMonsterCard)) || targetType.IsAbstract)
+            return null;
+
+        CardModel template = YgoPackCardCatalog.CardFromType(targetType);
+        return HoverTipFactory.FromCard(template);
+    }
 }
