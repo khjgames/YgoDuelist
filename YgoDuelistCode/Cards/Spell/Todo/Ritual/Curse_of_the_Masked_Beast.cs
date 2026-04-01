@@ -28,13 +28,4 @@ public sealed class Curse_of_the_Masked_Beast : RitualSpellCard
 
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Curse_of_the_Masked_Beast), typeof(The_Masked_Beast));
-
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

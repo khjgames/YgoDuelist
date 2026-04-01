@@ -29,12 +29,4 @@ public sealed class War_Lion_Ritual : RitualSpellCard
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(War_Lion_Ritual), typeof(Super_War_Lion));
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

@@ -13,6 +13,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 public abstract class FusionMonsterCard : EffectMonsterCard
 {
     private readonly FusionMaterialSlot[] _fusionMaterialSlots;
+    private readonly Type[] _fusionRelatedCards;
 
     /// <summary>Use <see cref="FusionMonsterCard"/> with <c>params</c> when no duel energy overrides are needed.</summary>
     protected FusionMonsterCard(
@@ -55,6 +56,7 @@ public abstract class FusionMonsterCard : EffectMonsterCard
     {
         ArgumentNullException.ThrowIfNull(fusionMaterialSlots);
         _fusionMaterialSlots = (FusionMaterialSlot[])fusionMaterialSlots.Clone();
+        _fusionRelatedCards = BuildDefaultFusionRelatedCards(GetType(), _fusionMaterialSlots);
         WillSet = false;
         FaceDown = false;
         SetDisplayAttackSkill(displayAsAttack: false);
@@ -126,6 +128,28 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         for (int i = 0; i < fusionMaterialTypes.Length; i++)
             slots[i] = FusionMaterialSlot.ForNamed(fusionMaterialTypes[i]);
         return slots;
+    }
+
+    /// <summary>
+    /// Pack / deck affinity: this fusion plus each distinct named material (same notion as fusion preview tips).
+    /// </summary>
+    public override Type[] RelatedCards => _fusionRelatedCards;
+
+    private static Type[] BuildDefaultFusionRelatedCards(Type fusionCardType, FusionMaterialSlot[] slots)
+    {
+        var list = new List<Type> { fusionCardType };
+        var seen = new HashSet<Type> { fusionCardType };
+        foreach (FusionMaterialSlot slot in slots)
+        {
+            Type? named = slot.NamedType;
+            if (named == null || !seen.Add(named))
+                continue;
+            if (!typeof(BaseMonsterCard).IsAssignableFrom(named) || named.IsAbstract)
+                continue;
+            list.Add(named);
+        }
+
+        return list.ToArray();
     }
 
     /// <summary>

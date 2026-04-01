@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
@@ -27,6 +30,12 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     public NormalMonsterCard? SourceMonster { get; private set; }
 
     /// <summary>
+    /// Filled by <c>CardPileCmdStampMonsterCommandManualSourcePilePatch</c> from the pile the card was in
+    /// immediately before <see cref="CardPileCmd.AddDuringManualCardPlay"/>; consumed when resolving play.
+    /// </summary>
+    internal PileType? PendingManualPlaySourcePileType;
+
+    /// <summary>
     /// When false, <see cref="Patches.YgoEnergyIconNodePatch"/> hides the energy orb (menu-only options, not paid with energy).
     /// Ignored when <see cref="CustomCommandEnergyTexturePath"/> is set.
     /// </summary>
@@ -46,6 +55,12 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     /// </summary>
     protected internal virtual string? CommandEnergyIconPrefix => null;
 
+    /// <summary>
+    /// When true, <see cref="InitializeSource"/> sets <see cref="CardModel.CurrentUpgradeLevel"/> to match
+    /// <see cref="SourceMonster"/> so card chrome (title color, frames) reflects whether the field monster is upgraded.
+    /// </summary>
+    protected virtual bool MirrorSourceMonsterUpgradeVisual => false;
+
     // Parameterless ctor for reflection / scanners – never used at runtime for real commands.
     protected MonsterCommandCard()
         : base(0, CardType.Skill, CardRarity.Event, TargetType.Self)
@@ -62,7 +77,22 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     public void InitializeSource(NormalMonsterCard source)
     {
         SourceMonster = source;
+        if (MirrorSourceMonsterUpgradeVisual)
+            SyncCurrentUpgradeLevelToSourceMonster(source);
         CardModelEnergyCache.Invalidate(this);
+    }
+
+    private void SyncCurrentUpgradeLevelToSourceMonster(NormalMonsterCard source)
+    {
+        int target = Math.Min(source.CurrentUpgradeLevel, MaxUpgradeLevel);
+        if (CurrentUpgradeLevel == target)
+            return;
+        if (CurrentUpgradeLevel > 0)
+            DowngradeInternal();
+        for (int i = 0; i < target; i++)
+            UpgradeInternal();
+        if (target > 0)
+            FinalizeUpgradeInternal();
     }
 
     public YgoCardType YgoCardType => YgoCardType.Spell;
@@ -147,5 +177,28 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
             CardPilePosition.Top,
             this,
             false);
+    }
+
+    /// <summary>Core draw / hand / discard / exhaust only — not YGO option row, field, graveyard, etc.</summary>
+    internal static bool IsVanillaCombatDeckPile(PileType pileType) =>
+        pileType is PileType.Hand or PileType.Draw or PileType.Discard or PileType.Exhaust;
+
+    /// <summary>For <see cref="CardModel.IsPlayable"/> while this instance is still in its source pile.</summary>
+    protected bool IsRegularDeckMonsterCommandWithLivePet(Creature? fieldPet) =>
+        fieldPet is { IsAlive: true }
+        && Pile != null
+        && IsVanillaCombatDeckPile(Pile.Type);
+
+    /// <summary>
+    /// Clears <see cref="PendingManualPlaySourcePileType"/> and returns whether to skip
+    /// <see cref="MonsterCommandRegistry.CommitMonsterCommandAfterPlay"/> (no command slot, no stiff/fatigue from registry).
+    /// </summary>
+    protected bool TryConsumeRegularDeckCommandWithoutFatigueOrSlots(CardPlay cardPlay, Creature? fieldPet)
+    {
+        PileType? pending = !cardPlay.IsAutoPlay ? PendingManualPlaySourcePileType : null;
+        PendingManualPlaySourcePileType = null;
+        if (fieldPet is not { IsAlive: true })
+            return false;
+        return pending is { } pt && IsVanillaCombatDeckPile(pt);
     }
 }

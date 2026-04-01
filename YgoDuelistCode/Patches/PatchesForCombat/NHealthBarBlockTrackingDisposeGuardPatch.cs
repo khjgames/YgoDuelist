@@ -33,6 +33,9 @@ public static class NHealthBarBlockTrackingDisposeGuardPatch
     private static readonly FieldInfo FHealthBarHpForeground =
         AccessTools.Field(typeof(NHealthBar), "_hpForeground");
 
+    private static readonly FieldInfo FHealthBarBlockLabel =
+        AccessTools.Field(typeof(NHealthBar), "_blockLabel");
+
     [HarmonyPrefix]
     [HarmonyPatch(typeof(NCreatureStateDisplay), nameof(NCreatureStateDisplay.TrackBlockStatus))]
     public static void TrackBlockStatus_UnsubscribePrevious(NCreatureStateDisplay __instance)
@@ -71,7 +74,13 @@ public static class NHealthBarBlockTrackingDisposeGuardPatch
 
     private static bool NHealthBarNodesAlive(NHealthBar bar)
     {
-        foreach (FieldInfo f in new[] { FHealthBarBlockContainer, FHealthBarBlockOutline, FHealthBarHpForeground })
+        foreach (FieldInfo f in new[]
+                 {
+                     FHealthBarBlockContainer,
+                     FHealthBarBlockOutline,
+                     FHealthBarHpForeground,
+                     FHealthBarBlockLabel
+                 })
         {
             var node = f.GetValue(bar) as GodotObject;
             if (node == null || !GodotObject.IsInstanceValid(node))

@@ -47,6 +47,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     {
     }
 
+    /// <inheritdoc cref="AbstractMonsterCard.HasRecklessKeyword" />
+    protected override bool HasRecklessKeyword => GetEffectiveDuelMonsterLevel() >= 3;
+
     protected override IEnumerable<DynamicVar> CanonicalVars
     {
         get
@@ -134,6 +137,23 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         int resolutionCount = YgoNarrowPassField.GetAttackOrDefendResolutionCount(Owner);
 
+        if (HasRecklessKeyword
+            && Owner != null
+            && Owner.Creature != null
+            && Owner.PlayerCombatState != null)
+        {
+            Creature? selfPet = Owner.PlayerCombatState.Pets
+                .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+            if (selfPet != null && selfPet.IsAlive)
+                await CreatureCmd.Damage(
+                    choiceContext,
+                    selfPet,
+                    1m,
+                    ValueProp.Unblockable | ValueProp.Unpowered,
+                    dealer: null,
+                    cardSource: this);
+        }
+
         if (Type == CardType.Attack && cardPlay.Target != null)
         {
             await BeforeAttackCombatActionAsync(choiceContext, cardPlay);
@@ -184,7 +204,10 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 {
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
                     if (!ShouldSkipCombatActionAfterSummon(cardPlay))
+                    {
+                        await ApplyNarrowPassHandSummonCombatPaymentAsync(choiceContext);
                         await CombatAction(choiceContext, cardPlay);
+                    }
                     return;
                 }
 
@@ -195,8 +218,12 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);
         }
 
+        if (Owner == null)
+            return;
+
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
 
+        await ApplyNarrowPassHandSummonCombatPaymentAsync(choiceContext);
         await CombatAction(choiceContext, cardPlay);
         await OnAfterMonsterPlayResolved(choiceContext, cardPlay);
     }
@@ -204,6 +231,16 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     /// <summary>Called after summon + combat action resolves (attack or defend from hand).</summary>
     protected virtual Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
+
+    /// <summary>Same life cost as <see cref="Command.Command_Attack"/> / <see cref="Command.Command_Defend"/> before hand summon combat (ATK/DEF).</summary>
+    private async Task ApplyNarrowPassHandSummonCombatPaymentAsync(PlayerChoiceContext choiceContext)
+    {
+        if (Owner?.PlayerCombatState == null)
+            return;
+        Creature? pet = Owner.PlayerCombatState.Pets
+            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+        await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
+    }
 
     /// <summary>Tribute fallback path: skip the post-summon combat action when true (e.g. Dark Zebra alone on field).</summary>
     protected virtual bool ShouldSkipCombatActionAfterSummon(CardPlay cardPlay) => false;

@@ -1,20 +1,21 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Spell;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
-public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapEquipLink
+public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapEquipLink, IYgoPrePlayCancelableGridSelection
 {
     private BaseMonsterCard? _equipLinkedMonster;
     private BaseMonsterCard? _pendingLinkAfterZone;
@@ -53,38 +54,52 @@ public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapE
         GraveyardRelic.GetGraveyardCards(Owner).Any(c => c is BaseMonsterCard) &&
         DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tributeReleaseCount: 0);
 
-    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        var player = Owner;
-        if (player == null)
-            return;
-
         var graveyardMonsters = GraveyardRelic
             .GetGraveyardCards(player)
             .OfType<BaseMonsterCard>()
             .ToList();
 
         if (graveyardMonsters.Count == 0)
-            return;
+            return false;
 
-        var prefs = new CardSelectorPrefs(
-            SelectionScreenPrompt,
-            1,
-            1);
+        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
 
-        var selected = await CardSelectCmd.FromSimpleGrid(
-            new BlockingPlayerChoiceContext(),
-            graveyardMonsters,
-            player,
-            prefs);
+        IEnumerable<CardModel> selected;
+        try
+        {
+            selected = await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                graveyardMonsters,
+                player,
+                prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
 
         var chosen = selected.FirstOrDefault() as BaseMonsterCard;
         if (chosen == null)
+            return false;
+
+        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
+        return true;
+    }
+
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        var player = Owner;
+        if (player == null)
             return;
 
-        // Summon the chosen monster for 0 energy cost; DuelMonsterSummon will also
-        // move the card into the MonsterPile and out of Graveyard via CardPileCmd.Add.
-        // Monster Reborn summons can use Attack/Defend the turn they are summoned.
+        if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseMonsterCard chosen)
+            return;
+
+        if (!GraveyardRelic.GetGraveyardCards(player).Contains(chosen))
+            return;
+
         bool summoned = await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, choiceContext);
         if (summoned)
             _pendingLinkAfterZone = chosen;

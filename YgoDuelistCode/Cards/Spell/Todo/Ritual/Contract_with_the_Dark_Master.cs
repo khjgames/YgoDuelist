@@ -28,13 +28,4 @@ public sealed class Contract_with_the_Dark_Master : RitualSpellCard
 
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Contract_with_the_Dark_Master), typeof(Dark_Master_Zorc));
-
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -16,6 +15,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell;
 
@@ -24,7 +24,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell;
 /// then send this card to the Graveyard as well (instead of discard).
 /// Mirrors the old Java effect using the new pile system.
 /// </summary>
-public sealed class Foolish_Burial : BaseSpellCard
+public sealed class Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => Enumerable.Empty<DynamicVar>();
     
@@ -60,38 +60,49 @@ public sealed class Foolish_Burial : BaseSpellCard
         Owner != null &&
         GetMonsterCardsFromDeckAndDiscard(Owner).Any();
 
+    public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
+    {
+        var allMonsters = GetMonsterCardsFromDeckAndDiscard(player).ToList();
+        if (allMonsters.Count == 0)
+            return false;
+
+        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
+
+        IEnumerable<CardModel> selected;
+        try
+        {
+            selected = await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                allMonsters,
+                player,
+                prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+
+        var chosen = selected.FirstOrDefault();
+        if (chosen == null)
+            return false;
+
+        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
+        return true;
+    }
+
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var player = Owner;
         if (player == null)
             return;
 
-        await SelectAndSendMonsterToGraveyard(choiceContext, player);
-    }
-
-    private async Task SelectAndSendMonsterToGraveyard(PlayerChoiceContext choiceContext, Player player)
-    {
-        // Collect all monster cards from draw + discard.
-        var allMonsters = GetMonsterCardsFromDeckAndDiscard(player).ToList();
-        if (allMonsters.Count == 0)
+        if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? chosen) || chosen == null)
             return;
 
-        var prefs = new CardSelectorPrefs(
-            SelectionScreenPrompt,
-            1,
-            1);
+        if (!GetMonsterCardsFromDeckAndDiscard(player).Contains(chosen))
+            return;
 
-        var selected = await CardSelectCmd.FromSimpleGrid(
-            new BlockingPlayerChoiceContext(),
-            allMonsters,
-            player,
-            prefs);
-
-        var chosen = selected.FirstOrDefault();
-        if (chosen != null)
-        {
-            await SendCardToGraveyard(choiceContext, player, chosen);
-        }
+        await SendCardToGraveyard(choiceContext, player, chosen);
     }
 
     private static IEnumerable<CardModel> GetMonsterCardsFromDeckAndDiscard(Player player)

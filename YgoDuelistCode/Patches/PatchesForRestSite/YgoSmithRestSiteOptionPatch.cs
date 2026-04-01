@@ -4,13 +4,17 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.RestSite;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -25,10 +29,7 @@ public static class YgoSmithRestSiteOptionEnabledPatch
         if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(owner))
             return;
 
-        CardPile? extra = PlayerRunExtraDeck.GetPileIfExists(owner);
-        if (extra == null)
-            return;
-
+        CardPile extra = PlayerRunExtraDeck.GetOrCreatePile(owner);
         if (extra.Cards.Any(c => c is FusionMonsterCard && c.IsUpgradable))
             __instance.IsEnabled = true;
     }
@@ -40,32 +41,73 @@ public static class YgoSmithRestSiteOptionOnSelectPatch
     [HarmonyPrefix]
     public static bool Prefix(SmithRestSiteOption __instance, ref Task<bool> __result)
     {
-        Player owner = Traverse.Create(__instance).Field<Player>("Owner").Value;
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(owner))
+        Player? owner = Traverse.Create(__instance).Property<Player>("Owner").Value;
+        if (owner == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(owner))
             return true;
 
         __result = RunYgoSmithAsync(__instance, owner);
         return false;
     }
 
+    private static bool ShouldSelectLocalCard(Player player) =>
+        LocalContext.IsMe(player) && RunManager.Instance.NetService.Type != NetGameType.Replay;
+
+    /// <summary>
+    /// Same flow as <see cref="CardSelectCmd.FromDeckForUpgrade"/>, but with a caller-built card list (deck + extra-deck fusions).
+    /// Uses <see cref="PlayerChoiceResult.FromIndexes"/> for net sync — <see cref="PlayerChoiceResult.FromMutableDeckCards"/> only supports
+    /// cards in <see cref="PileType.Deck"/> (<see cref="NetDeckCard.FromModel"/> rejects extra-deck piles).
+    /// </summary>
+    private static async Task<IEnumerable<CardModel>> SelectForUpgradeAsync(Player player, CardSelectorPrefs prefs, List<CardModel> list)
+    {
+        if (list.Count <= prefs.MinSelect && !prefs.RequireManualConfirmation)
+            return list;
+
+        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
+        List<CardModel> result;
+        if (ShouldSelectLocalCard(player))
+        {
+            if (CardSelectCmd.Selector != null)
+            {
+                result = (await CardSelectCmd.Selector.GetSelectedCards(list, prefs.MinSelect, prefs.MaxSelect)).ToList();
+            }
+            else
+            {
+                NDeckUpgradeSelectScreen screen = NDeckUpgradeSelectScreen.ShowScreen(list, prefs, player.RunState);
+                result = (await screen.CardsSelected()).ToList();
+            }
+
+            List<int> indexes = result.Select(c => list.IndexOf(c)).ToList();
+            RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(
+                player,
+                choiceId,
+                PlayerChoiceResult.FromIndexes(indexes));
+        }
+        else
+        {
+            result = (from i in (await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(player, choiceId)).AsIndexes()
+                select list[i]).ToList();
+        }
+
+        return result;
+    }
+
     private static async Task<bool> RunYgoSmithAsync(SmithRestSiteOption option, Player owner)
     {
-        var prefs = new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 1)
+        int smithCount = Traverse.Create(option).Property<int>(nameof(SmithRestSiteOption.SmithCount)).Value;
+        var prefs = new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, smithCount)
         {
             Cancelable = true,
             RequireManualConfirmation = true
         };
 
         List<CardModel> candidates = owner.Deck.Cards.Where(c => c.IsUpgradable).ToList();
-        CardPile? extra = PlayerRunExtraDeck.GetPileIfExists(owner);
-        if (extra != null)
-        {
-            candidates.AddRange(extra.Cards.Where(c => c is FusionMonsterCard && c.IsUpgradable));
-        }
+        CardPile extra = PlayerRunExtraDeck.GetOrCreatePile(owner);
+        candidates.AddRange(extra.Cards.Where(c => c is FusionMonsterCard && c.IsUpgradable));
+
         if (candidates.Count == 0)
             return false;
 
-        IEnumerable<CardModel> selected = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, owner, prefs);
+        IEnumerable<CardModel> selected = await SelectForUpgradeAsync(owner, prefs, candidates);
         List<CardModel> selectedList = selected.ToList();
         if (selectedList.Count == 0)
             return false;

@@ -28,13 +28,4 @@ public sealed class White_Dragon_Ritual : RitualSpellCard
 
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(White_Dragon_Ritual), typeof(Paladin_of_White_Dragon));
-
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

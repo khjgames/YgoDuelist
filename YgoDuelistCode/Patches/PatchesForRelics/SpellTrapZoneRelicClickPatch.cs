@@ -31,8 +31,8 @@ public static class SpellTrapZoneRelicClickPatch
             return false;
         }
 
-        YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.SpellTrapZone);
         YgoSpellTrapZoneBridge.SyncFromZonePile(player);
+        YgoSecondHandSourceBridge.SetSourceAndPublish(player, YgoSecondHandSource.SpellTrapZone);
         return false;
     }
 }

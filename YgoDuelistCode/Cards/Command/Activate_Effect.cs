@@ -17,6 +17,8 @@ public sealed class Activate_Effect : MonsterCommandCard
 {
     private IMonsterActivatedEffect? Effect => SourceMonster as IMonsterActivatedEffect;
 
+    protected override bool MirrorSourceMonsterUpgradeVisual => true;
+
     protected internal override string? CommandEnergyIconPrefix => "silent";
 
     public Activate_Effect()
@@ -49,7 +51,8 @@ public sealed class Activate_Effect : MonsterCommandCard
             var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
             if (pet == null)
                 return false;
-            if (impl.ActivatedEffectConsumesOncePerTurnSlot)
+            bool regularDeckBypass = IsRegularDeckMonsterCommandWithLivePet(pet);
+            if (impl.ActivatedEffectConsumesOncePerTurnSlot && !regularDeckBypass)
             {
                 MonsterCommandState reg = MonsterCommandRegistry.GetOrCreate(pet);
                 if (reg.HasUsedActivatedEffectThisTurn)

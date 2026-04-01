@@ -28,13 +28,4 @@ public sealed class Hamburger_Recipe : RitualSpellCard
 
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Hamburger_Recipe), typeof(Hungry_Burger));
-
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

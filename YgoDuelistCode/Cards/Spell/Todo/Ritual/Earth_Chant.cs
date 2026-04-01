@@ -26,13 +26,4 @@ public sealed class Earth_Chant : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
 
     public override Type[] RelatedCards => RitualArchetypeMeta.NonRitualCardsReferencingRitualInLocalization;
-
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

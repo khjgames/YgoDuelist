@@ -28,13 +28,4 @@ public sealed class Black_Luster_Ritual : RitualSpellCard
 
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Black_Luster_Ritual), typeof(Black_Luster_Soldier));
-
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

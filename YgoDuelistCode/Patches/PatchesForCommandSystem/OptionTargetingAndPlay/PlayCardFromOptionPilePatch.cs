@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Helpers;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -35,6 +36,86 @@ public static class PlayCardFromOptionPilePatch
     {
         var modelName = card?.GetType().Name;
         return modelName == "Activate_Effect";
+    }
+
+    /// <summary>
+    /// Option-pile cards use a custom <see cref="PileType"/>; <see cref="NCard.FindOnTable"/> does not resolve them.
+    /// After play, the <see cref="NCard"/> can remain under the play container while the holder is released — clean that up here.
+    /// </summary>
+    private static void CleanupDetachedOptionCardPlayVisual(CardModel? card)
+    {
+        if (card == null)
+            return;
+
+        NCard? ncard = NCombatRoom.Instance?.Ui?.GetCardFromPlayContainer(card);
+        if (ncard == null || !GodotObject.IsInstanceValid(ncard))
+            ncard = NCardPlayQueue.Instance?.GetCardNode(card);
+        if (ncard == null || !GodotObject.IsInstanceValid(ncard))
+            ncard = NPlayerHand.Instance?.GetCard(card);
+
+        if (ncard == null || !GodotObject.IsInstanceValid(ncard))
+            return;
+
+        ncard.Visible = false;
+        if (ncard.GetParent() is NHandCardHolder holder && GodotObject.IsInstanceValid(holder))
+        {
+            holder.Visible = false;
+            if (holder.Hitbox != null)
+            {
+                holder.Hitbox.Visible = false;
+                holder.Hitbox.SetEnabled(false);
+            }
+            holder.QueueFree();
+        }
+        else
+            ncard.QueueFree();
+    }
+
+    /// <summary>
+    /// Must run after option-pile <see cref="CardModel.SpendResources"/> even when <see cref="CardModel.OnPlayWrapper"/> throws;
+    /// otherwise holders / play visuals are never released and the row can desync (missing command slot).
+    /// </summary>
+    private static void ScheduleOptionPilePostPlayCleanup(Player? player, CardModel? cardPlayed)
+    {
+        var tree = NPlayerHand.Instance?.GetTree();
+        if (tree == null || player == null)
+            return;
+
+        var timer = tree.CreateTimer(0.0);
+        timer.Timeout += () =>
+        {
+            if (IsLifecycleDebugCard(cardPlayed))
+                GD.Print("[YgoLifecycle] PlayCardFromOptionPile P1_TimerTimeout card=", cardPlayed?.GetType().Name ?? "null");
+
+            if (cardPlayed != null)
+            {
+                var postPlayOptionPile = YgoCardOptionPile.CustomType.GetPile(player);
+                bool cardStillInOptionPile = postPlayOptionPile != null && postPlayOptionPile.Cards.Contains(cardPlayed);
+                if (IsLifecycleDebugCard(cardPlayed))
+                    GD.Print("[YgoLifecycle] PlayCardFromOptionPile P2_PostPlayPileCheck cardInOptionPile=", cardStillInOptionPile);
+                if (cardStillInOptionPile)
+                {
+                    var hand = NPlayerHand.Instance;
+                    if (hand?.GetCardHolder(cardPlayed) is NYgoOptionCardHolder optPlayed)
+                        YgoOptionHandUiPatch.ForceReleaseOptionHolder(optPlayed);
+                    CleanupDetachedOptionCardPlayVisual(cardPlayed);
+                    YgoOptionHandBridge.ForceRefreshOptionHandFromPile(player);
+                    YgoSpellTrapZoneBridge.ForceRefreshSpellTrapSecondHandFromZone(player);
+                    if (IsLifecycleDebugCard(cardPlayed))
+                        GD.Print("[YgoLifecycle] PlayCardFromOptionPile P3_SyncReleasedOptionHolder");
+                    return;
+                }
+
+                CleanupDetachedOptionCardPlayVisual(cardPlayed);
+                if (IsLifecycleDebugCard(cardPlayed))
+                    GD.Print("[YgoLifecycle] PlayCardFromOptionPile P4_CleanupDetachedVisualDone");
+            }
+
+            YgoOptionHandBridge.ForceRefreshOptionHandFromPile(player);
+            YgoSpellTrapZoneBridge.ForceRefreshSpellTrapSecondHandFromZone(player);
+            if (IsLifecycleDebugCard(cardPlayed))
+                GD.Print("[YgoLifecycle] PlayCardFromOptionPile P7_FinalSyncDone");
+        };
     }
 
     private static readonly PropertyInfo? PlayerChoiceContextProp =
@@ -153,65 +234,19 @@ public static class PlayCardFromOptionPilePatch
 
             var context = new GameActionPlayerChoiceContext(action);
             PlayerChoiceContextProp?.SetValue(action, context);
-            await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
-
-            // Card never leaves option pile: CardPileCmdOptionPilePlayPatch skips AddDuringManualCardPlay
-            // for option-pile cards. The played card's holder was reparented for the play; its NCard can
-            // stay floating. On the main thread: find and destroy that visual, then re-sync so the row rebuilds.
-            var player = action.Player;
-            CardModel? cardPlayed = action.NetCombatCard.ToCardModel();
-            var tree = NPlayerHand.Instance?.GetTree();
-            if (tree != null && player != null)
+            Player? playerForCleanup = action.Player;
+            CardModel? cardForCleanup = action.NetCombatCard.ToCardModel();
+            try
             {
-                var timer = tree.CreateTimer(0.0);
-                timer.Timeout += () =>
-                {
-                    if (IsLifecycleDebugCard(cardPlayed))
-                        GD.Print("[YgoLifecycle] PlayCardFromOptionPile P1_TimerTimeout card=", cardPlayed?.GetType().Name ?? "null");
-
-                    if (cardPlayed != null)
-                    {
-                        var postPlayOptionPile = player != null ? YgoCardOptionPile.CustomType.GetPile(player) : null;
-                        bool cardStillInOptionPile = postPlayOptionPile != null && postPlayOptionPile.Cards.Contains(cardPlayed);
-                        if (IsLifecycleDebugCard(cardPlayed))
-                            GD.Print("[YgoLifecycle] PlayCardFromOptionPile P2_PostPlayPileCheck cardInOptionPile=", cardStillInOptionPile);
-                        if (cardStillInOptionPile)
-                        {
-                            YgoOptionHandBridge.SyncFromOptionPile(player);
-                            if (IsLifecycleDebugCard(cardPlayed))
-                                GD.Print("[YgoLifecycle] PlayCardFromOptionPile P3_SyncedOnly_NoForcedNCardCleanup");
-                            return;
-                        }
-
-                        var ncard = NCard.FindOnTable(cardPlayed);
-                        if (IsLifecycleDebugCard(cardPlayed))
-                            GD.Print("[YgoLifecycle] PlayCardFromOptionPile P4_FindOnTable ncardFound=", ncard != null);
-                        if (ncard != null && GodotObject.IsInstanceValid(ncard))
-                        {
-                            ncard.Visible = false;
-                            var holder = ncard.GetParent() as NHandCardHolder;
-                            if (IsLifecycleDebugCard(cardPlayed))
-                                GD.Print("[YgoLifecycle] PlayCardFromOptionPile P5_NCardCleanup holderFound=", holder != null);
-                            if (holder != null && GodotObject.IsInstanceValid(holder))
-                            {
-                                holder.Visible = false;
-                                if (holder.Hitbox != null)
-                                {
-                                    holder.Hitbox.Visible = false;
-                                    holder.Hitbox.SetEnabled(false);
-                                }
-                                holder.QueueFree();
-                            }
-                            else
-                                ncard.QueueFree();
-                        }
-                        else if (IsLifecycleDebugCard(cardPlayed))
-                            GD.Print("[YgoLifecycle] PlayCardFromOptionPile P6_NoNCardFoundToCleanup");
-                    }
-                    YgoOptionHandBridge.SyncFromOptionPile(player);
-                    if (IsLifecycleDebugCard(cardPlayed))
-                        GD.Print("[YgoLifecycle] PlayCardFromOptionPile P7_FinalSyncDone");
-                };
+                await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
+            }
+            finally
+            {
+                // Option-pile cards are not PileType.Hand, so NCardPlayQueue never calls RemoveCardHolder — the
+                // holder stays reparented under NPlayerHand with NCardPlay's bottom-screen target position.
+                // If the card remains in the option pile (e.g. Command_Defend), we must free that holder before
+                // SyncFromOptionPile rebuilds the row; otherwise a duplicate floats forever.
+                ScheduleOptionPilePostPlayCleanup(playerForCleanup, cardForCleanup);
             }
         }
         finally

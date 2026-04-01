@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -34,6 +35,16 @@ public sealed class Graceful_Dice : BaseSpellCard
         YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Burn | YgoCardPackTags.Chance;
 
     public override Type[] RelatedCards => new[] { typeof(Graceful_Dice) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip tip in base.ExtraHoverTips)
+                yield return tip;
+            yield return YgoDeterministicRngResultDisplay.Rolled6SampleHoverTip();
+        }
+    }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

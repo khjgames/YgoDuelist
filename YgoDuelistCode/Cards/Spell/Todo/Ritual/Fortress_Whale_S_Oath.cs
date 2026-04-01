@@ -29,12 +29,4 @@ public sealed class Fortress_Whale_S_Oath : RitualSpellCard
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Fortress_Whale_S_Oath), typeof(Fortress_Whale));
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

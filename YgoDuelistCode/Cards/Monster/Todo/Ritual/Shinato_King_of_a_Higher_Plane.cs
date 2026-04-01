@@ -8,6 +8,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 
+/// <summary>Ritual monster; Corpse-Blight on execute kill is handled in GraveyardRelic.AfterAttack.</summary>
 public sealed class Shinato_King_of_a_Higher_Plane : RitualMonsterCard
 {
     public Shinato_King_of_a_Higher_Plane()

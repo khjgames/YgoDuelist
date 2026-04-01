@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -23,7 +22,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell;
 /// Monster Reborn – special summon 1 monster from your Graveyard for 0 energy.
 /// Only playable when there is at least 1 monster in your Graveyard.
 /// </summary>
-public sealed class Monster_Reborn : BaseSpellCard
+public sealed class Monster_Reborn : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
 
     public Monster_Reborn()
@@ -57,39 +56,52 @@ public sealed class Monster_Reborn : BaseSpellCard
         GraveyardRelic.GetGraveyardCards(Owner).Any(c => c is BaseMonsterCard) &&
         DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tributeReleaseCount: 0);
 
-    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        var player = Owner;
-        if (player == null)
-            return;
-
         var graveyardMonsters = GraveyardRelic
             .GetGraveyardCards(player)
             .OfType<BaseMonsterCard>()
             .ToList();
 
         if (graveyardMonsters.Count == 0)
-            return;
+            return false;
 
-        var prefs = new CardSelectorPrefs(
-            SelectionScreenPrompt,
-            1,
-            1);
+        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
 
-        var selected = await CardSelectCmd.FromSimpleGrid(
-            new BlockingPlayerChoiceContext(),
-            graveyardMonsters,
-            player,
-            prefs);
+        IEnumerable<CardModel> selected;
+        try
+        {
+            selected = await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                graveyardMonsters,
+                player,
+                prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
 
         var chosen = selected.FirstOrDefault() as BaseMonsterCard;
         if (chosen == null)
+            return false;
+
+        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
+        return true;
+    }
+
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        var player = Owner;
+        if (player == null)
             return;
 
-        // Summon the chosen monster for 0 energy cost; DuelMonsterSummon will also
-        // move the card into the MonsterPile and out of Graveyard via CardPileCmd.Add.
-        // Monster Reborn summons can use Attack/Defend the turn they are summoned.
+        if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseMonsterCard chosen)
+            return;
+
+        if (!GraveyardRelic.GetGraveyardCards(player).Contains(chosen))
+            return;
+
         await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, choiceContext);
     }
 }
-

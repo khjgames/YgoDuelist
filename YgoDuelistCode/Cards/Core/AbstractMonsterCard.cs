@@ -51,8 +51,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword CycleMonsterKeyword => (CardKeyword)20039;
     private static CardKeyword FlipEffectKeyword => (CardKeyword)20041;
     private static CardKeyword RecklessBlockerKeyword => (CardKeyword)20042;
-    private static CardKeyword SplinterKeyword => (CardKeyword)20043;
-    private static CardKeyword BlightKeyword => (CardKeyword)20044;
+    private static CardKeyword RecklessKeyword => (CardKeyword)20043;
+    private static CardKeyword SplinterKeyword => (CardKeyword)20044;
+    private static CardKeyword BlightKeyword => (CardKeyword)20045;
 
     public abstract YgoCardType YgoCardType { get; }
     public bool FaceDown { get; set; } = false;
@@ -94,10 +95,13 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                     ? bm.DuelMonsterAttackPlayEnergy
                     : bm.DuelMonsterDefensePlayEnergy;
                 int discount = bm.GetDuelMonsterPlayEnergyDiscount();
-                if (discount <= 0)
-                    return baseCost;
-                int discounted = baseCost - discount;
-                return discounted < 0 ? 0 : discounted;
+                int discounted = discount <= 0 ? baseCost : baseCost - discount;
+                if (discounted < 0)
+                    discounted = 0;
+                // Owner asserts mutable; canonical/library templates must not touch it (e.g. NCardGrid sort by EnergyCost).
+                if (IsMutable && bm.CanSummonDuelMonster && YgoCardType != YgoCardType.FusionMonster)
+                    discounted += YgoNarrowPassField.GetMonsterCommandEnergyAdd(bm.Owner);
+                return discounted;
             }
 
             return _handSummonFallbackEnergy;
@@ -343,6 +347,15 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
 
     protected virtual bool HasRecklessBlockerKeyword => false;
 
+    /// <summary>Level 3+ normal-line monsters: <see cref="NormalMonsterCard"/>; drives Reckless keyword and CombatAction self-damage.</summary>
+    protected virtual bool HasRecklessKeyword => false;
+
+    private IEnumerable<CardKeyword> GetRecklessKeywords()
+    {
+        if (HasRecklessKeyword)
+            yield return RecklessKeyword;
+    }
+
     private IEnumerable<CardKeyword> GetRecklessBlockerKeywords()
     {
         if (HasRecklessBlockerKeyword)
@@ -399,6 +412,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             keywords.AddRange(GetCycleMonsterKeywordWhenEligible());
             keywords.AddRange(GetFlipEffectKeywords());
             keywords.AddRange(GetRecklessBlockerKeywords());
+            keywords.AddRange(GetRecklessKeywords());
             keywords.AddRange(GetFaceDownKeywordsFromBool());
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
@@ -427,6 +441,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 tips.Add(new HoverTip(title, description));
             }
             foreach (CardKeyword kw in GetRecklessBlockerKeywords())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (CardKeyword kw in GetRecklessKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
                 tips.Add(HoverTipFactory.FromKeyword(kw));

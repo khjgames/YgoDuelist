@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -13,13 +12,14 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 /// <summary>
 /// Reinforcement of the Army — add 1 Level 4 or lower Warrior monster from your draw pile to your hand.
 /// </summary>
-public sealed class Reinforcement_of_the_Army : BaseSpellCard
+public sealed class Reinforcement_of_the_Army : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
     public Reinforcement_of_the_Army()
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
@@ -34,38 +34,52 @@ public sealed class Reinforcement_of_the_Army : BaseSpellCard
     protected override bool IsPlayable =>
         base.IsPlayable && Owner != null && GetEligibleWarriorsInDraw(Owner).Any();
 
+    public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
+    {
+        var candidates = GetEligibleWarriorsInDraw(player).ToList();
+        if (candidates.Count == 0)
+            return false;
+
+        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
+
+        IEnumerable<CardModel> selected;
+        try
+        {
+            selected = await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                candidates.Cast<CardModel>().ToList(),
+                player,
+                prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+
+        var first = selected.FirstOrDefault();
+        if (first is not BaseMonsterCard chosen)
+            return false;
+
+        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
+        return true;
+    }
+
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         Player? player = Owner;
         if (player == null)
             return;
 
-        var candidates = GetEligibleWarriorsInDraw(player).ToList();
-        if (candidates.Count == 0)
+        if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseMonsterCard chosen)
+            return;
+
+        CardPile? draw = PileType.Draw.GetPile(player);
+        if (draw == null || !draw.Cards.Contains(chosen))
             return;
 
         CardPile? hand = PileType.Hand.GetPile(player);
         if (hand == null)
             return;
-
-        BaseMonsterCard chosen;
-        if (candidates.Count == 1)
-        {
-            chosen = candidates[0];
-        }
-        else
-        {
-            var prefs = new CardSelectorPrefs(SelectionScreenPrompt, 1, 1);
-            var selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates.Cast<CardModel>().ToList(),
-                player,
-                prefs);
-            var first = selected.FirstOrDefault();
-            if (first is not BaseMonsterCard picked)
-                return;
-            chosen = picked;
-        }
 
         await CardPileCmd.Add(
             new CardModel[] { chosen },

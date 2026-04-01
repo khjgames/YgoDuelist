@@ -1,9 +1,10 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -12,10 +13,11 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Poison_of_the_Old_Man : BaseSpellCard
+public sealed class Poison_of_the_Old_Man : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
     private const int OptionHealSelf = 0;
     private const int OptionBlightEnemy = 1;
@@ -44,12 +46,10 @@ public sealed class Poison_of_the_Old_Man : BaseSpellCard
 
     public override bool CardShowsBlightKeyword => true;
 
-    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        if (Owner?.Creature?.CombatState is not { } cs)
-            return;
-
-        Player player = Owner;
+        if (player.Creature?.CombatState is not CombatState cs)
+            return false;
 
         YgoTransientSpellOptionCommandCard healOpt = YgoTransientSpellOptionCommandCard.Create(
             cs,
@@ -70,23 +70,45 @@ public sealed class Poison_of_the_Old_Man : BaseSpellCard
             "poison_of_the_old_man.png");
 
         var options = new List<CardModel> { healOpt, blightOpt };
+        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
 
-        CardModel? pick = await CardSelectCmd.FromChooseACardScreen(
-            choiceContext,
-            options,
-            player,
-            canSkip: false);
+        IEnumerable<CardModel> selected;
+        try
+        {
+            selected = await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                options,
+                player,
+                prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
 
+        CardModel? pick = selected.FirstOrDefault();
         if (pick is not YgoTransientSpellOptionCommandCard chosen)
+            return false;
+
+        YgoPrePlayOptionIdPayload.SetPending(sourceCard, chosen.OptionId);
+        return true;
+    }
+
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner?.Creature == null)
             return;
 
-        if (chosen.OptionId == OptionHealSelf)
+        if (!YgoPrePlayOptionIdPayload.TryTakePending(this, out int optionId))
+            return;
+
+        if (optionId == OptionHealSelf)
         {
             await CreatureCmd.Heal(Owner.Creature, DynamicVars["Mgc"].BaseValue);
             return;
         }
 
-        if (chosen.OptionId == OptionBlightEnemy)
+        if (optionId == OptionBlightEnemy)
         {
             if (cardPlay.Target == null)
                 return;

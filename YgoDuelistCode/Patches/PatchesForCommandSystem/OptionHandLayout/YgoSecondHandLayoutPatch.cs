@@ -84,7 +84,9 @@ public static class YgoSecondHandLayoutPatch
                 }
 
                 if (holder.Hitbox != null)
-                    holder.Hitbox.MouseFilter = (Control.MouseFilterEnum)(hasDraggedHolder ? 2 : 0);
+                    holder.Hitbox.MouseFilter = hasDraggedHolder
+                        ? Control.MouseFilterEnum.Ignore
+                        : Control.MouseFilterEnum.Stop;
 
                 // Focus neighbors (left/right) – still based on main-only list.
                 NodePath leftPath;
@@ -155,6 +157,10 @@ public static class YgoSecondHandLayoutPatch
                 {
                     holder.Hitbox.Visible = true;
                     holder.Hitbox.SetEnabled(true);
+                    // Option row must always accept input after a play: vanilla drag paths can leave
+                    // MouseFilter.Ignore on holders; we never reset it here before, so siblings (e.g. field
+                    // spells) could stay unclickable after another option card was dragged.
+                    holder.Hitbox.MouseFilter = Control.MouseFilterEnum.Stop;
                 }
                 holder.ZIndex = 0;
 

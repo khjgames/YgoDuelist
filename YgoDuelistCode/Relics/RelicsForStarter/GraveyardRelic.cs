@@ -23,6 +23,7 @@ using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -153,7 +154,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     public bool IsAnnualAvailable(string key) => !_annualKeysConsumedThisTurn.Contains(key);
 
-    /// <summary>Chunk Z: Splinter (50% splash to other enemies) and Blight (50% of hit damage as stacks, including blocked) after duel monster <see cref="AttackCommand"/>.</summary>
+    /// <summary>Chunk Z: Splinter (50% splash to other enemies); on-hit Blight (50% of hit damage as stacks, including blocked); Shinato Corpse-Blight (execute kill: 50% of that damage as Blight to all enemies) after duel monster <see cref="AttackCommand"/>.</summary>
     public override async Task AfterAttack(AttackCommand command)
     {
         if (Owner == null || command.Attacker?.Player != Owner)
@@ -273,6 +274,26 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             {
                 foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive).ToList())
                     await CreatureCmd.Stun(e);
+            }
+        }
+
+        if (monster is Shinato_King_of_a_Higher_Plane)
+        {
+            foreach (DamageResult r in command.Results)
+            {
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled || r.TotalDamage <= 0)
+                    continue;
+
+                int blight = (int)decimal.Floor(r.TotalDamage * 0.5m);
+                if (blight <= 0)
+                    continue;
+
+                foreach (Creature enemy in cs.HittableEnemies)
+                {
+                    if (!enemy.IsAlive)
+                        continue;
+                    await PowerCmd.Apply<BlightPower>(enemy, blight, command.Attacker, monster);
+                }
             }
         }
 

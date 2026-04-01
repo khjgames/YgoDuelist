@@ -337,6 +337,14 @@ public static class YgoOptionHandUiPatch
         if (PendingOptionHolderToFreeAfterReturnToHand == optionHolder)
             PendingOptionHolderToFreeAfterReturnToHand = null;
 
+        var handInst = NPlayerHand.Instance;
+        if (handInst != null)
+        {
+            var queueField = AccessTools.Field(typeof(NPlayerHand), "_holdersAwaitingQueue");
+            if (queueField?.GetValue(handInst) is Dictionary<NHandCardHolder, int> awaiting)
+                awaiting.Remove(optionHolder);
+        }
+
         if (!GodotObject.IsInstanceValid(optionHolder))
             return;
 

@@ -19,8 +19,8 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     private static CardKeyword SetKeyword => (CardKeyword)10009;
     private static CardKeyword TrapKeyword => (CardKeyword)10011;
     private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
-    private static CardKeyword SplinterKeyword => (CardKeyword)20043;
-    private static CardKeyword BlightKeyword => (CardKeyword)20044;
+    private static CardKeyword SplinterKeyword => (CardKeyword)20044;
+    private static CardKeyword BlightKeyword => (CardKeyword)20045;
 
     /// <summary>
     /// <see cref="CardModel.Keywords"/> only unions <see cref="CanonicalKeywords"/> once; trap presentation depends on pile,

@@ -15,6 +15,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 /// </summary>
 public sealed class Command_Defend : MonsterCommandCard
 {
+    protected override bool MirrorSourceMonsterUpgradeVisual => true;
+
     // For reflection / scanners
     public Command_Defend()
     {
@@ -58,6 +60,8 @@ public sealed class Command_Defend : MonsterCommandCard
             if (!base.IsPlayable || SourceMonster == null) return false;
             var pet = FindPetForMonster(SourceMonster);
             if (pet == null) return false;
+            if (IsRegularDeckMonsterCommandWithLivePet(pet))
+                return true;
             return MonsterCommandRegistry.CanUseMonsterDefendCommand(pet, SourceMonster);
         }
     }
@@ -69,10 +73,12 @@ public sealed class Command_Defend : MonsterCommandCard
             return;
 
         var pet = FindPetForMonster(SourceMonster);
+        bool skipRegistryCommit = TryConsumeRegularDeckCommandWithoutFatigueOrSlots(cardPlay, pet);
         if (pet != null)
         {
             await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, player, pet);
-            await MonsterCommandRegistry.CommitMonsterCommandAfterPlay(pet, isAttackCommand: false, player.Creature, SourceMonster);
+            if (!skipRegistryCommit)
+                await MonsterCommandRegistry.CommitMonsterCommandAfterPlay(pet, isAttackCommand: false, player.Creature, SourceMonster);
         }
 
         SourceMonster.SetBattlePositionFromDuelCommand(attackPosition: false);

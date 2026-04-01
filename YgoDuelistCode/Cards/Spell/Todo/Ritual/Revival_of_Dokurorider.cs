@@ -29,12 +29,4 @@ public sealed class Revival_of_Dokurorider : RitualSpellCard
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Revival_of_Dokurorider), typeof(Dokurorider));
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

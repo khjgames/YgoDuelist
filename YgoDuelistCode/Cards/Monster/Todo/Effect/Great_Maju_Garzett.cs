@@ -25,7 +25,7 @@ public sealed class Great_Maju_Garzett : EffectMonsterCard
             baseDef: 0,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Fiend,
-            duelMonsterAttackPlayEnergyOverride: 1)
+            duelMonsterAttackPlayEnergyOverride: 2)
     {
     }
 

@@ -78,6 +78,11 @@ public static class YgoCardPackRewardFlow
         Rng rng = player.PlayerRng.Rewards;
         var choiceContext = new BlockingPlayerChoiceContext();
 
+        LogPackFlowPhase(
+            player,
+            "flow_start",
+            $"cardSource={options.Source} | rarityOdds={options.RarityOdds} | slotCount={slotCount} | canSkipReward={reward.CanSkip}");
+
         var bundles = new List<IReadOnlyList<CardModel>>(3);
 
         void BuildBundlesFromGenerator()
@@ -103,6 +108,7 @@ public static class YgoCardPackRewardFlow
         int chosenBundleIndex;
 
     PickBundle:
+        LogPackFlowPhase(player, "choose_pack_phase_start", SummarizeBundlesForLog(bundles));
         try
         {
             chosenPack = (await CardSelectCmd.FromChooseABundleScreen(player, bundles)).ToList();
@@ -110,16 +116,22 @@ public static class YgoCardPackRewardFlow
         catch (OperationCanceledException)
         {
             RemoveAllCreatedCards(bundles, player);
+            LogPackFlowPhase(player, "flow_end_cancelled_choose_pack", "removed preview clones");
             return false;
         }
 
         if (chosenPack.Count == 0)
         {
             RemoveAllCreatedCards(bundles, player);
+            LogPackFlowPhase(player, "flow_end_empty_choose_pack", "removed preview clones");
             return false;
         }
 
         chosenBundleIndex = IndexOfBundleByInstanceSequence(bundles, chosenPack);
+        LogPackFlowPhase(
+            player,
+            "choose_pack_phase_end",
+            $"chosenBundleIndex={chosenBundleIndex} | chosenSize={chosenPack.Count} | {SummarizeRarities(chosenPack)}");
 
         var deckPrefs = new CardSelectorPrefs(
             new LocString("combat_messages", "YGODUELIST-PACK_REWARD_DECK.prompt"),
@@ -133,14 +145,24 @@ public static class YgoCardPackRewardFlow
         List<CardModel> deckPicks;
 
     AssignDeck:
+        LogPackFlowPhase(
+            player,
+            "assign_deck_phase_start",
+            $"poolSize={chosenPack.Count} | {SummarizeRarities(chosenPack)}");
         try
         {
             deckPicks = (await CardSelectCmd.FromSimpleGrid(choiceContext, chosenPack, player, deckPrefs)).ToList();
         }
         catch (OperationCanceledException)
         {
+            LogPackFlowPhase(player, "assign_deck_cancelled_back_to_choose_pack", "");
             goto PickBundle;
         }
+
+        LogPackFlowPhase(
+            player,
+            "assign_deck_phase_end",
+            $"deckPicks={deckPicks.Count} | {SummarizeRarities(deckPicks)}");
 
         var deckSet = new HashSet<CardModel>(deckPicks);
         List<CardModel> remainder = chosenPack.Where(c => !deckSet.Contains(c)).ToList();
@@ -148,6 +170,7 @@ public static class YgoCardPackRewardFlow
         if (remainder.Count == 0)
         {
             sidePicks = [];
+            LogPackFlowPhase(player, "assign_side_phase_skipped", "no remainder after deck");
             goto ApplyPackReward;
         }
 
@@ -160,16 +183,30 @@ public static class YgoCardPackRewardFlow
             Cancelable = true
         };
 
+        LogPackFlowPhase(
+            player,
+            "assign_side_phase_start",
+            $"remainderSize={remainder.Count} | {SummarizeRarities(remainder)}");
         try
         {
             sidePicks = (await CardSelectCmd.FromSimpleGrid(choiceContext, remainder, player, sidePrefs)).ToList();
         }
         catch (OperationCanceledException)
         {
+            LogPackFlowPhase(player, "assign_side_cancelled_back_to_assign_deck", "");
             goto AssignDeck;
         }
 
+        LogPackFlowPhase(
+            player,
+            "assign_side_phase_end",
+            $"sidePicks={sidePicks.Count} | {SummarizeRarities(sidePicks)}");
+
     ApplyPackReward:
+        LogPackFlowPhase(
+            player,
+            "apply_reward_phase_start",
+            $"deck={deckPicks.Count} side={sidePicks.Count} trunkFromPack={chosenPack.Count - deckPicks.Count - sidePicks.Count}");
         UnsubscribeRelicHandler(reward, player);
 
         YgoPlayerMinimumDeck.IncreaseAfterPackRewardConfirmed(player);
@@ -226,7 +263,35 @@ public static class YgoCardPackRewardFlow
 
         player.Deck.InvokeCardAddFinished();
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
+        LogPackFlowPhase(player, "flow_end_success", "minDeck bump applied; cards committed");
         return true;
+    }
+
+    private static void LogPackFlowPhase(Player player, string phase, string detail)
+    {
+        int owed = YgoPackRewardProgress.For(player).OwedRareCardVouchers;
+        string tail = string.IsNullOrEmpty(detail) ? "" : " | " + detail;
+        Log.Info($"[YgoDuelist][PackFlow] phase={phase} | owedRareVouchers={owed}{tail}");
+    }
+
+    private static string SummarizeRarities(IReadOnlyList<CardModel> cards)
+    {
+        int c = cards.Count(x => x.Rarity == CardRarity.Common);
+        int u = cards.Count(x => x.Rarity == CardRarity.Uncommon);
+        int r = cards.Count(x => x.Rarity == CardRarity.Rare);
+        return $"C={c} U={u} R={r}";
+    }
+
+    private static string SummarizeBundlesForLog(List<IReadOnlyList<CardModel>> bundles)
+    {
+        var parts = new List<string>(bundles.Count);
+        for (int i = 0; i < bundles.Count; i++)
+        {
+            IReadOnlyList<CardModel> b = bundles[i];
+            parts.Add($"[{i}] size={b.Count} {SummarizeRarities(b)}");
+        }
+
+        return string.Join("; ", parts);
     }
 
     private static void RemoveAllCreatedCards(List<IReadOnlyList<CardModel>> bundles, Player player)

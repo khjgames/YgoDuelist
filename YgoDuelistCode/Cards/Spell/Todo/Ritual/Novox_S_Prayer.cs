@@ -29,12 +29,4 @@ public sealed class Novox_S_Prayer : RitualSpellCard
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Novox_S_Prayer), typeof(Skull_Guardian));
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

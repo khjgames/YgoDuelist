@@ -29,12 +29,4 @@ public sealed class Zera_Ritual : RitualSpellCard
     public override Type[] RelatedCards =>
         RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Zera_Ritual), typeof(Zera_the_Mant));
 
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

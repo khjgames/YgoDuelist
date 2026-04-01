@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
@@ -22,7 +22,8 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Equip spells: choose a valid field monster before spending resources; cancel is silent.
+/// Equip spells: choose a valid field monster before spending resources.
+/// One legal target skips the grid; multiple targets use cancelable confirm (<see cref="YgoCancelableConfirmGridPrefs"/>).
 /// </summary>
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
 [HarmonyPriority(800)]
@@ -31,8 +32,7 @@ public static class PlayCardActionEquipSpellPatch
     private static readonly PropertyInfo? PlayerChoiceContextProp =
         typeof(PlayCardAction).GetProperty("PlayerChoiceContext", BindingFlags.Public | BindingFlags.Instance);
 
-    private static readonly PropertyInfo? SelectionScreenPromptProp =
-        AccessTools.Property(typeof(CardModel), "SelectionScreenPrompt");
+    private const string EquipSpellDefaultSelectionKey = "YGODUELIST-EQUIP_SPELL_DEFAULT.selectionScreenPrompt";
 
     static bool Prefix(PlayCardAction __instance, ref Task __result)
     {
@@ -86,19 +86,41 @@ public static class PlayCardActionEquipSpellPatch
                 return;
             }
 
-            var loc = (LocString)SelectionScreenPromptProp!.GetValue(equip, null)!;
-            var prefs = new CardSelectorPrefs(loc, 1, 1);
-            var selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates,
-                player,
-                prefs);
-
-            var chosen = selected.FirstOrDefault() as BaseMonsterCard;
-            if (chosen == null)
+            BaseMonsterCard? chosen;
+            if (candidates.Count == 1)
             {
-                action.Cancel();
-                return;
+                chosen = candidates[0] as BaseMonsterCard;
+                if (chosen == null)
+                {
+                    action.Cancel();
+                    return;
+                }
+            }
+            else
+            {
+                LocString prompt = ResolveEquipSelectionPrompt(equip);
+                var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(prompt);
+                IEnumerable<CardModel> selected;
+                try
+                {
+                    selected = await CardSelectCmd.FromSimpleGrid(
+                        new BlockingPlayerChoiceContext(),
+                        candidates,
+                        player,
+                        prefs);
+                }
+                catch (OperationCanceledException)
+                {
+                    action.Cancel();
+                    return;
+                }
+
+                chosen = selected.FirstOrDefault() as BaseMonsterCard;
+                if (chosen == null || !candidates.Contains(chosen))
+                {
+                    action.Cancel();
+                    return;
+                }
             }
 
             EquipSpellPlayPayload.SetPending(card, chosen);
@@ -109,6 +131,16 @@ public static class PlayCardActionEquipSpellPatch
             if (card != null)
                 EquipSpellPlayPayload.ClearForCard(card);
         }
+    }
+
+    private static LocString ResolveEquipSelectionPrompt(BaseEquipSpellCard equip)
+    {
+        string cardKey = equip.Id.Entry + ".selectionScreenPrompt";
+        LocString prompt = LocString.Exists("cards", cardKey)
+            ? new LocString("cards", cardKey)
+            : new LocString("cards", EquipSpellDefaultSelectionKey);
+        equip.DynamicVars.AddTo(prompt);
+        return prompt;
     }
 
     private static async Task ExecuteVanillaPlayCardActionBody(PlayCardAction action)

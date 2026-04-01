@@ -13,8 +13,6 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using YgoDuelist.YgoDuelistCode.Cards;
-using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -25,6 +23,11 @@ public sealed class Dice_Jar : EffectMonsterCard
 {
     private static readonly LocString RollPreviewPrompt =
         new("cards", "YGODUELIST-DICE_JAR.roll_result.selection");
+
+    private static readonly LocString FlipEffectHoverTitle = new("card_keywords", "20041.title");
+
+    private static readonly LocString FlipEffectHoverDescription =
+        new("cards", "YGODUELIST-DICE_JAR.flip_effect.description");
 
     public Dice_Jar()
         : base(
@@ -55,8 +58,16 @@ public sealed class Dice_Jar : EffectMonsterCard
         typeof(Dice_Jar),
     };
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        base.ExtraHoverTips.Concat(new[] { PreviewEffect.CreateHostedSmartTip(this) });
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return new HoverTip(FlipEffectHoverTitle, FlipEffectHoverDescription);
+            yield return YgoDeterministicRngResultDisplay.Rolled6SampleHoverTip();
+        }
+    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

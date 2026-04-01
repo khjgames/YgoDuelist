@@ -28,6 +28,18 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoOptionHandBridge
 {
+    private static bool SameOptionOrder(IReadOnlyList<CardModel> a, IReadOnlyList<CardModel> b)
+    {
+        if (a.Count != b.Count)
+            return false;
+        for (int i = 0; i < a.Count; i++)
+        {
+            if (!ReferenceEquals(a[i], b[i]))
+                return false;
+        }
+        return true;
+    }
+
     /// <summary>
     /// Logical snapshot of which option cards should currently be shown
     /// for each combat player. Limited to a small, fixed-size "hand".
@@ -83,6 +95,14 @@ public static class YgoOptionHandBridge
     }
 
     /// <summary>
+    /// Re-reads the option pile and always notifies second-hand subscribers, even when the ordered card list
+    /// matches the last snapshot. Use after a play resolves so <see cref="YgoOptionHandUiPatch"/> rebuilds holders
+    /// when visuals desynced (stale cards, wrong count).
+    /// </summary>
+    public static void ForceRefreshOptionHandFromPile(Player player, int maxCount = 7) =>
+        SyncFromOptionPile(player, maxCount, forceNotify: true);
+
+    /// <summary>
     /// Returns the current logical option cards for the given player.
     /// This is purely a data view; visuals are owned by subscribers.
     /// </summary>
@@ -108,7 +128,7 @@ public static class YgoOptionHandBridge
     /// Maximum number of options to expose as a second hand. Cards beyond
     /// this limit remain in the pile but are not part of the logical hand.
     /// </param>
-    public static void SyncFromOptionPile(Player player, int maxCount = 7)
+    public static void SyncFromOptionPile(Player player, int maxCount = 7, bool forceNotify = false)
     {
         if (player == null)
             throw new ArgumentNullException(nameof(player));
@@ -118,7 +138,7 @@ public static class YgoOptionHandBridge
         {
             // No option pile: clear any existing state and notify listeners.
             bool hadState = _visibleOptions.Remove(player);
-            if (hadState)
+            if (hadState || forceNotify)
             {
                 var empty = Array.Empty<CardModel>();
                 OptionsChanged?.Invoke(player, empty);
@@ -133,7 +153,13 @@ public static class YgoOptionHandBridge
             .Take(Math.Max(0, maxCount))
             .ToList();
 
+        bool changed = forceNotify
+                       || !_visibleOptions.TryGetValue(player, out var prev)
+                       || !SameOptionOrder(prev, cards);
         _visibleOptions[player] = cards;
+        if (!changed)
+            return;
+
         OptionsChanged?.Invoke(player, cards);
         YgoSecondHandSourceBridge.NotifyMonsterOptionsChanged(player, cards);
     }

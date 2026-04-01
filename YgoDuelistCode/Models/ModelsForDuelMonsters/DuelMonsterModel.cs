@@ -80,7 +80,10 @@ public sealed class DuelMonsterModel : MonsterModel
             6 => 12,
             7 => 15,
             8 => 17,
-            _ => 20
+            9 => 20,
+            10 => 22,
+            11 => 24,
+            _ => 26
         };
     }
 

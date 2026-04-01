@@ -19,7 +19,19 @@ public static class YgoMonsterStarIconPatch
 {
     private const string ConduitTexturePath = "YgoDuelist/images/card_frames/conduit_icon.png";
 
+    /// <summary>
+    /// Cached conduit art. Godot may dispose the underlying <see cref="CompressedTexture2D"/> on reload
+    /// or pile churn; always validate with <see cref="GodotObject.IsInstanceValid"/> before use.
+    /// </summary>
     private static Texture2D? _conduitTexture;
+
+    private static Texture2D? GetConduitTexture()
+    {
+        if (GodotObject.IsInstanceValid(_conduitTexture))
+            return _conduitTexture;
+        _conduitTexture = ResourceLoader.Load<Texture2D>(ConduitTexturePath, null, ResourceLoader.CacheMode.Reuse);
+        return _conduitTexture;
+    }
 
     static IEnumerable<MethodBase> TargetMethods()
     {
@@ -46,16 +58,16 @@ public static class YgoMonsterStarIconPatch
             return;
         }
 
-        _conduitTexture ??= ResourceLoader.Load<Texture2D>(ConduitTexturePath, null, ResourceLoader.CacheMode.Reuse);
-        if (_conduitTexture == null)
+        Texture2D? conduit = GetConduitTexture();
+        if (conduit == null)
             return;
 
         var starIcon = __instance.GetNodeOrNull<TextureRect>("%StarIcon");
         if (starIcon != null)
-            starIcon.Texture = _conduitTexture;
+            starIcon.Texture = conduit;
 
         var unplayableStar = __instance.GetNodeOrNull<TextureRect>("%UnplayableStarIcon");
         if (unplayableStar != null)
-            unplayableStar.Texture = _conduitTexture;
+            unplayableStar.Texture = conduit;
     }
 }

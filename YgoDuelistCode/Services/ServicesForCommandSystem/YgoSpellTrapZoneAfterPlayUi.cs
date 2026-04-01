@@ -47,7 +47,7 @@ public static class YgoSpellTrapZoneAfterPlayUi
             }
 
             YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.SpellTrapZone);
-            YgoSpellTrapZoneBridge.SyncFromZonePile(player);
+            YgoSpellTrapZoneBridge.ForceRefreshSpellTrapSecondHandFromZone(player);
             ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
         };
     }

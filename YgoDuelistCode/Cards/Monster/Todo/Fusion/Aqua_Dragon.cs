@@ -1,3 +1,4 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -19,9 +20,14 @@ public sealed class Aqua_Dragon : FusionMonsterCard
             baseDef: 19,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.SeaSerpent,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Fairy_Dragon),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Amazon_of_the_Seas),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Zone_Eater))
+            fusionMaterialTypes: new[]
+            {
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Fairy_Dragon),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Amazon_of_the_Seas),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Zone_Eater)
+            },
+            duelMonsterAttackPlayEnergyOverride: 1,
+            duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
 }

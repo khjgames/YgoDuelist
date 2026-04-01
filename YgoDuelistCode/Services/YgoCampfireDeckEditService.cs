@@ -127,7 +127,8 @@ public static class YgoCampfireDeckEditService
             }
 
             DetachFromTrunkOrSideIfNeeded(player, chosen);
-            await CardPileCmd.Add(chosen, PileType.Deck);
+            // Non-null source: Bing Bong only duplicates when source is null; trunk/side use PileType.None + AddInternal so this add would otherwise read as a normal deck gain.
+            await CardPileCmd.Add(chosen, PileType.Deck, source: chosen);
             TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
         }
     }
@@ -214,7 +215,7 @@ public static class YgoCampfireDeckEditService
             }
             await CardPileCmd.RemoveFromDeck(oldCard);
             DetachFromTrunkOrSideIfNeeded(player, newCard);
-            await CardPileCmd.Add(newCard, PileType.Deck);
+            await CardPileCmd.Add(newCard, PileType.Deck, source: newCard);
             TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
         }
     }

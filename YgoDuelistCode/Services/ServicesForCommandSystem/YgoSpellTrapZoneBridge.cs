@@ -22,6 +22,18 @@ public static class YgoSpellTrapZoneBridge
 {
     private static readonly Dictionary<Player, List<CardModel>> VisibleCardsByPlayer = new();
 
+    private static bool SameVisibleOrder(IReadOnlyList<CardModel> a, IReadOnlyList<CardModel> b)
+    {
+        if (a.Count != b.Count)
+            return false;
+        for (int i = 0; i < a.Count; i++)
+        {
+            if (!ReferenceEquals(a[i], b[i]))
+                return false;
+        }
+        return true;
+    }
+
     public static IReadOnlyList<CardModel> GetVisibleCards(Player player)
     {
         if (VisibleCardsByPlayer.TryGetValue(player, out var cards))
@@ -29,13 +41,13 @@ public static class YgoSpellTrapZoneBridge
         return Array.Empty<CardModel>();
     }
 
-    public static void SyncFromZonePile(Player player)
+    public static void SyncFromZonePile(Player player, bool forceNotify = false)
     {
         var pile = SpellTrapZonePile.CustomType.GetPile(player);
         if (pile == null)
         {
             bool removed = VisibleCardsByPlayer.Remove(player);
-            if (removed)
+            if (removed || forceNotify)
                 YgoSecondHandSourceBridge.NotifySpellTrapZoneChanged(player, Array.Empty<CardModel>());
             DarkSnakeSyndromeFieldPower.SyncCleanupIfSpellAbsent(player);
             SpellbindingCircleTargetPower.SyncCleanupIfTrapAbsent(player);
@@ -48,13 +60,24 @@ public static class YgoSpellTrapZoneBridge
             .OrderByDescending(IsFieldSpell)
             .ToList();
 
+        bool notifyUi = forceNotify
+                        || !VisibleCardsByPlayer.TryGetValue(player, out var prevVisible)
+                        || !SameVisibleOrder(prevVisible, ordered);
         VisibleCardsByPlayer[player] = ordered;
-        YgoSecondHandSourceBridge.NotifySpellTrapZoneChanged(player, ordered);
+        if (notifyUi)
+            YgoSecondHandSourceBridge.NotifySpellTrapZoneChanged(player, ordered);
         DarkSnakeSyndromeFieldPower.SyncCleanupIfSpellAbsent(player);
         SpellbindingCircleTargetPower.SyncCleanupIfTrapAbsent(player);
         NightmareWheelPower.SyncCleanupIfTrapAbsent(player);
         _ = YgoDesCounterblowThornsSync.SyncForPlayerAsync(player);
     }
+
+    /// <summary>
+    /// Same as <see cref="SyncFromZonePile"/> but always fires a spell/trap second-hand notification when that view is active,
+    /// so the row rebuilds after plays even if the cached list matched the pile (stale NCards / wrong count).
+    /// </summary>
+    public static void ForceRefreshSpellTrapSecondHandFromZone(Player player) =>
+        SyncFromZonePile(player, forceNotify: true);
 
     public static bool IsSpellOrTrapCard(CardModel card)
     {

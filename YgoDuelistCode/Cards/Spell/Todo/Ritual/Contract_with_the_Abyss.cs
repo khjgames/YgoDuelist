@@ -26,13 +26,4 @@ public sealed class Contract_with_the_Abyss : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
 
     public override Type[] RelatedCards => RitualArchetypeMeta.NonRitualCardsReferencingRitualInLocalization;
-
-    protected override void OnUpgrade()
-    {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
 }

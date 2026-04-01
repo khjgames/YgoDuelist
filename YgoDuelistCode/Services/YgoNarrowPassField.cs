@@ -12,7 +12,7 @@ using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>Face-up <see cref="Narrow_Pass"/> in the Spell/Trap zone: command costs, life payment, and repeated attack/defend resolutions.</summary>
+/// <summary>Face-up <see cref="Narrow_Pass"/> in the Spell/Trap zone: +1 monster play/command energy, summon pet life payment, and repeated attack/defend resolutions (field commands and hand normal/tribute ATK/DEF summons via <see cref="AbstractMonsterCard.CanonicalEnergyCost"/> / <see cref="NormalMonsterCard"/>).</summary>
 public static class YgoNarrowPassField
 {
     public static bool IsActive(Player? player)
@@ -69,7 +69,13 @@ public static class YgoNarrowPassField
         if (payment <= 0m)
             return;
 
-        await CreatureCmd.Damage(choiceContext, pet, payment, ValueProp.Unpowered, player.Creature, src);
+        await CreatureCmd.Damage(
+            choiceContext,
+            pet,
+            payment,
+            ValueProp.Unpowered | ValueProp.Unblockable,
+            player.Creature,
+            src);
     }
 
     public static Narrow_Pass? GetFirstActive(Player? player)

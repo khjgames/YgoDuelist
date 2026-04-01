@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Odds;
 using MegaCrit.Sts2.Core.Random;
@@ -26,6 +27,10 @@ public static class YgoCardPackGenerator
     {
         slotCount = Math.Clamp(slotCount, 2, 6);
         var progress = YgoPackRewardProgress.For(player);
+        int owedRareEntering = progress.OwedRareCardVouchers;
+        Log.Info(
+            $"[YgoDuelist][PackGen] phase=start_generate | owedRareVouchers={owedRareEntering} | slotCount={slotCount} | rarityOdds={oddsType}");
+
         var odds = new CardRarityOdds(rng);
 
         var rolledRarities = new CardRarity[slotCount];
@@ -42,6 +47,10 @@ public static class YgoCardPackGenerator
             }
         }
 
+        int columnRareSlots = rolledRarities.Take(slotCount).Count(r => r == CardRarity.Rare);
+        Log.Info(
+            $"[YgoDuelist][PackGen] phase=after_shared_rarity_column | column={FormatRarityColumn(rolledRarities, slotCount)} | columnRareSlots={columnRareSlots} | owedRareVouchers={progress.OwedRareCardVouchers} (after pity slots consumed)");
+
         var workingMain = YgoPackCardCatalog.PackThemeMainTags.ToList();
         var workingCombined = YgoPackCardCatalog.PackThemeMainTags
             .Concat(YgoPackCardCatalog.PackThemeSubTags)
@@ -51,10 +60,34 @@ public static class YgoCardPackGenerator
         for (int p = 0; p < 3; p++)
         {
             YgoCardPackTags tagMask = RollPackTagMask(rng, workingMain, workingCombined);
-            packs.Add(FillOnePack(player, rng, tagMask, rolledRarities, slotCount, progress));
+            List<CardModel> onePack = FillOnePack(player, rng, tagMask, rolledRarities, slotCount, progress);
+            packs.Add(onePack);
+            Log.Info(
+                $"[YgoDuelist][PackGen] phase=after_pack_{p}_filled | tagMask={tagMask} | {SummarizePackRarities(onePack)} | cards={onePack.Count} | owedRareVouchers={progress.OwedRareCardVouchers}");
         }
 
+        Log.Info(
+            $"[YgoDuelist][PackGen] phase=end_generate | owedRareVouchers={progress.OwedRareCardVouchers} (exit; includes pool-miss + bundle-trim vouchers from this roll)");
         return packs;
+    }
+
+    private static string FormatRarityColumn(CardRarity[] column, int len) =>
+        string.Join(
+            "",
+            column.Take(len).Select(static r => r switch
+            {
+                CardRarity.Common => "C",
+                CardRarity.Uncommon => "U",
+                CardRarity.Rare => "R",
+                _ => "?"
+            }));
+
+    private static string SummarizePackRarities(IReadOnlyList<CardModel> cards)
+    {
+        int c = cards.Count(x => x.Rarity == CardRarity.Common);
+        int u = cards.Count(x => x.Rarity == CardRarity.Uncommon);
+        int r = cards.Count(x => x.Rarity == CardRarity.Rare);
+        return $"C={c} U={u} R={r}";
     }
 
     private static YgoCardPackTags RollPackTagMask(Rng rng, List<YgoCardPackTags> workingMain, List<YgoCardPackTags> workingCombined)
@@ -124,7 +157,12 @@ public static class YgoCardPackGenerator
         ApplyBundleResolution(rng, cards);
         int rareAfterBundle = CountRaresInPack(cards);
         if (hadBundleAnchor && rareAfterBundle < rareBeforeBundle)
-            progress.OwedRareCardVouchers += rareBeforeBundle - rareAfterBundle;
+        {
+            int trimOwed = rareBeforeBundle - rareAfterBundle;
+            progress.OwedRareCardVouchers += trimOwed;
+            Log.Info(
+                $"[YgoDuelist][PackGen] bundle_trim_removed_rares | +{trimOwed} owedRareVoucher(s) | owedRareVouchers={progress.OwedRareCardVouchers}");
+        }
 
         return cards;
     }
@@ -151,7 +189,7 @@ public static class YgoCardPackGenerator
 
         HashSet<ModelId> bundleIds = CollectBundleIds(anchor, yAnchor);
 
-        foreach (CardModel mate in EnumerateBundleMatesExceptAnchor(anchor, yAnchor))
+        foreach (CardModel mate in EnumeratePackEligibleBundleMatesExceptAnchor(anchor, yAnchor))
         {
             if (cards.Exists(c => c.Id == mate.Id))
                 continue;
@@ -170,18 +208,35 @@ public static class YgoCardPackGenerator
     {
         var set = new HashSet<ModelId> { anchor.Id };
         foreach (Type bt in y.BundledCards)
-            set.Add(YgoPackCardCatalog.CardFromType(bt).Id);
+        {
+            if (bt == anchor.GetType())
+                continue;
+            CardModel mate = YgoPackCardCatalog.CardFromType(bt);
+            if (!IsPackBundleMateEligible(mate))
+                continue;
+            set.Add(mate.Id);
+        }
 
         return set;
     }
 
-    private static IEnumerable<CardModel> EnumerateBundleMatesExceptAnchor(CardModel anchor, YgoDuelistCard y)
+    /// <summary>
+    /// Pack bundle mates come from <see cref="YgoDuelistCard.BundledCards"/> but only if they pass the same filter as
+    /// <see cref="YgoPackCardCatalog.GetAllYgoTemplates"/>: <see cref="YgoDuelistCard"/> with non-<see cref="YgoCardPackTags.None"/> pack tags.
+    /// </summary>
+    private static bool IsPackBundleMateEligible(CardModel model) =>
+        model is YgoDuelistCard ygo && ygo.PackTags != YgoCardPackTags.None;
+
+    private static IEnumerable<CardModel> EnumeratePackEligibleBundleMatesExceptAnchor(CardModel anchor, YgoDuelistCard y)
     {
         foreach (Type bt in y.BundledCards)
         {
             if (bt == anchor.GetType())
                 continue;
-            yield return YgoPackCardCatalog.CardFromType(bt);
+            CardModel mate = YgoPackCardCatalog.CardFromType(bt);
+            if (!IsPackBundleMateEligible(mate))
+                continue;
+            yield return mate;
         }
     }
 
@@ -261,7 +316,11 @@ public static class YgoCardPackGenerator
                 }
 
                 if (pool != null && pool.Count > 0)
+                {
                     progress.OwedRareCardVouchers++;
+                    Log.Info(
+                        $"[YgoDuelist][PackGen] rare_slot_pool_empty_demoted | owedRareVouchers={progress.OwedRareCardVouchers} (+1 voucher, rare pool had no cards)");
+                }
             }
             else if (rarity == CardRarity.Uncommon)
             {

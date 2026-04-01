@@ -20,8 +20,8 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
     private static CardKeyword SetKeyword => (CardKeyword)10009;
     private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
     private static CardKeyword CycleSpellKeyword => (CardKeyword)20040;
-    private static CardKeyword SplinterKeyword => (CardKeyword)20043;
-    private static CardKeyword BlightKeyword => (CardKeyword)20044;
+    private static CardKeyword SplinterKeyword => (CardKeyword)20044;
+    private static CardKeyword BlightKeyword => (CardKeyword)20045;
 
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);

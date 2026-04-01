@@ -130,7 +130,7 @@ public static class DuelMonsterPetDeathPatch
                 if (hand != null && graveyard != null && card.Pile != hand)
                 {
                     GD.Print($"[ZGO] DuelMonsterPetDeathPatch: bounce {card.Id.Entry} to hand (equips to GY).");
-                    TaskHelper.RunSafely(MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, hand, graveyard));
+                    RunRelocationBlocking(() => MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, hand, graveyard));
                 }
             }
             else if (graveyard != null && card.Pile != graveyard)
@@ -138,12 +138,12 @@ public static class DuelMonsterPetDeathPatch
                 if (card is Keldo keldo)
                 {
                     GD.Print($"[ZGO] DuelMonsterPetDeathPatch: Keldo {card.Id.Entry} — move to GY then graveyard→discard effect.");
-                    TaskHelper.RunSafely(Keldo.RunAfterDestroyedOnFieldAsync(player, keldo, graveyard));
+                    RunRelocationBlocking(() => Keldo.RunAfterDestroyedOnFieldAsync(player, keldo, graveyard));
                 }
                 else
                 {
                     GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
-                    TaskHelper.RunSafely(MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, graveyard, graveyard));
+                    RunRelocationBlocking(() => MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, graveyard, graveyard));
                 }
             }
 
@@ -180,6 +180,23 @@ public static class DuelMonsterPetDeathPatch
         catch (Exception e)
         {
             MainFile.Logger.Error($"DuelMonsterPetDeathPatch error: {e}");
+        }
+    }
+
+    /// <summary>
+    /// Card pile moves must finish before <see cref="DuelMonsterFieldRegistry.UnregisterPet"/> / RemoveCreature.
+    /// Fire-and-forget <see cref="TaskHelper.RunSafely"/> let those run first; <see cref="CardPileCmd.Add"/> could then
+    /// leave the source card in no pile (vanished from GY/hand/deck UI).
+    /// </summary>
+    private static void RunRelocationBlocking(Func<Task> work)
+    {
+        try
+        {
+            work().ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"DuelMonsterPetDeathPatch relocation failed: {ex}");
         }
     }
 

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
+using YgoDuelist.YgoDuelistCode.Extensions;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -12,6 +13,13 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 /// </summary>
 public sealed class GracefulDicePower : YgoDuelistPower
 {
+    private static string IconPath =>
+        "graceful_dice.png".CardImagePath().Replace('\\', '/');
+
+    public override string CustomPackedIconPath => IconPath;
+
+    public override string CustomBigIconPath => IconPath;
+
     public override PowerType Type => PowerType.Buff;
 
     public override PowerStackType StackType => PowerStackType.Counter;

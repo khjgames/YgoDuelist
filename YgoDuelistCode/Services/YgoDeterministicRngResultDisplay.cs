@@ -1,5 +1,7 @@
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -10,6 +12,10 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoDeterministicRngResultDisplay
 {
+    /// <summary>Single sample d6 outcome card for dice-effect tooltips (not all six faces).</summary>
+    public static IHoverTip Rolled6SampleHoverTip() =>
+        HoverTipFactory.FromCard(YgoPackCardCatalog.CardFromType(typeof(Rolled_6)));
+
     public static MonsterCommandCard CreateCoinFlipResultCard(CombatState combatState, Player player, bool flipIsHeads) =>
         flipIsHeads
             ? combatState.CreateCard<Heads>(player)

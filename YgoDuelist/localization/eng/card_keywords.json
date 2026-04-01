@@ -125,13 +125,20 @@
 
   "20041.title": "Flip Effect",
   "20041.description": "Triggers when this card is flipped face-up from face-down.",
+
   "20042.title": "Reckless Blocker",
   "20042.description": "This monster will always Die for You. You cannot toggle it off.",
 
-  "20043.title": "Splinter",
-  "20043.description": "When this deals unblocked damage to an enemy, each other enemy takes 50% of that damage (rounded down).",
+  "20043.title": "Reckless",
+  "20043.description": "Loses 1 HP when attacking or blocking.",
 
-  "20044.title": "Blight",
-  "20044.description": "Blight ticks at end of turn, ignores Block, then falls off."
+  "20044.title": "Splinter",
+  "20044.description": "When this deals unblocked damage to an enemy, each other enemy takes 50% of that damage (rounded down).",
+
+  "20045.title": "Blight",
+  "20045.description": "Blight ticks at end of turn, ignores Block, then falls off.",
+
+  "20046.title": "Corpse-Blight",
+  "20046.description": "When this card executes an enemy, [purple]Blight[/purple] all enemies (50% of damage as stacks)."
 
 }

@@ -1,4 +1,3 @@
-Ok so taking a break from this fusion monster train of thought for a bit
 How should we handle and implement the shop.
 We could technically sell packs, but I don't really like that idea as much as browsing and buying individual cards
 Like, give gold some guarenteed return value, no gamba involved yk what i mean
@@ -18,10 +17,12 @@ I think it would be cool to let players sell cards, commons  0.5, uncommon 1, ra
 It would give them the opportunity to clear out their trunks if they want or to scrounge/ scavenge together 10-40 gold here and there
 If they are just barely short of something they want to buy
 The specific gold values would have to be really low though, I don't want it to be very significant 
+
+Fun ideas -> 
+
 It would be really funny if there was an alternate act set duel academy
 Act 1 slifer red, act 2 ra yellow, act 3 obelisk blue lol
 
-Fun idea -> 
 Duelist Tutorials
 Add a page to the menu 
 Freeplay Duel
@@ -47,3 +48,28 @@ Fusion summons.
 Ritual summons.
 
 Packs & Deck editing.
+
+
+This is for planning adding a weighted rng selection system to the tag selection step of our implemented packs system @YgoDuelist/Game_Design/Packs_System.md 
+
+The goal being that we will will softly push the RNG distribution such that our desired balance of tags are selected throughout the run rather than some tags never being chosen, or others being overly chosen, and in doing so we are also allowed more freedom and control over the individual tags occurance and balanced weight rate tuning, you know what I mean?
+
+I think I should implement a balanced weight system
+so whenever a pack drafts a certain tag it will add to that rolls weight either 4, 3 or 2, if the pack was a single, double, or triple tag
+
+And so tags with higher weights have a smaller chance of being chosen and tags with lower weights have a higher chance of being chosen.
+
+
+And you can specify individual weight ratios for each tag.
+
+And the individual weight ratios influence what is considered "balanced" for that tag by modifying their final value so like.
+
+We give all the tags a base weight ratio of like 10. 
+
+then we do like spell = 22, trap = 24, attribute-based tags = 8, race-based tags = 12
+
+Lets say you wanted the Spell, Trap, Normal tags to occur more often than other tags, 
+maybe you wanted attribute specifics to occur less often and type theme specific to occur more often.
+
+I also need to fix the ability to skip card packs and also the ability to go back and 
+re-do selection of which cards in a card pack you want in your deck and which you want in your side deck before confirming

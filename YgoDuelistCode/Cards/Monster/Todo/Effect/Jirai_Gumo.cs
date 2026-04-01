@@ -43,17 +43,15 @@ public sealed class Jirai_Gumo : EffectMonsterCard
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Insect | YgoCardPackTags.Burn | YgoCardPackTags.Chance;
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
-    public override Type[] BundledCards => new[]
-    {
-        typeof(Jirai_Gumo),
-        typeof(Second_Coin_Toss)
-    };
+    public override Type[] BundledCards => new[] { typeof(Jirai_Gumo), typeof(Second_Coin_Toss) };
 
     // You will see these related cards more often with this card in your deck or side deck.
     public override Type[] RelatedCards => new[]
     {
         typeof(Jirai_Gumo),
-        typeof(Second_Coin_Toss)
+        typeof(Second_Coin_Toss),
+        typeof(Heads),
+        typeof(Tails)
     };
 
     /// <summary>
