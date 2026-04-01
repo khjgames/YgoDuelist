@@ -62,6 +62,18 @@ public static class YgoOptionHandUiPatch
         return pile != null && pile.Cards.Contains(card);
     }
 
+    /// <summary>
+    /// Option row holders are removed from <see cref="NPlayerHand.ActiveHolders"/> while a card is played:
+    /// <c>StartCardPlay</c> reparents them out of <c>CardHolderContainer</c>. Treat that as normal, not broken UI.
+    /// </summary>
+    private static bool OptionHolderIsDetachedForActivePlay(NPlayerHand hand, NYgoOptionCardHolder h)
+    {
+        var currentPlay = hand.InCardPlay && AccessTools.Field(typeof(NPlayerHand), "_currentCardPlay")?.GetValue(hand) is NCardPlay cp
+            ? cp.Holder
+            : null;
+        return currentPlay == h || hand.IsAwaitingPlay(h);
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(NCombatRoom), "_EnterTree")]
     private static void OnCombatRoomEnter(NCombatRoom __instance)
@@ -139,7 +151,7 @@ public static class YgoOptionHandUiPatch
         var container = hand.CardHolderContainer;
         var activeOpts = hand.ActiveHolders.Where(h => h is NYgoOptionCardHolder).ToHashSet();
         var currentPlayHolder = hand.InCardPlay && AccessTools.Field(typeof(NPlayerHand), "_currentCardPlay")?.GetValue(hand) is NCardPlay cp ? cp.Holder : null;
-        bool canPrune(NYgoOptionCardHolder h) => GodotObject.IsInstanceValid(h) && !activeOpts.Contains(h) && h != currentPlayHolder && !OptionHolderCardStillInPile(h, player);
+        bool canPrune(NYgoOptionCardHolder h) => GodotObject.IsInstanceValid(h) && !activeOpts.Contains(h) && h != currentPlayHolder && !hand.IsAwaitingPlay(h) && !OptionHolderCardStillInPile(h, player);
         var toFree = existing.Where(canPrune).ToList();
         int pruned = existing.RemoveAll(h => canPrune(h));
         if (pruned > 0)
@@ -171,8 +183,8 @@ public static class YgoOptionHandUiPatch
                 hand.RemoveCardHolder(h);
             else
             {
-                bool isCurrentPlayHolder = currentPlayHolder == h;
-                if (isCurrentPlayHolder)
+                bool isMidPlayOption = currentPlayHolder == h || hand.IsAwaitingPlay(h);
+                if (isMidPlayOption)
                     PendingOptionHolderToFreeAfterReturnToHand = h;
                 else if (GodotObject.IsInstanceValid(h) && h.IsInsideTree())
                     h.QueueFree();
@@ -247,7 +259,7 @@ public static class YgoOptionHandUiPatch
         var active = hand.ActiveHolders;
         var activeOpts = active.Where(h => h is NYgoOptionCardHolder).ToList();
         var currentPlayHolder = hand.InCardPlay && AccessTools.Field(typeof(NPlayerHand), "_currentCardPlay")?.GetValue(hand) is NCardPlay cp ? cp.Holder : null;
-        bool canPrune(NYgoOptionCardHolder h) => GodotObject.IsInstanceValid(h) && !activeOpts.Contains(h) && h != currentPlayHolder && !OptionHolderCardStillInPile(h, player);
+        bool canPrune(NYgoOptionCardHolder h) => GodotObject.IsInstanceValid(h) && !activeOpts.Contains(h) && h != currentPlayHolder && !hand.IsAwaitingPlay(h) && !OptionHolderCardStillInPile(h, player);
         var toFree = holders.Where(canPrune).ToList();
         int pruned = holders.RemoveAll(h => canPrune(h));
         if (pruned > 0)
@@ -274,10 +286,10 @@ public static class YgoOptionHandUiPatch
             bool hitboxOk = h.Hitbox != null;
             bool hitboxVisible = hitboxOk && h.Hitbox.Visible;
             bool hitboxEnabled = hitboxOk && h.Hitbox.IsEnabled;
-            bool inActive = activeOpts.Contains(h);
+            bool inActiveRow = activeOpts.Contains(h) || OptionHolderIsDetachedForActivePlay(hand, h);
             bool focusStale = hand.FocusedHolder == h && !GodotObject.IsInstanceValid(h);
 
-            if (!inTree || !visible || !cardOk || !hitboxOk || !hitboxVisible || !hitboxEnabled || !inActive || focusStale)
+            if (!inTree || !visible || !cardOk || !hitboxOk || !hitboxVisible || !hitboxEnabled || !inActiveRow || focusStale)
             {
                 if (!anyFail)
                     GD.Print("[YgoDuelist] ValidateSecondHand: FAILURES for player ", player.GetHashCode(), " handId=", hand.GetInstanceId());
@@ -285,13 +297,15 @@ public static class YgoOptionHandUiPatch
                 GD.Print("[YgoDuelist]   holder[", i, "] ", modelName, " id=", h.GetInstanceId(),
                     " inTree=", inTree, " visible=", visible,
                     " cardOk=", cardOk, " hitboxOk=", hitboxOk, " hitboxVisible=", hitboxVisible, " hitboxEnabled=", hitboxEnabled,
-                    " inActiveHolders=", inActive, " focusStale=", focusStale);
+                    " inActiveRowOrPlay=", inActiveRow, " focusStale=", focusStale);
             }
         }
 
-        if (activeOpts.Count != holders.Count)
+        int orphanOpts = holders.Count(h => !activeOpts.Contains(h) && !OptionHolderIsDetachedForActivePlay(hand, h));
+        if (orphanOpts != 0)
         {
-            GD.Print("[YgoDuelist] ValidateSecondHand: active option count mismatch activeOpts=", activeOpts.Count, " tracked=", holders.Count);
+            GD.Print("[YgoDuelist] ValidateSecondHand: orphan option holders (not in hand row, not mid-play) count=", orphanOpts,
+                " activeOpts=", activeOpts.Count, " tracked=", holders.Count);
             anyFail = true;
         }
 

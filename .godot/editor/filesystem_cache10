@@ -8,8 +8,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1775037147
-YgoDuelist.deps.json::JSON::-1::1775031167::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1775042092
+YgoDuelist.deps.json::JSON::-1::1775042092::0::1::::<><><>0<>0<><>::
 ::res://docs/::1774723882
 card_database_import.schema.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
@@ -86,7 +86,7 @@ BaseLib.json::JSON::-1::1774591970::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.baselib/0.2.1/lib/::1774612851
 ::res://packages/alchyr.sts2.baselib/0.2.1/lib/net9.0/::1774612851
 BaseLib.xml::TextFile::-1::1774592140::0::1::::<><><>0<>0<><>::
-::res://packages/alchyr.sts2.modanalyzers/::1774042091
+::res://packages/alchyr.sts2.modanalyzers/::1775038705
 ::res://packages/alchyr.sts2.modanalyzers/0.0.9/::1773513134
 README.md::TextFile::-1::1773084058::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.modanalyzers/0.0.9/analyzers/::1773513134
@@ -115,6 +115,13 @@ README.md::TextFile::-1::1773891142::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.modanalyzers/0.1.6/analyzers/dotnet/cs/::1774042091
 ::res://packages/alchyr.sts2.modanalyzers/0.1.6/tools/::1774042091
 ::res://packages/alchyr.sts2.modanalyzers/0.1.6/tools/tools/::1774042091
+::res://packages/alchyr.sts2.modanalyzers/0.1.7/::1775038705
+README.md::TextFile::-1::1773891142::0::1::::<><><>0<>0<><>::
+::res://packages/alchyr.sts2.modanalyzers/0.1.7/analyzers/::1775038705
+::res://packages/alchyr.sts2.modanalyzers/0.1.7/analyzers/dotnet/::1775038705
+::res://packages/alchyr.sts2.modanalyzers/0.1.7/analyzers/dotnet/cs/::1775038705
+::res://packages/alchyr.sts2.modanalyzers/0.1.7/tools/::1775038705
+::res://packages/alchyr.sts2.modanalyzers/0.1.7/tools/tools/::1775038705
 ::res://packages/godot.net.sdk/::1773513092
 ::res://packages/godot.net.sdk/4.5.1/::1773513092
 ::res://packages/godot.net.sdk/4.5.1/Sdk/::1773513092
@@ -2325,7 +2332,7 @@ trunk_side_deck.png::CompressedTexture2D::6798465944459700739::1774723882::17747
 ::res://YgoDuelist/localization/::1773513086
 ::res://YgoDuelist/localization/eng/::1774805185
 ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
-cards.json::JSON::-1::1775037128::0::1::::<><><>0<>0<><>::
+cards.json::JSON::-1::1775041508::0::1::::<><><>0<>0<><>::
 card_keywords.json::JSON::-1::1775028365::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 combat_messages.json::JSON::-1::1775011966::0::1::::<><><>0<>0<><>::
@@ -2346,7 +2353,7 @@ RitualArchetypeMeta.cs::CSharpScript::8503929562558895497::1775010811::0::1::::<
 YgoCardTypes.cs::CSharpScript::8470661758287105871::1774978482::0::1::::<><><>0<>0<><>::
 YgoCycleKeywordPileHelper.cs::CSharpScript::5117249336157152713::1774296650::0::1::::<><><>0<>0<><>::
 YgoDuelistCard.cs::CSharpScript::1750447615170480644::1774937408::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Cards/Ancient/::1775036635
+::res://YgoDuelistCode/Cards/Ancient/::1775037155
 Pot_Of_Destiny.cs::CSharpScript::2283325308790729103::1775037096::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Basic/::1774723882
 Defend_YgoDuelist.cs::CSharpScript::48164725545099381::1774724498::0::1::::<><><>0<>0<><>::
@@ -2394,7 +2401,7 @@ IMonsterFlipEffect.cs::CSharpScript::2868536930952134737::1774723882::0::1::::<>
 IMonsterOptionCommandProvider.cs::CSharpScript::8374203553786749807::1774723882::0::1::::<><><>0<>0<><>::
 NormalMonsterCard.cs::CSharpScript::4082555643496497167::1775029039::0::1::::<><><>0<>0<><>::
 RitualMonsterCard.cs::CSharpScript::1709879962997000164::1775011306::0::1::::<><><>0<>0<><>::
-RitualSpellCard.cs::CSharpScript::2740121426851065573::1775011302::0::1::::<><><>0<>0<><>::
+RitualSpellCard.cs::CSharpScript::2740121426851065573::1775039314::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Monster/::1774723882
 Enraged_Muka_Muka.cs::CSharpScript::8776879511406162243::1774935525::0::1::::<><><>0<>0<><>::
 Muka_Muka.cs::CSharpScript::487168266688562560::1774935525::0::1::::<><><>0<>0<><>::
@@ -2743,7 +2750,7 @@ Red_Eyes_Black_Metal_Dragon.cs::CSharpScript::1614273021088436676::1774723882::0
 Reflect_Bounder.cs::CSharpScript::4501340474453667339::1774723676::0::1::::<><><>0<>0<><>::
 Regenerating_Mummy.cs::CSharpScript::9035979183031314087::1774723676::0::1::::<><><>0<>0<><>::
 Revival_Jam.cs::CSharpScript::6578567831571835174::1774723676::0::1::::<><><>0<>0<><>::
-Rigorous_Reaver.cs::CSharpScript::5391638803530587831::1774934017::0::1::::<><><>0<>0<><>::
+Rigorous_Reaver.cs::CSharpScript::5391638803530587831::1775040929::0::1::::<><><>0<>0<><>::
 Rocket_Jumper.cs::CSharpScript::3804975247579457410::1774941804::0::1::::<><><>0<>0<><>::
 Rocket_Warrior.cs::CSharpScript::8134662945693315136::1774723882::0::1::::<><><>0<>0<><>::
 Rose_Witch.cs::CSharpScript::3149592459428867603::1774732186::0::1::::<><><>0<>0<><>::
@@ -2939,7 +2946,7 @@ Pragtical.cs::CSharpScript::1022969543505858315::1774723882::0::1::::<><><>0<>0<
 Punished_Eagle.cs::CSharpScript::3697466377855961695::1774723882::0::1::::<><><>0<>0<><>::
 Rabid_Horseman.cs::CSharpScript::2573899899876173356::1774723882::0::1::::<><><>0<>0<><>::
 Rare_Fish.cs::CSharpScript::2500046990082680112::1774723882::0::1::::<><><>0<>0<><>::
-Reaper_on_the_Nightmare.cs::CSharpScript::975938790202825778::1775035821::0::1::::<><><>0<>0<><>::
+Reaper_on_the_Nightmare.cs::CSharpScript::975938790202825778::1775042007::0::1::::<><><>0<>0<><>::
 Roaring_Ocean_Snake.cs::CSharpScript::7316435869031675206::1774723882::0::1::::<><><>0<>0<><>::
 Rose_Spectre_of_Dunn.cs::CSharpScript::7951673538863971814::1774723882::0::1::::<><><>0<>0<><>::
 Ryu_Senshi.cs::CSharpScript::6126623111659329403::1774723882::0::1::::<><><>0<>0<><>::
@@ -4060,7 +4067,7 @@ NCardPlayCenterCardOptionHolderPatch.cs::CSharpScript::4141951685503359214::1773
 NHandCardHolderSetTargetPositionOptionHolderPatch.cs::CSharpScript::8812546175008842732::1773596495::0::1::::<><><>0<>0<><>::
 NPlayerHandOnCombatStateChangedPatch.cs::CSharpScript::6290056804210325788::1773596480::0::1::::<><><>0<>0<><>::
 YgoFusionGateFieldGlowPatch.cs::CSharpScript::4591434513230832292::1774979126::0::1::::<><><>0<>0<><>::
-YgoOptionHandUiPatch.cs::CSharpScript::3682330759885140910::1774723882::0::1::::<><><>0<>0<><>::
+YgoOptionHandUiPatch.cs::CSharpScript::3682330759885140910::1775040741::0::1::::<><><>0<>0<><>::
 YgoSecondHandGlowPatch.cs::CSharpScript::2213908647995528445::1774723882::0::1::::<><><>0<>0<><>::
 YgoSecondHandHandBridge.cs::CSharpScript::8431945022232200976::1773596476::0::1::::<><><>0<>0<><>::
 YgoSecondHandHoverPatch.cs::CSharpScript::1942219829415802498::1773596484::0::1::::<><><>0<>0<><>::
@@ -4120,8 +4127,9 @@ TrunkSideDeckDeckCardSelectOnCardClickedPatch.cs::CSharpScript::1793565690551218
 TrunkSideDeckDeckCardSelectScreenPatch.cs::CSharpScript::3112270011158836323::1775024466::0::1::::<><><>0<>0<><>::
 YgoRelicBrowseGridOverlayPatch.cs::CSharpScript::7581658626407284271::1775024176::0::1::::<><><>0<>0<><>::
 YgoRelicInventoryRightClickPatch.cs::CSharpScript::400587442969204419::1774723882::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Patches/PatchesForRestSite/::1774805444
+::res://YgoDuelistCode/Patches/PatchesForRestSite/::1775040989
 YgoCampfireRestSitePatches.cs::CSharpScript::1454065712297427891::1775026637::0::1::::<><><>0<>0<><>::
+YgoSmithRestSiteOptionPatch.cs::CSharpScript::2500621191229723954::1775038816::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForRewards/::1774764636
 YgoCardRewardPackPatch.cs::CSharpScript::4719037090447043436::1774809631::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForRuns/::1774237807

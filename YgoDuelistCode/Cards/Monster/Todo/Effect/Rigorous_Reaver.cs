@@ -29,7 +29,7 @@ public sealed class Rigorous_Reaver : EffectMonsterCard
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
             baseAtk: 16,
-            baseDef: 1,
+            baseDef: 3,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Plant)
     {

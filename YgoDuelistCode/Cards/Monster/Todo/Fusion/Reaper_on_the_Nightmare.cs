@@ -1,3 +1,4 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -19,8 +20,12 @@ public sealed class Reaper_on_the_Nightmare : FusionMonsterCard
             baseDef: 9,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Zombie,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Spirit_Reaper),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Nightmare_Horse))
+            fusionMaterialTypes: new[]
+            {
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Spirit_Reaper),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Nightmare_Horse)
+            },
+            duelMonsterDefensePlayEnergyOverride: 0)
     {
     }
 
