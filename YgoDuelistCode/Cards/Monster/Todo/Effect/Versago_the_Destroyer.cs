@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Versago_the_Destroyer : EffectMonsterCard
+public sealed class Versago_the_Destroyer : EffectMonsterCard, IFusionMaterialSubstitute
 {
     public Versago_the_Destroyer()
         : base(

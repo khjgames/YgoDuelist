@@ -52,8 +52,7 @@ public sealed class Activate_Effect : MonsterCommandCard
             if (impl.ActivatedEffectConsumesOncePerTurnSlot)
             {
                 MonsterCommandState reg = MonsterCommandRegistry.GetOrCreate(pet);
-                if (reg.HasUsedActivatedEffectThisTurn
-                    && (!YgoNarrowPassField.IsActive(Owner) || reg.NarrowPassActivatedEffectReplayRemaining <= 0))
+                if (reg.HasUsedActivatedEffectThisTurn)
                     return false;
             }
             return true;
@@ -67,10 +66,7 @@ public sealed class Activate_Effect : MonsterCommandCard
 
         var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
         if (pet != null)
-        {
-            MonsterCommandRegistry.TryConsumeNarrowPassActivatedEffectReplayBeforePlay(Owner, pet);
             await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
-        }
 
         await impl.OnActivatedEffect(choiceContext, cardPlay, SourceMonster);
     }

@@ -42,4 +42,6 @@ public sealed class Piranha_Army : EffectMonsterCard
 
     public override bool AttackDealsBlightedDamage => true;
 
+    public override bool AttackDealsFullBlightedDamage => true;
+
 }

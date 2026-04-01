@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -33,6 +34,10 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
 
     public YgoCardType YgoCardType => YgoCardType.Trap;
     public bool FaceDown { get; set; } = false;
+    /// <summary>
+    /// Facedown traps set into the spell/trap zone cannot be activated until your next turn start clears this (YGO set timing).
+    /// </summary>
+    public bool SetThisTurn { get; set; } = true;
     public bool WasSetIntoSpellTrapZone { get; protected set; } = false;
     protected virtual bool CanActivateDirectlyFromHand => false;
 
@@ -50,6 +55,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        SetThisTurn = false;
         WasSetIntoSpellTrapZone = false;
         FaceDown = false;
         SyncFaceDownPresentationKeyword();
@@ -71,15 +77,41 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             if (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand && Owner != null && !YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
                 return false;
 
+            if (SetThisTurn
+                && Pile?.Type == SpellTrapZonePile.CustomType
+                && WasSetIntoSpellTrapZone
+                && FaceDown)
+                return false;
+
             return true;
         }
     }
 
     public void EnterSpellTrapZoneAsSetCard()
     {
+        SetThisTurn = true;
         WasSetIntoSpellTrapZone = true;
         FaceDown = true;
         SyncFaceDownPresentationKeyword();
+    }
+
+    /// <summary>
+    /// At the start of your turn, facedown set traps in your spell/trap zone become activatable (clear <see cref="SetThisTurn"/>).
+    /// </summary>
+    public static void ClearSetThisTurnForFacedownSetTrapsInZone(Player player)
+    {
+        var pile = SpellTrapZonePile.CustomType.GetPile(player);
+        if (pile == null)
+            return;
+
+        foreach (var model in pile.Cards)
+        {
+            if (model is not BaseTrapCard trap)
+                continue;
+            if (!trap.WasSetIntoSpellTrapZone || !trap.FaceDown)
+                continue;
+            trap.SetThisTurn = false;
+        }
     }
 
     public void NormalizeFaceDownStateForCurrentPile()

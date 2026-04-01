@@ -12,7 +12,7 @@ using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>Face-up <see cref="Narrow_Pass"/> in the Spell/Trap zone: command costs, life payment, and replay (see registry).</summary>
+/// <summary>Face-up <see cref="Narrow_Pass"/> in the Spell/Trap zone: command costs, life payment, and repeated attack/defend resolutions.</summary>
 public static class YgoNarrowPassField
 {
     public static bool IsActive(Player? player)
@@ -29,6 +29,21 @@ public static class YgoNarrowPassField
 
     public static int GetMonsterCommandEnergyAdd(Player? player) =>
         IsActive(player) ? 1 : 0;
+
+    public static int GetActiveCount(Player? player)
+    {
+        if (player == null)
+            return 0;
+
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zone == null)
+            return 0;
+
+        return zone.Cards.OfType<Narrow_Pass>().Count(c => !c.FaceDown);
+    }
+
+    public static int GetAttackOrDefendResolutionCount(Player? player) =>
+        1 + GetActiveCount(player);
 
     public static async Task ApplyMonsterCommandLifePaymentIfActiveAsync(
         PlayerChoiceContext choiceContext,

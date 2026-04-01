@@ -40,5 +40,6 @@ public sealed class Polymerization : FusionSpellCard
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
     }
 }

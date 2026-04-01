@@ -64,7 +64,7 @@
   "10009.description": "You may [blue]Set[/blue] this card in your Spell & Trap Zone. It will remain until it is activated, destroyed or removed.",
 
   "10011.title": "Trap",
-  "10011.description": "You must first [blue]Set[/blue] this card before it can be activated.",
+  "10011.description": "You must first [blue]Set[/blue] this card for one turn before it can be activated.",
 
   "10012.title": "Face down",
   "10012.description": "This card is currently set face down.",

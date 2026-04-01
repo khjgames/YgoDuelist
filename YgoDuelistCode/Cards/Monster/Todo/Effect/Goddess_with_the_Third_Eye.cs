@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Goddess_with_the_Third_Eye : EffectMonsterCard
+public sealed class Goddess_with_the_Third_Eye : EffectMonsterCard, IFusionMaterialSubstitute
 {
     public Goddess_with_the_Third_Eye()
         : base(

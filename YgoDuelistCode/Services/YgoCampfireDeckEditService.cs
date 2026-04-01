@@ -8,8 +8,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Runs;
-using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -19,6 +18,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoCampfireDeckEditService
 {
+    private static bool IsCampfireDeckEditEligible(CardModel c) =>
+        c is BaseMonsterCard or BaseSpellCard or BaseTrapCard;
+
     public static int GetDeckCap(Player player) =>
         Math.Min(YgoPlayerMinimumDeck.Get(player) * 2, 99);
 
@@ -41,7 +43,7 @@ public static class YgoCampfireDeckEditService
             picked = (await CardSelectCmd.FromDeckForRemoval(
                 player,
                 prefs,
-                static c => c is YgoDuelistCard)).ToList();
+                IsCampfireDeckEditEligible)).ToList();
         }
         catch (OperationCanceledException)
         {
@@ -55,7 +57,10 @@ public static class YgoCampfireDeckEditService
             return;
         }
 
-        await CardPileCmd.RemoveFromDeck(picked[0]);
+        CardModel removed = picked[0];
+        await CardPileCmd.RemoveFromDeck(removed);
+        PlayerRunTrunk.GetOrCreatePile(player).AddInternal(removed, -1, silent: true);
+        TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
         YgoPlayerMinimumDeck.DecreaseAfterVoluntaryRemovals(player, 1);
     }
 
@@ -70,7 +75,7 @@ public static class YgoCampfireDeckEditService
             return;
         }
 
-        (List<CardModel> grid, List<CardModel> spawnedCatalog) = BuildPickGrid(player);
+        List<CardModel> grid = BuildPickGrid(player);
         if (grid.Count == 0)
         {
             YgoCampfireDeckEditCharges.RefundOne(player);
@@ -78,8 +83,6 @@ public static class YgoCampfireDeckEditService
         }
 
         CardModel? chosen = null;
-        bool catalogPickCommitted = false;
-        try
         {
             var prefs = new CardSelectorPrefs(
                 new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_ADD.prompt"),
@@ -117,15 +120,15 @@ public static class YgoCampfireDeckEditService
                 YgoCampfireDeckEditCharges.RefundOne(player);
                 return;
             }
+            if (!IsCampfireDeckEditEligible(chosen))
+            {
+                YgoCampfireDeckEditCharges.RefundOne(player);
+                return;
+            }
 
             DetachFromTrunkOrSideIfNeeded(player, chosen);
             await CardPileCmd.Add(chosen, PileType.Deck);
             TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
-            catalogPickCommitted = true;
-        }
-        finally
-        {
-            CleanupSpawnedCatalog(player, spawnedCatalog, chosen, catalogPickCommitted);
         }
     }
 
@@ -148,7 +151,7 @@ public static class YgoCampfireDeckEditService
             oldPick = (await CardSelectCmd.FromDeckForRemoval(
                 player,
                 prefsOld,
-                static c => c is YgoDuelistCard)).ToList();
+                IsCampfireDeckEditEligible)).ToList();
         }
         catch (OperationCanceledException)
         {
@@ -164,7 +167,7 @@ public static class YgoCampfireDeckEditService
 
         CardModel oldCard = oldPick[0];
 
-        (List<CardModel> grid, List<CardModel> spawnedCatalog) = BuildPickGrid(player);
+        List<CardModel> grid = BuildPickGrid(player);
         if (grid.Count == 0)
         {
             YgoCampfireDeckEditCharges.RefundOne(player);
@@ -172,8 +175,6 @@ public static class YgoCampfireDeckEditService
         }
 
         CardModel? newCard = null;
-        bool catalogPickCommitted = false;
-        try
         {
             var prefsNew = new CardSelectorPrefs(
                 new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_REPLACE.pick_new"),
@@ -206,53 +207,36 @@ public static class YgoCampfireDeckEditService
             }
 
             newCard = newPick[0];
+            if (!IsCampfireDeckEditEligible(newCard))
+            {
+                YgoCampfireDeckEditCharges.RefundOne(player);
+                return;
+            }
             await CardPileCmd.RemoveFromDeck(oldCard);
             DetachFromTrunkOrSideIfNeeded(player, newCard);
             await CardPileCmd.Add(newCard, PileType.Deck);
             TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
-            catalogPickCommitted = true;
-        }
-        finally
-        {
-            CleanupSpawnedCatalog(player, spawnedCatalog, newCard, catalogPickCommitted);
         }
     }
 
-    private static (List<CardModel> grid, List<CardModel> spawnedCatalog) BuildPickGrid(Player player)
+    private static List<CardModel> BuildPickGrid(Player player)
     {
         var grid = new List<CardModel>();
-        var spawnedCatalog = new List<CardModel>();
 
         CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
         CardPile side = PlayerRunSideDeck.GetOrCreatePile(player);
         foreach (CardModel c in trunk.Cards)
         {
-            if (c is YgoDuelistCard)
+            if (IsCampfireDeckEditEligible(c))
                 grid.Add(c);
         }
 
         foreach (CardModel c in side.Cards)
         {
-            if (c is YgoDuelistCard)
+            if (IsCampfireDeckEditEligible(c))
                 grid.Add(c);
         }
-
-        HashSet<ModelId> unlocked = player.Character.CardPool
-            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-            .Select(static c => c.Id)
-            .ToHashSet();
-
-        foreach (CardModel template in YgoPackCardCatalog.GetAllYgoTemplates())
-        {
-            if (!unlocked.Contains(template.Id))
-                continue;
-
-            CardModel instance = player.RunState.CreateCard(template, player);
-            spawnedCatalog.Add(instance);
-            grid.Add(instance);
-        }
-
-        return (grid, spawnedCatalog);
+        return grid;
     }
 
     private static void DetachFromTrunkOrSideIfNeeded(Player player, CardModel card)
@@ -269,22 +253,4 @@ public static class YgoCampfireDeckEditService
             side.RemoveInternal(card, silent: true);
     }
 
-    private static void CleanupSpawnedCatalog(
-        Player player,
-        List<CardModel> spawnedCatalog,
-        CardModel? pickedFromCatalog,
-        bool pickedWasCommittedToDeck)
-    {
-        foreach (CardModel c in spawnedCatalog)
-        {
-            if (pickedWasCommittedToDeck
-                && pickedFromCatalog != null
-                && ReferenceEquals(c, pickedFromCatalog))
-            {
-                continue;
-            }
-
-            player.RunState.RemoveCard(c);
-        }
-    }
 }

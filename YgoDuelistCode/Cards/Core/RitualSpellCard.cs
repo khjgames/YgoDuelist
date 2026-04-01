@@ -97,6 +97,11 @@ public abstract class RitualSpellCard : BaseSpellCard
     protected virtual Task OnRitualSpellAfterResolution(PlayerChoiceContext choiceContext, CardPlay cardPlay)
         => Task.CompletedTask;
 
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+    }
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get

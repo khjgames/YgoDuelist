@@ -106,6 +106,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Blighted (YGO direct attack): 50% of hit damage (blocked and unblocked) applies as Blight stacks on the struck enemy (Blight X ticks at end of your turn, ignores Block, then removes).</summary>
     public virtual bool AttackDealsBlightedDamage => false;
 
+    /// <summary>When true, blight attackers apply 100% of dealt damage as Blight instead of 50%.</summary>
+    public virtual bool AttackDealsFullBlightedDamage => false;
+
     /// <summary>
     /// Low-ATK blight attackers: when upgraded (or upgrade preview), attack stance / Command Attack costs 0 energy.
     /// Printed ATK upgrade scaling is unchanged. (makes them worth comboing with atk boosts)

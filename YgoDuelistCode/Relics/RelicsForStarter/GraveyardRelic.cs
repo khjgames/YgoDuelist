@@ -231,12 +231,13 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
         if (blighted)
         {
+            decimal blightMultiplier = monster.AttackDealsFullBlightedDamage ? 1m : 0.5m;
             foreach (DamageResult r in command.Results)
             {
                 if (r.Receiver.Side != CombatSide.Enemy || r.TotalDamage <= 0)
                     continue;
 
-                int blight = (int)decimal.Floor(r.TotalDamage * 0.5m);
+                int blight = (int)decimal.Floor(r.TotalDamage * blightMultiplier);
                 if (blight <= 0)
                     continue;
 

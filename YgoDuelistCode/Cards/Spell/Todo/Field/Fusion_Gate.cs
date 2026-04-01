@@ -46,6 +46,7 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
     }
 
     /// <summary>Right-click on this card in the Spell/Trap zone (second hand). Returns true if the click was consumed.</summary>

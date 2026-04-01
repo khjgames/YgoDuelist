@@ -132,27 +132,35 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             def = stats.Def;
         }
 
+        int resolutionCount = YgoNarrowPassField.GetAttackOrDefendResolutionCount(Owner);
+
         if (Type == CardType.Attack && cardPlay.Target != null)
         {
             await BeforeAttackCombatActionAsync(choiceContext, cardPlay);
             WillSet = false;
-            await DamageCmd.Attack((decimal)atk)
-                .FromCard(this)
-                .Targeting(cardPlay.Target)
-                .WithHitFx("vfx/vfx_attack_slash")
-                .Execute(choiceContext);
+            for (int i = 0; i < resolutionCount; i++)
+            {
+                await DamageCmd.Attack((decimal)atk)
+                    .FromCard(this)
+                    .Targeting(cardPlay.Target)
+                    .WithHitFx("vfx/vfx_attack_slash")
+                    .Execute(choiceContext);
+            }
         }
         else if (Type == CardType.Skill)
         {
             if (Owner != null && Owner.Creature != null)
             {
                 WillSet = false;
-                await CreatureCmd.GainBlock(
-                    Owner.Creature,
-                    (decimal)def,
-                    ValueProp.Move,
-                    cardPlay);
-                await OnAfterGainBlockFromCombatActionAsync(choiceContext, cardPlay, def);
+                for (int i = 0; i < resolutionCount; i++)
+                {
+                    await CreatureCmd.GainBlock(
+                        Owner.Creature,
+                        (decimal)def,
+                        ValueProp.Move,
+                        cardPlay);
+                    await OnAfterGainBlockFromCombatActionAsync(choiceContext, cardPlay, def);
+                }
             }
         }
     }

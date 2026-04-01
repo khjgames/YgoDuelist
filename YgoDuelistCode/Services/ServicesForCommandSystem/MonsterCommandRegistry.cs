@@ -49,11 +49,6 @@ public sealed class MonsterCommandState
     /// <summary>Enemy creature that dealt the killing Move blow; set with <see cref="DestroyedByEnemyBattleDamage"/>.</summary>
     public Creature? BattleDamageKillerEnemy;
 
-    /// <summary><see cref="YgoNarrowPassField"/>: extra Command Attack/Defend use for non–dual-slot summons (Replay 1).</summary>
-    public int NarrowPassMainCommandReplayRemaining;
-
-    /// <summary><see cref="YgoNarrowPassField"/>: second Activate Effect use (Replay 1).</summary>
-    public int NarrowPassActivatedEffectReplayRemaining;
 }
 
 public static class MonsterCommandRegistry
@@ -111,9 +106,7 @@ public static class MonsterCommandRegistry
                    && (!state.HasUsedCommandThisTurn || state.HasUsedDefendCommandThisTurn);
         }
 
-        if (!state.HasUsedCommandThisTurn)
-            return true;
-        return NarrowPassAllowsExtraMainCommandUse(state, sourceMonster?.Owner);
+        return !state.HasUsedCommandThisTurn;
     }
 
     public static bool CanUseMonsterDefendCommand(Creature pet, NormalMonsterCard? sourceMonster)
@@ -125,23 +118,14 @@ public static class MonsterCommandRegistry
                    && (!state.HasUsedCommandThisTurn || state.HasUsedAttackCommandThisTurn);
         }
 
-        if (!state.HasUsedCommandThisTurn)
-            return true;
-        return NarrowPassAllowsExtraMainCommandUse(state, sourceMonster?.Owner);
+        return !state.HasUsedCommandThisTurn;
     }
-
-    private static bool NarrowPassAllowsExtraMainCommandUse(MonsterCommandState state, Player? player) =>
-        player != null
-        && YgoNarrowPassField.IsActive(player)
-        && state.NarrowPassMainCommandReplayRemaining > 0;
 
     /// <summary>
     /// After Command Attack or Command Defend resolves: one combined command for normal monsters, or separate slots until both are used.
     /// </summary>
     public static async Task CommitMonsterCommandAfterPlay(Creature pet, bool isAttackCommand, Creature? applier, NormalMonsterCard? sourceMonster)
     {
-        await TryConsumeNarrowPassReplayUnlockBeforeMainCommandCommitAsync(pet, sourceMonster);
-
         if (sourceMonster is BaseMonsterCard bm && bm.AllowsSeparateAttackAndDefendCommandsPerTurn)
         {
             var state = GetOrCreate(pet);
@@ -156,64 +140,6 @@ public static class MonsterCommandRegistry
         }
 
         await SetHasUsedCommandThisTurn(pet, true, applier, sourceMonster);
-    }
-
-    public static void RefillNarrowPassReplayChargesForPlayer(Player? player)
-    {
-        if (player?.PlayerCombatState == null)
-            return;
-
-        bool active = YgoNarrowPassField.IsActive(player);
-        int charge = active ? 1 : 0;
-
-        foreach (Creature pet in player.PlayerCombatState.Pets)
-        {
-            if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
-                continue;
-            MonsterCommandState s = GetOrCreate(pet);
-            s.NarrowPassMainCommandReplayRemaining = charge;
-            s.NarrowPassActivatedEffectReplayRemaining = charge;
-        }
-    }
-
-    public static void TryConsumeNarrowPassActivatedEffectReplayBeforePlay(Player? player, Creature pet)
-    {
-        if (player == null || !YgoNarrowPassField.IsActive(player))
-            return;
-
-        MonsterCommandState state = GetOrCreate(pet);
-        if (!state.HasUsedActivatedEffectThisTurn || state.NarrowPassActivatedEffectReplayRemaining <= 0)
-            return;
-
-        state.NarrowPassActivatedEffectReplayRemaining--;
-        state.HasUsedActivatedEffectThisTurn = false;
-    }
-
-    private static async Task TryConsumeNarrowPassReplayUnlockBeforeMainCommandCommitAsync(
-        Creature pet,
-        NormalMonsterCard? sourceMonster)
-    {
-        if (sourceMonster is BaseMonsterCard bm && bm.AllowsSeparateAttackAndDefendCommandsPerTurn)
-            return;
-
-        Player? player = sourceMonster?.Owner;
-        if (player == null || !YgoNarrowPassField.IsActive(player))
-            return;
-
-        MonsterCommandState state = GetOrCreate(pet);
-        if (!state.HasUsedCommandThisTurn || state.NarrowPassMainCommandReplayRemaining <= 0)
-            return;
-
-        state.NarrowPassMainCommandReplayRemaining--;
-        await ClearMainCommandLockPreservingActivatedEffectAsync(pet, player.Creature, sourceMonster);
-    }
-
-    private static async Task ClearMainCommandLockPreservingActivatedEffectAsync(Creature pet, Creature? applierIgnored, CardModel? sourceIgnored)
-    {
-        MonsterCommandState state = GetOrCreate(pet);
-        state.HasUsedCommandThisTurn = false;
-        await PowerCmd.Remove<StiffPower>(pet);
-        await PowerCmd.Remove<FatiguePower>(pet);
     }
 
     /// <summary>True if this pet has used any Command Attack/Defend allowance this turn (including one of two dual slots).</summary>
@@ -309,8 +235,6 @@ public static class MonsterCommandRegistry
             s.ExarionUniversePiercingStanceThisTurn = false;
             s.KarateManBurstAtkThisTurn = false;
             s.KarateManDestroyAtEndOfOwnerTurn = false;
-            s.NarrowPassMainCommandReplayRemaining = 0;
-            s.NarrowPassActivatedEffectReplayRemaining = 0;
         }
 
         foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.GetFieldMonsters(player))

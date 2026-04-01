@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class King_of_the_Swamp : EffectMonsterCard
+public sealed class King_of_the_Swamp : EffectMonsterCard, IFusionMaterialSubstitute
 {
     public King_of_the_Swamp()
         : base(

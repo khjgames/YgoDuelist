@@ -20,7 +20,8 @@ public sealed class Hayabusa_Knight : EffectMonsterCard
             baseAtk: 10,
             baseDef: 7,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Warrior)
+            duelMonsterRace: DuelMonsterRace.Warrior,
+            duelMonsterAttackPlayEnergyOverride: 1)
     {
     }
     // Dictates the card pack tags this card will be included in.

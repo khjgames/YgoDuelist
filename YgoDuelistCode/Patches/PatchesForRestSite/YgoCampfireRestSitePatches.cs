@@ -148,3 +148,30 @@ public static class NRestSiteRoomYgoCampfireDeckEditRowPatch
             AccessTools.Method(typeof(NRestSiteRoom), "UpdateRestSiteOptions").Invoke(room, null);
     }
 }
+
+[HarmonyPatch(typeof(NRestSiteRoom), nameof(NRestSiteRoom.DefaultFocusedControl), MethodType.Getter)]
+public static class NRestSiteRoomDefaultFocusedControlSafePatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(NRestSiteRoom __instance, ref Control? __result)
+    {
+        Control? choices = Traverse.Create(__instance).Field<Control>("_choicesContainer").Value;
+        if (choices == null)
+        {
+            __result = null;
+            return false;
+        }
+
+        foreach (Node child in choices.GetChildren())
+        {
+            if (child is NRestSiteButton button)
+            {
+                __result = button;
+                return false;
+            }
+        }
+
+        __result = null;
+        return false;
+    }
+}

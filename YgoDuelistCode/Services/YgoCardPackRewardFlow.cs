@@ -110,24 +110,12 @@ public static class YgoCardPackRewardFlow
         catch (OperationCanceledException)
         {
             RemoveAllCreatedCards(bundles, player);
-            if (!reward.CanSkip)
-            {
-                BuildBundlesFromGenerator();
-                goto PickBundle;
-            }
-
             return false;
         }
 
         if (chosenPack.Count == 0)
         {
             RemoveAllCreatedCards(bundles, player);
-            if (!reward.CanSkip)
-            {
-                BuildBundlesFromGenerator();
-                goto PickBundle;
-            }
-
             return false;
         }
 

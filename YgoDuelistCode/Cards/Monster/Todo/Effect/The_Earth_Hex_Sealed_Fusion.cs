@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class The_Earth_Hex_Sealed_Fusion : EffectMonsterCard
+public sealed class The_Earth_Hex_Sealed_Fusion : EffectMonsterCard, IFusionMaterialSubstitute
 {
     public The_Earth_Hex_Sealed_Fusion()
         : base(

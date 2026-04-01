@@ -15,8 +15,8 @@ public sealed class Reaper_on_the_Nightmare : FusionMonsterCard
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
-            baseAtk: 8,
-            baseDef: 6,
+            baseAtk: 9,
+            baseDef: 9,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Zombie,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Spirit_Reaper),
@@ -27,4 +27,6 @@ public sealed class Reaper_on_the_Nightmare : FusionMonsterCard
     public override bool CardShowsBlightKeyword => true;
 
     public override bool AttackDealsBlightedDamage => true;
+
+    public override bool AttackDealsFullBlightedDamage => true;
 }
