@@ -165,24 +165,21 @@ public sealed class Dice_Jar : EffectMonsterCard
                     .Execute(choiceContext);
             }
         }
-        else
+        else if (player.PlayerCombatState != null)
         {
-            if (player.PlayerCombatState != null)
+            foreach (Creature summon in YgoDeterministicRng.StableOrder(
+                         player.PlayerCombatState.Pets.Where(
+                             p => p.Monster is DuelMonsterModel && p.IsAlive),
+                         p => p.CombatId))
             {
-                List<Creature> duelPets = player.PlayerCombatState.Pets
-                    .Where(p => p.Monster is DuelMonsterModel && p.IsAlive)
-                    .ToList();
-                foreach (Creature summon in duelPets)
-                    await CreatureCmd.Kill(summon, force: true);
+                await CreatureCmd.Damage(
+                    choiceContext,
+                    summon,
+                    enemyScore,
+                    ValueProp.Unpowered,
+                    playerCreature,
+                    this);
             }
-
-            await CreatureCmd.Damage(
-                choiceContext,
-                playerCreature,
-                enemyScore,
-                ValueProp.Unpowered,
-                playerCreature,
-                this);
         }
     }
 

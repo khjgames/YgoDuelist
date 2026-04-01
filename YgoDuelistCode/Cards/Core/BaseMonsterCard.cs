@@ -46,13 +46,16 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     {
         if (_duelMonsterAttackPlayEnergyOverride.HasValue)
             return _duelMonsterAttackPlayEnergyOverride.Value;
-        return MonsterEnergyCostCalculator.ApplyHighStatEfficiencyTax(
+        int energy = MonsterEnergyCostCalculator.ApplyHighStatEfficiencyTax(
             _duelMonsterLevel,
             BaseAtk,
             isAttackStat: true,
             _rawDuelMonsterAttackPlayEnergy,
             upgradedOrPreview,
             DuelMonsterStatsAreUnknown);
+        if (upgradedOrPreview && ZeroAttackPlayEnergyWhenUpgradedForLowAtkBlight)
+            return 0;
+        return energy;
     }
 
     /// <summary>Defense-stance play energy for a given upgraded/preview state.</summary>
@@ -102,6 +105,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     /// <summary>Blighted (YGO direct attack): 50% of unblocked hit damage applies as Blight stacks on the hit enemy (Blight X ticks at end of your turn, ignores Block, then removes).</summary>
     public virtual bool AttackDealsBlightedDamage => false;
+
+    /// <summary>
+    /// Low-ATK blight attackers: when upgraded (or upgrade preview), attack stance / Command Attack costs 0 energy.
+    /// Printed ATK upgrade scaling is unchanged.
+    /// </summary>
+    protected virtual bool ZeroAttackPlayEnergyWhenUpgradedForLowAtkBlight =>
+        AttackDealsBlightedDamage && BaseAtk <= 6;
 
     /// <inheritdoc cref="YgoDuelistCard.CardShowsSplinterKeyword" />
     public override bool CardShowsSplinterKeyword => AttackDealsSplinterDamage;

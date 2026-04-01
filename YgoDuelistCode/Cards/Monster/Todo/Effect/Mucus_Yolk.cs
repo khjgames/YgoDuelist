@@ -11,7 +11,7 @@ public sealed class Mucus_Yolk : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
@@ -21,8 +21,6 @@ public sealed class Mucus_Yolk : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Aqua)
     {
     }
-
-    public override bool CardShowsBlightKeyword => true;
 
     public override bool AttackDealsBlightedDamage => true;
 
