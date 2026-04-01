@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1774934930
+::res://::1775024285
 export_presets.cfg::TextFile::-1::1773513087::0::1::::<><><>0<>0<><>::
 MainFile.cs::CSharpScript::4205972269297282253::1774808856::0::1::::<><><>0<>0<><>::
 README.md::TextFile::-1::1773577795::0::1::::<><><>0<>0<><>::
@@ -8,8 +8,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1775020500
-YgoDuelist.deps.json::JSON::-1::1775020500::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1775024526
+YgoDuelist.deps.json::JSON::-1::1775021804::0::1::::<><><>0<>0<><>::
 ::res://docs/::1774723882
 card_database_import.schema.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
@@ -18,7 +18,7 @@ LOCALIZATION_VARS.md::TextFile::-1::1774723882::0::1::::<><><>0<>0<><>::
 ::res://Game_Design/::1775015088
 cards_database.json::JSON::-1::1775014410::0::1::::<><><>0<>0<><>::
 Cards_Revised.md::TextFile::-1::1774723881::0::1::::<><><>0<>0<><>::
-Deck_Trunk_Side_System.md::TextFile::-1::1774817402::0::1::::<><><>0<>0<><>::
+Deck_Trunk_Side_System.md::TextFile::-1::1775021262::0::1::::<><><>0<>0<><>::
 Double_Summoners.md::TextFile::-1::1774740102::0::1::::<><><>0<>0<><>::
 equip_spell_survey_filled.md::TextFile::-1::1775015851::0::1::::<><><>0<>0<><>::
 Packs_System.md::TextFile::-1::1774930726::0::1::::<><><>0<>0<><>::
@@ -31,6 +31,10 @@ weak_normal_monsters_atk800_def700.md::TextFile::-1::1774744610::0::1::::<><><>0
 weak_normal_monsters_atk900_def800_level34.md::TextFile::-1::1774929484::0::1::::<><><>0<>0<><>::
 weak_normal_monsters_atk1000_def900_level34.md::TextFile::-1::1774929546::0::1::::<><><>0<>0<><>::
 weak_normal_monsters_atk1900_def1700_level56.md::TextFile::-1::1774744705::0::1::::<><><>0<>0<><>::
+::res://obj/::1775024285
+::res://obj/chk/::1775024286
+project.assets.json::JSON::-1::1775024285::0::1::::<><><>0<>0<><>::
+YgoDuelist.csproj.nuget.dgspec.json::JSON::-1::1775024286::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
 ::res://packages/alchyr.sts2.baselib/::1774612851
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
@@ -4027,7 +4031,7 @@ YgoSetModePlaqueAndFrameTintPatch.cs::CSharpScript::3379541632289860124::1775016
 YgoSpellTrapRaceIconPatch.cs::CSharpScript::8607086363000490058::1774295327::0::1::::<><><>0<>0<><>::
 YgoTransientSpellOptionCardTextPatch.cs::CSharpScript::4613349252253777119::1774904873::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForCardSelection/::1775018631
-NDeckCardSelectScreenPreviewSelectionPatch.cs::CSharpScript::4724960576037796771::1775018585::0::1::::<><><>0<>0<><>::
+NDeckCardSelectScreenPreviewSelectionPatch.cs::CSharpScript::4724960576037796771::1775020748::0::1::::<><><>0<>0<><>::
 SimpleCardSelectScreenCancelBackButtonPatch.cs::CSharpScript::1802082996828080799::1774203391::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForCombat/::1774768366
 ConvulsionOfNaturePreviewHoverPatch.cs::CSharpScript::329462331225748374::1774723882::0::1::::<><><>0<>0<><>::
@@ -4104,12 +4108,15 @@ YgoTrunkSideDeckLoadPending.cs::CSharpScript::4081417971852222072::1774940389::0
 ::res://YgoDuelistCode/Patches/PatchesForPowers/::1774723882
 HookModifyPowerAmountReceivedDustBarrierPatch.cs::CSharpScript::5909746375582680761::1774723882::0::1::::<><><>0<>0<><>::
 HookModifyPowerAmountReceivedTorpedoFishUmiPatch.cs::CSharpScript::6431848217072269567::1774723882::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Patches/PatchesForRelics/::1775017100
+::res://YgoDuelistCode/Patches/PatchesForRelics/::1775024359
 CardOptionsRelicClickPatch.cs::CSharpScript::9104032151645078099::1773590143::0::1::::<><><>0<>0<><>::
 GraveyardRelicClickPatch.cs::CSharpScript::8169355163944261729::1774810102::0::1::::<><><>0<>0<><>::
+NCardGridFocusRowSafePatch.cs::CSharpScript::8514284660766407551::1775021727::0::1::::<><><>0<>0<><>::
+NDeckCardSelectScreenStickyConfirmPatch.cs::CSharpScript::114404970211644690::1775024020::0::1::::<><><>0<>0<><>::
 SpellTrapZoneRelicClickPatch.cs::CSharpScript::8311222830194195958::1774300298::0::1::::<><><>0<>0<><>::
-TrunkSideDeckDeckCardSelectScreenPatch.cs::CSharpScript::3112270011158836323::1775020412::0::1::::<><><>0<>0<><>::
-YgoRelicBrowseGridOverlayPatch.cs::CSharpScript::7581658626407284271::1775019898::0::1::::<><><>0<>0<><>::
+TrunkSideDeckDeckCardSelectOnCardClickedPatch.cs::CSharpScript::1793565690551218886::1775021305::0::1::::<><><>0<>0<><>::
+TrunkSideDeckDeckCardSelectScreenPatch.cs::CSharpScript::3112270011158836323::1775024466::0::1::::<><><>0<>0<><>::
+YgoRelicBrowseGridOverlayPatch.cs::CSharpScript::7581658626407284271::1775024176::0::1::::<><><>0<>0<><>::
 YgoRelicInventoryRightClickPatch.cs::CSharpScript::400587442969204419::1774723882::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForRestSite/::1774805444
 YgoCampfireRestSitePatches.cs::CSharpScript::1454065712297427891::1774810891::0::1::::<><><>0<>0<><>::
@@ -4191,7 +4198,7 @@ TrunkSideDeckRelic.cs::CSharpScript::2316772366581976651::1774723882::0::1::::<>
 YgoDuelistRelic.cs::CSharpScript::1362123596858446735::1773589494::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/RestSite/::1774805444
 YgoDeckRevampRestSiteOption.cs::CSharpScript::4644472648357904739::1774810858::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Services/::1775003401
+::res://YgoDuelistCode/Services/::1775021327
 ActivatedEffectTributeSelectionPayload.cs::CSharpScript::8872545235464063281::1774723882::0::1::::<><><>0<>0<><>::
 AmazonessSwordsWomanThornsSync.cs::CSharpScript::6271264411698128911::1774723882::0::1::::<><><>0<>0<><>::
 CardModelEnergyCache.cs::CSharpScript::6082268261041224344::1774723882::0::1::::<><><>0<>0<><>::
@@ -4213,7 +4220,8 @@ TailorOfTheFicklePlayPayload.cs::CSharpScript::2768140358153202292::1774723882::
 TributeSummonPlayPayload.cs::CSharpScript::2191928419489268336::1774202172::0::1::::<><><>0<>0<><>::
 TributeSummonSelection.cs::CSharpScript::7599590929164813862::1774203178::0::1::::<><><>0<>0<><>::
 TrunkSideDeckEditorSession.cs::CSharpScript::8258857538257566088::1774802521::0::1::::<><><>0<>0<><>::
-TrunkSideDeckGuiService.cs::CSharpScript::3616046080741902263::1775019906::0::1::::<><><>0<>0<><>::
+TrunkSideDeckGuiService.cs::CSharpScript::3616046080741902263::1775024481::0::1::::<><><>0<>0<><>::
+TrunkSideDeckSplitGridState.cs::CSharpScript::1429520412707458464::1775021143::0::1::::<><><>0<>0<><>::
 YgoAnnualTracker.cs::CSharpScript::7735591217521467788::1774723882::0::1::::<><><>0<>0<><>::
 YgoBadReactionToSimochi.cs::CSharpScript::7500865677816639893::1774723882::0::1::::<><><>0<>0<><>::
 YgoBlackPendantGraveyard.cs::CSharpScript::2775877184357763468::1774890465::0::1::::<><><>0<>0<><>::

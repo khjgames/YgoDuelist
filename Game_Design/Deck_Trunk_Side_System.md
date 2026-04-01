@@ -17,7 +17,7 @@ The editor remembers which of **3 pages** you last used (persists for the run). 
 
 **Page 2 — Side deck:** grid = Side only. Confirm moves selected cards to Trunk. Top row: **[Edit trunk]** **[Split editor]**.
 
-**Page 3 — Split editor:** grid = all cards in Trunk and Side together. Confirm **swaps** each selected card to the other pile (Trunk ↔ Side). Top row: **[Edit trunk]** **[Edit side deck]**.
+**Page 3 — Split editor:** two card grids side by side (~half screen width each): **Trunk (left)** and **Side deck (right)**. Same sort bar applies to both columns. Confirm **swaps** each selected card to the other pile (Trunk ↔ Side). Top row: **[Edit trunk]** **[Edit side deck]**.
 
 Clicking a top button closes the current grid without applying and reopens on the chosen page (still no separate shell UI). Clicking the relic again while the grid is open closes it with **no** moves applied.
 

@@ -1,12 +1,17 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
@@ -17,19 +22,82 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// Trunk/side/split editor uses <see cref="NDeckCardSelectScreen"/>; injects deck-view-style sort row (Obtained / Type / Cost / A–Z)
-/// and two nav buttons aligned with the Type and Cost columns, slightly above that row. Chrome Y uses 0.99× deck view SortingOptions offset_top (92) so nav lines up like the vanilla sort bar.
+/// and two nav buttons. Split page replaces the scene <see cref="NCardGrid"/> with two fresh instances (same source as the right column)
+/// so neither grid runs <see cref="NCardGrid.SetCards"/> while full-width; vanilla deferred scroll sizing otherwise pins the trunk column to full width.
 /// </summary>
 [HarmonyPatch(typeof(NDeckCardSelectScreen), nameof(NDeckCardSelectScreen._Ready))]
 public static class TrunkSideDeckDeckCardSelectScreenPatch
 {
+    private static ChromeState? ActiveEditorChrome;
+
+    internal static void ClearActiveEditorChrome(NDeckCardSelectScreen? screen)
+    {
+        if (screen != null && ActiveEditorChrome != null && ReferenceEquals(ActiveEditorChrome.Screen, screen))
+            ActiveEditorChrome = null;
+    }
+
+    /// <summary>After pile mutation from sticky Confirm, refresh baselines and grids for the active trunk/side chrome.</summary>
+    internal static void ResyncChromeAfterPileMutation()
+    {
+        ChromeState? state = ActiveEditorChrome;
+        if (state == null)
+            return;
+        Player? p = TrunkSideDeckGuiService.EditorSessionPlayer;
+        if (p == null)
+            return;
+
+        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(p);
+        CardPile side = PlayerRunSideDeck.GetOrCreatePile(p);
+        TrunkSideDeckEditorPage page = TrunkSideDeckEditorSession.ActivePage;
+
+        if (state.RightGrid != null && state.TrunkBaseline != null && state.SideBaseline != null)
+        {
+            state.TrunkBaseline.Clear();
+            state.TrunkBaseline.AddRange(trunk.Cards);
+            state.SideBaseline.Clear();
+            state.SideBaseline.AddRange(side.Cards);
+            TrunkSideDeckGuiService.SetSplitSessionPiles(new List<CardModel>(state.TrunkBaseline), new List<CardModel>(state.SideBaseline));
+        }
+        else
+        {
+            List<CardModel> nextBaseline = page switch
+            {
+                TrunkSideDeckEditorPage.Trunk => new List<CardModel>(trunk.Cards),
+                TrunkSideDeckEditorPage.Side => new List<CardModel>(side.Cards),
+                _ => trunk.Cards.Concat(side.Cards).ToList()
+            };
+            state.BaselineOrder.Clear();
+            state.BaselineOrder.AddRange(nextBaseline);
+        }
+
+        RefreshGridDisplay(state);
+    }
+
     private const string ChromeName = "YgoTrunkSideDeckChrome";
+    private const string SplitHBoxName = "YgoTrunkSideSplitHBox";
     private const string SortButtonScenePath = "res://scenes/screens/deck_view_screen/deck_view_sort_button.tscn";
+
+    /// <summary>Same scene as <see cref="NDeckCardSelectScreen"/>; used to clone an empty <see cref="NCardGrid"/> (live grid after <see cref="NCardGrid.SetCards"/> cannot be <see cref="Godot.Node.Duplicate"/>d).</summary>
+    private static readonly string DeckCardSelectScenePath =
+        SceneHelper.GetScenePath("screens/card_selection/deck_card_select_screen");
+
+    /// <summary>
+    /// <see cref="NCardGrid"/> uses <c>Columns = (scrollWidth + 40) / (cardWidth + 40)</c>. If width is 0 before layout, <c>Columns</c> is 0,
+    /// <see cref="NCardGrid"/> builds empty rows, and <c>AllocateCardHolders</c> indexes <c>_cardRows[0][0]</c> and throws.
+    /// </summary>
+    private static float SplitGridSlotMinWidth => NCard.defaultSize.X * NCardHolder.smallScale.X + 40f;
 
     private static readonly FieldInfo GridField =
         typeof(NCardGridSelectionScreen).GetField("_grid", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     private static readonly FieldInfo CardsField =
         typeof(NCardGridSelectionScreen).GetField("_cards", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+    private static readonly MethodInfo? DeckOnCardClicked =
+        AccessTools.DeclaredMethod(typeof(NDeckCardSelectScreen), "OnCardClicked", new[] { typeof(CardModel) });
+
+    private static readonly MethodInfo? GridScreenShowCardDetail =
+        AccessTools.DeclaredMethod(typeof(NCardGridSelectionScreen), "ShowCardDetail", new[] { typeof(CardModel) });
 
     [HarmonyPostfix]
     public static void AfterReady(NDeckCardSelectScreen __instance)
@@ -46,6 +114,14 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         if (CardsField.GetValue(__instance) is not List<CardModel> cardList)
             return;
 
+        TrunkSideDeckSplitGridState.Clear();
+        NCardGrid? rightSplitGrid = null;
+        List<CardModel>? trunkBaseline = null;
+        List<CardModel>? sideBaseline = null;
+        bool splitMode = TryBeginSplitDualLayout(__instance, ref grid, out rightSplitGrid, out trunkBaseline, out sideBaseline);
+        if (splitMode && rightSplitGrid != null)
+            TrunkSideDeckSplitGridState.Activate(grid, rightSplitGrid);
+
         var sortingPriority = new List<SortingOrders>
         {
             SortingOrders.Ascending,
@@ -58,10 +134,8 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
 
         const float sortButtonWidth = 250f;
         const float sortButtonHeight = 42f;
-        // deck_view_screen.tscn: SortingOptions offset_top for the sort button strip (Type/Cost live here).
         const float deckViewSortingOptionsOffsetTop = 92f;
         float chromeOffsetTop = 0.99f * deckViewSortingOptionsOffsetTop;
-        // Space between nav row and sort row: 99% of sort row height (nav sits just above Type/Cost, not a full 100px gap).
         float navGapPx = 0.99f * sortButtonHeight;
         const float chromeExtraMargin = 16f;
         float chromeHeight = sortButtonHeight + navGapPx + sortButtonHeight + chromeExtraMargin;
@@ -149,18 +223,37 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         sortRow.AddChild(costSorter);
         sortRow.AddChild(alphabetSorter);
 
-        var state = new ChromeState
-        {
-            Screen = __instance,
-            Grid = grid,
-            Cards = cardList,
-            BaselineOrder = cardList.ToList(),
-            SortingPriority = sortingPriority,
-            ObtainedSorter = obtainedSorter,
-            TypeSorter = typeSorter,
-            CostSorter = costSorter,
-            AlphabetSorter = alphabetSorter
-        };
+        ChromeState state = splitMode && trunkBaseline != null && sideBaseline != null && rightSplitGrid != null
+            ? new ChromeState
+            {
+                Screen = __instance,
+                Grid = grid,
+                RightGrid = rightSplitGrid,
+                Cards = cardList,
+                BaselineOrder = cardList.ToList(),
+                TrunkBaseline = trunkBaseline,
+                SideBaseline = sideBaseline,
+                SortingPriority = sortingPriority,
+                ObtainedSorter = obtainedSorter,
+                TypeSorter = typeSorter,
+                CostSorter = costSorter,
+                AlphabetSorter = alphabetSorter
+            }
+            : new ChromeState
+            {
+                Screen = __instance,
+                Grid = grid,
+                RightGrid = null,
+                Cards = cardList,
+                BaselineOrder = cardList.ToList(),
+                TrunkBaseline = null,
+                SideBaseline = null,
+                SortingPriority = sortingPriority,
+                ObtainedSorter = obtainedSorter,
+                TypeSorter = typeSorter,
+                CostSorter = costSorter,
+                AlphabetSorter = alphabetSorter
+            };
 
         rootVBox.AddChild(navRow);
         rootVBox.AddChild(gap);
@@ -169,8 +262,6 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         __instance.AddChild(chrome);
         __instance.MoveChild(chrome, __instance.GetChildCount() - 1);
 
-        // NCardViewSortButton caches %Label in _Ready(); this postfix runs during NDeckCardSelectScreen._Ready,
-        // so child _Ready (and _label) are not ready until after this frame — SetLabel must be deferred.
         Callable.From(() =>
         {
             nav1.SetLabel(new LocString("relics", key1).GetFormattedText());
@@ -183,15 +274,170 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
             alphabetSorter.SetLabel(new LocString("gameplay_ui", "SORT_ALPHABET").GetRawText());
         }).CallDeferred();
 
-        if (__instance.GetNodeOrNull("%CardGrid") is Control cardGrid)
-            cardGrid.OffsetTop = chromeOffsetTop + chromeHeight;
+        Control? gridTop = splitMode
+            ? __instance.GetNodeOrNull(SplitHBoxName) as Control
+            : __instance.GetNodeOrNull("%CardGrid") as Control;
+        if (gridTop != null)
+        {
+            gridTop.OffsetTop = chromeOffsetTop + chromeHeight;
+            if (splitMode)
+            {
+                gridTop.OffsetTop += TrunkSideDeckGuiService.SplitEditorHBoxOffsetTopAdjust;
+                gridTop.OffsetBottom += TrunkSideDeckGuiService.SplitEditorHBoxOffsetBottomAdjust;
+            }
+        }
 
         state.ObtainedSorter.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnObtainedSort(state)));
         state.TypeSorter.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnCardTypeSort(state)));
         state.CostSorter.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnCostSort(state)));
         state.AlphabetSorter.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnAlphabetSort(state)));
 
-        RefreshGridDisplay(state);
+        if (splitMode && rightSplitGrid != null)
+            Callable.From(() => RefreshGridDisplay(state)).CallDeferred();
+        else
+            RefreshGridDisplay(state);
+
+        ActiveEditorChrome = state;
+    }
+
+    private static bool TryBeginSplitDualLayout(
+        NDeckCardSelectScreen screen,
+        ref NCardGrid grid,
+        out NCardGrid? rightGrid,
+        out List<CardModel>? trunkBaseline,
+        out List<CardModel>? sideBaseline)
+    {
+        rightGrid = null;
+        trunkBaseline = null;
+        sideBaseline = null;
+
+        if (TrunkSideDeckEditorSession.ActivePage != TrunkSideDeckEditorPage.Split)
+            return false;
+        if (TrunkSideDeckGuiService.SplitSessionTrunkOrder == null || TrunkSideDeckGuiService.SplitSessionSideOrder == null)
+            return false;
+
+        trunkBaseline = new List<CardModel>(TrunkSideDeckGuiService.SplitSessionTrunkOrder);
+        sideBaseline = new List<CardModel>(TrunkSideDeckGuiService.SplitSessionSideOrder);
+
+        NCardGrid? freshLeft = InstantiateFreshCardGridFromDeckSelectScene();
+        NCardGrid? rg = InstantiateFreshCardGridFromDeckSelectScene();
+        if (freshLeft == null || rg == null)
+        {
+            freshLeft?.QueueFree();
+            rg?.QueueFree();
+            return false;
+        }
+
+        NCardGrid originalGrid = grid;
+        Node parent = originalGrid.GetParent()!;
+        int insertIndex = originalGrid.GetIndex();
+        CopyAnchoredControlLayout(originalGrid, out float al, out float at, out float ar, out float ab, out float ol, out float ot, out float orr, out float ob);
+        parent.RemoveChild(originalGrid);
+        originalGrid.QueueFree();
+
+        var hbox = new HBoxContainer { Name = SplitHBoxName };
+        hbox.LayoutMode = 1;
+        hbox.AnchorLeft = al;
+        hbox.AnchorTop = at;
+        hbox.AnchorRight = ar;
+        hbox.AnchorBottom = ab;
+        hbox.OffsetLeft = ol;
+        hbox.OffsetTop = ot;
+        hbox.OffsetRight = orr;
+        hbox.OffsetBottom = ob;
+
+        parent.AddChild(hbox);
+        parent.MoveChild(hbox, insertIndex);
+
+        var leftSlot = new Control();
+        leftSlot.LayoutMode = 2;
+        leftSlot.CustomMinimumSize = new Vector2(SplitGridSlotMinWidth, 0f);
+        leftSlot.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        leftSlot.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
+        var rightSlot = new Control();
+        rightSlot.LayoutMode = 2;
+        rightSlot.CustomMinimumSize = new Vector2(SplitGridSlotMinWidth, 0f);
+        rightSlot.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        rightSlot.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
+
+        hbox.AddChild(leftSlot);
+        hbox.AddChild(rightSlot);
+
+        freshLeft.Name = "CardGrid";
+        freshLeft.UniqueNameInOwner = true;
+        leftSlot.AddChild(freshLeft);
+        freshLeft.LayoutMode = 1;
+        freshLeft.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        freshLeft.OffsetLeft = freshLeft.OffsetRight = freshLeft.OffsetTop = freshLeft.OffsetBottom = 0;
+
+        rg.Name = "YgoSplitSideGrid";
+        rightSlot.AddChild(rg);
+        rg.LayoutMode = 1;
+        rg.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        rg.OffsetLeft = rg.OffsetRight = rg.OffsetTop = rg.OffsetBottom = 0;
+
+        grid = freshLeft;
+        GridField.SetValue(screen, freshLeft);
+
+        rightGrid = rg;
+        NDeckCardSelectScreen screenRef = screen;
+        void ConnectSplitGridSignals(NCardGrid g)
+        {
+            g.Connect(
+                NCardGrid.SignalName.HolderPressed,
+                Callable.From<NCardHolder>(h => DeckOnCardClicked?.Invoke(screenRef, new object[] { h.CardModel })));
+            g.Connect(
+                NCardGrid.SignalName.HolderAltPressed,
+                Callable.From<NCardHolder>(h => GridScreenShowCardDetail?.Invoke(screenRef, new object[] { h.CardModel })));
+        }
+
+        ConnectSplitGridSignals(freshLeft);
+        ConnectSplitGridSignals(rg);
+
+        Callable.From(() =>
+        {
+            freshLeft.InsetForTopBar();
+            rg.InsetForTopBar();
+        }).CallDeferred();
+
+        return true;
+    }
+
+    private static NCardGrid? InstantiateFreshCardGridFromDeckSelectScene()
+    {
+        PackedScene ps = PreloadManager.Cache.GetScene(DeckCardSelectScenePath);
+        NDeckCardSelectScreen temp = ps.Instantiate<NDeckCardSelectScreen>(PackedScene.GenEditState.Disabled);
+        try
+        {
+            NCardGrid template = temp.GetNode<NCardGrid>("%CardGrid");
+            Node dup = template.Duplicate();
+            return dup as NCardGrid;
+        }
+        finally
+        {
+            temp.QueueFree();
+        }
+    }
+
+    private static void CopyAnchoredControlLayout(
+        Control src,
+        out float anchorLeft,
+        out float anchorTop,
+        out float anchorRight,
+        out float anchorBottom,
+        out float offsetLeft,
+        out float offsetTop,
+        out float offsetRight,
+        out float offsetBottom)
+    {
+        anchorLeft = src.AnchorLeft;
+        anchorTop = src.AnchorTop;
+        anchorRight = src.AnchorRight;
+        anchorBottom = src.AnchorBottom;
+        offsetLeft = src.OffsetLeft;
+        offsetTop = src.OffsetTop;
+        offsetRight = src.OffsetRight;
+        offsetBottom = src.OffsetBottom;
     }
 
     /// <summary>Same control as Type/Cost sort row (<see cref="NCardViewSortButton"/>); label/glyph after <see cref="NCardViewSortButton._Ready"/> via deferred apply.</summary>
@@ -258,35 +504,58 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
 
     private static void RefreshGridDisplay(ChromeState s)
     {
-        RebuildCardListOrder(s);
+        if (s.RightGrid != null && s.TrunkBaseline != null && s.SideBaseline != null)
+        {
+            List<CardModel> trunkOrdered = SortSegment(s.TrunkBaseline, s.SortingPriority);
+            List<CardModel> sideOrdered = SortSegment(s.SideBaseline, s.SortingPriority);
+            s.Cards.Clear();
+            s.Cards.AddRange(trunkOrdered);
+            s.Cards.AddRange(sideOrdered);
+
+            int splitY = TrunkSideDeckGuiService.SplitEditorNCardGridContentYOffset;
+            s.Grid.YOffset = splitY;
+            s.RightGrid.YOffset = splitY;
+            s.Grid.SetCards(trunkOrdered, PileType.None, s.SortingPriority);
+            s.RightGrid.SetCards(sideOrdered, PileType.None, s.SortingPriority);
+            CardsField.SetValue(s.Screen, s.Cards);
+            return;
+        }
+
+        RebuildCombinedCardListOrder(s);
         s.Grid.YOffset = 100;
         s.Grid.SetCards(s.Cards, PileType.None, s.SortingPriority);
         CardsField.SetValue(s.Screen, s.Cards);
     }
 
-    /// <summary>Mirrors <see cref="NCardGrid.SetCards"/> ordering so <see cref="NCardGridSelectionScreen"/> inspect uses correct indices.</summary>
-    private static void RebuildCardListOrder(ChromeState s)
+    private static void RebuildCombinedCardListOrder(ChromeState s)
     {
-        List<CardModel> next = s.BaselineOrder.ToList();
-        SortingOrders p0 = s.SortingPriority[0];
+        List<CardModel> next = SortSegment(s.BaselineOrder, s.SortingPriority);
+        s.Cards.Clear();
+        s.Cards.AddRange(next);
+    }
+
+    private static List<CardModel> SortSegment(List<CardModel> baseline, List<SortingOrders> sortingPriority)
+    {
+        List<CardModel> next = new List<CardModel>(baseline);
+        SortingOrders p0 = sortingPriority[0];
         if (p0 == SortingOrders.Descending)
             next.Reverse();
         else if (p0 != SortingOrders.Ascending)
         {
             next.Sort((x, y) =>
             {
-                foreach (SortingOrders item in s.SortingPriority)
+                foreach (SortingOrders item in sortingPriority)
                 {
-                    int num = CompareSortKey(x, y, item, s.BaselineOrder);
+                    int num = CompareSortKey(x, y, item, baseline);
                     if (num != 0)
                         return num;
                 }
+
                 return x.Id.CompareTo(y.Id);
             });
         }
 
-        s.Cards.Clear();
-        s.Cards.AddRange(next);
+        return next;
     }
 
     private static int CompareSortKey(CardModel x, CardModel y, SortingOrders item, List<CardModel> baseline)
@@ -309,8 +578,11 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
     {
         public required NDeckCardSelectScreen Screen { get; init; }
         public required NCardGrid Grid { get; init; }
+        public NCardGrid? RightGrid { get; init; }
         public required List<CardModel> Cards { get; init; }
         public required List<CardModel> BaselineOrder { get; init; }
+        public List<CardModel>? TrunkBaseline { get; init; }
+        public List<CardModel>? SideBaseline { get; init; }
         public required List<SortingOrders> SortingPriority { get; init; }
         public required NCardViewSortButton ObtainedSorter { get; init; }
         public required NCardViewSortButton TypeSorter { get; init; }

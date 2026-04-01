@@ -27,10 +27,14 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
 /// Opens <see cref="NDeckCardSelectScreen"/> for trunk/side/split editing (deck-style multi-select + confirm); sort + nav UI is injected via Harmony.
+/// Confirm applies moves without closing; Close or relic ends the overlay and the await.
 /// </summary>
 public static class TrunkSideDeckGuiService
 {
     private static int _editorSessionActive;
+
+    /// <summary>Local player for the in-progress <see cref="RunEditorAsync"/> session; set for the whole editor loop until exit.</summary>
+    public static Player? EditorSessionPlayer { get; private set; }
 
     /// <summary>True while <see cref="RunEditorAsync"/> is in progress (including before the overlay is pushed). Used to ignore duplicate relic clicks.</summary>
     public static bool IsEditorSessionRunning() => Volatile.Read(ref _editorSessionActive) != 0;
@@ -42,6 +46,26 @@ public static class TrunkSideDeckGuiService
     /// While true, <see cref="NDeckCardSelectScreen"/> completes on the main Confirm (or on hitting max selection) without the preview overlay step.
     /// </summary>
     public static bool SkipDeckSelectPreviewLayer { get; private set; }
+
+    /// <summary>Snapshot of trunk / side piles when opening split editor; used to build two columns. Cleared after the selection await.</summary>
+    public static List<CardModel>? SplitSessionTrunkOrder { get; private set; }
+
+    public static List<CardModel>? SplitSessionSideOrder { get; private set; }
+
+    /// <summary>
+    /// Split editor only: added to <c>YgoTrunkSideSplitHBox</c> <c>OffsetTop</c> after chrome (negative moves both grids + scrollbars up).
+    /// </summary>
+    public static float SplitEditorHBoxOffsetTopAdjust { get; set; } = -235f;
+
+    /// <summary>
+    /// Split editor only: added to the split hbox <c>OffsetBottom</c> to change vertical size (default +20 grows the area when the hbox is fully anchored; flip sign if your theme behaves the opposite).
+    /// </summary>
+    public static float SplitEditorHBoxOffsetBottomAdjust { get; set; } = 20f;
+
+    /// <summary>
+    /// Split editor only: <see cref="MegaCrit.Sts2.Core.Nodes.Cards.NCardGrid.YOffset"/> for both columns (internal card / scroll layout; vanilla deck screen uses 100).
+    /// </summary>
+    public static int SplitEditorNCardGridContentYOffset { get; set; } = 80;
 
     public static bool HasAnyTrunkOrSideCards(Player player)
     {
@@ -55,6 +79,18 @@ public static class TrunkSideDeckGuiService
     public static void SetInjectNavForNextGrid(bool value) => InjectNavButtonsOnNextGrid = value;
 
     public static void SetSkipDeckSelectPreviewLayer(bool value) => SkipDeckSelectPreviewLayer = value;
+
+    public static void SetSplitSessionPiles(List<CardModel> trunk, List<CardModel> side)
+    {
+        SplitSessionTrunkOrder = trunk;
+        SplitSessionSideOrder = side;
+    }
+
+    public static void ClearSplitSessionPiles()
+    {
+        SplitSessionTrunkOrder = null;
+        SplitSessionSideOrder = null;
+    }
 
     public static async Task RunEditorAsync(Player player)
     {
@@ -76,48 +112,75 @@ public static class TrunkSideDeckGuiService
 
     private static async Task RunEditorAsyncCore(Player player)
     {
-        EnsureActivePageShowsNonEmptyGrid(player);
-
-        while (true)
+        EditorSessionPlayer = player;
+        try
         {
-            if (!TryBuildCardList(player, TrunkSideDeckEditorSession.ActivePage, out List<CardModel> cards))
+            EnsureActivePageShowsNonEmptyGrid(player);
+
+            while (true)
             {
+                if (!TryBuildCardList(player, TrunkSideDeckEditorSession.ActivePage, out List<CardModel> cards))
+                {
+                    return;
+                }
+
+                CardSelectorPrefs prefs = BuildPrefs(TrunkSideDeckEditorSession.ActivePage, cards.Count);
+                SetInjectNavForNextGrid(true);
+                SetSkipDeckSelectPreviewLayer(true);
+                if (TrunkSideDeckEditorSession.ActivePage == TrunkSideDeckEditorPage.Split)
+                {
+                    CardPile trunkPile = PlayerRunTrunk.GetOrCreatePile(player);
+                    CardPile sidePile = PlayerRunSideDeck.GetOrCreatePile(player);
+                    SetSplitSessionPiles(trunkPile.Cards.ToList(), sidePile.Cards.ToList());
+                }
+
+                YgoRelicBrowseGridOverlayPatch.SetPendingKind(YgoRelicBrowseGridOverlayPatch.RelicGridKind.TrunkSideDeckSelect);
+                IEnumerable<CardModel> pickedEnumerable;
+                try
+                {
+                    pickedEnumerable = await AwaitTrunkSideDeckGridSelection(player, cards, prefs);
+                }
+                catch (System.OperationCanceledException)
+                {
+                    TrunkSideDeckEditorSession.ClearNavigateRequest();
+                    return;
+                }
+                finally
+                {
+                    SetInjectNavForNextGrid(false);
+                    SetSkipDeckSelectPreviewLayer(false);
+                    ClearSplitSessionPiles();
+                    TrunkSideDeckSplitGridState.Clear();
+                    YgoRelicBrowseGridOverlayPatch.ClearPendingKind();
+                }
+
+                if (TrunkSideDeckEditorSession.TryConsumeNavigateRequest(out TrunkSideDeckEditorPage next))
+                {
+                    TrunkSideDeckEditorSession.ActivePage = next;
+                    EnsureActivePageShowsNonEmptyGrid(player);
+                    continue;
+                }
+
+                List<CardModel> picked = pickedEnumerable.ToList();
+                ApplyPicks(player, TrunkSideDeckEditorSession.ActivePage, picked);
+                TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
                 return;
             }
-
-            CardSelectorPrefs prefs = BuildPrefs(TrunkSideDeckEditorSession.ActivePage, cards.Count);
-            SetInjectNavForNextGrid(true);
-            SetSkipDeckSelectPreviewLayer(true);
-            YgoRelicBrowseGridOverlayPatch.SetPendingKind(YgoRelicBrowseGridOverlayPatch.RelicGridKind.TrunkSideDeckSelect);
-            IEnumerable<CardModel> pickedEnumerable;
-            try
-            {
-                pickedEnumerable = await AwaitTrunkSideDeckGridSelection(player, cards, prefs);
-            }
-            catch (System.OperationCanceledException)
-            {
-                TrunkSideDeckEditorSession.ClearNavigateRequest();
-                return;
-            }
-            finally
-            {
-                SetInjectNavForNextGrid(false);
-                SetSkipDeckSelectPreviewLayer(false);
-                YgoRelicBrowseGridOverlayPatch.ClearPendingKind();
-            }
-
-            if (TrunkSideDeckEditorSession.TryConsumeNavigateRequest(out TrunkSideDeckEditorPage next))
-            {
-                TrunkSideDeckEditorSession.ActivePage = next;
-                EnsureActivePageShowsNonEmptyGrid(player);
-                continue;
-            }
-
-            List<CardModel> picked = pickedEnumerable.ToList();
-            ApplyPicks(player, TrunkSideDeckEditorSession.ActivePage, picked);
-            TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
-            return;
         }
+        finally
+        {
+            EditorSessionPlayer = null;
+        }
+    }
+
+    /// <summary>Applies trunk/side/split moves for the current editor page; notifies relic UI. Used when Confirm applies without closing the overlay.</summary>
+    public static void ApplyTrunkSideEditorMoves(IReadOnlyList<CardModel> picked)
+    {
+        Player? p = EditorSessionPlayer;
+        if (p == null || picked.Count == 0)
+            return;
+        ApplyPicks(p, TrunkSideDeckEditorSession.ActivePage, picked.ToList());
+        TrunkSideDeckRelic.NotifyRunTrunkSideChanged(p);
     }
 
     private static bool ShouldSelectLocalCard(Player player) =>

@@ -140,6 +140,8 @@ public static class YgoRelicBrowseGridOverlayPatch
     {
         if (_activeTrunkSideDeckScreen != null && ReferenceEquals(screen, _activeTrunkSideDeckScreen))
         {
+            if (screen is NDeckCardSelectScreen deck)
+                TrunkSideDeckDeckCardSelectScreenPatch.ClearActiveEditorChrome(deck);
             _activeTrunkSideDeckScreen = null;
             if (_activeKind == RelicGridKind.TrunkSideDeckSelect)
                 _activeKind = RelicGridKind.None;
