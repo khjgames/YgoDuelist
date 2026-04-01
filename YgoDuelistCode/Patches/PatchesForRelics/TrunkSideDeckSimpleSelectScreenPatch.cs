@@ -7,18 +7,31 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Adds trunk/side/split page nav buttons to the top of <see cref="NSimpleCardSelectScreen"/> when opened from <see cref="TrunkSideDeckGuiService"/>.
+/// Adds trunk/side/split page nav buttons when <see cref="TrunkSideDeckGuiService"/> opens <see cref="NSimpleCardSelectScreen"/>.
+/// The bar is parented as the <b>last</b> child so it draws above the card grid (Godot paints later siblings on top).
 /// </summary>
-[HarmonyPatch(typeof(NSimpleCardSelectScreen), "_Ready")]
+[HarmonyPatch(typeof(NSimpleCardSelectScreen), nameof(NSimpleCardSelectScreen.AfterOverlayOpened))]
 public static class TrunkSideDeckSimpleSelectScreenPatch
 {
+    private const string NavRowName = "YgoTrunkSideNavRow";
+
     [HarmonyPostfix]
-    public static void AfterReady(NSimpleCardSelectScreen __instance)
+    public static void AfterOverlayOpened(NSimpleCardSelectScreen __instance)
     {
         if (!TrunkSideDeckGuiService.InjectNavButtonsOnNextGrid)
             return;
+        if (__instance.GetNodeOrNull(NavRowName) != null)
+            return;
 
-        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center };
+        var row = new HBoxContainer
+        {
+            Name = NavRowName,
+            Alignment = BoxContainer.AlignmentMode.Center,
+            MouseFilter = Control.MouseFilterEnum.Stop
+        };
+        row.LayoutMode = 1; // anchors (matches other NSimpleCardSelectScreen add-ons)
+        row.SetAnchorsPreset(Control.LayoutPreset.TopWide);
+        row.OffsetBottom = 56;
         row.AddThemeConstantOverride("separation", 8);
 
         TrunkSideDeckEditorPage page = TrunkSideDeckEditorSession.ActivePage;
@@ -45,7 +58,6 @@ public static class TrunkSideDeckSimpleSelectScreenPatch
         row.AddChild(MakeNavButton(key2, target2));
 
         __instance.AddChild(row);
-        __instance.MoveChild(row, 0);
     }
 
     private static Button MakeNavButton(string localizationKey, TrunkSideDeckEditorPage targetPage)

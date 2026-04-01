@@ -26,7 +26,7 @@ public static class TrunkSideDeckGuiService
     /// <summary>True while <see cref="RunEditorAsync"/> is in progress (including before the overlay is pushed). Used to ignore duplicate relic clicks.</summary>
     public static bool IsEditorSessionRunning() => Volatile.Read(ref _editorSessionActive) != 0;
 
-    /// <summary>Set while <see cref="RunEditorAsync"/> is about to push the simple select screen so <c>_Ready</c> can inject nav buttons.</summary>
+    /// <summary>Set while <see cref="RunEditorAsync"/> is about to push the simple select screen so the trunk/side nav bar patch can inject buttons (after overlay open).</summary>
     public static bool InjectNavButtonsOnNextGrid { get; private set; }
 
     public static bool HasAnyTrunkOrSideCards(Player player)

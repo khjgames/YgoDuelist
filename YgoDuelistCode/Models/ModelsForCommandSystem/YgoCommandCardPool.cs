@@ -47,6 +47,7 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
         ModelDb.Card<Command_Defend>(),
         ModelDb.Card<Activate_Effect>(),
         ModelDb.Card<Heads>(),
+        ModelDb.Card<PreviewEffect>(),
         ModelDb.Card<Tails>(),
         ModelDb.Card<Rolled_1>(),
         ModelDb.Card<Rolled_2>(),

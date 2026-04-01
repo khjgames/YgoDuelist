@@ -8,8 +8,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1775006254
-YgoDuelist.deps.json::JSON::-1::1775006254::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1775007336
+YgoDuelist.deps.json::JSON::-1::1775007336::0::1::::<><><>0<>0<><>::
 ::res://docs/::1774723882
 card_database_import.schema.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
@@ -2319,7 +2319,7 @@ trunk_side_deck.png::CompressedTexture2D::6798465944459700739::1774723882::17747
 ::res://YgoDuelist/localization/::1773513086
 ::res://YgoDuelist/localization/eng/::1774805185
 ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
-cards.json::JSON::-1::1775005656::0::1::::<><><>0<>0<><>::
+cards.json::JSON::-1::1775007294::0::1::::<><><>0<>0<><>::
 card_keywords.json::JSON::-1::1774937407::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 combat_messages.json::JSON::-1::1774931647::0::1::::<><><>0<>0<><>::
@@ -2498,7 +2498,7 @@ Des_Kangaroo.cs::CSharpScript::1756227225393745763::1774723882::0::1::::<><><>0<
 Des_Koala.cs::CSharpScript::4205654160611849420::1774723676::0::1::::<><><>0<>0<><>::
 Des_Lacooda.cs::CSharpScript::4076873507383409887::1774723676::0::1::::<><><>0<>0<><>::
 Des_Volstgalph.cs::CSharpScript::7671192025110351582::1774723882::0::1::::<><><>0<>0<><>::
-Dice_Jar.cs::CSharpScript::7794297492781959007::1774934017::0::1::::<><><>0<>0<><>::
+Dice_Jar.cs::CSharpScript::7794297492781959007::1775006949::0::1::::<><><>0<>0<><>::
 Dimension_Jar.cs::CSharpScript::9137205459891862928::1774723676::0::1::::<><><>0<>0<><>::
 Don_Turtle.cs::CSharpScript::3335448850654236851::1774723676::0::1::::<><><>0<>0<><>::
 Double_Coston.cs::CSharpScript::3296529830343620357::1774723676::0::1::::<><><>0<>0<><>::
