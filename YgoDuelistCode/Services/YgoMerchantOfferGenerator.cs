@@ -12,86 +12,105 @@ using YgoDuelist.YgoDuelistCode.Cards;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// 16-card merchant offer: 4 themed rows — exactly 2 single-tag and 2 double-tag pack masks (shuffled rows),
-/// fixed 6/8/2 rarity mix, deck top-2 tag affinity on at least one row.
+/// 18-card merchant (3×6 grid): 6C / 8U / 4R. Four packs — double-tag 5+5, single-tag 4+4 — row-major indices (col = idx%6, row = idx/6).
+/// Row0: DoubleFirst cols 0–4, DoubleSecond col5. Row1: DoubleSecond cols 0–3, SingleTagFirst cols 4–5. Row2: SingleTagFirst cols 0–1, SingleTagSecond cols 2–5.
 /// </summary>
 public static class YgoMerchantOfferGenerator
 {
-    public const int SlotCount = 16;
-    public const int RowCount = 4;
+    public const int SlotCount = 18;
+    public const int GridColumns = 6;
+    public const int GridRows = 3;
 
     private static readonly YgoCardPackTags HistogramIgnore =
         YgoCardPackTags.None | YgoCardPackTags.Starter | YgoCardPackTags.Bundled;
+
+    /// <summary>First double-tag pack: top row, left five (indices 0–4).</summary>
+    private static readonly int[] DoubleFirstSlots = { 0, 1, 2, 3, 4 };
+
+    /// <summary>Second double-tag pack: top-right (5) plus row1 cols 0–3 (6–9).</summary>
+    private static readonly int[] DoubleSecondSlots = { 5, 6, 7, 8, 9 };
+
+    /// <summary>First single-tag pack: row1 cols 4–5 and row2 cols 0–1 (10–13).</summary>
+    private static readonly int[] SingleTagFirstSlots = { 10, 11, 12, 13 };
+
+    /// <summary>Second single-tag pack: bottom row, right four (14–17).</summary>
+    private static readonly int[] SingleTagSecondSlots = { 14, 15, 16, 17 };
 
     public sealed class ShopSlot
     {
         public required CardModel Template { get; init; }
         public required CardRarity Rarity { get; init; }
         public required YgoCardPackTags RowTagMask { get; init; }
+        public required YgoMerchantShopPackRole PackRole { get; init; }
     }
 
     public sealed class ShopOffer
     {
         public required IReadOnlyList<ShopSlot> Slots { get; init; }
-        public required IReadOnlyList<YgoCardPackTags> RowMasks { get; init; }
+        public required IReadOnlyList<YgoCardPackTags> PackMasks { get; init; }
     }
 
     public static ShopOffer Generate(Player player, Rng rng)
     {
         YgoCardPackTags affinityUnion = BuildAffinityUnion(player);
-        var rowMasks = RollMerchantRowMasks(rng);
+        (YgoCardPackTags d0, YgoCardPackTags d1, YgoCardPackTags t0, YgoCardPackTags t1) = RollFourMerchantPackMasks(rng);
 
-        if (affinityUnion != YgoCardPackTags.None && !rowMasks.Any(m => (m & affinityUnion) != 0))
+        if (affinityUnion != YgoCardPackTags.None
+            && !IntersectsAny(affinityUnion, d0, d1, t0, t1))
         {
-            var eligibleMains = YgoPackCardCatalog.PackThemeMainTags
+            List<YgoCardPackTags> eligibleMains = YgoPackCardCatalog.PackThemeMainTags
                 .Where(t => (t & affinityUnion) != 0)
                 .ToList();
             if (eligibleMains.Count > 0)
             {
-                var singleRowIndices = Enumerable.Range(0, RowCount)
-                    .Where(i => CountPackThemeBits(rowMasks[i]) == 1)
-                    .ToList();
-                int rowIdx = singleRowIndices.Count > 0
-                    ? singleRowIndices[rng.NextInt(singleRowIndices.Count)]
-                    : rng.NextInt(RowCount);
-                rowMasks[rowIdx] = eligibleMains[rng.NextInt(eligibleMains.Count)];
+                YgoCardPackTags pick = eligibleMains[rng.NextInt(eligibleMains.Count)];
+                int which = rng.NextInt(2);
+                if (which == 0)
+                    t0 = pick;
+                else
+                    t1 = pick;
             }
         }
 
-        List<CardRarity> rarities = AssignRaritiesBestFit(player, rowMasks, rng);
+        var rarityPool = BuildShuffledRarityPool(rng);
+        List<CardRarity> r0 = TakeAndShuffleSlice(rarityPool, rng, 0, 5);
+        List<CardRarity> r1 = TakeAndShuffleSlice(rarityPool, rng, 5, 5);
+        List<CardRarity> r2 = TakeAndShuffleSlice(rarityPool, rng, 10, 4);
+        List<CardRarity> r3 = TakeAndShuffleSlice(rarityPool, rng, 14, 4);
 
         var trunkCounts = CountIds(PlayerRunTrunk.GetOrCreatePile(player).Cards);
         var relatedBonus = BuildRelatedBonus(player);
         var chosenIds = new HashSet<ModelId>();
-        var slots = new List<ShopSlot>(SlotCount);
+        var grid = new ShopSlot?[SlotCount];
 
+        FillPackAtIndices(player, rng, d0, r0, DoubleFirstSlots, chosenIds, trunkCounts, relatedBonus, grid,
+            YgoMerchantShopPackRole.DoubleFirst);
+        FillPackAtIndices(player, rng, d1, r1, DoubleSecondSlots, chosenIds, trunkCounts, relatedBonus, grid,
+            YgoMerchantShopPackRole.DoubleSecond);
+        FillPackAtIndices(player, rng, t0, r2, SingleTagFirstSlots, chosenIds, trunkCounts, relatedBonus, grid,
+            YgoMerchantShopPackRole.SingleTagFirst);
+        FillPackAtIndices(player, rng, t1, r3, SingleTagSecondSlots, chosenIds, trunkCounts, relatedBonus, grid,
+            YgoMerchantShopPackRole.SingleTagSecond);
+
+        var slots = new List<ShopSlot>(SlotCount);
         for (int i = 0; i < SlotCount; i++)
         {
-            int row = i / 4;
-            YgoCardPackTags rowMask = rowMasks[row];
-            CardRarity rarity = rarities[i];
-            bool excludeBundled = false;
-            CardModel? pick = PickShopSlot(
-                player,
-                rng,
-                rowMask,
-                ref rarity,
-                chosenIds,
-                excludeBundled,
-                trunkCounts,
-                relatedBonus);
-            if (pick == null)
+            if (grid[i] != null)
             {
-                Log.Warn($"[YgoDuelist][Shop] empty_pick slot={i} row={row} mask={rowMask} rarity={rarity}");
+                slots.Add(grid[i]!);
                 continue;
             }
 
-            chosenIds.Add(pick.Id);
+            CardModel? filler = PickFallbackAny(player, rng, chosenIds);
+            if (filler == null)
+                continue;
+            chosenIds.Add(filler.Id);
             slots.Add(new ShopSlot
             {
-                Template = pick,
-                Rarity = rarity,
-                RowTagMask = rowMask
+                Template = filler,
+                Rarity = filler.Rarity,
+                RowTagMask = YgoCardPackTags.None,
+                PackRole = YgoMerchantShopPackRole.Filler
             });
         }
 
@@ -105,7 +124,8 @@ public static class YgoMerchantOfferGenerator
             {
                 Template = filler,
                 Rarity = filler.Rarity,
-                RowTagMask = YgoCardPackTags.None
+                RowTagMask = YgoCardPackTags.None,
+                PackRole = YgoMerchantShopPackRole.Filler
             });
         }
 
@@ -113,9 +133,90 @@ public static class YgoMerchantOfferGenerator
         return new ShopOffer
         {
             Slots = slots,
-            RowMasks = rowMasks
+            PackMasks = new[] { d0, d1, t0, t1 }
         };
     }
+
+    private static bool IntersectsAny(YgoCardPackTags affinity, YgoCardPackTags a, YgoCardPackTags b, YgoCardPackTags c, YgoCardPackTags d) =>
+        (affinity & a) != 0 || (affinity & b) != 0 || (affinity & c) != 0 || (affinity & d) != 0;
+
+    private static List<CardRarity> BuildShuffledRarityPool(Rng rng)
+    {
+        var pool = new List<CardRarity>(SlotCount);
+        for (int i = 0; i < 6; i++)
+            pool.Add(CardRarity.Common);
+        for (int i = 0; i < 8; i++)
+            pool.Add(CardRarity.Uncommon);
+        for (int i = 0; i < 4; i++)
+            pool.Add(CardRarity.Rare);
+        Shuffle(pool, rng);
+        return pool;
+    }
+
+    private static List<CardRarity> TakeAndShuffleSlice(List<CardRarity> pool, Rng rng, int start, int length)
+    {
+        var slice = pool.GetRange(start, length);
+        Shuffle(slice, rng);
+        return slice;
+    }
+
+    private static void FillPackAtIndices(
+        Player player,
+        Rng rng,
+        YgoCardPackTags mask,
+        IReadOnlyList<CardRarity> rarities,
+        int[] gridIndices,
+        HashSet<ModelId> chosenIds,
+        Dictionary<ModelId, int> trunkCounts,
+        Dictionary<ModelId, int> relatedBonus,
+        ShopSlot?[] grid,
+        YgoMerchantShopPackRole packRole)
+    {
+        for (int i = 0; i < gridIndices.Length; i++)
+        {
+            int g = gridIndices[i];
+            CardRarity rarity = rarities[i];
+            bool excludeBundled = false;
+            CardModel? pick = PickShopSlot(
+                player,
+                rng,
+                mask,
+                ref rarity,
+                chosenIds,
+                excludeBundled,
+                trunkCounts,
+                relatedBonus);
+            if (pick == null)
+            {
+                Log.Warn($"[YgoDuelist][Shop] empty_pick grid={g} mask={mask} rarity={rarity}");
+                continue;
+            }
+
+            chosenIds.Add(pick.Id);
+            grid[g] = new ShopSlot
+            {
+                Template = pick,
+                Rarity = rarity,
+                RowTagMask = mask,
+                PackRole = packRole
+            };
+        }
+    }
+
+    private static (YgoCardPackTags d0, YgoCardPackTags d1, YgoCardPackTags t0, YgoCardPackTags t1) RollFourMerchantPackMasks(Rng rng)
+    {
+        YgoCardPackTags d0 = RollShopPackTagMask(rng, MainCopy(), CombinedCopy(), 2);
+        YgoCardPackTags d1 = RollShopPackTagMask(rng, MainCopy(), CombinedCopy(), 2);
+        YgoCardPackTags t0 = RollShopPackTagMask(rng, MainCopy(), CombinedCopy(), 1);
+        YgoCardPackTags t1 = RollShopPackTagMask(rng, MainCopy(), CombinedCopy(), 1);
+        return (d0, d1, t0, t1);
+    }
+
+    private static List<YgoCardPackTags> MainCopy() =>
+        YgoPackCardCatalog.PackThemeMainTags.ToList();
+
+    private static List<YgoCardPackTags> CombinedCopy() =>
+        YgoPackCardCatalog.PackThemeMainTags.Concat(YgoPackCardCatalog.PackThemeSubTags).ToList();
 
     private static YgoCardPackTags BuildAffinityUnion(Player player)
     {
@@ -167,26 +268,6 @@ public static class YgoMerchantOfferGenerator
         }
     }
 
-    /// <summary>Exactly two rows use one theme bit, two rows use two bits; row order is random.</summary>
-    private static YgoCardPackTags[] RollMerchantRowMasks(Rng rng)
-    {
-        var rowMasks = new YgoCardPackTags[RowCount];
-        var tagCounts = new[] { 1, 1, 2, 2 };
-        Shuffle(tagCounts, rng);
-
-        for (int row = 0; row < RowCount; row++)
-        {
-            var main = YgoPackCardCatalog.PackThemeMainTags.ToList();
-            var combined = YgoPackCardCatalog.PackThemeMainTags.Concat(YgoPackCardCatalog.PackThemeSubTags).ToList();
-            rowMasks[row] = RollShopPackTagMask(rng, main, combined, tagCounts[row]);
-        }
-
-        return rowMasks;
-    }
-
-    private static int CountPackThemeBits(YgoCardPackTags mask) =>
-        EnumerateThemeBits(mask).Count();
-
     private static YgoCardPackTags RollShopPackTagMask(
         Rng rng,
         List<YgoCardPackTags> workingMain,
@@ -222,175 +303,6 @@ public static class YgoMerchantOfferGenerator
             int j = rng.NextInt(i + 1);
             (list[i], list[j]) = (list[j], list[i]);
         }
-    }
-
-    private const int TargetShopCommons = 6;
-    private const int TargetShopUncommons = 8;
-    private const int TargetShopRares = 2;
-
-    /// <summary>
-    /// Partitions 6C/8U/2R across four rows of four slots so global counts match and per-row assignment
-    /// minimizes shortage vs that row's unlocked tag pool (same eligibility as <see cref="FilterPool"/> without dedup).
-    /// Within each row, slot order is shuffled.
-    /// </summary>
-    private static List<CardRarity> AssignRaritiesBestFit(Player player, YgoCardPackTags[] rowMasks, Rng rng)
-    {
-        var avail = new (int C, int U, int R)[RowCount];
-        for (int row = 0; row < RowCount; row++)
-            avail[row] = CountEligiblePerRarityForRow(player, rowMasks[row]);
-
-        if (!TrySolveRowRarityPartition(avail, rng, out (int C, int U, int R)[] rowMix))
-            return BuildShuffledGlobalRarityList(rng);
-
-        var rarities = new List<CardRarity>(SlotCount);
-        for (int row = 0; row < RowCount; row++)
-        {
-            var rowList = new List<CardRarity>(4);
-            for (int i = 0; i < rowMix[row].C; i++)
-                rowList.Add(CardRarity.Common);
-            for (int i = 0; i < rowMix[row].U; i++)
-                rowList.Add(CardRarity.Uncommon);
-            for (int i = 0; i < rowMix[row].R; i++)
-                rowList.Add(CardRarity.Rare);
-            Shuffle(rowList, rng);
-            rarities.AddRange(rowList);
-        }
-
-        return rarities;
-    }
-
-    private static List<CardRarity> BuildShuffledGlobalRarityList(Rng rng)
-    {
-        var rarities = new List<CardRarity>(SlotCount);
-        for (int i = 0; i < TargetShopCommons; i++)
-            rarities.Add(CardRarity.Common);
-        for (int i = 0; i < TargetShopUncommons; i++)
-            rarities.Add(CardRarity.Uncommon);
-        for (int i = 0; i < TargetShopRares; i++)
-            rarities.Add(CardRarity.Rare);
-        Shuffle(rarities, rng);
-        return rarities;
-    }
-
-    private static (int C, int U, int R) CountEligiblePerRarityForRow(Player player, YgoCardPackTags tagMask)
-    {
-        List<CardModel> raw = YgoPackCardCatalog.GetUnlockedPool(player, tagMask);
-        int c = 0, u = 0, r = 0;
-        foreach (CardModel model in raw)
-        {
-            if (!AllowedForRun(player, model))
-                continue;
-            switch (model.Rarity)
-            {
-                case CardRarity.Common:
-                    c++;
-                    break;
-                case CardRarity.Uncommon:
-                    u++;
-                    break;
-                case CardRarity.Rare:
-                    r++;
-                    break;
-            }
-        }
-
-        return (c, u, r);
-    }
-
-    /// <summary>
-    /// Penalize assigning more of a rarity than exists in the row pool (drives demotion in <see cref="PickShopSlot"/>).
-    /// Rare over-assign is weighted higher than uncommon/common.
-    /// </summary>
-    private static int RowShortfallCost((int C, int U, int R) avail, int c, int u, int rare)
-    {
-        int dC = Math.Max(0, c - avail.C);
-        int dU = Math.Max(0, u - avail.U);
-        int dR = Math.Max(0, rare - avail.R);
-        return dC + 3 * dU + 12 * dR;
-    }
-
-    private static bool TrySolveRowRarityPartition(
-        (int C, int U, int R)[] avail,
-        Rng rng,
-        out (int C, int U, int R)[] rowMix)
-    {
-        rowMix = new (int C, int U, int R)[RowCount];
-        const int inf = int.MaxValue / 8;
-        var dp = new int[RowCount + 1, TargetShopCommons + 1, TargetShopUncommons + 1, TargetShopRares + 1];
-        for (int a = 0; a <= RowCount; a++)
-        for (int gc = 0; gc <= TargetShopCommons; gc++)
-        for (int gu = 0; gu <= TargetShopUncommons; gu++)
-        for (int gr = 0; gr <= TargetShopRares; gr++)
-            dp[a, gc, gu, gr] = inf;
-
-        dp[0, 0, 0, 0] = 0;
-
-        for (int row = 0; row < RowCount; row++)
-        {
-            for (int gc = 0; gc <= TargetShopCommons; gc++)
-            for (int gu = 0; gu <= TargetShopUncommons; gu++)
-            for (int gr = 0; gr <= TargetShopRares; gr++)
-            {
-                int cur = dp[row, gc, gu, gr];
-                if (cur >= inf)
-                    continue;
-
-                for (int c = 0; c <= 4; c++)
-                for (int u = 0; u <= 4 - c; u++)
-                {
-                    int rare = 4 - c - u;
-                    int ngc = gc + c;
-                    int ngu = gu + u;
-                    int ngr = gr + rare;
-                    if (ngc > TargetShopCommons || ngu > TargetShopUncommons || ngr > TargetShopRares)
-                        continue;
-
-                    int nextCost = cur + RowShortfallCost(avail[row], c, u, rare);
-                    if (nextCost < dp[row + 1, ngc, ngu, ngr])
-                        dp[row + 1, ngc, ngu, ngr] = nextCost;
-                }
-            }
-        }
-
-        int finalCost = dp[RowCount, TargetShopCommons, TargetShopUncommons, TargetShopRares];
-        if (finalCost >= inf)
-            return false;
-
-        int gC = TargetShopCommons;
-        int gU = TargetShopUncommons;
-        int gR = TargetShopRares;
-
-        for (int row = RowCount - 1; row >= 0; row--)
-        {
-            var picks = new List<(int c, int u, int rare)>();
-            for (int c = 0; c <= 4; c++)
-            for (int u = 0; u <= 4 - c; u++)
-            {
-                int rare = 4 - c - u;
-                int pC = gC - c;
-                int pU = gU - u;
-                int pR = gR - rare;
-                if (pC < 0 || pU < 0 || pR < 0)
-                    continue;
-                int prev = dp[row, pC, pU, pR];
-                if (prev >= inf)
-                    continue;
-                if (prev + RowShortfallCost(avail[row], c, u, rare) != dp[row + 1, gC, gU, gR])
-                    continue;
-                picks.Add((c, u, rare));
-            }
-
-            if (picks.Count == 0)
-                return false;
-
-            (int c, int u, int rare) chosen = picks[rng.NextInt(picks.Count)];
-            rowMix[row] = (chosen.c, chosen.u, chosen.rare);
-            gC -= chosen.c;
-            gU -= chosen.u;
-            gR -= chosen.rare;
-        }
-
-        return true;
     }
 
     private static CardModel? PickShopSlot(

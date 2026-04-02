@@ -14,6 +14,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
 /// Builds three YGO card packs for a reward: shared rarity column, per-pack tag masks, weighted picks, bundles, owed rare vouchers.
+/// Single-theme packs use three cards from the column and bump the first rolled common to uncommon (one fewer common).
 /// </summary>
 public static class YgoCardPackGenerator
 {
@@ -60,7 +61,17 @@ public static class YgoCardPackGenerator
         for (int p = 0; p < 3; p++)
         {
             YgoCardPackTags tagMask = RollPackTagMask(rng, workingMain, workingCombined, progress);
-            List<CardModel> onePack = FillOnePack(player, rng, tagMask, rolledRarities, slotCount, progress);
+            int themeBits = CountPackThemeBits(tagMask);
+            int packSlots = themeBits == 1 ? Math.Min(3, slotCount) : slotCount;
+            bool oneLessCommon = themeBits == 1 && packSlots == 3;
+            List<CardModel> onePack = FillOnePack(
+                player,
+                rng,
+                tagMask,
+                rolledRarities,
+                packSlots,
+                oneLessCommon,
+                progress);
             packs.Add(onePack);
             Log.Info(
                 $"[YgoDuelist][PackGen] phase=after_pack_{p}_filled | tagMask={tagMask} | {SummarizePackRarities(onePack)} | cards={onePack.Count} | owedRareVouchers={progress.OwedRareCardVouchers}");
@@ -122,6 +133,36 @@ public static class YgoCardPackGenerator
         return mask;
     }
 
+    private static int CountPackThemeBits(YgoCardPackTags mask)
+    {
+        int n = 0;
+        foreach (YgoCardPackTags t in YgoPackCardCatalog.PackThemeMainTags)
+        {
+            if ((mask & t) != 0)
+                n++;
+        }
+
+        foreach (YgoCardPackTags t in YgoPackCardCatalog.PackThemeSubTags)
+        {
+            if ((mask & t) != 0)
+                n++;
+        }
+
+        return n;
+    }
+
+    /// <summary>First common in the slice becomes uncommon (single-tag 3-card packs: one fewer common).</summary>
+    private static void ApplyOneLessCommon(CardRarity[] slice)
+    {
+        for (int i = 0; i < slice.Length; i++)
+        {
+            if (slice[i] != CardRarity.Common)
+                continue;
+            slice[i] = CardRarity.Uncommon;
+            return;
+        }
+    }
+
     private static YgoCardPackTags PickWeightedPackTag(
         Rng rng,
         List<YgoCardPackTags> candidates,
@@ -149,7 +190,8 @@ public static class YgoCardPackGenerator
         Rng rng,
         YgoCardPackTags tagMask,
         CardRarity[] rolledRarities,
-        int slotCount,
+        int packSlots,
+        bool oneLessCommon,
         YgoPackRewardProgressState progress)
     {
         var cards = new List<CardModel>();
@@ -158,9 +200,16 @@ public static class YgoCardPackGenerator
         var trunkCounts = CountIds(PlayerRunTrunk.GetOrCreatePile(player).Cards);
         var relatedBonus = BuildRelatedBonus(player);
 
-        for (int slot = 0; slot < slotCount; slot++)
+        var slotRarities = new CardRarity[packSlots];
+        for (int i = 0; i < packSlots; i++)
+            slotRarities[i] = rolledRarities[i];
+
+        if (oneLessCommon)
+            ApplyOneLessCommon(slotRarities);
+
+        for (int slot = 0; slot < packSlots; slot++)
         {
-            CardRarity rarity = rolledRarities[slot];
+            CardRarity rarity = slotRarities[slot];
             CardModel? pick = PickForSlot(
                 player,
                 rng,

@@ -20,11 +20,16 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMerchant;
 
 /// <summary>
 /// Mod-only merchant branch: duplicated <see cref="NMerchantCard"/> slots and sell UI under vanilla <c>_slotsContainer</c>.
-/// Does not replace vanilla fields, patch <see cref="NMerchantInventory.GetCardSlots"/>, or toggle vanilla row visibility—pages cover the slot area when active.
+/// YGO buy/sell pages hide vanilla card/relic/potion/removal rows and dialogue chrome so only the rug texture, hand, and mod UI show; Standard restores them.
 /// </summary>
 public partial class YgoMerchantSlotsAddonLayer : Control
 {
     public const string GodotName = "YgoMerchantSlotsAddonLayer";
+
+    /// <summary>Root <see cref="HBoxContainer"/> parented to <see cref="NMerchantInventory"/> (Standard / YGO buy / sell tabs).</summary>
+    public const string AddonNavBarName = "YgoMerchantAddonNavBar";
+
+    private const string BuyGridCenterName = "YgoAddonBuyGridCenter";
 
     private static readonly MethodInfo UpdateNavigationMethod =
         AccessTools.DeclaredMethod(typeof(NMerchantInventory), "UpdateNavigation")!;
@@ -44,6 +49,13 @@ public partial class YgoMerchantSlotsAddonLayer : Control
     private YgoMerchantInventorySidecar? _sidecar;
     private readonly Dictionary<CardModel, CheckBox> _rowChecks = new();
 
+    private readonly Control? _vanillaCharacterCards;
+    private readonly Control? _vanillaColorlessCards;
+    private readonly Control? _vanillaRelics;
+    private readonly Control? _vanillaPotions;
+    private readonly NMerchantCardRemoval? _vanillaCardRemoval;
+    private readonly Control? _merchantDialogueRoot;
+
     private enum ShopPage
     {
         Standard,
@@ -61,7 +73,13 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         Label sellTally,
         Button btnStandard,
         Button btnYgoBuy,
-        Button btnYgoSell)
+        Button btnYgoSell,
+        Control? vanillaCharacterCards,
+        Control? vanillaColorlessCards,
+        Control? vanillaRelics,
+        Control? vanillaPotions,
+        NMerchantCardRemoval? vanillaCardRemoval,
+        Control? merchantDialogueRoot)
     {
         _merchantUi = merchantUi;
         _player = player;
@@ -73,6 +91,12 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         _btnStandard = btnStandard;
         _btnYgoBuy = btnYgoBuy;
         _btnYgoSell = btnYgoSell;
+        _vanillaCharacterCards = vanillaCharacterCards;
+        _vanillaColorlessCards = vanillaColorlessCards;
+        _vanillaRelics = vanillaRelics;
+        _vanillaPotions = vanillaPotions;
+        _vanillaCardRemoval = vanillaCardRemoval;
+        _merchantDialogueRoot = merchantDialogueRoot;
 
         Name = GodotName;
         SetAnchorsPreset(LayoutPreset.FullRect);
@@ -96,43 +120,55 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         NMerchantCard templateCard)
     {
         var traverse = Traverse.Create(merchantUi);
-        Control? slots = traverse.Field<Control>("_slotsContainer").Value;
+        Control? slots = traverse.Field<Control>("_slotsContainer").Value
+            ?? merchantUi.GetNodeOrNull<Control>("%SlotsContainer");
         if (slots == null)
             return null;
 
-        var ygoBuyPage = new Panel
+        QueueMerchantShopVisualTuning(merchantUi, slots);
+
+        Control? vanillaCharacter = traverse.Field<Control>("_characterCardContainer").Value;
+        Control? vanillaColorless = traverse.Field<Control>("_colorlessCardContainer").Value;
+        Control? vanillaRelics = traverse.Field<Control>("_relicContainer").Value;
+        Control? vanillaPotions = traverse.Field<Control>("_potionContainer").Value;
+        NMerchantCardRemoval? vanillaRemoval = traverse.Field<NMerchantCardRemoval>("_cardRemovalNode").Value;
+        Control? dialogueRoot = merchantUi.GetNodeOrNull<Control>("%Dialogue");
+
+        var ygoBuyPage = new Control
         {
             Name = "YgoAddonBuyPage",
             Visible = false,
             MouseFilter = MouseFilterEnum.Stop
         };
         ygoBuyPage.SetAnchorsPreset(LayoutPreset.FullRect);
-        ygoBuyPage.Modulate = new Color(0.06f, 0.06f, 0.08f, 0.94f);
+
+        var gridCenter = new CenterContainer
+        {
+            Name = BuyGridCenterName,
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        gridCenter.SetAnchorsPreset(LayoutPreset.FullRect);
+        ApplyMerchantBuyGridCenterOffsets(gridCenter);
 
         var ygoGrid = new GridContainer
         {
             Name = "YgoAddonBuyGrid",
-            Columns = 4,
+            Columns = YgoMerchantOfferGenerator.GridColumns,
             MouseFilter = MouseFilterEnum.Stop
         };
-        ygoGrid.SetAnchorsPreset(LayoutPreset.FullRect);
-        const float pad = 20f;
-        ygoGrid.OffsetLeft = pad;
-        ygoGrid.OffsetTop = pad;
-        ygoGrid.OffsetRight = -pad;
-        ygoGrid.OffsetBottom = -pad;
-        ygoGrid.AddThemeConstantOverride("h_separation", 18);
-        ygoGrid.AddThemeConstantOverride("v_separation", 18);
-        ygoBuyPage.AddChild(ygoGrid);
+        ApplyYgoGridGapTheme(ygoGrid);
+        gridCenter.AddChild(ygoGrid);
+        ygoBuyPage.AddChild(gridCenter);
 
         for (int i = 0; i < ygoSlotCount; i++)
         {
             if (templateCard.Duplicate() is not NMerchantCard dup)
                 continue;
+            dup.Scale = Vector2.One * YgoMerchantShopLayoutTuning.MerchantSlotIdleScale;
             ygoGrid.AddChild(dup);
             dup.CustomMinimumSize = new Vector2(112, 198);
-            dup.SizeFlagsHorizontal = SizeFlags.Expand | SizeFlags.Fill;
-            dup.SizeFlagsVertical = SizeFlags.Expand | SizeFlags.Fill;
+            dup.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
+            dup.SizeFlagsVertical = SizeFlags.ShrinkBegin;
         }
 
         var ygoSellPage = new MarginContainer
@@ -161,7 +197,7 @@ public partial class YgoMerchantSlotsAddonLayer : Control
 
         var navBar = new HBoxContainer
         {
-            Name = "YgoMerchantAddonNavBar",
+            Name = AddonNavBarName,
             Alignment = BoxContainer.AlignmentMode.Begin
         };
         var btnStandard = new Button { Text = "Standard shop" };
@@ -178,7 +214,13 @@ public partial class YgoMerchantSlotsAddonLayer : Control
             sellTally,
             btnStandard,
             btnYgoBuy,
-            btnYgoSell);
+            btnYgoSell,
+            vanillaCharacter,
+            vanillaColorless,
+            vanillaRelics,
+            vanillaPotions,
+            vanillaRemoval,
+            dialogueRoot);
 
         layer.AddChild(ygoBuyPage);
         layer.AddChild(ygoSellPage);
@@ -208,7 +250,126 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         confirm.Pressed += layer.OnReviewSell;
 
         layer.ApplyPage(ShopPage.Standard);
+        SetAddonNavBarVisible(merchantUi, false);
         return layer;
+    }
+
+    /// <summary>
+    /// Tab bar must not stay visible or <see cref="Control.MouseFilterEnum.Stop"/> when the shop is closed:
+    /// the inventory root uses <c>Ignore</c> but children still hit-test and steal clicks from the merchant room (e.g. Card Trader NPC).
+    /// </summary>
+    public static void SetAddonNavBarVisible(NMerchantInventory merchantUi, bool visible)
+    {
+        if (!GodotObject.IsInstanceValid(merchantUi))
+            return;
+
+        Control? nav = merchantUi.GetNodeOrNull<Control>(AddonNavBarName);
+        if (nav == null)
+            return;
+
+        nav.Visible = visible;
+        nav.MouseFilter = visible ? MouseFilterEnum.Stop : MouseFilterEnum.Ignore;
+    }
+
+    /// <summary>
+    /// <see cref="NMerchantInventory.Initialize"/> runs during room setup; touching <c>_slotsContainer</c> scale/position
+    /// in the same frame can NRE before the native Control is ready. Run after a zero-delay tree timer tick.
+    /// </summary>
+    private static void QueueMerchantShopVisualTuning(NMerchantInventory merchantUi, Control slots)
+    {
+        SceneTree? tree = merchantUi.GetTree();
+        if (tree == null)
+        {
+            ApplyMerchantShopVisualTuningCore(merchantUi, slots);
+            return;
+        }
+
+        NMerchantInventory m = merchantUi;
+        Control s = slots;
+        SceneTreeTimer timer = tree.CreateTimer(0f);
+        timer.Timeout += () =>
+        {
+            if (GodotObject.IsInstanceValid(m) && GodotObject.IsInstanceValid(s))
+                ApplyMerchantShopVisualTuningCore(m, s);
+        };
+    }
+
+    /// <summary>
+    /// Rug/carpet lives under vanilla <c>_slotsContainer</c>; optional child path for a carpet-only sprite.
+    /// Applied once when YGO chrome mounts (relative to scene defaults at that moment).
+    /// </summary>
+    private static void ApplyMerchantShopVisualTuningCore(NMerchantInventory merchantUi, Control slots)
+    {
+        if (!GodotObject.IsInstanceValid(merchantUi) || !GodotObject.IsInstanceValid(slots))
+            return;
+        if (!slots.IsInsideTree())
+            return;
+
+        Vector2 sm = YgoMerchantShopLayoutTuning.MerchantSlotsContainerScaleMultiplier;
+        Vector2 cur = slots.Scale;
+        slots.Scale = new Vector2(cur.X * sm.X, cur.Y * sm.Y);
+        slots.Position += YgoMerchantShopLayoutTuning.MerchantSlotsContainerPositionOffset;
+
+        if (slots.FindChild(BuyGridCenterName, recursive: true, owned: false) is Control buyGridCenter)
+            ApplyMerchantBuyGridCenterOffsets(buyGridCenter);
+
+        string carpetPathStr = YgoMerchantShopLayoutTuning.MerchantCarpetOnlyNodePath.ToString();
+        if (string.IsNullOrEmpty(carpetPathStr))
+            return;
+        if (merchantUi.GetNodeOrNull(YgoMerchantShopLayoutTuning.MerchantCarpetOnlyNodePath) is not Control rug
+            || !GodotObject.IsInstanceValid(rug))
+            return;
+        Vector2 cm = YgoMerchantShopLayoutTuning.MerchantCarpetOnlyScaleMultiplier;
+        Vector2 rcur = rug.Scale;
+        rug.Scale = new Vector2(rcur.X * cm.X, rcur.Y * cm.Y);
+        rug.Position += YgoMerchantShopLayoutTuning.MerchantCarpetOnlyPositionOffset;
+    }
+
+    /// <summary>
+    /// Full-rect <see cref="CenterContainer"/> insets; nudging all four offsets by the same (X,Y) shifts the centered grid without resizing it.
+    /// </summary>
+    private static void ApplyMerchantBuyGridCenterOffsets(Control gridCenter)
+    {
+        const float pad = 20f;
+        Vector2 o = YgoMerchantShopLayoutTuning.MerchantBuyGridPositionOffset;
+        gridCenter.OffsetLeft = pad + o.X;
+        gridCenter.OffsetTop = pad + o.Y;
+        gridCenter.OffsetRight = -pad + o.X;
+        gridCenter.OffsetBottom = -pad + o.Y;
+    }
+
+    private static void ApplyYgoGridGapTheme(GridContainer grid)
+    {
+        const int baseH = 18;
+        const int baseV = 18;
+        int h = Mathf.RoundToInt(baseH * YgoMerchantShopLayoutTuning.GridHorizontalGapMultiplier);
+        int v = Mathf.RoundToInt(baseV * YgoMerchantShopLayoutTuning.GridVerticalGapMultiplier);
+        grid.AddThemeConstantOverride("h_separation", Mathf.Max(0, h));
+        grid.AddThemeConstantOverride("v_separation", Mathf.Max(0, v));
+    }
+
+    /// <summary>
+    /// Opens the YGO buy grid tab (e.g. after entering shop from the Card Trader room NPC).
+    /// </summary>
+    public void ShowYgoBuyShopPage() => ApplyPage(ShopPage.YgoBuy);
+
+    public static void TryShowYgoBuyPage(NMerchantInventory inv)
+    {
+        Control? slots = Traverse.Create(inv).Field<Control>("_slotsContainer").Value
+            ?? inv.GetNodeOrNull<Control>("%SlotsContainer");
+        slots?.GetNodeOrNull<YgoMerchantSlotsAddonLayer>(GodotName)?.ShowYgoBuyShopPage();
+    }
+
+    /// <summary>
+    /// Restores vanilla merchant rows and hides YGO chrome. Call when the shop UI closes so the next open is not stuck on the Card Trader view.
+    /// </summary>
+    public void ResetToStandardShopPage() => ApplyPage(ShopPage.Standard);
+
+    public static void TryResetToStandardShopPage(NMerchantInventory inv)
+    {
+        Control? slots = Traverse.Create(inv).Field<Control>("_slotsContainer").Value
+            ?? inv.GetNodeOrNull<Control>("%SlotsContainer");
+        slots?.GetNodeOrNull<YgoMerchantSlotsAddonLayer>(GodotName)?.ResetToStandardShopPage();
     }
 
     public void CompleteAfterVanillaInitialize(MerchantInventory inventory)
@@ -228,6 +389,66 @@ public partial class YgoMerchantSlotsAddonLayer : Control
             card.Initialize(_merchantUi);
             card.FillSlot(sidecar.YgoCardEntries[i]);
         }
+
+        CallDeferred(nameof(DeferredRefreshYgoBuyCardVisuals));
+    }
+
+    private void DeferredRefreshYgoBuyCardVisuals()
+    {
+        RefreshYgoBuyNCardVisuals();
+        if (YgoMerchantShopLayoutTuning.RunOneFrameHoverScalePulseAfterLayout)
+            _ = RunYgoBuyHoverScalePulseAsync();
+    }
+
+    private void RefreshYgoBuyNCardVisuals()
+    {
+        foreach (Node ch in _ygoGrid.GetChildren())
+        {
+            if (ch is not NMerchantCard slot)
+                continue;
+            Control? holder = slot.GetNodeOrNull<Control>("%CardHolder");
+            if (holder == null)
+                continue;
+            foreach (Node cn in holder.GetChildren())
+            {
+                if (cn is NCard nc)
+                {
+                    nc.Scale = Vector2.One;
+                    nc.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
+                }
+            }
+        }
+    }
+
+    private async Task RunYgoBuyHoverScalePulseAsync()
+    {
+        if (!IsInsideTree())
+            return;
+
+        SceneTree? tree = GetTree();
+        if (tree == null)
+            return;
+
+        float hover = YgoMerchantShopLayoutTuning.MerchantSlotHoverScale;
+        float idle = YgoMerchantShopLayoutTuning.MerchantSlotIdleScale;
+        foreach (Node ch in _ygoGrid.GetChildren())
+        {
+            if (ch is NMerchantCard slot)
+                slot.Scale = Vector2.One * hover;
+        }
+
+        await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+        if (!IsInsideTree())
+            return;
+
+        foreach (Node ch in _ygoGrid.GetChildren())
+        {
+            if (ch is NMerchantCard slot)
+                slot.Scale = Vector2.One * idle;
+        }
+
+        RefreshYgoBuyNCardVisuals();
     }
 
     private void ApplyPage(ShopPage page)
@@ -240,11 +461,15 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         switch (page)
         {
             case ShopPage.Standard:
+                SetVanillaMerchantSlotRowsVisible(true);
+                SetMerchantDialogueRootVisible(true);
                 Visible = false;
                 _ygoBuyPage.Visible = false;
                 _ygoSellPage.Visible = false;
                 break;
             case ShopPage.YgoBuy:
+                SetVanillaMerchantSlotRowsVisible(false);
+                SetMerchantDialogueRootVisible(false);
                 Visible = true;
                 _ygoBuyPage.Visible = true;
                 _ygoSellPage.Visible = false;
@@ -255,10 +480,14 @@ public partial class YgoMerchantSlotsAddonLayer : Control
                         if (ch is NMerchantCard ygoCard)
                             ygoCard.OnInventoryOpened();
                     }
+
+                    CallDeferred(nameof(DeferredRefreshYgoBuyCardVisuals));
                 }
 
                 break;
             case ShopPage.YgoSell:
+                SetVanillaMerchantSlotRowsVisible(false);
+                SetMerchantDialogueRootVisible(false);
                 Visible = true;
                 _ygoBuyPage.Visible = false;
                 _ygoSellPage.Visible = true;
@@ -268,6 +497,26 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         }
 
         UpdateNavigationMethod.Invoke(_merchantUi, null);
+    }
+
+    private void SetVanillaMerchantSlotRowsVisible(bool visible)
+    {
+        if (_vanillaCharacterCards != null)
+            _vanillaCharacterCards.Visible = visible;
+        if (_vanillaColorlessCards != null)
+            _vanillaColorlessCards.Visible = visible;
+        if (_vanillaRelics != null)
+            _vanillaRelics.Visible = visible;
+        if (_vanillaPotions != null)
+            _vanillaPotions.Visible = visible;
+        if (_vanillaCardRemoval != null)
+            _vanillaCardRemoval.Visible = visible;
+    }
+
+    private void SetMerchantDialogueRootVisible(bool visible)
+    {
+        if (_merchantDialogueRoot != null)
+            _merchantDialogueRoot.Visible = visible;
     }
 
     private void RebuildSellList()
@@ -351,6 +600,8 @@ public partial class YgoMerchantSlotsAddonLayer : Control
 
     private void OnTreeExiting()
     {
+        SetVanillaMerchantSlotRowsVisible(true);
+        SetMerchantDialogueRootVisible(true);
         if (_sidecar == null)
             return;
         foreach (MerchantCardEntry e in _sidecar.YgoCardEntries)

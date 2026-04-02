@@ -28,6 +28,8 @@ public static class YgoMerchantInventoryPostfixPatch
         if (offer.Slots.Count == 0)
             return;
 
+        YgoMerchantShopDebug.LogOfferLayout(offer);
+
         var onUpdate = (Action<PurchaseStatus, MerchantEntry>)Delegate.CreateDelegate(
             typeof(Action<PurchaseStatus, MerchantEntry>),
             __result,
@@ -40,7 +42,7 @@ public static class YgoMerchantInventoryPostfixPatch
         {
             YgoMerchantOfferGenerator.ShopSlot slot = offer.Slots[i];
             var entry = new MerchantCardEntry(player, __result, new[] { slot.Template }, slot.Rarity);
-            entry.Populate();
+            YgoMerchantCardEntryPopulateFixedTemplate.Populate(entry, player, slot.Template);
             if (saleIdx == i)
                 entry.SetOnSale();
             entry.PurchaseCompleted += onUpdate;

@@ -10,7 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMerchant;
 /// <summary>
 /// Single hook surface on <see cref="NMerchantInventory.Initialize"/>: Prefix mounts mod-only UI from duplicated
 /// <see cref="NMerchantCard"/> templates; Postfix binds YGO <see cref="MerchantCardEntry"/> rows after vanilla fills its slots.
-/// Does not replace vanilla fields, patch <c>GetCardSlots</c>, or hook <c>_ExitTree</c>.
+/// Does not replace vanilla fields or patch <c>GetCardSlots</c>. YGO pages hide vanilla shop rows via <see cref="YgoMerchantSlotsAddonLayer"/>; Standard restores them.
 /// </summary>
 [HarmonyPatch(typeof(NMerchantInventory), nameof(NMerchantInventory.Initialize))]
 public static class YgoMerchantShopUiPatch
