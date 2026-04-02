@@ -59,7 +59,7 @@ public static class YgoCardPackGenerator
         var packs = new List<List<CardModel>>(3);
         for (int p = 0; p < 3; p++)
         {
-            YgoCardPackTags tagMask = RollPackTagMask(rng, workingMain, workingCombined);
+            YgoCardPackTags tagMask = RollPackTagMask(rng, workingMain, workingCombined, progress);
             List<CardModel> onePack = FillOnePack(player, rng, tagMask, rolledRarities, slotCount, progress);
             packs.Add(onePack);
             Log.Info(
@@ -90,29 +90,58 @@ public static class YgoCardPackGenerator
         return $"C={c} U={u} R={r}";
     }
 
-    private static YgoCardPackTags RollPackTagMask(Rng rng, List<YgoCardPackTags> workingMain, List<YgoCardPackTags> workingCombined)
+    private static YgoCardPackTags RollPackTagMask(
+        Rng rng,
+        List<YgoCardPackTags> workingMain,
+        List<YgoCardPackTags> workingCombined,
+        YgoPackRewardProgressState progress)
     {
         int r = rng.NextInt(100);
         int tagCount = r < 48 ? 1 : r < 85 ? 2 : 3;
+        int bump = tagCount == 1 ? 4 : tagCount == 2 ? 3 : 2;
         YgoCardPackTags mask = YgoCardPackTags.None;
 
         if (workingMain.Count == 0)
             return YgoCardPackTags.Dragon;
 
-        YgoCardPackTags first = rng.NextItem(workingMain);
+        YgoCardPackTags first = PickWeightedPackTag(rng, workingMain, progress);
         workingMain.Remove(first);
         workingCombined.Remove(first);
+        progress.ApplyPackTagPickBumpAndTetris(first, bump);
         mask |= first;
 
         for (int extra = 1; extra < tagCount && workingCombined.Count > 0; extra++)
         {
-            YgoCardPackTags next = rng.NextItem(workingCombined);
+            YgoCardPackTags next = PickWeightedPackTag(rng, workingCombined, progress);
             workingMain.Remove(next);
             workingCombined.Remove(next);
+            progress.ApplyPackTagPickBumpAndTetris(next, bump);
             mask |= next;
         }
 
         return mask;
+    }
+
+    private static YgoCardPackTags PickWeightedPackTag(
+        Rng rng,
+        List<YgoCardPackTags> candidates,
+        YgoPackRewardProgressState progress)
+    {
+        if (candidates.Count == 0)
+            return YgoCardPackTags.Dragon;
+        if (candidates.Count == 1)
+            return candidates[0];
+
+        YgoCardPackTags? pick = rng.WeightedNextItem(candidates, t => PackTagSelectionWeight(t, progress));
+        return pick ?? candidates[rng.NextInt(candidates.Count)];
+    }
+
+    private static float PackTagSelectionWeight(YgoCardPackTags singleBit, YgoPackRewardProgressState progress)
+    {
+        int d = progress.GetPackTagAccum(singleBit);
+        float f = YgoPackTagFatigue.FatigueFactor(d);
+        int w = YgoPackTagWeightConfig.GetWeightMultiplier(singleBit);
+        return Math.Max(1e-6f, f * (w / 10f));
     }
 
     private static List<CardModel> FillOnePack(

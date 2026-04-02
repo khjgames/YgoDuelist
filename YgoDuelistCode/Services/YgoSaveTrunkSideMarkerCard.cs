@@ -17,6 +17,7 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
     public const string ExtraDeckCountProp = "ygo_extra_count";
     public const string MinDeckSizeProp = "ygo_min_deck_size";
     public const string OwedRareCardVouchersProp = "ygo_owed_rare_vouchers";
+    public const string PackTagBalanceProp = "ygo_pack_tag_balance";
 
     public const int MaxSerializedPileCount = 255;
 
@@ -79,6 +80,20 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
         }
 
         return 0;
+    }
+
+    public static string? ReadPackTagBalanceOrNull(SerializableCard marker)
+    {
+        if (marker.Props?.strings == null)
+            return null;
+
+        foreach (SavedProperties.SavedProperty<string> p in marker.Props.strings)
+        {
+            if (p.name == PackTagBalanceProp)
+                return p.value;
+        }
+
+        return null;
     }
 
     public static bool TryReadCounts(SerializableCard marker, out int trunkCount, out int sideCount)

@@ -123,8 +123,10 @@ public static class YgoCardPackRewardFlow
         if (chosenPack.Count == 0)
         {
             RemoveAllCreatedCards(bundles, player);
-            LogPackFlowPhase(player, "flow_end_empty_choose_pack", "removed preview clones");
-            return false;
+            UnsubscribeRelicHandler(reward, player);
+            RecordAllPackCardsSkippedForReward(player, bundles);
+            LogPackFlowPhase(player, "flow_end_skip_no_pack", "removed preview clones; reward consumed");
+            return true;
         }
 
         chosenBundleIndex = IndexOfBundleByInstanceSequence(bundles, chosenPack);
@@ -300,6 +302,24 @@ public static class YgoCardPackRewardFlow
         {
             foreach (CardModel c in b)
                 player.RunState.RemoveCard(c);
+        }
+    }
+
+    private static void RecordAllPackCardsSkippedForReward(Player player, List<IReadOnlyList<CardModel>> bundles)
+    {
+        if (RunManager.Instance == null)
+            return;
+        var historyEntry = player.RunState.CurrentMapPointHistoryEntry?.GetEntry(LocalContext.NetId!.Value);
+        if (historyEntry == null)
+            return;
+
+        foreach (IReadOnlyList<CardModel> b in bundles)
+        {
+            foreach (CardModel c in b)
+            {
+                historyEntry.CardChoices.Add(new CardChoiceHistoryEntry(c, wasPicked: false));
+                RunManager.Instance.RewardSynchronizer.SyncLocalSkippedCard(c);
+            }
         }
     }
 

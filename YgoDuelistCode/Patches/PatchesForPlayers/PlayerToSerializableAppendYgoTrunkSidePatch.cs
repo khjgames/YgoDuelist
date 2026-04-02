@@ -32,10 +32,13 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
         int ec = PlayerRunExtraDeck.GetPileIfExists(__instance)?.Cards.Count ?? 0;
         ec = Math.Clamp(ec, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount);
         int minDeck = YgoPlayerMinimumDeck.Get(__instance);
-        int owedRare = YgoPackRewardProgress.For(__instance).OwedRareCardVouchers;
+        YgoPackRewardProgressState packProgress = YgoPackRewardProgress.For(__instance);
+        int owedRare = packProgress.OwedRareCardVouchers;
+        bool needTagBalance = packProgress.HasPackTagBalanceToPersist();
         bool needTrailer = tc > 0 || sc > 0 || ec > 0
             || minDeck > YgoPlayerMinimumDeck.StartingMinimum
-            || owedRare > 0;
+            || owedRare > 0
+            || needTagBalance;
         if (!needTrailer)
             return;
 
@@ -65,14 +68,26 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
                     Math.Clamp(owedRare, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedOwedRareVouchers)));
         }
 
-        if (intProps.Count > 0)
+        var stringProps = new List<SavedProperties.SavedProperty<string>>();
+        if (needTagBalance)
         {
-            marker.Props = new SavedProperties { ints = intProps };
+            string blob = YgoPackTagBalanceSerializer.Serialize(packProgress.PackTagAccumByFlag);
+            stringProps.Add(
+                new SavedProperties.SavedProperty<string>(YgoSaveTrunkSideMarkerCard.PackTagBalanceProp, blob));
+        }
+
+        if (intProps.Count > 0 || stringProps.Count > 0)
+        {
+            marker.Props = new SavedProperties();
+            if (intProps.Count > 0)
+                marker.Props.ints = intProps;
+            if (stringProps.Count > 0)
+                marker.Props.strings = stringProps;
         }
 
         deck.Add(marker);
         GD.Print(
             $"[YgoDuelist][SaveLoad] ToSerializable trailer appended netId={__instance.NetId} " +
-            $"extra={ec} trunk={tc} side={sc} minDeck={minDeck} owedRare={owedRare} deckCount={deck.Count}");
+            $"extra={ec} trunk={tc} side={sc} minDeck={minDeck} owedRare={owedRare} packTagBalance={needTagBalance} deckCount={deck.Count}");
     }
 }

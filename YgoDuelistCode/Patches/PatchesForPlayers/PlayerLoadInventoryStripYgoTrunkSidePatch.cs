@@ -61,6 +61,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
         YgoPlayerMinimumDeck.SetLoadedFromSave(player, pending.LoadedMinimumDeckSize);
         YgoPackRewardProgress.SetOwedRareLoadedFromSave(player, pending.LoadedOwedRareCardVouchers);
+        YgoPackRewardProgress.SetPackTagBalanceLoadedFromSave(player, pending.LoadedPackTagBalance);
     }
 
     public static void Prefix(Player __instance, SerializablePlayer save, ref object? __state)
@@ -83,6 +84,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
             last,
             YgoPlayerMinimumDeck.StartingMinimum);
         int loadedOwedRare = YgoSaveTrunkSideMarkerCard.ReadOwedRareCardVouchersOrDefault(last);
+        string? loadedPackTagBalance = YgoSaveTrunkSideMarkerCard.ReadPackTagBalanceOrNull(last);
 
         int need = 1 + extraCount + trunkCount + sideCount;
         if (deck.Count < need)
@@ -98,7 +100,8 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         var pending = new YgoTrunkSideDeckLoadPending
         {
             LoadedMinimumDeckSize = loadedMinDeck,
-            LoadedOwedRareCardVouchers = loadedOwedRare
+            LoadedOwedRareCardVouchers = loadedOwedRare,
+            LoadedPackTagBalance = loadedPackTagBalance
         };
         for (int i = 0; i < sideCount; i++)
         {
