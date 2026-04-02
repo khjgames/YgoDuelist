@@ -8,8 +8,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
 /// Save-file trailer only: never offered or played. Marks appended extra/trunk/side blocks in <see cref="SerializablePlayer.Deck"/>.
-/// Trunk/side counts use <see cref="SerializableCard.CurrentUpgradeLevel"/> / <see cref="SerializableCard.FloorAddedToDeck"/> (no custom prop names in combat replay).
-/// Extra deck count uses <see cref="ExtraDeckCountProp"/> on <see cref="SavedProperties"/> (save trailer only).
+/// Trunk/side counts use <see cref="SerializableCard.CurrentUpgradeLevel"/> / <see cref="SerializableCard.FloorAddedToDeck"/>.
+/// Extra deck, min deck, owed rare vouchers, and pack tag balance use <see cref="SavedProperties"/> keys registered in
+/// <see cref="YgoSaveTrunkSideMarkerNetPropertyNames"/> for replay / net serialization.
 /// Minimum deck size and <see cref="OwedRareCardVouchersProp"/> use int props when non-default.
 /// </summary>
 public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
