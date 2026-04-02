@@ -11,7 +11,6 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
-using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
@@ -113,10 +112,6 @@ public sealed class DarkSnakeSyndromeFieldPowerPlus : YgoDuelistPower
     public override LocString Title => new("powers", "YGODUELIST-DARK_SNAKE_SYNDROME_FIELD_POWER_PLUS.title");
 
     public override LocString Description => new("powers", "YGODUELIST-DARK_SNAKE_SYNDROME_FIELD_POWER_PLUS.description");
-
-    public override string CustomPackedIconPath => "dark_snake_syndrome_field_power.png".PowerImagePath();
-
-    public override string CustomBigIconPath => "dark_snake_syndrome_field_power.png".BigPowerImagePath();
 
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side) =>
         await DarkSnakeSyndromeFieldPowerShared.AfterTurnEnd(this, choiceContext, side);

@@ -1,4 +1,5 @@
 using System.Linq;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -15,12 +16,19 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// <summary>Face-up <see cref="Narrow_Pass"/> in the Spell/Trap zone: +1 monster play/command energy, summon pet life payment, and repeated attack/defend resolutions (field commands and hand normal/tribute ATK/DEF summons via <see cref="AbstractMonsterCard.CanonicalEnergyCost"/> / <see cref="NormalMonsterCard"/>).</summary>
 public static class YgoNarrowPassField
 {
+    /// <summary>
+    /// Spell/Trap zone <see cref="PileType"/> is only wired during combat; <see cref="CardPile.Get"/> throws off-map / in merchant / deck screens.
+    /// </summary>
+    private static CardPile? GetSpellTrapZoneInCombat(Player? player)
+    {
+        if (player == null || CombatManager.Instance?.IsInProgress != true)
+            return null;
+        return SpellTrapZonePile.CustomType.GetPile(player);
+    }
+
     public static bool IsActive(Player? player)
     {
-        if (player == null)
-            return false;
-
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = GetSpellTrapZoneInCombat(player);
         if (zone == null)
             return false;
 
@@ -32,10 +40,7 @@ public static class YgoNarrowPassField
 
     public static int GetActiveCount(Player? player)
     {
-        if (player == null)
-            return 0;
-
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = GetSpellTrapZoneInCombat(player);
         if (zone == null)
             return 0;
 
@@ -80,10 +85,7 @@ public static class YgoNarrowPassField
 
     public static Narrow_Pass? GetFirstActive(Player? player)
     {
-        if (player == null)
-            return null;
-
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = GetSpellTrapZoneInCombat(player);
         if (zone == null)
             return null;
 

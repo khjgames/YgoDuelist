@@ -9,7 +9,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMerchant;
 
 /// <summary>
-/// Replaces vanilla character/colorless shop cards with 16 YGO-themed singleton <see cref="MerchantCardEntry"/> rows.
+/// Builds YGO shop rows in a <see cref="YgoMerchantInventorySidecar"/> only. Does not modify <see cref="MerchantInventory.CharacterCardEntries"/> or colorless entries.
 /// </summary>
 [HarmonyPatch(typeof(MerchantInventory), nameof(MerchantInventory.CreateForNormalMerchant))]
 public static class YgoMerchantInventoryPostfixPatch
@@ -24,11 +24,6 @@ public static class YgoMerchantInventoryPostfixPatch
         if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
             return;
 
-        var charList = Traverse.Create(__result).Field<List<MerchantCardEntry>>("_characterCardEntries").Value;
-        var colorList = Traverse.Create(__result).Field<List<MerchantCardEntry>>("_colorlessCardEntries").Value;
-        charList.Clear();
-        colorList.Clear();
-
         var offer = YgoMerchantOfferGenerator.Generate(player, player.PlayerRng.Shops);
         if (offer.Slots.Count == 0)
             return;
@@ -39,6 +34,7 @@ public static class YgoMerchantInventoryPostfixPatch
             UpdateEntriesMethod);
 
         int saleIdx = player.PlayerRng.Shops.NextInt(offer.Slots.Count + 3);
+        var list = new List<MerchantCardEntry>(offer.Slots.Count);
 
         for (int i = 0; i < offer.Slots.Count; i++)
         {
@@ -48,7 +44,15 @@ public static class YgoMerchantInventoryPostfixPatch
             if (saleIdx == i)
                 entry.SetOnSale();
             entry.PurchaseCompleted += onUpdate;
-            charList.Add(entry);
+            list.Add(entry);
         }
+
+        YgoMerchantInventorySidecarTable.Attach(
+            __result,
+            new YgoMerchantInventorySidecar
+            {
+                YgoCardEntries = list,
+                PurchaseUpdateHandler = onUpdate
+            });
     }
 }
