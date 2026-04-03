@@ -12,8 +12,6 @@ public sealed class YgoCardLibraryLevelFilterState
 {
     public NCardViewSortButton? SortButton { get; set; }
 
-    public CardLibraryFilterSortingRuleCategoryFilterToggleGUI? AnyToggle { get; set; }
-
     /// <summary>Index 0 = level 1 … index 11 = level 12.</summary>
     public CardLibraryFilterSortingRuleCategoryFilterToggleGUI?[] LevelToggles { get; } = new CardLibraryFilterSortingRuleCategoryFilterToggleGUI?[12];
 
@@ -25,9 +23,6 @@ public sealed class YgoCardLibraryLevelFilterState
             return true;
 
         var parts = new List<Func<int, bool>>();
-
-        if (AnyToggle?.IsTicked == true)
-            parts.Add(_ => true);
 
         for (int i = 0; i < 12; i++)
         {
@@ -64,8 +59,6 @@ public sealed class YgoCardLibraryLevelFilterState
 
     public void ResetToDefaults()
     {
-        if (AnyToggle != null)
-            AnyToggle.IsTicked = true;
         foreach (CardLibraryFilterSortingRuleCategoryFilterToggleGUI? t in LevelToggles)
         {
             if (t != null)

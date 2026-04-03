@@ -13,8 +13,6 @@ public sealed class YgoCardLibraryAttributeFilterState
 {
     public NCardViewSortButton? SortButton { get; set; }
 
-    public CardLibraryFilterSortingRuleCategoryFilterToggleGUI? AnyToggle { get; set; }
-
     public List<(DuelMonsterAttribute Attribute, CardLibraryFilterSortingRuleCategoryFilterToggleGUI Gui)> AttributeToggles { get; } = new();
 
     /// <summary>OR across checked rows. Cards without a duel attribute context (spells, traps, vanilla, etc.) are not affected.</summary>
@@ -25,9 +23,6 @@ public sealed class YgoCardLibraryAttributeFilterState
             return true;
 
         var parts = new List<Func<DuelMonsterAttribute, bool>>();
-
-        if (AnyToggle?.IsTicked == true)
-            parts.Add(_ => true);
 
         foreach ((DuelMonsterAttribute a, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in AttributeToggles)
         {
@@ -62,8 +57,6 @@ public sealed class YgoCardLibraryAttributeFilterState
 
     public void ResetToDefaults()
     {
-        if (AnyToggle != null)
-            AnyToggle.IsTicked = true;
         foreach ((_, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in AttributeToggles)
             gui.IsTicked = false;
     }

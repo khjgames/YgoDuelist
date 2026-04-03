@@ -7,9 +7,6 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// <summary>Loads YGO frame PNGs from <c>YgoDuelist/images/card_frames/</c> and scales them to 5% for card-library tickbox icons.</summary>
 internal static class YgoCardLibraryYgoCardTypeFilterIcons
 {
-    internal static readonly Lazy<Texture2D> Any =
-        new(() => LoadScaledIcon("card_frames/ygo_any.png"));
-
     internal static readonly Lazy<Texture2D> NormalMonster =
         new(() => LoadScaledIcon("card_frames/ygo_monster.png"));
 

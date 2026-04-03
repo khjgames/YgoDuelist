@@ -42,6 +42,17 @@ internal static class YgoCardLibraryNCardLibraryInvoker
 [HarmonyPatch(typeof(NCardLibrary), nameof(NCardLibrary._Ready))]
 public static class YgoCardLibraryScrollAndPackTagsReadyPatch
 {
+    /// <summary>Compendium attribute row order (YGO strip: DIVINE first, then the six core attributes).</summary>
+    static readonly DuelMonsterAttribute[] DuelMonsterAttributeFilterSidebarOrder =
+    [
+        DuelMonsterAttribute.Divine,
+        DuelMonsterAttribute.Fire,
+        DuelMonsterAttribute.Earth,
+        DuelMonsterAttribute.Dark,
+        DuelMonsterAttribute.Light,
+        DuelMonsterAttribute.Wind,
+        DuelMonsterAttribute.Water,
+    ];
 
     static void Postfix(NCardLibrary __instance)
     {
@@ -137,16 +148,7 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
 
         void Dirty() => YgoCardLibraryNCardLibraryInvoker.RequestUpdateFilter(library);
 
-        var grid = new GridContainer
-        {
-            Name = "YgoRaceRarityGrid",
-            Columns = 4
-        };
-        grid.AddThemeConstantOverride("h_separation", 2);
-        grid.AddThemeConstantOverride("v_separation", 2);
-        cat.ToggleColumn.AddChild(grid);
-
-        CardLibraryFilterSortingRuleCategoryFilterToggleGUI AddRarityToggle(string label, LocString hoverLoc)
+        CardLibraryFilterSortingRuleCategoryFilterToggleGUI AddToggle(string label, LocString hoverLoc)
         {
             var gui = CardLibraryFilterSortingRuleCategoryFilterToggleGUI.Create(
                 CardLibraryFilterToggleStyle.Rarity,
@@ -154,15 +156,15 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
                 null,
                 hoverLoc);
             gui.ConnectChanged(Dirty);
-            grid.AddChild(gui.Root);
+            cat.ToggleColumn.AddChild(gui.Root);
             return gui;
         }
 
-        state.AnyToggle = AddRarityToggle("Any", new LocString("static_hover_tips", "RACE_FILTER_ANY"));
-        foreach (DuelMonsterRace race in Enum.GetValues<DuelMonsterRace>())
+        foreach (DuelMonsterRace race in YgoCardLibraryRaceSidebarLabels.SidebarOrder)
         {
-            string name = race.ToString();
-            var gui = AddRarityToggle(name, new LocString("static_hover_tips", $"RACE_FILTER_{name}"));
+            string key = race.ToString();
+            string label = YgoCardLibraryRaceSidebarLabels.TickboxLabel(race);
+            var gui = AddToggle(label, new LocString("static_hover_tips", $"RACE_FILTER_{key}"));
             state.RaceToggles.Add((race, gui));
         }
     }
@@ -180,16 +182,7 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
 
         void Dirty() => YgoCardLibraryNCardLibraryInvoker.RequestUpdateFilter(library);
 
-        var grid = new GridContainer
-        {
-            Name = "YgoAttributeRarityGrid",
-            Columns = 4
-        };
-        grid.AddThemeConstantOverride("h_separation", 2);
-        grid.AddThemeConstantOverride("v_separation", 2);
-        cat.ToggleColumn.AddChild(grid);
-
-        CardLibraryFilterSortingRuleCategoryFilterToggleGUI AddRarityToggle(string label, LocString hoverLoc)
+        CardLibraryFilterSortingRuleCategoryFilterToggleGUI AddToggle(string label, LocString hoverLoc)
         {
             var gui = CardLibraryFilterSortingRuleCategoryFilterToggleGUI.Create(
                 CardLibraryFilterToggleStyle.Rarity,
@@ -197,15 +190,14 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
                 null,
                 hoverLoc);
             gui.ConnectChanged(Dirty);
-            grid.AddChild(gui.Root);
+            cat.ToggleColumn.AddChild(gui.Root);
             return gui;
         }
 
-        state.AnyToggle = AddRarityToggle("Any", new LocString("static_hover_tips", "ATTR_FILTER_ANY"));
-        foreach (DuelMonsterAttribute attr in Enum.GetValues<DuelMonsterAttribute>())
+        foreach (DuelMonsterAttribute attr in DuelMonsterAttributeFilterSidebarOrder)
         {
-            string name = attr.ToString();
-            var gui = AddRarityToggle(name, new LocString("static_hover_tips", $"ATTR_FILTER_{name}"));
+            string key = attr.ToString();
+            var gui = AddToggle(key, new LocString("static_hover_tips", $"ATTR_FILTER_{key}"));
             state.AttributeToggles.Add((attr, gui));
         }
     }
@@ -296,7 +288,6 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
             return gui;
         }
 
-        state.AnyToggle = AddCostToggle("Any", new LocString("static_hover_tips", "LEVEL_FILTER_ANY"));
         for (int lv = 1; lv <= 12; lv++)
         {
             state.LevelToggles[lv - 1] = AddCostToggle(
@@ -339,9 +330,6 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
             return gui;
         }
 
-        state.AnyToggle = AddTypeToggle(
-            YgoCardLibraryYgoCardTypeFilterIcons.Any.Value,
-            new LocString("static_hover_tips", "YGO_TYPE_FILTER_ANY"));
         state.NormalMonsterToggle = AddTypeToggle(
             YgoCardLibraryYgoCardTypeFilterIcons.NormalMonster.Value,
             new LocString("static_hover_tips", "YGO_TYPE_FILTER_NORMAL_MONSTER"));
@@ -387,7 +375,6 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
             return gui;
         }
 
-        state.AnyToggle = AddToggle("Any", new LocString("static_hover_tips", "PACK_TAG_FILTER_ANY"));
         state.NoneToggle = AddToggle("None", new LocString("static_hover_tips", "PACK_TAG_FILTER_NONE"));
 
         foreach (YgoCardPackTags tag in Enum.GetValues<YgoCardPackTags>())

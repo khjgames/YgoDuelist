@@ -11,8 +11,6 @@ public sealed class YgoCardLibraryPackTagFilterState
 {
     public NCardViewSortButton? SortButton { get; set; }
 
-    public CardLibraryFilterSortingRuleCategoryFilterToggleGUI? AnyToggle { get; set; }
-
     public CardLibraryFilterSortingRuleCategoryFilterToggleGUI? NoneToggle { get; set; }
 
     public List<(YgoCardPackTags Flag, CardLibraryFilterSortingRuleCategoryFilterToggleGUI Gui)> FlagToggles { get; } = new();
@@ -21,9 +19,6 @@ public sealed class YgoCardLibraryPackTagFilterState
     {
         YgoCardPackTags tags = card is YgoDuelistCard y ? y.PackTags : YgoCardPackTags.None;
         var parts = new List<Func<bool>>();
-
-        if (AnyToggle?.IsTicked == true)
-            parts.Add(() => tags != YgoCardPackTags.None);
 
         if (NoneToggle?.IsTicked == true)
             parts.Add(() => tags == YgoCardPackTags.None);
@@ -51,10 +46,8 @@ public sealed class YgoCardLibraryPackTagFilterState
 
     public void ResetToDefaults()
     {
-        if (AnyToggle != null)
-            AnyToggle.IsTicked = true;
         if (NoneToggle != null)
-            NoneToggle.IsTicked = true;
+            NoneToggle.IsTicked = false;
         foreach ((_, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in FlagToggles)
             gui.IsTicked = false;
     }

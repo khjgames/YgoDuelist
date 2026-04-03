@@ -13,8 +13,6 @@ public sealed class YgoCardLibraryRaceFilterState
 {
     public NCardViewSortButton? SortButton { get; set; }
 
-    public CardLibraryFilterSortingRuleCategoryFilterToggleGUI? AnyToggle { get; set; }
-
     public List<(DuelMonsterRace Race, CardLibraryFilterSortingRuleCategoryFilterToggleGUI Gui)> RaceToggles { get; } = new();
 
     /// <summary>OR across checked rows. Non–YGO cards and command cards without a source monster are not affected.</summary>
@@ -25,9 +23,6 @@ public sealed class YgoCardLibraryRaceFilterState
             return true;
 
         var parts = new List<Func<DuelMonsterRace, bool>>();
-
-        if (AnyToggle?.IsTicked == true)
-            parts.Add(_ => true);
 
         foreach ((DuelMonsterRace r, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in RaceToggles)
         {
@@ -62,8 +57,6 @@ public sealed class YgoCardLibraryRaceFilterState
 
     public void ResetToDefaults()
     {
-        if (AnyToggle != null)
-            AnyToggle.IsTicked = true;
         foreach ((_, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in RaceToggles)
             gui.IsTicked = false;
     }

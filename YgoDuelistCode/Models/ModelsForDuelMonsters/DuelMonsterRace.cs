@@ -2,6 +2,7 @@ namespace YgoDuelist.YgoDuelistCode.Models;
 
 /// <summary>
 /// Duel monster type / race (YGO). Icons: <c>YgoDuelist/images/card_frames/Race/</c>.
+/// Numeric values are stable (keyword / save mapping). The compendium race filters list every value with readable labels in <see cref="YgoDuelist.YgoDuelistCode.Nodes.CardLibrary.YgoCardLibraryRaceSidebarLabels"/>.
 /// </summary>
 public enum DuelMonsterRace
 {
