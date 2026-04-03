@@ -11,6 +11,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Nodes;
 using YgoDuelist.YgoDuelistCode.Patches;
+using YgoDuelist.YgoDuelistCode.Patches.PatchesForMerchant;
 using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -33,6 +34,8 @@ public partial class MainFile : Node
         // PatchAll() with no assembly uses GetCallingAssembly(); the mod loader may not be YgoDuelist.dll,
         // so no patches from this mod would register. Always scan our assembly explicitly.
         harmony.PatchAll(typeof(MainFile).Assembly);
+
+        YgoMerchantShopBundlePurchasePatch.ApplyMerchantCardEntryPatches(harmony);
 
         MethodInfo? ancientSetInitial = AccessTools.DeclaredMethod(typeof(MegaCrit.Sts2.Core.Models.AncientEventModel), "SetInitialEventState");
         if (ancientSetInitial != null)

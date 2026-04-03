@@ -1,3 +1,4 @@
+using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
@@ -38,18 +39,22 @@ public static class YgoMerchantSlotYgoGridOnFocusPostfix
 [HarmonyPatch(typeof(NMerchantSlot), "OnUnfocus")]
 public static class YgoMerchantSlotYgoGridOnUnfocusPostfix
 {
+    private static readonly FieldInfo? HoverTweenField = AccessTools.DeclaredField(typeof(NMerchantSlot), "_hoverTween");
+
     [HarmonyPostfix]
     public static void Postfix(NMerchantSlot __instance)
     {
         if (!YgoAddonBuyGridMerchantSlotIdentifiers.IsUnderYgoAddonBuyGrid(__instance))
             return;
 
-        var traverse = Traverse.Create(__instance);
-        Tween? existing = traverse.Field<Tween?>("_hoverTween").Value;
-        existing?.Kill();
+        if (HoverTweenField != null)
+        {
+            Tween? existing = HoverTweenField.GetValue(__instance) as Tween;
+            existing?.Kill();
+        }
 
         Tween tween = __instance.CreateTween();
-        traverse.Field("_hoverTween").SetValue(tween);
+        HoverTweenField?.SetValue(__instance, tween);
 
         Vector2 idle = Vector2.One * YgoMerchantShopLayoutTuning.MerchantSlotIdleScale;
         tween.TweenProperty(__instance, "scale", idle, 0.5f)

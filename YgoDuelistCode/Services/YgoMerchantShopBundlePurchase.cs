@@ -65,27 +65,25 @@ public static class YgoMerchantShopBundlePurchase
         Type[] types = y.BundledCards.ToArray();
         bool extraSelf = y.BundleGrantsExtraCopyOfSelf;
         YgoMerchantShopBundleDiag.Log(
-            $"ScheduleGrantFromEntry: queued GrantNow (next frame) offer={offerId} mainCanon={mainId.Entry} bundleTypes={string.Join(",", types.Select(t => t.Name))} extraSelf={extraSelf}");
+            $"ScheduleGrantFromEntry: deferred GrantNow offer={offerId} mainCanon={mainId.Entry} bundleTypes={string.Join(",", types.Select(t => t.Name))} extraSelf={extraSelf}");
 
-        SceneTree? tree = NGame.Instance?.GetTree();
-        if (tree == null)
+        NGame? root = NGame.Instance;
+        if (root == null || !GodotObject.IsInstanceValid(root))
         {
-            MainFile.Logger.Error($"[YgoDuelist][ShopBundle] ScheduleGrantFromEntry: no SceneTree offer={offerId}");
+            MainFile.Logger.Error($"[YgoDuelist][ShopBundle] ScheduleGrantFromEntry: NGame.Instance missing offer={offerId}");
             return;
         }
 
-        SceneTreeTimer timer = tree.CreateTimer(0f);
-        timer.Timeout += () =>
+        Callable.From(() =>
         {
             if (!GodotObject.IsInstanceValid(NGame.Instance))
                 return;
             GrantBundledCardsBlocking(player, types, mainId, extraSelf, offerId);
-        };
+        }).CallDeferred();
     }
 
     /// <summary>
-    /// Runs on the main thread after a zero-delay <see cref="SceneTreeTimer"/> so <see cref="CardPileCmd.Add"/> executes
-    /// in the same context as vanilla shop purchases (async continuations were not reliably adding to the deck).
+    /// Runs deferred on the main thread so <see cref="CardPileCmd.Add"/> is not invoked from inside merchant purchase continuations.
     /// </summary>
     private static void GrantBundledCardsBlocking(
         Player player,
@@ -122,7 +120,12 @@ public static class YgoMerchantShopBundlePurchase
                 CardModel instance = player.RunState.CreateCard(template, player);
                 CardPileAddResult result = CardPileCmd.Add(instance, PileType.Deck).GetAwaiter().GetResult();
                 YgoMerchantShopBundleDiag.Log($"GrantNow: CardPileCmd.Add template={template.Id.Entry} success={result.success}");
-                if (result.success)
+                if (!result.success)
+                {
+                    MainFile.Logger.Warn(
+                        $"[YgoDuelist][ShopBundle] Bundle card not added to deck (vanilla Hook.ShouldAddToDeck returned false or pile rules failed). template={template.Id.Entry} offer={offerIdForLog}");
+                }
+                else
                     RunManager.Instance?.RewardSynchronizer?.SyncLocalObtainedCard(instance);
             }
 

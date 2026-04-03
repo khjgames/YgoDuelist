@@ -420,6 +420,8 @@ public partial class YgoMerchantSlotsAddonLayer : Control
                 if (cn is NCard nc)
                     nc.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
             }
+
+            YgoMerchantShopBundleVisualPatch.ResyncYgoBuyGridSlotScale(slot);
         }
     }
 
@@ -433,11 +435,14 @@ public partial class YgoMerchantSlotsAddonLayer : Control
             return;
 
         float hover = YgoMerchantShopLayoutTuning.MerchantSlotHoverScale;
-        float idle = YgoMerchantShopLayoutTuning.MerchantSlotIdleScale;
         foreach (Node ch in _ygoGrid.GetChildren())
         {
-            if (ch is NMerchantCard slot)
-                slot.Scale = Vector2.One * hover;
+            if (ch is not NMerchantCard slot)
+                continue;
+            var tr = Traverse.Create(slot);
+            tr.Field<Tween?>("_hoverTween").Value?.Kill();
+            tr.Field("_hoverTween").SetValue(null);
+            slot.Scale = Vector2.One * hover;
         }
 
         await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
@@ -448,7 +453,7 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         foreach (Node ch in _ygoGrid.GetChildren())
         {
             if (ch is NMerchantCard slot)
-                slot.Scale = Vector2.One * idle;
+                YgoMerchantShopBundleVisualPatch.ResyncYgoBuyGridSlotScale(slot);
         }
 
         RefreshYgoBuyNCardVisuals();
