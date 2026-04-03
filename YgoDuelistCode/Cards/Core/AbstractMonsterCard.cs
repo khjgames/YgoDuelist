@@ -94,7 +94,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 int baseCost = Type == CardType.Attack
                     ? bm.DuelMonsterAttackPlayEnergy
                     : bm.DuelMonsterDefensePlayEnergy;
-                int discount = bm.GetDuelMonsterPlayEnergyDiscount();
+                int discount = Type == CardType.Attack
+                    ? bm.GetDuelMonsterAttackPlayEnergyDiscount()
+                    : bm.GetDuelMonsterDefensePlayEnergyDiscount();
                 int discounted = discount <= 0 ? baseCost : baseCost - discount;
                 if (discounted < 0)
                     discounted = 0;

@@ -47,8 +47,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     {
     }
 
-    /// <inheritdoc cref="AbstractMonsterCard.HasRecklessKeyword" />
-    protected override bool HasRecklessKeyword => GetEffectiveDuelMonsterLevel() >= 3;
+    public override int GetIntrinsicRecklessCombatSelfDamage() => GetEffectiveDuelMonsterLevel() >= 3 ? 1 : 0;
 
     protected override IEnumerable<DynamicVar> CanonicalVars
     {
@@ -137,7 +136,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         int resolutionCount = YgoNarrowPassField.GetAttackOrDefendResolutionCount(Owner);
 
-        if (HasRecklessKeyword
+        int recklessSelf = GetTotalRecklessCombatSelfDamage();
+        if (recklessSelf > 0
             && Owner != null
             && Owner.Creature != null
             && Owner.PlayerCombatState != null)
@@ -148,7 +148,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 await CreatureCmd.Damage(
                     choiceContext,
                     selfPet,
-                    1m,
+                    recklessSelf,
                     ValueProp.Unblockable | ValueProp.Unpowered,
                     dealer: null,
                     cardSource: this);

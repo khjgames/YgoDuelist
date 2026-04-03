@@ -62,7 +62,12 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await OnTrapPlay(choiceContext, cardPlay);
         await SendThisTrapToGraveyard(choiceContext);
+        await OnAfterNormalTrapSentToGraveyardAsync(choiceContext, cardPlay);
     }
+
+    /// <summary>After this normal trap is moved to the graveyard by <see cref="OnPlay"/> (e.g. attach equip-link while the card is in the GY).</summary>
+    protected virtual Task OnAfterNormalTrapSentToGraveyardAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     protected override bool IsPlayable
     {

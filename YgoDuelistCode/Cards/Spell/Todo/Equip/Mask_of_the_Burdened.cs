@@ -5,13 +5,14 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
-public sealed class Mask_of_Brutality : BaseEquipSpellCard
+public sealed class Mask_of_the_Burdened : BaseEquipSpellCard
 {
-    public Mask_of_Brutality()
+    public Mask_of_the_Burdened()
         : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.Self)
     {
     }
@@ -30,7 +31,7 @@ public sealed class Mask_of_Brutality : BaseEquipSpellCard
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;
 
-    public override int GetEquipAttackPlayEnergyDiscount(BaseMonsterCard equipped) => 1;
+    public override int GetEquipDefensePlayEnergyDiscount(BaseMonsterCard equipped) => 1;
 
     public override int GetEquipRecklessCombatSelfDamage(BaseMonsterCard equipped) => 1;
 

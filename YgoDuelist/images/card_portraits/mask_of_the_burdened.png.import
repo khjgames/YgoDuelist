@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b1mbofembbc2m"
-path="res://.godot/imported/mask_of_the_accursed.png-3789ccf0ebbc4213158c40afdf08ce0f.ctex"
+path="res://.godot/imported/mask_of_the_burdened.png-aaa92ee77293a210c7d86e441a8cd95d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://YgoDuelist/images/card_portraits/mask_of_the_accursed.png"
-dest_files=["res://.godot/imported/mask_of_the_accursed.png-3789ccf0ebbc4213158c40afdf08ce0f.ctex"]
+source_file="res://YgoDuelist/images/card_portraits/mask_of_the_burdened.png"
+dest_files=["res://.godot/imported/mask_of_the_burdened.png-aaa92ee77293a210c7d86e441a8cd95d.ctex"]
 
 [params]
 

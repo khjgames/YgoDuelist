@@ -36,6 +36,12 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
 
         foreach ((CardModel card, PileType? from) in __state)
         {
+            if (from == GraveyardPile.CustomType && newPile.Type != GraveyardPile.CustomType)
+            {
+                if (card is IYgoSpellTrapEquipLink)
+                    YgoSpellTrapEquipLinkRegistry.Detach(card);
+            }
+
             if (from != SpellTrapZonePile.CustomType)
                 continue;
 
@@ -54,12 +60,15 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
                 continue;
             }
 
-            if (card is IYgoSpellTrapEquipLink)
+            if (card is IYgoSpellTrapEquipLink linkTrap)
             {
                 if (toGraveyard)
                 {
+                    if (!linkTrap.DetachSpellTrapEquipLinkOnSpellTrapZoneToGraveyard)
+                        continue;
+
                     BaseMonsterCard? linked = YgoSpellTrapEquipLinkRegistry.DetachAndConsumeLinkedMonster(card);
-                    if (linked != null && card.Owner != null)
+                    if (linked != null && card.Owner != null && linkTrap.DestroyLinkedDuelMonsterOnSpellTrapZoneToGraveyard)
                         TaskHelper.RunSafely(YgoSpellTrapEquipLinkCombat.DestroyLinkedMonsterIfOnFieldAsync(card.Owner, linked));
                 }
                 else if (newPile.Type != SpellTrapZonePile.CustomType)

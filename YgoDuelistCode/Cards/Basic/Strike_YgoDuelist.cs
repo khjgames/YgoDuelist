@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Basic;
@@ -14,11 +15,11 @@ public sealed class Strike_YgoDuelist : YgoDuelistCard
 {
     public override (float H, float S, float V)? CustomFrameTintHsv => (0f, 0f, 0.6f);
 
-    public override string CustomPortraitPath => SilentStarterPortraitPaths.PackedPng(SilentStarterPortraitPaths.StrikeEntry);
+    public override string CustomPortraitPath => VanillaBorrowedPortraitPaths.PackedPng<StrikeSilent>();
 
-    public override string PortraitPath => SilentStarterPortraitPaths.AtlasTres(SilentStarterPortraitPaths.StrikeEntry);
+    public override string PortraitPath => ModelDb.Card<StrikeSilent>().PortraitPath;
 
-    public override string BetaPortraitPath => SilentStarterPortraitPaths.BetaAtlasTres(SilentStarterPortraitPaths.StrikeEntry);
+    public override string BetaPortraitPath => ModelDb.Card<StrikeSilent>().BetaPortraitPath;
 
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
 

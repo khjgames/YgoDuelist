@@ -32,6 +32,15 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
 
     public abstract StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped);
 
+    /// <summary>Extra discount applied only when the equipped monster pays attack-stance / Command Attack energy.</summary>
+    public virtual int GetEquipAttackPlayEnergyDiscount(BaseMonsterCard equipped) => 0;
+
+    /// <summary>Extra discount applied only when the equipped monster pays defense-stance / Command Defend energy.</summary>
+    public virtual int GetEquipDefensePlayEnergyDiscount(BaseMonsterCard equipped) => 0;
+
+    /// <summary>Extra self-damage to the duel pet before each attack or block combat action (stacks with level-based reckless).</summary>
+    public virtual int GetEquipRecklessCombatSelfDamage(BaseMonsterCard equipped) => 0;
+
     /// <summary>Multiplies summed ATK/DEF after flat <see cref="GetEquipStatEffect"/> from this equip (and other equips' flat bonuses) are applied.</summary>
     public virtual StatEffectTotalMultiplier GetEquipStatMultiplier(BaseMonsterCard equipped) => StatEffectTotalMultiplier.Identity;
 

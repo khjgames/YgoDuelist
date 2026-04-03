@@ -13,6 +13,12 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoSpellTrapZoneAfterPlayUi
 {
+    /// <summary>
+    /// Delay after synchronous player turn-start state (trap <c>SetThisTurn</c> clear, zone refills, etc.)
+    /// before rebuilding the spell/trap second hand so playability reflects fresh energy and card flags.
+    /// </summary>
+    private const double TurnStartSpellTrapSecondHandRefreshDelaySec = 0.05;
+
     public static void ScheduleCleanup(Player? player, CardModel? card)
     {
         if (player == null || card == null)
@@ -78,6 +84,30 @@ public static class YgoSpellTrapZoneAfterPlayUi
         if (player == null || YgoSecondHandSourceBridge.GetSource(player) != YgoSecondHandSource.SpellTrapZone)
             return;
         ScheduleSpellTrapSecondHandRepublish(player);
+    }
+
+    /// <summary>
+    /// After player turn-start bookkeeping (trap <c>SetThisTurn</c>, refills, etc.), if the spell/trap zone second hand
+    /// is visible, resync from the zone pile and republish so costs/playability match the post-turn state.
+    /// Runs on a short timer so it executes strictly after synchronous turn-start mutations.
+    /// </summary>
+    public static void ScheduleSpellTrapSecondHandRefreshAfterTurnStartIfZoneViewActive(Player? player)
+    {
+        if (player == null)
+            return;
+
+        SceneTree? tree = NPlayerHand.Instance?.GetTree();
+        if (tree == null)
+            return;
+
+        SceneTreeTimer timer = tree.CreateTimer(TurnStartSpellTrapSecondHandRefreshDelaySec);
+        timer.Timeout += () =>
+        {
+            if (YgoSecondHandSourceBridge.GetSource(player) != YgoSecondHandSource.SpellTrapZone)
+                return;
+            YgoSpellTrapZoneBridge.ForceRefreshSpellTrapSecondHandFromZone(player);
+            ScheduleSpellTrapSecondHandRepublish(player);
+        };
     }
 
     /// <summary>

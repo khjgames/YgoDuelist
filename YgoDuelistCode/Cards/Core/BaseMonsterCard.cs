@@ -91,6 +91,23 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Subtracts from attack/defense play energy (e.g. The Legendary Fisherman while Umi is up). Clamped to 0.</summary>
     public virtual int GetDuelMonsterPlayEnergyDiscount() => 0;
 
+    /// <summary>Attack-stance discount: <see cref="GetDuelMonsterPlayEnergyDiscount"/> plus face-up equip attack discounts.</summary>
+    public virtual int GetDuelMonsterAttackPlayEnergyDiscount() =>
+        GetDuelMonsterPlayEnergyDiscount() + SumFaceUpEquipAttackDiscount() + SumLinkedTrapAttackPlayEnergyDiscount();
+
+    /// <summary>Defense-stance discount: <see cref="GetDuelMonsterPlayEnergyDiscount"/> plus face-up equip defense discounts.</summary>
+    public virtual int GetDuelMonsterDefensePlayEnergyDiscount() =>
+        GetDuelMonsterPlayEnergyDiscount() + SumFaceUpEquipDefenseDiscount() + SumLinkedTrapDefensePlayEnergyDiscount();
+
+    /// <summary>Intrinsic reckless self-hit before each attack or block (normal line: level 3+ = 1).</summary>
+    public virtual int GetIntrinsicRecklessCombatSelfDamage() => 0;
+
+    protected override bool HasRecklessKeyword => GetTotalRecklessCombatSelfDamage() > 0;
+
+    /// <summary>Self-damage to the duel pet before attack/block from intrinsic reckless and face-up equips.</summary>
+    public int GetTotalRecklessCombatSelfDamage() =>
+        GetIntrinsicRecklessCombatSelfDamage() + SumFaceUpEquipRecklessSelfDamage();
+
     /// <summary>Level (star count) for the duel monster this card summons.</summary>
     public override int DuelMonsterLevel => _duelMonsterLevel;
 
@@ -337,6 +354,18 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
                 }
             }
 
+            foreach (CardModel trap in YgoSpellTrapEquipLinkRegistry.GetLinkedTrapsForMonster(this))
+            {
+                if (trap is not IYgoSpellTrapEquipLinkStatEffect fx || !fx.IsSpellTrapEquipLinkStatEffectActive)
+                    continue;
+                StatEffectTotalMultiplier tm = fx.GetSpellTrapEquipLinkStatMultiplier();
+                if (tm.Atk != 1m || tm.Def != 1m)
+                {
+                    atk = (int)(atk * tm.Atk);
+                    def = (int)(def * tm.Def);
+                }
+            }
+
             foreach (BaseContinuousSpellCard continuous in YgoFieldSpellStatAggregator.GetActiveFaceUpContinuousSpells(Owner))
             {
                 StatEffectTotal ce = continuous.GetContinuousStatEffect(this);
@@ -480,5 +509,75 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         }
 
         return null;
+    }
+
+    private int SumFaceUpEquipAttackDiscount()
+    {
+        if (IsCanonical || Owner == null)
+            return 0;
+        int sum = 0;
+        foreach (BaseEquipSpellCard equip in YgoEquipSpellRegistry.GetEquipsForMonster(this))
+        {
+            if (equip.Pile?.Type != SpellTrapZonePile.CustomType || equip.FaceDown)
+                continue;
+            sum += equip.GetEquipAttackPlayEnergyDiscount(this);
+        }
+        return sum;
+    }
+
+    private int SumFaceUpEquipDefenseDiscount()
+    {
+        if (IsCanonical || Owner == null)
+            return 0;
+        int sum = 0;
+        foreach (BaseEquipSpellCard equip in YgoEquipSpellRegistry.GetEquipsForMonster(this))
+        {
+            if (equip.Pile?.Type != SpellTrapZonePile.CustomType || equip.FaceDown)
+                continue;
+            sum += equip.GetEquipDefensePlayEnergyDiscount(this);
+        }
+        return sum;
+    }
+
+    private int SumFaceUpEquipRecklessSelfDamage()
+    {
+        if (IsCanonical || Owner == null)
+            return 0;
+        int sum = 0;
+        foreach (BaseEquipSpellCard equip in YgoEquipSpellRegistry.GetEquipsForMonster(this))
+        {
+            if (equip.Pile?.Type != SpellTrapZonePile.CustomType || equip.FaceDown)
+                continue;
+            sum += equip.GetEquipRecklessCombatSelfDamage(this);
+        }
+        return sum;
+    }
+
+    private int SumLinkedTrapAttackPlayEnergyDiscount()
+    {
+        if (IsCanonical || Owner == null)
+            return 0;
+        int sum = 0;
+        foreach (CardModel trap in YgoSpellTrapEquipLinkRegistry.GetLinkedTrapsForMonster(this))
+        {
+            if (trap is not IYgoSpellTrapEquipLinkStatEffect fx || !fx.IsSpellTrapEquipLinkStatEffectActive)
+                continue;
+            sum += fx.GetSpellTrapEquipLinkAttackPlayEnergyDiscount();
+        }
+        return sum;
+    }
+
+    private int SumLinkedTrapDefensePlayEnergyDiscount()
+    {
+        if (IsCanonical || Owner == null)
+            return 0;
+        int sum = 0;
+        foreach (CardModel trap in YgoSpellTrapEquipLinkRegistry.GetLinkedTrapsForMonster(this))
+        {
+            if (trap is not IYgoSpellTrapEquipLinkStatEffect fx || !fx.IsSpellTrapEquipLinkStatEffectActive)
+                continue;
+            sum += fx.GetSpellTrapEquipLinkDefensePlayEnergyDiscount();
+        }
+        return sum;
     }
 }

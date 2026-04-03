@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Basic;
@@ -13,11 +14,11 @@ public sealed class Defend_YgoDuelist : YgoDuelistCard
 {
     public override (float H, float S, float V)? CustomFrameTintHsv => (0f, 0f, 0.6f);
 
-    public override string CustomPortraitPath => SilentStarterPortraitPaths.PackedPng(SilentStarterPortraitPaths.DefendEntry);
+    public override string CustomPortraitPath => VanillaBorrowedPortraitPaths.PackedPng<DefendIronclad>();
 
-    public override string PortraitPath => SilentStarterPortraitPaths.AtlasTres(SilentStarterPortraitPaths.DefendEntry);
+    public override string PortraitPath => ModelDb.Card<DefendIronclad>().PortraitPath;
 
-    public override string BetaPortraitPath => SilentStarterPortraitPaths.BetaAtlasTres(SilentStarterPortraitPaths.DefendEntry);
+    public override string BetaPortraitPath => ModelDb.Card<DefendIronclad>().BetaPortraitPath;
 
     public override bool GainsBlock => true;
 

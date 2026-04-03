@@ -7,6 +7,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
@@ -38,6 +40,9 @@ public sealed class Narrow_Pass : BaseContinuousTrapCard
     public override Type[] RelatedCards => new[]
     {
         typeof(Narrow_Pass),
+        typeof(Mask_of_Brutality),
+        typeof(Mask_of_the_Burdened),
+        typeof(Mask_of_Weakness),
     };
 
     public override bool UseAlternateUpgradedDescription => true;

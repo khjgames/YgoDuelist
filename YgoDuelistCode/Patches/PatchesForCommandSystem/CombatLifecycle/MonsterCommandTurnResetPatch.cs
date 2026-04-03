@@ -41,6 +41,8 @@ public static class MonsterCommandTurnResetPatch
 
         Ominous_Fortunetelling.RefillAllInSpellTrapZoneForPlayer(combatPlayer);
 
+        YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRefreshAfterTurnStartIfZoneViewActive(combatPlayer);
+
         await Task.CompletedTask;
     }
 }

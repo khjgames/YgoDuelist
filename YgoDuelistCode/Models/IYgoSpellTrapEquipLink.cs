@@ -3,11 +3,17 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 namespace YgoDuelist.YgoDuelistCode.Models;
 
 /// <summary>
-/// Continuous spell/trap in the Spell/Trap zone that binds to one field monster like an equip (UI link overlay + mutual leave-field).
+/// Spell/trap that binds to one field monster like an equip (UI link overlay + registry).
 /// </summary>
 public interface IYgoSpellTrapEquipLink
 {
     BaseMonsterCard? EquipLinkedMonster { get; }
 
     void SetEquipLinkedMonster(BaseMonsterCard? monster);
+
+    /// <summary>When this card moves from the spell/trap zone to the graveyard, remove its registry link (default: true).</summary>
+    bool DetachSpellTrapEquipLinkOnSpellTrapZoneToGraveyard => true;
+
+    /// <summary>When a link is removed due to zone→graveyard, destroy the linked duel monster if still on the field (default: true).</summary>
+    bool DestroyLinkedDuelMonsterOnSpellTrapZoneToGraveyard => true;
 }

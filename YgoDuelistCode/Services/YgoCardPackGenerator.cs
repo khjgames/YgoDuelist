@@ -13,8 +13,8 @@ using YgoDuelist.YgoDuelistCode.Cards;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Builds three YGO card packs for a reward: shared rarity column, per-pack tag masks, weighted picks, bundles, owed rare vouchers.
-/// Single-theme packs use three cards from the column and bump the first rolled common to uncommon (one fewer common).
+/// Builds three YGO card packs for a reward: shared rarity column, per-pack tag masks, weighted tag picks (fatigue + desire),
+/// bundles, owed rare vouchers. Every pack uses the same slot count; tag count only widens the card pool.
 /// </summary>
 public static class YgoCardPackGenerator
 {
@@ -61,16 +61,12 @@ public static class YgoCardPackGenerator
         for (int p = 0; p < 3; p++)
         {
             YgoCardPackTags tagMask = RollPackTagMask(rng, workingMain, workingCombined, progress);
-            int themeBits = CountPackThemeBits(tagMask);
-            int packSlots = themeBits == 1 ? Math.Min(3, slotCount) : slotCount;
-            bool oneLessCommon = themeBits == 1 && packSlots == 3;
             List<CardModel> onePack = FillOnePack(
                 player,
                 rng,
                 tagMask,
                 rolledRarities,
-                packSlots,
-                oneLessCommon,
+                slotCount,
                 progress);
             packs.Add(onePack);
             Log.Info(
@@ -113,7 +109,12 @@ public static class YgoCardPackGenerator
         YgoCardPackTags mask = YgoCardPackTags.None;
 
         if (workingMain.Count == 0)
-            return YgoCardPackTags.Dragon;
+        {
+            const string msg =
+                "[YgoDuelist][PackGen] PackThemeMainTags working list is empty; cannot roll pack themes.";
+            Log.Error(msg);
+            throw new InvalidOperationException(msg);
+        }
 
         YgoCardPackTags first = PickWeightedPackTag(rng, workingMain, progress);
         workingMain.Remove(first);
@@ -133,43 +134,18 @@ public static class YgoCardPackGenerator
         return mask;
     }
 
-    private static int CountPackThemeBits(YgoCardPackTags mask)
-    {
-        int n = 0;
-        foreach (YgoCardPackTags t in YgoPackCardCatalog.PackThemeMainTags)
-        {
-            if ((mask & t) != 0)
-                n++;
-        }
-
-        foreach (YgoCardPackTags t in YgoPackCardCatalog.PackThemeSubTags)
-        {
-            if ((mask & t) != 0)
-                n++;
-        }
-
-        return n;
-    }
-
-    /// <summary>First common in the slice becomes uncommon (single-tag 3-card packs: one fewer common).</summary>
-    private static void ApplyOneLessCommon(CardRarity[] slice)
-    {
-        for (int i = 0; i < slice.Length; i++)
-        {
-            if (slice[i] != CardRarity.Common)
-                continue;
-            slice[i] = CardRarity.Uncommon;
-            return;
-        }
-    }
-
     private static YgoCardPackTags PickWeightedPackTag(
         Rng rng,
         List<YgoCardPackTags> candidates,
         YgoPackRewardProgressState progress)
     {
         if (candidates.Count == 0)
-            return YgoCardPackTags.Dragon;
+        {
+            const string msg = "[YgoDuelist][PackGen] Weighted tag pick had zero candidates.";
+            Log.Error(msg);
+            throw new InvalidOperationException(msg);
+        }
+
         if (candidates.Count == 1)
             return candidates[0];
 
@@ -191,7 +167,6 @@ public static class YgoCardPackGenerator
         YgoCardPackTags tagMask,
         CardRarity[] rolledRarities,
         int packSlots,
-        bool oneLessCommon,
         YgoPackRewardProgressState progress)
     {
         var cards = new List<CardModel>();
@@ -204,13 +179,10 @@ public static class YgoCardPackGenerator
         for (int i = 0; i < packSlots; i++)
             slotRarities[i] = rolledRarities[i];
 
-        if (oneLessCommon)
-            ApplyOneLessCommon(slotRarities);
-
         for (int slot = 0; slot < packSlots; slot++)
         {
             CardRarity rarity = slotRarities[slot];
-            CardModel? pick = PickForSlot(
+            CardModel pick = PickForSlot(
                 player,
                 rng,
                 tagMask,
@@ -220,9 +192,6 @@ public static class YgoCardPackGenerator
                 trunkCounts,
                 relatedBonus,
                 progress);
-
-            if (pick == null)
-                continue;
 
             cards.Add(pick);
 
@@ -267,7 +236,7 @@ public static class YgoCardPackGenerator
 
         HashSet<ModelId> bundleIds = CollectBundleIds(anchor, yAnchor);
 
-        foreach (CardModel mate in EnumeratePackEligibleBundleMatesExceptAnchor(anchor, yAnchor))
+        foreach (CardModel mate in EnumerateBundleMatesExceptAnchor(anchor, yAnchor))
         {
             bool allowDupSelf = yAnchor.BundleGrantsExtraCopyOfSelf && mate.Id == anchor.Id;
             if (cards.Exists(c => c.Id == mate.Id) && !allowDupSelf)
@@ -291,31 +260,19 @@ public static class YgoCardPackGenerator
             if (bt == anchor.GetType())
                 continue;
             CardModel mate = YgoPackCardCatalog.CardFromType(bt);
-            if (!IsPackBundleMateEligible(mate))
-                continue;
             set.Add(mate.Id);
         }
 
         return set;
     }
 
-    /// <summary>
-    /// Pack bundle mates come from <see cref="YgoDuelistCard.BundledCards"/> but only if they pass the same filter as
-    /// <see cref="YgoPackCardCatalog.GetAllYgoTemplates"/>: <see cref="YgoDuelistCard"/> with non-<see cref="YgoCardPackTags.None"/> pack tags.
-    /// </summary>
-    private static bool IsPackBundleMateEligible(CardModel model) =>
-        model is YgoDuelistCard ygo && YgoPackCardCatalog.GetEffectivePackTags(ygo) != YgoCardPackTags.None;
-
-    private static IEnumerable<CardModel> EnumeratePackEligibleBundleMatesExceptAnchor(CardModel anchor, YgoDuelistCard y)
+    private static IEnumerable<CardModel> EnumerateBundleMatesExceptAnchor(CardModel anchor, YgoDuelistCard y)
     {
         foreach (Type bt in y.BundledCards)
         {
             if (bt == anchor.GetType() && !y.BundleGrantsExtraCopyOfSelf)
                 continue;
-            CardModel mate = YgoPackCardCatalog.CardFromType(bt);
-            if (!IsPackBundleMateEligible(mate))
-                continue;
-            yield return mate;
+            yield return YgoPackCardCatalog.CardFromType(bt);
         }
     }
 
@@ -369,7 +326,7 @@ public static class YgoCardPackGenerator
         }
     }
 
-    private static CardModel? PickForSlot(
+    private static CardModel PickForSlot(
         Player player,
         Rng rng,
         YgoCardPackTags tagMask,
@@ -408,11 +365,20 @@ public static class YgoCardPackGenerator
             }
         }
 
-        if (pool == null || pool.Count == 0)
-            pool = BuildPoolIgnoreTag(player, rarity, excludeBundledTagFromPool);
+        if ((pool == null || pool.Count == 0) && rarity == CardRarity.Common)
+        {
+            rarity = CardRarity.Uncommon;
+            pool = BuildPool(player, tagMask, rarity, excludeBundledTagFromPool);
+        }
 
         if (pool == null || pool.Count == 0)
-            return YgoPackCardCatalog.GetUnlockedPool(player, tagMask).FirstOrDefault();
+        {
+            string msg =
+                $"[YgoDuelist][PackGen] No cards for pack tags {tagMask} after rarity demotion (final rarity {rarity}). " +
+                "Add unlocked cards that match this theme, or fix PackTags on existing cards.";
+            Log.Error(msg);
+            throw new InvalidOperationException(msg);
+        }
 
         CardModel? pick = rng.WeightedNextItem(pool, m =>
             Math.Max(1f, CalculateWeight(m!, chosenSoFar, trunkCounts, relatedBonus)));
@@ -426,16 +392,6 @@ public static class YgoCardPackGenerator
         bool excludeBundledTagFromPool)
     {
         List<CardModel> raw = YgoPackCardCatalog.GetUnlockedPool(player, tagMask);
-        return FilterPool(raw, rarity, excludeBundledTagFromPool);
-    }
-
-    private static List<CardModel>? BuildPoolIgnoreTag(Player player, CardRarity rarity, bool excludeBundledTagFromPool)
-    {
-        HashSet<ModelId> unlocked = player.Character.CardPool
-            .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
-            .Select(c => c.Id)
-            .ToHashSet();
-        List<CardModel> raw = YgoPackCardCatalog.GetAllYgoTemplates().Where(c => unlocked.Contains(c.Id)).ToList();
         return FilterPool(raw, rarity, excludeBundledTagFromPool);
     }
 
