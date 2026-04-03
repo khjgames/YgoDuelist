@@ -18,24 +18,51 @@ public sealed class YgoCardLibraryPackTagFilterState
     public bool Matches(CardModel card)
     {
         YgoCardPackTags tags = card is YgoDuelistCard y ? y.PackTags : YgoCardPackTags.None;
-        var parts = new List<Func<bool>>();
+        var includeParts = new List<Func<bool>>();
+        var excludeParts = new List<Func<bool>>();
 
-        if (NoneToggle?.IsTicked == true)
-            parts.Add(() => tags == YgoCardPackTags.None);
-
-        foreach ((YgoCardPackTags flag, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in FlagToggles)
+        if (NoneToggle != null)
         {
-            if (gui.IsTicked)
+            switch (NoneToggle.RowState)
             {
-                YgoCardPackTags captured = flag;
-                parts.Add(() => (tags & captured) != 0);
+                case CardLibraryFilterTriState.Include:
+                    includeParts.Add(() => tags == YgoCardPackTags.None);
+                    break;
+                case CardLibraryFilterTriState.Exclude:
+                    excludeParts.Add(() => tags == YgoCardPackTags.None);
+                    break;
             }
         }
 
-        if (parts.Count == 0)
+        foreach ((YgoCardPackTags flag, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in FlagToggles)
+        {
+            switch (gui.RowState)
+            {
+                case CardLibraryFilterTriState.Include:
+                {
+                    YgoCardPackTags captured = flag;
+                    includeParts.Add(() => (tags & captured) != 0);
+                    break;
+                }
+                case CardLibraryFilterTriState.Exclude:
+                {
+                    YgoCardPackTags captured = flag;
+                    excludeParts.Add(() => (tags & captured) != 0);
+                    break;
+                }
+            }
+        }
+
+        foreach (Func<bool> p in excludeParts)
+        {
+            if (p())
+                return false;
+        }
+
+        if (includeParts.Count == 0)
             return true;
 
-        foreach (Func<bool> p in parts)
+        foreach (Func<bool> p in includeParts)
         {
             if (p())
                 return true;
@@ -47,8 +74,8 @@ public sealed class YgoCardLibraryPackTagFilterState
     public void ResetToDefaults()
     {
         if (NoneToggle != null)
-            NoneToggle.IsTicked = false;
+            NoneToggle.RowState = CardLibraryFilterTriState.Neutral;
         foreach ((_, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in FlagToggles)
-            gui.IsTicked = false;
+            gui.RowState = CardLibraryFilterTriState.Neutral;
     }
 }

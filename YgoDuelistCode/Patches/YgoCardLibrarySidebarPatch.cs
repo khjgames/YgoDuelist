@@ -154,7 +154,8 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
                 CardLibraryFilterToggleStyle.Rarity,
                 label,
                 null,
-                hoverLoc);
+                hoverLoc,
+                triStateRarity: true);
             gui.ConnectChanged(Dirty);
             cat.ToggleColumn.AddChild(gui.Root);
             return gui;
@@ -369,7 +370,8 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
                 CardLibraryFilterToggleStyle.Rarity,
                 label,
                 null,
-                hoverLoc);
+                hoverLoc,
+                triStateRarity: true);
             gui.ConnectChanged(Dirty);
             cat.ToggleColumn.AddChild(gui.Root);
             return gui;

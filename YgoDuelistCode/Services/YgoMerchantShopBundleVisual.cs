@@ -143,13 +143,12 @@ public static class YgoMerchantShopBundleVisual
         bool diag)
     {
         // Defer until after enter-tree / _ready so NCard.UpdateVisuals (requires IsNodeReady) runs reliably.
-        holder.CallDeferred(
-            Callable.From(() =>
-            {
-                if (!GodotObject.IsInstanceValid(holder) || !GodotObject.IsInstanceValid(stack))
-                    return;
-                ApplyBundlePreviewLayout(holder, stack, previewCount, previewScaleVec, step, diag);
-            }));
+        Callable.From(() =>
+        {
+            if (!GodotObject.IsInstanceValid(holder) || !GodotObject.IsInstanceValid(stack))
+                return;
+            ApplyBundlePreviewLayout(holder, stack, previewCount, previewScaleVec, step, diag);
+        }).CallDeferred();
     }
 
     private static void ApplyBundlePreviewLayout(

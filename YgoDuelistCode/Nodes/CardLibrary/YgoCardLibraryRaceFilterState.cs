@@ -22,22 +22,39 @@ public sealed class YgoCardLibraryRaceFilterState
         if (race == null)
             return true;
 
-        var parts = new List<Func<DuelMonsterRace, bool>>();
+        var includeParts = new List<Func<DuelMonsterRace, bool>>();
+        var excludeParts = new List<Func<DuelMonsterRace, bool>>();
 
         foreach ((DuelMonsterRace r, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in RaceToggles)
         {
-            if (gui.IsTicked)
+            switch (gui.RowState)
             {
-                DuelMonsterRace captured = r;
-                parts.Add(x => x == captured);
+                case CardLibraryFilterTriState.Include:
+                {
+                    DuelMonsterRace captured = r;
+                    includeParts.Add(x => x == captured);
+                    break;
+                }
+                case CardLibraryFilterTriState.Exclude:
+                {
+                    DuelMonsterRace captured = r;
+                    excludeParts.Add(x => x == captured);
+                    break;
+                }
             }
         }
 
-        if (parts.Count == 0)
+        DuelMonsterRace v = race.Value;
+        foreach (Func<DuelMonsterRace, bool> p in excludeParts)
+        {
+            if (p(v))
+                return false;
+        }
+
+        if (includeParts.Count == 0)
             return true;
 
-        DuelMonsterRace v = race.Value;
-        foreach (Func<DuelMonsterRace, bool> p in parts)
+        foreach (Func<DuelMonsterRace, bool> p in includeParts)
         {
             if (p(v))
                 return true;
@@ -58,6 +75,6 @@ public sealed class YgoCardLibraryRaceFilterState
     public void ResetToDefaults()
     {
         foreach ((_, CardLibraryFilterSortingRuleCategoryFilterToggleGUI gui) in RaceToggles)
-            gui.IsTicked = false;
+            gui.RowState = CardLibraryFilterTriState.Neutral;
     }
 }
