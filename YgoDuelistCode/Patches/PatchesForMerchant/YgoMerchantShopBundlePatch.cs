@@ -13,13 +13,21 @@ public static class YgoMerchantShopBundlePurchasePatch
 {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(MerchantCardEntry), "ClearAfterPurchase")]
-    public static void PrefixClear(MerchantCardEntry __instance) =>
+    public static void PrefixClear(MerchantCardEntry __instance)
+    {
+        string id = __instance.CreationResult?.Card?.Id.Entry ?? "(null)";
+        YgoMerchantShopBundleDiag.Log($"Harmony PrefixClearAfterPurchase card={id}");
         YgoMerchantShopBundlePurchase.ScheduleGrantFromEntry(__instance);
+    }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(MerchantCardEntry), "RestockAfterPurchase")]
-    public static void PrefixRestock(MerchantCardEntry __instance) =>
+    public static void PrefixRestock(MerchantCardEntry __instance)
+    {
+        string id = __instance.CreationResult?.Card?.Id.Entry ?? "(null)";
+        YgoMerchantShopBundleDiag.Log($"Harmony PrefixRestockAfterPurchase card={id}");
         YgoMerchantShopBundlePurchase.ScheduleGrantFromEntry(__instance);
+    }
 }
 
 [HarmonyPatch(typeof(NMerchantCard), "UpdateVisual")]
@@ -30,6 +38,7 @@ public static class YgoMerchantShopBundleVisualPatch
     {
         if (__instance.Entry is not MerchantCardEntry mce)
             return;
+
         YgoMerchantShopBundleVisual.MountOrRefresh(__instance, mce);
         ResyncYgoBuyGridSlotScale(__instance);
     }

@@ -27,7 +27,8 @@ public static class YgoMerchantShopLayoutTuning
     public static float MerchantSlotHoverScale = 0.8f;
 
     /// <summary>
-    /// After cards bind, one frame at hover scale then idle scale + <c>NCard</c> refresh (mimics first hover cycle for layout).
+    /// When opening the YGO buy tab only: one frame at hover scale then idle scale + <c>NCard</c> refresh. Does not run on
+    /// inventory re-layout or other deferred refreshes (avoids resetting every slot when one card updates).
     /// </summary>
     public static bool RunOneFrameHoverScalePulseAfterLayout = true;
 
@@ -77,12 +78,19 @@ public static class YgoMerchantShopLayoutTuning
 
     // --- YGO buy grid: bundled-card stack (see YgoDuelistCard.BundledCards) ---
 
-    /// <summary>Uniform scale of each stacked bundle preview <see cref="MegaCrit.Sts2.Core.Nodes.Cards.NCard"/> behind the main offer.</summary>
-    public static float MerchantBundlePreviewScale = 0.38f;
+    /// <summary>
+    /// Fallback uniform scale for bundle previews when the main offer <c>NCard</c> is missing (normally previews copy the main card's <c>Scale</c>).
+    /// </summary>
+    public static float MerchantBundlePreviewScaleFallback = 1f;
 
     /// <summary>Offset per stacked card: positive X = right, negative Y = up (Godot Y-down).</summary>
-    public static Vector2 MerchantBundlePreviewStepPixels = new(14f, -11f);
+    public static Vector2 MerchantBundlePreviewStepPixels = new(36f, -28f);
 
-    /// <summary>Base offset of the first stacked card from the holder's top-left.</summary>
-    public static Vector2 MerchantBundlePreviewOriginPixels = new(6f, 10f);
+    /// <summary>
+    /// Extra offset applied after the bundle anchor is computed from the holder bottom (see <see cref="YgoMerchantShopBundleVisual"/>).
+    /// </summary>
+    public static Vector2 MerchantBundlePreviewOriginPixels = Vector2.Zero;
+
+    /// <summary>Pixels subtracted from holder height when anchoring the first bundle preview (larger = higher on screen).</summary>
+    public static float MerchantBundlePreviewAnchorFromBottomPx = 88f;
 }

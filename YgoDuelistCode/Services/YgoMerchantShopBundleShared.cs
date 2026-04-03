@@ -14,18 +14,30 @@ public static class YgoMerchantShopBundleShared
         if (card == null)
             return false;
 
+        bool diag = YgoMerchantShopBundleDiag.IsMaskedBeastDiagCard(card);
+
         if (card is YgoDuelistCard direct)
         {
             ygo = direct;
+            if (diag)
+                YgoMerchantShopBundleDiag.Log(
+                    $"TryGetBundlingTemplate: OK direct YgoDuelistCard type={direct.GetType().FullName} bundled={direct.BundledCards.Length}");
             return true;
         }
 
-        if (card.CanonicalInstance is YgoDuelistCard canon)
+        CardModel canon = card.CanonicalInstance;
+        if (canon is YgoDuelistCard canonYgo)
         {
-            ygo = canon;
+            ygo = canonYgo;
+            if (diag)
+                YgoMerchantShopBundleDiag.Log(
+                    $"TryGetBundlingTemplate: OK via CanonicalInstance cardClr={card.GetType().FullName} canonClr={canon.GetType().FullName} bundled={canonYgo.BundledCards.Length}");
             return true;
         }
 
+        if (diag)
+            YgoMerchantShopBundleDiag.Log(
+                $"TryGetBundlingTemplate: FAIL cardClr={card.GetType().FullName} canonClr={canon.GetType().FullName} canonIsYgo=False");
         return false;
     }
 }

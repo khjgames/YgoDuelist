@@ -396,6 +396,10 @@ public partial class YgoMerchantSlotsAddonLayer : Control
     private void DeferredRefreshYgoBuyCardVisuals()
     {
         RefreshYgoBuyNCardVisuals();
+    }
+
+    private void DeferredPulseYgoBuySlotScalesOnly()
+    {
         if (YgoMerchantShopLayoutTuning.RunOneFrameHoverScalePulseAfterLayout)
             _ = RunYgoBuyHoverScalePulseAsync();
     }
@@ -414,10 +418,7 @@ public partial class YgoMerchantSlotsAddonLayer : Control
                 if (cn.Name == YgoMerchantShopBundleVisual.BundleStackNodeName)
                     continue;
                 if (cn is NCard nc)
-                {
-                    nc.Scale = Vector2.One;
                     nc.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
-                }
             }
         }
     }
@@ -484,6 +485,7 @@ public partial class YgoMerchantSlotsAddonLayer : Control
                     }
 
                     CallDeferred(nameof(DeferredRefreshYgoBuyCardVisuals));
+                    CallDeferred(nameof(DeferredPulseYgoBuySlotScalesOnly));
                 }
 
                 break;

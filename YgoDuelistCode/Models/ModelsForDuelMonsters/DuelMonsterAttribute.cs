@@ -11,5 +11,6 @@ public enum DuelMonsterAttribute
     Fire,
     Wind,
     Light,
-    Dark
+    Dark,
+    Divine
 }

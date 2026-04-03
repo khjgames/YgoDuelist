@@ -26,7 +26,5 @@ public sealed class Twin_Headed_Thunder_Dragon : FusionMonsterCard
     {
     }
 
-    public override bool BundleGrantsExtraCopyOfSelf => true;
-
-    public override Type[] BundledCards => new[] { typeof(Twin_Headed_Thunder_Dragon), typeof(Thunder_Dragon) };
+    public override Type[] BundledCards => new[] { typeof(Thunder_Dragon) };
 }

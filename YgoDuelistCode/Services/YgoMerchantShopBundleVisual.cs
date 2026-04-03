@@ -22,28 +22,59 @@ public static class YgoMerchantShopBundleVisual
     public static void MountOrRefresh(NMerchantCard slot, MerchantCardEntry entry)
     {
         Control? holder = slot.GetNodeOrNull<Control>("%CardHolder");
+        CardModel? offer = entry.CreationResult?.Card;
+        bool diag = YgoMerchantShopBundleDiag.IsMaskedBeastDiagCard(offer);
+
         if (holder == null)
+        {
+            if (diag)
+                YgoMerchantShopBundleDiag.Log("MountOrRefresh: %CardHolder missing");
             return;
+        }
 
         Control? existing = holder.GetNodeOrNull<Control>(BundleStackNodeName);
 
-        if (entry.CreationResult?.Card == null
-            || !YgoMerchantShopBundleShared.TryGetBundlingTemplate(entry.CreationResult.Card, out YgoDuelistCard y)
-            || y.BundledCards.Length == 0)
+        if (entry.CreationResult?.Card == null)
         {
+            if (diag)
+                YgoMerchantShopBundleDiag.Log("MountOrRefresh: no bundle UI (CreationResult or Card null)");
             existing?.QueueFree();
             return;
         }
 
-        string sig = BuildSig(entry.CreationResult.Card, y);
-        if (existing != null && existing.HasMeta(SigMetaKey) && existing.GetMeta(SigMetaKey).AsString() == sig)
+        CardModel offerCard = entry.CreationResult.Card;
+        if (!YgoMerchantShopBundleShared.TryGetBundlingTemplate(offerCard, out YgoDuelistCard bundling))
+        {
+            if (diag)
+                YgoMerchantShopBundleDiag.Log("MountOrRefresh: no bundle UI (TryGetBundlingTemplate false)");
+            existing?.QueueFree();
             return;
+        }
+
+        if (bundling.BundledCards.Length == 0)
+        {
+            if (diag)
+                YgoMerchantShopBundleDiag.Log("MountOrRefresh: no bundle UI (BundledCards length 0 on template)");
+            existing?.QueueFree();
+            return;
+        }
+
+        string sig = BuildSig(offerCard, bundling);
+        if (existing != null && existing.HasMeta(SigMetaKey) && existing.GetMeta(SigMetaKey).AsString() == sig)
+        {
+            if (diag)
+                YgoMerchantShopBundleDiag.Log($"MountOrRefresh: sig unchanged skip rebuild sig={sig}");
+            return;
+        }
+
+        if (diag)
+            YgoMerchantShopBundleDiag.Log($"MountOrRefresh: rebuilding stack sig={sig}");
 
         existing?.QueueFree();
 
-        ModelId mainId = entry.CreationResult.Card.CanonicalInstance.Id;
+        ModelId mainId = offerCard.CanonicalInstance.Id;
         List<CardModel> previews = new();
-        foreach (Type bt in y.BundledCards)
+        foreach (Type bt in bundling.BundledCards)
         {
             CardModel template;
             try
@@ -55,7 +86,7 @@ public static class YgoMerchantShopBundleVisual
                 continue;
             }
 
-            if (template.Id == mainId && !y.BundleGrantsExtraCopyOfSelf)
+            if (template.Id == mainId && !bundling.BundleGrantsExtraCopyOfSelf)
                 continue;
 
             previews.Add(template);
@@ -77,23 +108,102 @@ public static class YgoMerchantShopBundleVisual
         stack.SetMeta(SigMetaKey, sig);
 
         holder.AddChild(stack);
-        holder.MoveChild(stack, 0);
+        // Draw on top of the main offer NCard (MouseFilter Ignore so purchase/hover still hit the slot).
+        holder.MoveChild(stack, holder.GetChildCount() - 1);
 
-        float scale = YgoMerchantShopLayoutTuning.MerchantBundlePreviewScale;
+        Vector2 previewScaleVec = ResolveMainOfferNCardScale(holder);
         Vector2 step = YgoMerchantShopLayoutTuning.MerchantBundlePreviewStepPixels;
-        Vector2 origin = YgoMerchantShopLayoutTuning.MerchantBundlePreviewOriginPixels;
 
         for (int i = 0; i < previews.Count; i++)
         {
             NCard? nc = NCard.Create(previews[i]);
             if (nc == null)
+            {
+                if (diag)
+                    YgoMerchantShopBundleDiag.Log($"MountOrRefresh: NCard.Create null for {previews[i].Id.Entry}");
                 continue;
+            }
             nc.MouseFilter = Control.MouseFilterEnum.Ignore;
-            nc.Scale = Vector2.One * scale;
-            nc.Position = origin + step * (i + 1);
+            nc.Scale = previewScaleVec;
             nc.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
             stack.AddChild(nc);
         }
+
+        ScheduleDeferredBundleLayout(holder, stack, previews.Count, previewScaleVec, step, diag);
+    }
+
+    private static void ScheduleDeferredBundleLayout(
+        Control holder,
+        Control stack,
+        int previewCount,
+        Vector2 previewScaleVec,
+        Vector2 step,
+        bool diag)
+    {
+        SceneTree? tree = holder.GetTree();
+        if (tree == null)
+        {
+            ApplyBundlePreviewLayout(holder, stack, previewCount, previewScaleVec, step, diag);
+            return;
+        }
+
+        SceneTreeTimer timer = tree.CreateTimer(0f);
+        timer.Timeout += () =>
+        {
+            if (!GodotObject.IsInstanceValid(holder) || !GodotObject.IsInstanceValid(stack))
+                return;
+            ApplyBundlePreviewLayout(holder, stack, previewCount, previewScaleVec, step, diag);
+        };
+    }
+
+    private static void ApplyBundlePreviewLayout(
+        Control holder,
+        Control stack,
+        int previewCount,
+        Vector2 previewScaleVec,
+        Vector2 step,
+        bool diag)
+    {
+        Vector2 sz = holder.Size;
+        if (sz.X < 24f || sz.Y < 24f)
+            sz = new Vector2(112f, 198f);
+
+        Vector2 extra = YgoMerchantShopLayoutTuning.MerchantBundlePreviewOriginPixels;
+        float fromBottom = YgoMerchantShopLayoutTuning.MerchantBundlePreviewAnchorFromBottomPx;
+        Vector2 basePos = new(4f + extra.X, sz.Y - fromBottom + extra.Y);
+
+        Vector2 scaleVec = ResolveMainOfferNCardScale(holder);
+        if (scaleVec.X <= 0f || scaleVec.Y <= 0f)
+            scaleVec = previewScaleVec;
+
+        int idx = 0;
+        foreach (Node ch in stack.GetChildren())
+        {
+            if (ch is not NCard nc)
+                continue;
+            idx++;
+            nc.Scale = scaleVec;
+            nc.Position = basePos + step * idx;
+        }
+
+        if (diag)
+            YgoMerchantShopBundleDiag.Log(
+                $"ApplyBundleLayout holderSize={holder.Size} szUsed={sz} base={basePos} scale={scaleVec} previews={previewCount}");
+    }
+
+    /// <summary>Match bundle preview size to the primary offer <see cref="NCard"/> in the same holder.</summary>
+    private static Vector2 ResolveMainOfferNCardScale(Control holder)
+    {
+        float f = YgoMerchantShopLayoutTuning.MerchantBundlePreviewScaleFallback;
+        Vector2 fallback = new(f, f);
+        foreach (Node ch in holder.GetChildren())
+        {
+            if (ch.Name == BundleStackNodeName || ch is not NCard nc)
+                continue;
+            return nc.Scale;
+        }
+
+        return fallback;
     }
 
     private static string BuildSig(CardModel main, YgoDuelistCard y) =>
