@@ -3,9 +3,9 @@ using Godot;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Live-edit fields for YGO merchant buy grid. Vanilla merchant card slots use hover scale 0.8 and idle 0.65
-/// on the whole <c>NMerchantCard</c> node (<see cref="MegaCrit.Sts2.Core.Nodes.Screens.Shops.NMerchantSlot"/>);
-/// YGO grid slots are patched to use <see cref="MerchantSlotHoverScale"/> / <see cref="MerchantSlotIdleScale"/> instead.
+/// Live-edit fields for YGO merchant buy grid. Vanilla shop rows scale the whole <c>NMerchantCard</c>; the YGO grid is
+/// inside a <c>GridContainer</c> that resets cell root <see cref="Godot.Control.Scale"/> to (1,1), so idle/hover multipliers
+/// are applied to <c>YgoBuyGridScaleRoot</c> (card, hitbox, cost row, sale tag) while the cell root stays at scale 1.
 /// </summary>
 public static class YgoMerchantShopLayoutTuning
 {
@@ -13,18 +13,30 @@ public static class YgoMerchantShopLayoutTuning
     public static float GridHorizontalGapMultiplier = 7.4f;
 
     /// <summary>Multiplies default vertical gap between grid cells (base 18px). 1 = current default.</summary>
-    public static float GridVerticalGapMultiplier = 6.115f;
+    public static float GridVerticalGapMultiplier = 6.12f;
 
     /// <summary>
     /// Shifts the YGO buy <c>GridContainer</c> area (inside <c>YgoAddonBuyGridCenter</c>) in pixels. Positive X moves right, positive Y moves down.
     /// </summary>
-    public static Vector2 MerchantBuyGridPositionOffset = new Vector2(52f, 65f);
+    public static Vector2 MerchantBuyGridPositionOffset = new Vector2(52f, 70f);
 
-    /// <summary>Matches vanilla <c>NMerchantSlot</c> idle scale after unhover (<c>_smallScale</c>).</summary>
-    public static float MerchantSlotIdleScale = 0.56f;
+    /// <summary>YGO buy grid: scale on <c>YgoBuyGridScaleRoot</c> when idle (matches vanilla small slot scale intent).</summary>
+    public static float MerchantSlotIdleScale = 0.54f;
 
-    /// <summary>Matches vanilla <c>NMerchantSlot</c> hover scale on focus (<c>_hoverScale</c>).</summary>
-    public static float MerchantSlotHoverScale = 0.8f;
+    /// <summary>YGO buy grid: scale on <c>YgoBuyGridScaleRoot</c> when hovered.</summary>
+    public static float MerchantSlotHoverScale = 0.75f;
+
+    /// <summary>
+    /// When <c>YgoBuyGridScaleRoot</c> scale is above <see cref="MerchantSlotIdleScale"/>, the whole buy cell uses this
+    /// <see cref="Godot.Control.ZIndex"/> so zoomed slots (hover + tween out) draw above neighbors and prices stay readable.
+    /// </summary>
+    public static int MerchantBuyGridHoverElevatedCellZIndex = 10;
+
+    /// <summary>
+    /// While elevated, the <c>Cost</c> row (gold + price) gets this <see cref="Godot.Control.ZIndex"/> inside the scale root
+    /// so it paints above <c>%SaleVisual</c> and overlapping card art in the same cell.
+    /// </summary>
+    public static int MerchantBuyGridCostRowZIndexWhenElevated = 24;
 
     /// <summary>
     /// When opening the YGO buy tab only: one frame at hover scale then idle scale + <c>NCard</c> refresh. Does not run on
@@ -98,5 +110,5 @@ public static class YgoMerchantShopLayoutTuning
     /// Added to every bundle preview <see cref="Godot.Control.Position"/> after base anchor and fan <see cref="MerchantBundlePreviewStepPixels"/> (pixels in holder space).
     /// Positive X = right; negative Y = up on screen (Godot Y-down).
     /// </summary>
-    public static Vector2 MerchantBundlePreviewPositionOffsetPixels = new(30f, -130f);
+    public static Vector2 MerchantBundlePreviewPositionOffsetPixels = new(25f, -130f);
 }

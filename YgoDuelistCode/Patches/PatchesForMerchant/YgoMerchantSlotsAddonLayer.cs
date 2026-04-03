@@ -164,7 +164,7 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         {
             if (templateCard.Duplicate() is not NMerchantCard dup)
                 continue;
-            dup.Scale = Vector2.One * YgoMerchantShopLayoutTuning.MerchantSlotIdleScale;
+            dup.Scale = Vector2.One;
             ygoGrid.AddChild(dup);
             dup.CustomMinimumSize = new Vector2(112, 198);
             dup.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
@@ -395,7 +395,11 @@ public partial class YgoMerchantSlotsAddonLayer : Control
 
     private void DeferredRefreshYgoBuyCardVisuals()
     {
+        YgoMerchantBuyGridScaleTrace.Log("DeferredRefreshYgoBuyCardVisuals BEGIN");
+        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("DeferredRefresh BEFORE", _ygoGrid);
         RefreshYgoBuyNCardVisuals();
+        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("DeferredRefresh AFTER", _ygoGrid);
+        YgoMerchantBuyGridScaleTrace.Log("DeferredRefreshYgoBuyCardVisuals END");
     }
 
     private void DeferredPulseYgoBuySlotScalesOnly()
@@ -406,6 +410,7 @@ public partial class YgoMerchantSlotsAddonLayer : Control
 
     private void RefreshYgoBuyNCardVisuals()
     {
+        YgoMerchantBuyGridScaleTrace.Log("RefreshYgoBuyNCardVisuals BEGIN");
         foreach (Node ch in _ygoGrid.GetChildren())
         {
             if (ch is not NMerchantCard slot)
@@ -413,16 +418,27 @@ public partial class YgoMerchantSlotsAddonLayer : Control
             Control? holder = slot.GetNodeOrNull<Control>("%CardHolder");
             if (holder == null)
                 continue;
+            YgoMerchantBuyGridScaleTrace.Log(
+                $"RefreshYgoBuyNCardVisuals slot BEFORE ncard refresh {YgoMerchantBuyGridScaleTrace.SlotOneLine("refreshSlot", slot)}");
             foreach (Node cn in holder.GetChildren())
             {
                 if (cn.Name == YgoMerchantShopBundleVisual.BundleStackNodeName)
                     continue;
                 if (cn is NCard nc)
+                {
+                    Vector2 nBefore = nc.Scale;
                     nc.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
+                    YgoMerchantBuyGridScaleTrace.Log(
+                        $"RefreshYgoBuyNCardVisuals NCard.UpdateVisuals done nScale {nBefore} -> {nc.Scale} path={nc.GetPath()}");
+                }
             }
 
             YgoMerchantShopBundleVisualPatch.ResyncYgoBuyGridSlotScale(slot);
+            YgoMerchantBuyGridScaleTrace.Log(
+                $"RefreshYgoBuyNCardVisuals slot AFTER Resync {YgoMerchantBuyGridScaleTrace.SlotOneLine("refreshSlot", slot)}");
         }
+
+        YgoMerchantBuyGridScaleTrace.Log("RefreshYgoBuyNCardVisuals END");
     }
 
     private async Task RunYgoBuyHoverScalePulseAsync()
@@ -434,6 +450,9 @@ public partial class YgoMerchantSlotsAddonLayer : Control
         if (tree == null)
             return;
 
+        YgoMerchantBuyGridScaleTrace.Log("RunYgoBuyHoverScalePulseAsync START");
+        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("HoverPulse BEFORE force-hover", _ygoGrid);
+
         float hover = YgoMerchantShopLayoutTuning.MerchantSlotHoverScale;
         foreach (Node ch in _ygoGrid.GetChildren())
         {
@@ -442,13 +461,23 @@ public partial class YgoMerchantSlotsAddonLayer : Control
             var tr = Traverse.Create(slot);
             tr.Field<Tween?>("_hoverTween").Value?.Kill();
             tr.Field("_hoverTween").SetValue(null);
-            slot.Scale = Vector2.One * hover;
+            slot.Scale = Vector2.One;
+            Control? holder = slot.GetNodeOrNull<Control>("%CardHolder");
+            Vector2 before = holder?.Scale ?? Vector2.Zero;
+            YgoBuyGridMerchantSlotChromeScale.ApplyChromeUniformScale(slot, hover);
+            YgoMerchantBuyGridScaleTrace.Log(
+                $"HoverPulse forced chrome hoverScale={hover} holder {before}->{holder?.Scale} {YgoMerchantBuyGridScaleTrace.SlotOneLine("pulse", slot)}");
         }
+
+        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("HoverPulse AFTER force-hover (before await frame)", _ygoGrid);
 
         await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
 
         if (!IsInsideTree())
             return;
+
+        YgoMerchantBuyGridScaleTrace.Log("HoverPulse AFTER ProcessFrame — Resync all then RefreshYgoBuyNCardVisuals");
+        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("HoverPulse BEFORE post-frame Resync", _ygoGrid);
 
         foreach (Node ch in _ygoGrid.GetChildren())
         {
@@ -456,7 +485,12 @@ public partial class YgoMerchantSlotsAddonLayer : Control
                 YgoMerchantShopBundleVisualPatch.ResyncYgoBuyGridSlotScale(slot);
         }
 
+        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("HoverPulse AFTER post-frame Resync", _ygoGrid);
+
         RefreshYgoBuyNCardVisuals();
+
+        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("HoverPulse END (after RefreshYgoBuyNCardVisuals)", _ygoGrid);
+        YgoMerchantBuyGridScaleTrace.Log("RunYgoBuyHoverScalePulseAsync END");
     }
 
     private void ApplyPage(ShopPage page)

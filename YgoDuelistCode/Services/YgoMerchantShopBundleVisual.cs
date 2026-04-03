@@ -159,6 +159,14 @@ public static class YgoMerchantShopBundleVisual
         Vector2 step,
         bool diag)
     {
+        NMerchantCard? slotForTrace = holder.GetParent() as NMerchantCard;
+        if (slotForTrace != null && YgoMerchantBuyGridScaleTrace.IsYgoBuyGridSlot(slotForTrace))
+        {
+            YgoMerchantBuyGridScaleTrace.Log(
+                $"ApplyBundlePreviewLayout ENTER {YgoMerchantBuyGridScaleTrace.SlotOneLine("bundleLayout", slotForTrace)} holder={holder.GetPath()}");
+            YgoMerchantBuyGridScaleTrace.DumpEntireGridFromSlot("ApplyBundlePreviewLayout ENTER", slotForTrace);
+        }
+
         Vector2 sz = holder.Size;
         if (sz.X < 24f || sz.Y < 24f)
             sz = new Vector2(112f, 198f);
@@ -186,6 +194,13 @@ public static class YgoMerchantShopBundleVisual
         if (diag)
             YgoMerchantShopBundleDiag.Log(
                 $"ApplyBundleLayout holderSize={holder.Size} szUsed={sz} base={basePos} scale={scaleVec} previews={previewCount}");
+
+        if (slotForTrace != null && YgoMerchantBuyGridScaleTrace.IsYgoBuyGridSlot(slotForTrace))
+        {
+            YgoMerchantBuyGridScaleTrace.Log(
+                $"ApplyBundlePreviewLayout EXIT previewScaleApplied={scaleVec} {YgoMerchantBuyGridScaleTrace.SlotOneLine("bundleLayout", slotForTrace)}");
+            YgoMerchantBuyGridScaleTrace.DumpEntireGridFromSlot("ApplyBundlePreviewLayout EXIT", slotForTrace);
+        }
     }
 
     /// <summary>Match bundle preview size to the primary offer <see cref="NCard"/> in the same holder.</summary>

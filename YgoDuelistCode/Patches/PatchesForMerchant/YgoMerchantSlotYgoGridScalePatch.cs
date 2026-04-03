@@ -7,8 +7,10 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMerchant;
 
 /// <summary>
-/// Vanilla <see cref="NMerchantSlot"/> hardcodes hover/unhover scale; YGO buy grid slots must follow
-/// <see cref="YgoMerchantShopLayoutTuning.MerchantSlotHoverScale"/> and <see cref="YgoMerchantShopLayoutTuning.MerchantSlotIdleScale"/>.
+/// Vanilla <see cref="NMerchantSlot"/> animates hover on the slot root. YGO buy grid cells are
+/// <see cref="GridContainer"/> children — layout forces root <see cref="Control.Scale"/> to (1,1). Hover/idle use
+/// <see cref="YgoMerchantShopLayoutTuning.MerchantSlotHoverScale"/> / <see cref="YgoMerchantShopLayoutTuning.MerchantSlotIdleScale"/>
+/// on <c>YgoBuyGridScaleRoot</c> (same subtree vanilla scales on the slot root); cell root stays (1,1).
 /// </summary>
 internal static class YgoAddonBuyGridMerchantSlotIdentifiers
 {
@@ -32,7 +34,14 @@ public static class YgoMerchantSlotYgoGridOnFocusPostfix
     {
         if (!YgoAddonBuyGridMerchantSlotIdentifiers.IsUnderYgoAddonBuyGrid(__instance))
             return;
-        __instance.Scale = Vector2.One * YgoMerchantShopLayoutTuning.MerchantSlotHoverScale;
+        if (__instance is not NMerchantCard mc)
+            return;
+
+        float target = YgoMerchantShopLayoutTuning.MerchantSlotHoverScale;
+        YgoMerchantBuyGridScaleTrace.Log(
+            $"YgoGridOnFocusPostfix vanilla set slotScale={__instance.Scale} -> chrome hover={target} {YgoMerchantBuyGridScaleTrace.SlotOneLine("ygoFocusPost", __instance)}");
+
+        YgoBuyGridMerchantSlotChromeScale.ApplyChromeHoverInstant(mc);
     }
 }
 
@@ -46,6 +55,11 @@ public static class YgoMerchantSlotYgoGridOnUnfocusPostfix
     {
         if (!YgoAddonBuyGridMerchantSlotIdentifiers.IsUnderYgoAddonBuyGrid(__instance))
             return;
+        if (__instance is not NMerchantCard mc)
+            return;
+
+        YgoMerchantBuyGridScaleTrace.Log(
+            $"YgoGridOnUnfocusPostfix START (kill vanilla slot tween; tween YgoBuyGridScaleRoot to idle) {YgoMerchantBuyGridScaleTrace.SlotOneLine("ygoUnfocusPost", __instance)}");
 
         if (HoverTweenField != null)
         {
@@ -53,12 +67,20 @@ public static class YgoMerchantSlotYgoGridOnUnfocusPostfix
             existing?.Kill();
         }
 
+        __instance.Scale = Vector2.One;
+
+        YgoBuyGridMerchantSlotChromeScale.EnsureBuyGridScaledContentRoot(mc);
+        Control? scaleRoot = YgoBuyGridMerchantSlotChromeScale.GetScaleRoot(mc);
+        if (scaleRoot == null)
+            return;
+
         Tween tween = __instance.CreateTween();
         HoverTweenField?.SetValue(__instance, tween);
 
-        Vector2 idle = Vector2.One * YgoMerchantShopLayoutTuning.MerchantSlotIdleScale;
-        tween.TweenProperty(__instance, "scale", idle, 0.5f)
-            .SetEase(Tween.EaseType.Out)
-            .SetTrans(Tween.TransitionType.Expo);
+        const float duration = 0.5f;
+        YgoBuyGridMerchantSlotChromeScale.TweenChromeToIdle(mc, tween, duration);
+
+        YgoMerchantBuyGridScaleTrace.Log(
+            $"YgoGridOnUnfocusPostfix END tween scaleRoot->idle scale={YgoMerchantShopLayoutTuning.MerchantSlotIdleScale} scaleRootNow={scaleRoot.Scale} {YgoMerchantBuyGridScaleTrace.SlotOneLine("ygoUnfocusPost", __instance)}");
     }
 }

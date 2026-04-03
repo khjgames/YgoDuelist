@@ -37,6 +37,9 @@ public partial class MainFile : Node
 
         YgoMerchantShopBundlePurchasePatch.ApplyMerchantCardEntryPatches(harmony);
 
+        Logger.Info(
+            "[YgoDuelist][YgoBuyScale] YGO buy grid scale trace is ON — filter godot.log for this tag to debug slot/NCard scale after purchases.");
+
         MethodInfo? ancientSetInitial = AccessTools.DeclaredMethod(typeof(MegaCrit.Sts2.Core.Models.AncientEventModel), "SetInitialEventState");
         if (ancientSetInitial != null)
         {

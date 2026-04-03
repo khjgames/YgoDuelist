@@ -94,6 +94,8 @@ public static class YgoMerchantShopBundlePurchase
     {
         try
         {
+            YgoMerchantBuyGridScaleTrace.Log(
+                $"GrantBundledCardsBlocking START (deferred; may run after shop UI updates) offer={offerIdForLog}");
             YgoMerchantShopBundleDiag.Log(
                 $"GrantNow: START offer={offerIdForLog} purchasedCanon={purchasedCanonicalId.Entry} count={bundleTypes.Length}");
             foreach (Type bt in bundleTypes)
@@ -130,6 +132,7 @@ public static class YgoMerchantShopBundlePurchase
             }
 
             YgoMerchantShopBundleDiag.Log($"GrantNow: END offer={offerIdForLog}");
+            YgoMerchantBuyGridScaleTrace.Log($"GrantBundledCardsBlocking END offer={offerIdForLog}");
         }
         catch (Exception ex)
         {
