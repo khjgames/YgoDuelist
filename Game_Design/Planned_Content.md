@@ -1,4 +1,4 @@
-How should we handle and implement the shop.
+How should we handle and implement the merchant/shop.
 We could technically sell packs, but I don't really like that idea as much as browsing and buying individual cards
 Like, give gold some guarenteed return value, no gamba involved yk what i mean
 Theres already enough pack distribution according to combats elites and bosses
@@ -6,10 +6,10 @@ So its better to give us some other / new avenues of options.
 Also worth mentioning is im going to have to boost pack size by 1 across the board once I implement sealed pack visuals hiding their contents since revealed is too op and also again has you min maxxing between the three card packs instead of trying to deckbuild around themes and stuff
 (So min pack size would be 3 cards instead of 2) making it much easier to get at least one card you want out of blind pick thematic tagged packs. 
 The gradual tweaking of the related cards system will also help with this too though to be fair
-Anyhow as for the specifics of the shop
+Anyhow as for the specifics of the merchant/shop
 
 Im thinking an individual buy card pool of 4 cards each from 4 randomly chosen tagged packs with a guarentee one of the packs themes matches one of the two most occuring tags in your deck (so if most of your decks cards are light and dark there would always be at least one light or dark pack chosen) 
-So 16 cards total, and probably do 6 commons 8 uncommons and 2 rares in the shop card pool
+So 16 cards total, and probably do 6 commons 8 uncommons and 2 rares in the merchant/shop card pool
 With pricing scaling by card rarity
 On the topic
 I think it would be cool to let players sell cards, commons  0.5, uncommon 1, rare 5
@@ -17,6 +17,12 @@ I think it would be cool to let players sell cards, commons  0.5, uncommon 1, ra
 It would give them the opportunity to clear out their trunks if they want or to scrounge/ scavenge together 10-40 gold here and there
 If they are just barely short of something they want to buy
 The specific gold values would have to be really low though, I don't want it to be very significant 
+
+The merchant/shop rug would have two new GUI pages you can visit on top of the default merchant layout, 
+
+The Sell GUI Page is a selection screen of cards in your trunk and side deck, that lets you select cards and see a running tally of their total sell price gold values, and then a confirm followed by a second prompt sell "x commons, y uncommons, and z rares" for w gold? That you have to confirm to lock it in. 
+
+The Buy GUI Page is much like the existing merchant layout, but with the new card pool and pricing system. (16 individual cards each with their own price listed, same as the regular merchant layout, but a bit more compact / 4x4 grid like, with each pack of 4 cards for sale being in one of the four rows)
 
 Fun ideas -> 
 

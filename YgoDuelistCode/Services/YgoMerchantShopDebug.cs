@@ -29,7 +29,7 @@ public static class YgoMerchantShopDebug
             YgoMerchantOfferGenerator.ShopSlot s = offer.Slots[i];
             int row = i / YgoMerchantOfferGenerator.GridColumns;
             int col = i % YgoMerchantOfferGenerator.GridColumns;
-            string cardTags = s.Template is YgoDuelistCard y ? ExpandPackTags(y.PackTags) : "(not YgoDuelistCard)";
+            string cardTags = s.Template is YgoDuelistCard y ? ExpandPackTags(YgoPackCardCatalog.GetEffectivePackTags(y)) : "(not YgoDuelistCard)";
             string frame = s.Template is IYgoCard iy ? iy.YgoCardType.ToString() : "n/a";
             sb.AppendLine(
                 $"  idx={i} grid=({row},{col}) pack={s.PackRole} offeredRarity={s.Rarity} templateId={s.Template.Id} " +

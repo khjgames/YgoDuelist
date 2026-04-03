@@ -225,7 +225,7 @@ public static class YgoMerchantOfferGenerator
         {
             if (c is not YgoDuelistCard y)
                 continue;
-            YgoCardPackTags tags = y.PackTags & ~HistogramIgnore;
+            YgoCardPackTags tags = YgoPackCardCatalog.GetEffectivePackTags(y) & ~HistogramIgnore;
             foreach (YgoCardPackTags bit in EnumerateThemeBits(tags))
                 counts[bit] = counts.GetValueOrDefault(bit, 0) + 1;
         }
@@ -427,21 +427,8 @@ public static class YgoMerchantOfferGenerator
     {
         var d = new Dictionary<ModelId, int>();
 
-        void AddFromYgo(YgoDuelistCard ygo, int delta)
-        {
-            foreach (Type t in ygo.RelatedCards)
-            {
-                try
-                {
-                    CardModel related = YgoPackCardCatalog.CardFromType(t);
-                    d[related.Id] = d.GetValueOrDefault(related.Id, 0) + delta;
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
-        }
+        void AddFromYgo(YgoDuelistCard ygo, int delta) =>
+            YgoRelatedCardWeighting.AccumulateRelatedWeight(ygo, delta, d);
 
         foreach (CardModel c in player.Deck.Cards)
         {

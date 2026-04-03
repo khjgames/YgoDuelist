@@ -74,4 +74,15 @@ public static class YgoMerchantShopLayoutTuning
     /// Pixels between the Card Trader's scaled right edge and the vanilla merchant's left edge.
     /// </summary>
     public static float CardTraderRoomNpcGapPixels = 50f;
+
+    // --- YGO buy grid: bundled-card stack (see YgoDuelistCard.BundledCards) ---
+
+    /// <summary>Uniform scale of each stacked bundle preview <see cref="MegaCrit.Sts2.Core.Nodes.Cards.NCard"/> behind the main offer.</summary>
+    public static float MerchantBundlePreviewScale = 0.38f;
+
+    /// <summary>Offset per stacked card: positive X = right, negative Y = up (Godot Y-down).</summary>
+    public static Vector2 MerchantBundlePreviewStepPixels = new(14f, -11f);
+
+    /// <summary>Base offset of the first stacked card from the holder's top-left.</summary>
+    public static Vector2 MerchantBundlePreviewOriginPixels = new(6f, 10f);
 }

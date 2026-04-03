@@ -411,6 +411,8 @@ public partial class YgoMerchantSlotsAddonLayer : Control
                 continue;
             foreach (Node cn in holder.GetChildren())
             {
+                if (cn.Name == YgoMerchantShopBundleVisual.BundleStackNodeName)
+                    continue;
                 if (cn is NCard nc)
                 {
                     nc.Scale = Vector2.One;

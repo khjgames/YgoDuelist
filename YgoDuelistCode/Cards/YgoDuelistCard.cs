@@ -19,6 +19,12 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual Type[] RelatedCards => Array.Empty<Type>(); // Every other card is weighted at 1, these are weighted at 2.
 
     /// <summary>
+    /// When true, <see cref="BundledCards"/> may list this card's own type for one extra copy (merchant grant, pack mate, shop stack preview).
+    /// When false, same-id bundle entries are skipped so anchors can appear in <see cref="BundledCards"/> for other reasons without a duplicate grant.
+    /// </summary>
+    public virtual bool BundleGrantsExtraCopyOfSelf => false;
+
+    /// <summary>
     /// When true, upgraded cards (and upgrade preview) use <c>cards.json</c> key <c>.description_upgraded</c> instead of <c>.description</c>.
     /// </summary>
     public virtual bool UseAlternateUpgradedDescription => false;

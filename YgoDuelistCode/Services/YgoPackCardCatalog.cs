@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using BaseLib.Abstracts;
@@ -6,15 +7,40 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// YGO cards eligible for tag-based packs: <c>(PackTags &amp; mask) != 0</c> (inclusive OR on pack themes).
+/// YGO cards eligible for tag-based packs: <c>(<see cref="GetEffectivePackTags"/> &amp; mask) != 0</c> (inclusive OR on pack themes).
 /// <see cref="YgoCardPackTags.Starter"/> is not a rolled pack category but remains on cards for other systems.
 /// </summary>
 public static class YgoPackCardCatalog
 {
+    /// <summary>
+    /// Declared <see cref="YgoDuelistCard.PackTags"/> plus implicit tags for monsters that are named fusion materials
+    /// elsewhere (<see cref="FusionMaterialArchetypeIndex"/>): Fusion, attribute/race profile, and Normal/Ritual subtype when applicable.
+    /// </summary>
+    public static YgoCardPackTags GetEffectivePackTags(YgoDuelistCard y)
+    {
+        YgoCardPackTags tags = y.PackTags;
+        Type t = y.GetType();
+        if (!FusionMaterialArchetypeIndex.IsNamedFusionMaterial(t))
+            return tags;
+
+        tags |= YgoCardPackTags.Fusion;
+        if (y is AbstractMonsterCard m)
+        {
+            tags |= FusionMonsterCard.PackTagsForFusionProfile(m.DuelMonsterAttribute, m.DuelMonsterRace);
+            if (m.YgoCardType == YgoCardType.Monster)
+                tags |= YgoCardPackTags.Normal;
+            if (m.YgoCardType == YgoCardType.RitualMonster)
+                tags |= YgoCardPackTags.Ritual;
+        }
+
+        return tags;
+    }
+
     private static readonly object Gate = new();
     private static List<CardModel>? sAllYgoTemplates;
     private static MethodInfo? sModelDbCardNoArg;
@@ -58,7 +84,7 @@ public static class YgoPackCardCatalog
                     continue;
                 }
 
-                if (model is YgoDuelistCard ygo && ygo.PackTags != YgoCardPackTags.None)
+                if (model is YgoDuelistCard ygo && GetEffectivePackTags(ygo) != YgoCardPackTags.None)
                     list.Add(model);
             }
 
@@ -67,7 +93,7 @@ public static class YgoPackCardCatalog
         }
     }
 
-    /// <summary>Unlocked YGO cards whose <see cref="YgoDuelistCard.PackTags"/> intersect <paramref name="tagMask"/> (any tag).</summary>
+    /// <summary>Unlocked YGO cards whose effective pack tags (declared + fusion-material inference) intersect <paramref name="tagMask"/>.</summary>
     public static List<CardModel> GetUnlockedPool(Player player, YgoCardPackTags tagMask)
     {
         HashSet<ModelId> unlocked = player.Character.CardPool
@@ -76,7 +102,7 @@ public static class YgoPackCardCatalog
             .ToHashSet();
 
         return GetAllYgoTemplates()
-            .Where(c => unlocked.Contains(c.Id) && c is YgoDuelistCard y && (y.PackTags & tagMask) != 0)
+            .Where(c => unlocked.Contains(c.Id) && c is YgoDuelistCard y && (GetEffectivePackTags(y) & tagMask) != 0)
             .ToList();
     }
 

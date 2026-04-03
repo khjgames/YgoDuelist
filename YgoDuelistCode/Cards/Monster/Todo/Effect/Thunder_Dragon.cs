@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YgoDuelist.YgoDuelistCode.Cards;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
@@ -36,6 +37,12 @@ public sealed class Thunder_Dragon : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light;
+
+    public override bool BundleGrantsExtraCopyOfSelf => true;
+
+    public override Type[] BundledCards => new[] { typeof(Thunder_Dragon) };
 
     protected override bool SupportsHandEffectForm => true;
 

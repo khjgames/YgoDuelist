@@ -269,7 +269,8 @@ public static class YgoCardPackGenerator
 
         foreach (CardModel mate in EnumeratePackEligibleBundleMatesExceptAnchor(anchor, yAnchor))
         {
-            if (cards.Exists(c => c.Id == mate.Id))
+            bool allowDupSelf = yAnchor.BundleGrantsExtraCopyOfSelf && mate.Id == anchor.Id;
+            if (cards.Exists(c => c.Id == mate.Id) && !allowDupSelf)
                 continue;
 
             int victim = FindLowestRarityNonBundledNonRareVictimIndex(cards, bundleIds);
@@ -303,13 +304,13 @@ public static class YgoCardPackGenerator
     /// <see cref="YgoPackCardCatalog.GetAllYgoTemplates"/>: <see cref="YgoDuelistCard"/> with non-<see cref="YgoCardPackTags.None"/> pack tags.
     /// </summary>
     private static bool IsPackBundleMateEligible(CardModel model) =>
-        model is YgoDuelistCard ygo && ygo.PackTags != YgoCardPackTags.None;
+        model is YgoDuelistCard ygo && YgoPackCardCatalog.GetEffectivePackTags(ygo) != YgoCardPackTags.None;
 
     private static IEnumerable<CardModel> EnumeratePackEligibleBundleMatesExceptAnchor(CardModel anchor, YgoDuelistCard y)
     {
         foreach (Type bt in y.BundledCards)
         {
-            if (bt == anchor.GetType())
+            if (bt == anchor.GetType() && !y.BundleGrantsExtraCopyOfSelf)
                 continue;
             CardModel mate = YgoPackCardCatalog.CardFromType(bt);
             if (!IsPackBundleMateEligible(mate))
@@ -483,21 +484,8 @@ public static class YgoCardPackGenerator
     {
         var d = new Dictionary<ModelId, int>();
 
-        void AddFromYgo(YgoDuelistCard ygo, int delta)
-        {
-            foreach (Type t in ygo.RelatedCards)
-            {
-                try
-                {
-                    CardModel related = YgoPackCardCatalog.CardFromType(t);
-                    d[related.Id] = d.GetValueOrDefault(related.Id, 0) + delta;
-                }
-                catch
-                {
-                    // ignore bad related entries
-                }
-            }
-        }
+        void AddFromYgo(YgoDuelistCard ygo, int delta) =>
+            YgoRelatedCardWeighting.AccumulateRelatedWeight(ygo, delta, d);
 
         foreach (CardModel c in player.Deck.Cards)
         {
