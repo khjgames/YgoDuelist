@@ -49,7 +49,6 @@ public static class YgoMerchantShopBundlePurchasePatch
     {
         string id = __instance.CreationResult?.Card?.Id.Entry ?? "(null)";
         YgoMerchantShopBundleDiag.Log($"PrefixClearAfterPurchase card={id}");
-        YgoMerchantBuyGridScaleTrace.Log($"PrefixClearAfterPurchase (entry pipeline) card={id}");
         YgoMerchantShopBundlePurchase.ScheduleGrantFromEntry(__instance);
     }
 
@@ -57,7 +56,6 @@ public static class YgoMerchantShopBundlePurchasePatch
     {
         string id = __instance.CreationResult?.Card?.Id.Entry ?? "(null)";
         YgoMerchantShopBundleDiag.Log($"PrefixRestockAfterPurchase card={id}");
-        YgoMerchantBuyGridScaleTrace.Log($"PrefixRestockAfterPurchase (entry pipeline) card={id}");
         YgoMerchantShopBundlePurchase.ScheduleGrantFromEntry(__instance);
     }
 }
@@ -73,7 +71,6 @@ public static class YgoMerchantShopBundleTryPurchaseWrapperDiagPatch
             return;
         string id = mce.CreationResult?.Card?.Id.Entry ?? "(null)";
         YgoMerchantShopBundleDiag.Log($"MerchantCardEntry.OnTryPurchaseWrapper begin card={id} enoughGold={mce.EnoughGold}");
-        YgoMerchantBuyGridScaleTrace.Log($"MerchantCardEntry.OnTryPurchaseWrapper begin (scale trace) card={id} enoughGold={mce.EnoughGold}");
     }
 }
 
@@ -92,21 +89,9 @@ public static class YgoMerchantShopBundleVisualPatch
         if (__instance.Entry is not MerchantCardEntry mce)
             return;
 
-        if (YgoAddonBuyGridMerchantSlotIdentifiers.IsUnderYgoAddonBuyGrid(__instance))
-        {
-            YgoMerchantBuyGridScaleTrace.Log(
-                $"YgoMerchantShopBundleVisualPatch.Postfix BEFORE MountOrRefresh {YgoMerchantBuyGridScaleTrace.SlotOneLine("bundlePost", __instance)}");
-        }
-
         YgoMerchantShopBundleVisual.MountOrRefresh(__instance, mce);
         ResyncYgoBuyGridSlotScale(__instance);
         ScheduleDeferredResyncEntireYgoBuyGrid(__instance);
-
-        if (YgoAddonBuyGridMerchantSlotIdentifiers.IsUnderYgoAddonBuyGrid(__instance))
-        {
-            YgoMerchantBuyGridScaleTrace.Log(
-                $"YgoMerchantShopBundleVisualPatch.Postfix AFTER defer schedule {YgoMerchantBuyGridScaleTrace.SlotOneLine("bundlePost", __instance)}");
-        }
     }
 
     /// <summary>
@@ -117,14 +102,6 @@ public static class YgoMerchantShopBundleVisualPatch
     {
         if (!YgoAddonBuyGridMerchantSlotIdentifiers.IsUnderYgoAddonBuyGrid(slot))
             return;
-
-        Control? scaleRootBefore = YgoBuyGridMerchantSlotChromeScale.GetScaleRoot(slot);
-        Vector2 scaleBeforeSlot = slot.Scale;
-        Vector2 scaleBeforeRoot = scaleRootBefore?.Scale ?? new Vector2(-1f, -1f);
-        bool hadTween = HoverTweenField != null && HoverTweenField.GetValue(slot) is Tween;
-        bool hoveredBefore = IsHoveredField != null && (bool)IsHoveredField.GetValue(slot)!;
-        YgoMerchantBuyGridScaleTrace.Log(
-            $"ResyncYgoBuyGridSlotScale ENTER hadTween={hadTween} hovered={hoveredBefore} slotBefore={scaleBeforeSlot} scaleRootBefore={scaleBeforeRoot} {YgoMerchantBuyGridScaleTrace.SlotOneLine("resyncIn", slot)}");
 
         if (HoverTweenField != null)
         {
@@ -138,10 +115,6 @@ public static class YgoMerchantShopBundleVisualPatch
             ? YgoMerchantShopLayoutTuning.MerchantSlotHoverScale
             : YgoMerchantShopLayoutTuning.MerchantSlotIdleScale;
         YgoBuyGridMerchantSlotChromeScale.ApplyChromeUniformScale(slot, target);
-
-        Control? scaleRootAfter = YgoBuyGridMerchantSlotChromeScale.GetScaleRoot(slot);
-        YgoMerchantBuyGridScaleTrace.Log(
-            $"ResyncYgoBuyGridSlotScale EXIT target={target} slotAfter={slot.Scale} scaleRootAfter={(scaleRootAfter == null ? "null" : scaleRootAfter.Scale.ToString())} {YgoMerchantBuyGridScaleTrace.SlotOneLine("resyncOut", slot)}");
     }
 
     private static void ScheduleDeferredResyncEntireYgoBuyGrid(NMerchantCard slot)
@@ -155,7 +128,6 @@ public static class YgoMerchantShopBundleVisualPatch
 
         _deferredResyncYgoBuyGrid = grid;
         _deferredYgoBuyGridResyncQueued = true;
-        YgoMerchantBuyGridScaleTrace.Log($"ScheduleDeferredResyncEntireYgoBuyGrid QUEUED grid={grid.GetPath()} {YgoMerchantBuyGridScaleTrace.GridSummary(grid)}");
         Callable.From(ExecuteDeferredResyncEntireYgoBuyGrid).CallDeferred();
     }
 
@@ -165,21 +137,12 @@ public static class YgoMerchantShopBundleVisualPatch
         GridContainer? grid = _deferredResyncYgoBuyGrid;
         _deferredResyncYgoBuyGrid = null;
         if (!GodotObject.IsInstanceValid(grid))
-        {
-            YgoMerchantBuyGridScaleTrace.Log("ExecuteDeferredResyncEntireYgoBuyGrid ABORT grid invalid");
             return;
-        }
-
-        YgoMerchantBuyGridScaleTrace.Log("ExecuteDeferredResyncEntireYgoBuyGrid BEGIN (before per-slot Resync)");
-        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("ExecuteDeferred BEFORE", grid);
 
         foreach (Node ch in grid.GetChildren())
         {
             if (ch is NMerchantCard nc)
                 ResyncYgoBuyGridSlotScale(nc);
         }
-
-        YgoMerchantBuyGridScaleTrace.Log("ExecuteDeferredResyncEntireYgoBuyGrid END (after per-slot Resync)");
-        YgoMerchantBuyGridScaleTrace.DumpEntireGrid("ExecuteDeferred AFTER", grid);
     }
 }

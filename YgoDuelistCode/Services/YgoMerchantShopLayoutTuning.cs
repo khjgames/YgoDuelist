@@ -27,14 +27,8 @@ public static class YgoMerchantShopLayoutTuning
     public static float MerchantSlotHoverScale = 0.75f;
 
     /// <summary>
-    /// When <c>YgoBuyGridScaleRoot</c> scale is above <see cref="MerchantSlotIdleScale"/>, the whole buy cell uses this
-    /// <see cref="Godot.Control.ZIndex"/> so zoomed slots (hover + tween out) draw above neighbors and prices stay readable.
-    /// </summary>
-    public static int MerchantBuyGridHoverElevatedCellZIndex = 10;
-
-    /// <summary>
-    /// While elevated, the <c>Cost</c> row (gold + price) gets this <see cref="Godot.Control.ZIndex"/> inside the scale root
-    /// so it paints above <c>%SaleVisual</c> and overlapping card art in the same cell.
+    /// While <c>YgoBuyGridScaleRoot</c> scale is above <see cref="MerchantSlotIdleScale"/>, the <c>Cost</c> row (gold + price)
+    /// gets this <see cref="Godot.Control.ZIndex"/> inside the scale root only — not the whole slot (avoids drawing over hover tips).
     /// </summary>
     public static int MerchantBuyGridCostRowZIndexWhenElevated = 24;
 

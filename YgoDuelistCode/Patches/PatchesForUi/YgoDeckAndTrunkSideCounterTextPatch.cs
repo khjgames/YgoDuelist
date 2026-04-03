@@ -1,6 +1,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Nodes.TopBar;
 using YgoDuelist.YgoDuelistCode.Relics;
@@ -31,16 +32,35 @@ public static class YgoRelicInventoryCounterTextPatch
 [HarmonyPatch(typeof(NTopBarDeckButton), "OnPileContentsChanged")]
 public static class YgoTopBarDeckCountTextPatch
 {
+    /// <summary>
+    /// <see cref="OnPileContentsChanged"/> runs when the deck pile changes; YGO minimum can change later (deferred), so call this after mutating <see cref="YgoPlayerMinimumDeck"/>.
+    /// </summary>
+    internal static void RefreshDeckCountLabelForPlayer(Player player)
+    {
+        if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+            return;
+        if (NRun.Instance?.GlobalUi?.TopBar?.Deck is not NTopBarDeckButton deckBtn)
+            return;
+        Player? bound = Traverse.Create(deckBtn).Field<Player>("_player").Value;
+        if (bound != player)
+            return;
+        ApplyDeckCountLabel(deckBtn, player);
+    }
+
+    private static void ApplyDeckCountLabel(NTopBarDeckButton deckBtn, Player player)
+    {
+        int currentDeckCount = player.Deck.Cards.Count;
+        int minDeckCount = YgoPlayerMinimumDeck.Get(player);
+        MegaLabel countLabel = deckBtn.GetNode<MegaLabel>("DeckCardCount");
+        countLabel.SetTextAutoSize($"{currentDeckCount}/{minDeckCount}");
+    }
+
     [HarmonyPostfix]
     private static void Postfix(NTopBarDeckButton __instance)
     {
         Player? player = Traverse.Create(__instance).Field<Player>("_player").Value;
         if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
             return;
-
-        int currentDeckCount = player.Deck.Cards.Count;
-        int minDeckCount = YgoPlayerMinimumDeck.Get(player);
-        MegaLabel countLabel = __instance.GetNode<MegaLabel>("DeckCardCount");
-        countLabel.SetTextAutoSize($"{currentDeckCount}/{minDeckCount}");
+        ApplyDeckCountLabel(__instance, player);
     }
 }

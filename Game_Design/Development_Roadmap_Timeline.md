@@ -28,10 +28,19 @@ Duelist vanilla event interactions / some neow or relic interactions / boss & mo
 
 -> Decoupling all the systems that make the Duelist work from being character specific 
 and intelligently usable so you could technically still draft and work with them on other characters. 
-       (ex: all duelists cards would still work as silent / necrobinder / ironclad / regent) 
+       (ex: all duelists cards would still work as silent / necrobinder / ironclad / regent)
 
 -------------------------
 
+-> Making the Duelist work correctly in some sort of safe way that doesn't break other mods (Challenge: literally impossible)
+Since in order to track a lot of things, we patch and outright replace so many base game functions that I cannot see a world 
+where we are not crashing and burning and destroying every other mod trying to access those base game things (sorry lol)
+
+-------------------------
+
+If we can somehow do the above that would be the pinacle of apparently correct modding practices.
+
+-------------------------
 
 If I were to try making a clean refactored codebase from the start it'd take 5 months to get anything done
 and I'd lose my motivation long before then, rather learn and iterate new ideas and mess up quickly then 

@@ -61,7 +61,6 @@ public static class YgoCampfireDeckEditService
         await CardPileCmd.RemoveFromDeck(removed);
         PlayerRunTrunk.GetOrCreatePile(player).AddInternal(removed, -1, silent: true);
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
-        YgoPlayerMinimumDeck.DecreaseAfterVoluntaryRemovals(player, 1);
     }
 
     public static async Task RunAddAsync(Player player)
@@ -213,6 +212,7 @@ public static class YgoCampfireDeckEditService
                 YgoCampfireDeckEditCharges.RefundOne(player);
                 return;
             }
+            YgoDeckRemovalMinTracker.SkipNextRunDeckRemovalMin(oldCard);
             await CardPileCmd.RemoveFromDeck(oldCard);
             DetachFromTrunkOrSideIfNeeded(player, newCard);
             await CardPileCmd.Add(newCard, PileType.Deck, source: newCard);

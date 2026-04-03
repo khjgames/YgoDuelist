@@ -83,13 +83,13 @@ internal static class YgoBuyGridMerchantSlotChromeScale
     }
 
     /// <summary>
-    /// Hover / tween-out keeps chrome scale above idle for a while; lift the grid cell and cost row so gold+price read over neighbors.
+    /// While scaled above idle, raise only the <c>Cost</c> row (gold + price) inside the scale root so it paints above
+    /// card art / sale tag in the same cell — not <c>NMerchantCard</c> itself (that would stack the whole slot over hover tips).
     /// </summary>
     internal static void SyncSortOrderForChromeScale(NMerchantCard slot, float chromeUniformScale)
     {
         float idle = YgoMerchantShopLayoutTuning.MerchantSlotIdleScale;
         bool elevated = chromeUniformScale > idle + 0.0001f;
-        slot.ZIndex = elevated ? YgoMerchantShopLayoutTuning.MerchantBuyGridHoverElevatedCellZIndex : 0;
 
         Control? costRow = GetScaleRoot(slot)?.GetNodeOrNull<Control>("Cost");
         if (costRow != null)
