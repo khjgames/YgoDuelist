@@ -64,6 +64,8 @@ public static class YgoMerchantShopBundleVisual
         {
             if (diag)
                 YgoMerchantShopBundleDiag.Log($"MountOrRefresh: sig unchanged skip rebuild sig={sig}");
+            if (existing.GetIndex() != 0)
+                holder.MoveChild(existing, 0);
             return;
         }
 
@@ -108,8 +110,8 @@ public static class YgoMerchantShopBundleVisual
         stack.SetMeta(SigMetaKey, sig);
 
         holder.AddChild(stack);
-        // Draw on top of the main offer NCard (MouseFilter Ignore so purchase/hover still hit the slot).
-        holder.MoveChild(stack, holder.GetChildCount() - 1);
+        // First child = drawn underneath; main offer NCard stays last so it receives clicks and paints on top.
+        holder.MoveChild(stack, 0);
 
         Vector2 previewScaleVec = ResolveMainOfferNCardScale(holder);
         Vector2 step = YgoMerchantShopLayoutTuning.MerchantBundlePreviewStepPixels;
@@ -125,7 +127,7 @@ public static class YgoMerchantShopBundleVisual
             }
             nc.MouseFilter = Control.MouseFilterEnum.Ignore;
             nc.Scale = previewScaleVec;
-            nc.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
+            // NCard.UpdateVisuals no-ops until IsNodeReady(); must enter tree first or previews show as broken.
             stack.AddChild(nc);
         }
 
@@ -140,20 +142,14 @@ public static class YgoMerchantShopBundleVisual
         Vector2 step,
         bool diag)
     {
-        SceneTree? tree = holder.GetTree();
-        if (tree == null)
-        {
-            ApplyBundlePreviewLayout(holder, stack, previewCount, previewScaleVec, step, diag);
-            return;
-        }
-
-        SceneTreeTimer timer = tree.CreateTimer(0f);
-        timer.Timeout += () =>
-        {
-            if (!GodotObject.IsInstanceValid(holder) || !GodotObject.IsInstanceValid(stack))
-                return;
-            ApplyBundlePreviewLayout(holder, stack, previewCount, previewScaleVec, step, diag);
-        };
+        // Defer until after enter-tree / _ready so NCard.UpdateVisuals (requires IsNodeReady) runs reliably.
+        holder.CallDeferred(
+            Callable.From(() =>
+            {
+                if (!GodotObject.IsInstanceValid(holder) || !GodotObject.IsInstanceValid(stack))
+                    return;
+                ApplyBundlePreviewLayout(holder, stack, previewCount, previewScaleVec, step, diag);
+            }));
     }
 
     private static void ApplyBundlePreviewLayout(
@@ -170,7 +166,8 @@ public static class YgoMerchantShopBundleVisual
 
         Vector2 extra = YgoMerchantShopLayoutTuning.MerchantBundlePreviewOriginPixels;
         float fromBottom = YgoMerchantShopLayoutTuning.MerchantBundlePreviewAnchorFromBottomPx;
-        Vector2 basePos = new(4f + extra.X, sz.Y - fromBottom + extra.Y);
+        Vector2 posNudge = YgoMerchantShopLayoutTuning.MerchantBundlePreviewPositionOffsetPixels;
+        Vector2 basePos = new Vector2(4f + extra.X, sz.Y - fromBottom + extra.Y) + posNudge;
 
         Vector2 scaleVec = ResolveMainOfferNCardScale(holder);
         if (scaleVec.X <= 0f || scaleVec.Y <= 0f)
@@ -184,6 +181,7 @@ public static class YgoMerchantShopBundleVisual
             idx++;
             nc.Scale = scaleVec;
             nc.Position = basePos + step * idx;
+            nc.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
         }
 
         if (diag)

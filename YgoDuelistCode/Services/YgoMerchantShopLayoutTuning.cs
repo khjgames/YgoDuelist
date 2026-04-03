@@ -93,4 +93,10 @@ public static class YgoMerchantShopLayoutTuning
 
     /// <summary>Pixels subtracted from holder height when anchoring the first bundle preview (larger = higher on screen).</summary>
     public static float MerchantBundlePreviewAnchorFromBottomPx = 88f;
+
+    /// <summary>
+    /// Added to every bundle preview <see cref="Godot.Control.Position"/> after base anchor and fan <see cref="MerchantBundlePreviewStepPixels"/> (pixels in holder space).
+    /// Positive X = right; negative Y = up on screen (Godot Y-down).
+    /// </summary>
+    public static Vector2 MerchantBundlePreviewPositionOffsetPixels = new(30f, -130f);
 }
