@@ -13,7 +13,7 @@ public sealed class Curse_of_the_Masked_Beast : RitualSpellCard
     public Curse_of_the_Masked_Beast()
         : base(
             cost: 1,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.Self,
             spellRace: DuelMonsterRace.SpellRitual,
             ritualTargetMonsterType: typeof(The_Masked_Beast),

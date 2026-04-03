@@ -13,7 +13,7 @@ public sealed class Incandescent_Ordeal : RitualSpellCard
     public Incandescent_Ordeal()
         : base(
             cost: 1,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.Self,
             spellRace: DuelMonsterRace.SpellRitual,
             ritualTargetMonsterType: typeof(Legendary_Flame_Lord),

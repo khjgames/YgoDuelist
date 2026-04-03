@@ -13,7 +13,7 @@ public sealed class White_Dragon_Ritual : RitualSpellCard
     public White_Dragon_Ritual()
         : base(
             cost: 1,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.Self,
             spellRace: DuelMonsterRace.SpellRitual,
             ritualTargetMonsterType: typeof(Paladin_of_White_Dragon),

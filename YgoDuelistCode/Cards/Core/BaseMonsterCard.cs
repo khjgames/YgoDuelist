@@ -104,6 +104,17 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     protected override bool HasRecklessKeyword => GetTotalRecklessCombatSelfDamage() > 0;
 
+    protected override int RecklessKeywordStackCountForDisplay
+    {
+        get
+        {
+            if (HasRecklessBlockerKeyword)
+                return 0;
+            int d = GetTotalRecklessCombatSelfDamage();
+            return d > 0 ? d : 0;
+        }
+    }
+
     /// <summary>Self-damage to the duel pet before attack/block from intrinsic reckless and face-up equips.</summary>
     public int GetTotalRecklessCombatSelfDamage() =>
         GetIntrinsicRecklessCombatSelfDamage() + SumFaceUpEquipRecklessSelfDamage();

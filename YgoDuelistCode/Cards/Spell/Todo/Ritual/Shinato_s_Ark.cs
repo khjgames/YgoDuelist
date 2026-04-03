@@ -13,7 +13,7 @@ public sealed class Shinato_S_Ark : RitualSpellCard
     public Shinato_S_Ark()
         : base(
             cost: 1,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.Self,
             spellRace: DuelMonsterRace.SpellRitual,
             ritualTargetMonsterType: typeof(Shinato_King_of_a_Higher_Plane),

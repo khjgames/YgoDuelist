@@ -45,6 +45,9 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     /// <summary>Spell/trap cards: show Blight keyword chip when card text references Blight.</summary>
     public virtual bool CardShowsBlightKeyword => false;
 
+    /// <summary>Spell/trap cards: show Reckless keyword chip (e.g. equips that grant combat self-damage on the monster).</summary>
+    public virtual bool CardShowsRecklessKeyword => false;
+
     /// <summary>
     /// Resolves <c>description</c> vs <c>description_combat</c> and optional <c>_upgraded</c> suffixes; used by <see cref="Patches.MonsterCardRightClickPatch.GetDescriptionLocString"/>.
     /// </summary>

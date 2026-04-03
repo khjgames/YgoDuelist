@@ -1,5 +1,6 @@
 using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -11,12 +12,17 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
 public sealed class Mask_of_Brutality : BaseEquipSpellCard
 {
+    private const string AtkEnergyImgBbcode =
+        "[img]res://YgoDuelist/images/card_frames/attack_monster_energy_icon.png[/img]";
+
     public Mask_of_Brutality()
         : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.Self)
     {
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Spell;
+
+    public override bool CardShowsRecklessKeyword => true;
 
     public override Type[] RelatedCards => new[]
     {
@@ -33,6 +39,9 @@ public sealed class Mask_of_Brutality : BaseEquipSpellCard
     public override int GetEquipAttackPlayEnergyDiscount(BaseMonsterCard equipped) => 1;
 
     public override int GetEquipRecklessCombatSelfDamage(BaseMonsterCard equipped) => 1;
+
+    protected override void AddExtraArgsToDescription(LocString description) =>
+        description.Add("ATK_Energy", AtkEnergyImgBbcode);
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

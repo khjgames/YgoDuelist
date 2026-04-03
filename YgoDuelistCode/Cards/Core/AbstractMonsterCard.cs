@@ -352,9 +352,14 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// <summary>Level 3+ normal-line monsters: <see cref="NormalMonsterCard"/>; drives Reckless keyword and CombatAction self-damage.</summary>
     protected virtual bool HasRecklessKeyword => false;
 
+    /// <summary>How many <see cref="RecklessKeyword"/> entries appear in <see cref="CanonicalKeywords"/> (keyword text: 1 HP per stack).</summary>
+    protected virtual int RecklessKeywordStackCountForDisplay =>
+        HasRecklessKeyword ? 1 : 0;
+
     private IEnumerable<CardKeyword> GetRecklessKeywords()
     {
-        if (HasRecklessKeyword)
+        int n = RecklessKeywordStackCountForDisplay;
+        for (int i = 0; i < n; i++)
             yield return RecklessKeyword;
     }
 

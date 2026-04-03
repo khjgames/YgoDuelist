@@ -260,6 +260,43 @@ public static class YgoSpellTrapZoneBridge
     }
 
     /// <summary>
+    /// Normal trap that binds to a monster like an equip: from hand/play, moves face-up into the zone then <see cref="YgoSpellTrapEquipLinkRegistry.Attach"/>.
+    /// </summary>
+    public static async Task ActivateEquipLinkTrapAsync(BaseTrapCard trap, BaseMonsterCard targetMonster)
+    {
+        if (trap.Owner == null || trap is not IYgoSpellTrapEquipLink)
+            return;
+
+        Player player = trap.Owner;
+        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zonePile == null)
+            return;
+
+        trap.MarkResolvingFaceUpInSpellTrapZone();
+
+        PileType from = trap.Pile?.Type ?? PileType.None;
+        if (from == PileType.Hand || from == PileType.Play)
+        {
+            if (!HasSpaceForSetOrPlay(player, trap))
+                return;
+
+            await CardPileCmd.Add(
+                new[] { trap },
+                zonePile,
+                CardPilePosition.Top,
+                trap,
+                false);
+        }
+        else if (!ReferenceEquals(trap.Pile, zonePile))
+            return;
+
+        YgoSpellTrapEquipLinkRegistry.Attach(trap, targetMonster);
+
+        SyncFromZonePile(player);
+        YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandEnsureVisible(player);
+    }
+
+    /// <summary>
     /// From hand/play: moves the card into the Spell/Trap zone. From zone (set continuous): already there—flip/sync only.
     /// </summary>
     public static async Task ActivateContinuousSpellAsync(BaseContinuousSpellCard card)

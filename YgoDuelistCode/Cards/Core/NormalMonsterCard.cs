@@ -136,22 +136,25 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         int resolutionCount = YgoNarrowPassField.GetAttackOrDefendResolutionCount(Owner);
 
-        int recklessSelf = GetTotalRecklessCombatSelfDamage();
-        if (recklessSelf > 0
-            && Owner != null
-            && Owner.Creature != null
-            && Owner.PlayerCombatState != null)
+        int recklessSelf = HasRecklessBlockerKeyword ? 0 : GetTotalRecklessCombatSelfDamage();
+
+        async Task ApplyRecklessSelfDamageIfAnyAsync()
         {
+            if (recklessSelf <= 0
+                || Owner?.Creature == null
+                || Owner.PlayerCombatState == null)
+                return;
             Creature? selfPet = Owner.PlayerCombatState.Pets
                 .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
-            if (selfPet != null && selfPet.IsAlive)
-                await CreatureCmd.Damage(
-                    choiceContext,
-                    selfPet,
-                    recklessSelf,
-                    ValueProp.Unblockable | ValueProp.Unpowered,
-                    dealer: null,
-                    cardSource: this);
+            if (selfPet == null || !selfPet.IsAlive)
+                return;
+            await CreatureCmd.Damage(
+                choiceContext,
+                selfPet,
+                recklessSelf,
+                ValueProp.Unblockable | ValueProp.Unpowered,
+                dealer: null,
+                cardSource: this);
         }
 
         if (Type == CardType.Attack && cardPlay.Target != null)
@@ -160,6 +163,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             WillSet = false;
             for (int i = 0; i < resolutionCount; i++)
             {
+                await ApplyRecklessSelfDamageIfAnyAsync();
                 await DamageCmd.Attack((decimal)atk)
                     .FromCard(this)
                     .Targeting(cardPlay.Target)
@@ -174,6 +178,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 WillSet = false;
                 for (int i = 0; i < resolutionCount; i++)
                 {
+                    await ApplyRecklessSelfDamageIfAnyAsync();
                     await CreatureCmd.GainBlock(
                         Owner.Creature,
                         (decimal)def,

@@ -22,6 +22,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
     private static CardKeyword CycleSpellKeyword => (CardKeyword)20040;
     private static CardKeyword SplinterKeyword => (CardKeyword)20044;
     private static CardKeyword BlightKeyword => (CardKeyword)20045;
+    private static CardKeyword RecklessKeyword => (CardKeyword)20043;
 
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);
@@ -133,6 +134,8 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             yield return SplinterKeyword;
         if (CardShowsBlightKeyword)
             yield return BlightKeyword;
+        if (CardShowsRecklessKeyword)
+            yield return RecklessKeyword;
     }
 
     private IEnumerable<CardKeyword> GetFaceDownKeyword()

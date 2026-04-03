@@ -8,14 +8,17 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Basic;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 [HarmonyPatch(typeof(NCard), "Reload")]
 public static class YgoEnergyIconNodePatch
 {
-    private const string AttackMonsterEnergyPath = "YgoDuelist/images/card_frames/attack_monster_energy.png";
+    private const string AttackMonsterEnergyPath = "YgoDuelist/images/card_frames/attack_monster_energy_icon.png";
+    private const string DefenseMonsterEnergyPath = "YgoDuelist/images/card_frames/defense_monster_energy_icon.png";
 
     [HarmonyPostfix]
     [HarmonyPriority(Priority.Last)]
@@ -41,10 +44,9 @@ public static class YgoEnergyIconNodePatch
         if (model is Defend_YgoDuelist)
         {
             icon.Visible = true;
-            string defectEnergyPath = EnergyIconHelper.GetPath("defect");
-            var defectTex = ResourceLoader.Load<Texture2D>(defectEnergyPath, null, ResourceLoader.CacheMode.Reuse);
-            if (defectTex != null)
-                icon.Texture = defectTex;
+            var defTex = ResourceLoader.Load<Texture2D>(DefenseMonsterEnergyPath, null, ResourceLoader.CacheMode.Reuse);
+            if (defTex != null)
+                icon.Texture = defTex;
             return;
         }
 
@@ -73,7 +75,7 @@ public static class YgoEnergyIconNodePatch
                 else if (model.Type == CardType.Attack)
                     customTexturePath = AttackMonsterEnergyPath;
                 else
-                    energyPrefix = "defect";
+                    customTexturePath = DefenseMonsterEnergyPath;
             }
         }
         else if (model is AbstractMonsterCard handEffectMonster && handEffectMonster.IsHandEffectFormActive)
@@ -110,6 +112,15 @@ public static class YgoEnergyIconNodePatch
             icon.Visible = true;
             customTexturePath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
         }
+        else if (model is BaseTrapCard zoneLinkTrap
+                 && model is IYgoSpellTrapEquipLink
+                 && model.Pile?.Type == SpellTrapZonePile.CustomType
+                 && !zoneLinkTrap.FaceDown
+                 && YgoSpellTrapEquipLinkRegistry.GetLinkedMonster(model) != null)
+        {
+            icon.Visible = true;
+            customTexturePath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
+        }
         else if (model is IYgoCard ygo)
         {
             icon.Visible = true;
@@ -117,20 +128,21 @@ public static class YgoEnergyIconNodePatch
             {
                 YgoCardType.Spell => "silent",
                 YgoCardType.Trap => "necrobinder",
-                YgoCardType.Monster => model.Type == CardType.Attack ? null : "defect",
-                YgoCardType.EffectMonster => model.Type == CardType.Attack ? null : "defect",
-                YgoCardType.FusionMonster => model.Type == CardType.Attack ? null : "defect",
-                YgoCardType.RitualMonster => model.Type == CardType.Attack ? null : "defect",
+                YgoCardType.Monster => null,
+                YgoCardType.EffectMonster => null,
+                YgoCardType.FusionMonster => null,
+                YgoCardType.RitualMonster => null,
                 _ => null
             };
 
-            if ((ygo.YgoCardType == YgoCardType.Monster
+            if (ygo.YgoCardType == YgoCardType.Monster
                 || ygo.YgoCardType == YgoCardType.EffectMonster
                 || ygo.YgoCardType == YgoCardType.FusionMonster
                 || ygo.YgoCardType == YgoCardType.RitualMonster)
-                && model.Type == CardType.Attack)
             {
-                customTexturePath = AttackMonsterEnergyPath;
+                customTexturePath = model.Type == CardType.Attack
+                    ? AttackMonsterEnergyPath
+                    : DefenseMonsterEnergyPath;
             }
         }
 

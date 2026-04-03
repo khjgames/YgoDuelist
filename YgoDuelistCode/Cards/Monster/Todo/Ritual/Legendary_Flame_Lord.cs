@@ -14,7 +14,7 @@ public sealed class Legendary_Flame_Lord : RitualMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
@@ -26,7 +26,7 @@ public sealed class Legendary_Flame_Lord : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Fire | YgoCardPackTags.Spellcaster;
+        YgoCardPackTags.Ritual | YgoCardPackTags.Fire | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
 
     public override Type[] BundledCards => new[] { typeof(Incandescent_Ordeal), typeof(Legendary_Flame_Lord) };
 

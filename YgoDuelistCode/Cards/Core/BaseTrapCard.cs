@@ -53,6 +53,12 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
 
     protected abstract Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay);
 
+    /// <summary>
+    /// When false, <see cref="OnPlay"/> does not send this card to the graveyard; use
+    /// <see cref="OnTrapRemainFaceUpInSpellTrapZoneAfterPlayAsync"/> to resolve (e.g. equip-link trap stays face-up in the zone).
+    /// </summary>
+    protected virtual bool SendsTrapToGraveyardAfterPlay => true;
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         SetThisTurn = false;
@@ -61,12 +67,23 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         SyncFaceDownPresentationKeyword();
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await OnTrapPlay(choiceContext, cardPlay);
-        await SendThisTrapToGraveyard(choiceContext);
-        await OnAfterNormalTrapSentToGraveyardAsync(choiceContext, cardPlay);
+        if (SendsTrapToGraveyardAfterPlay)
+        {
+            await SendThisTrapToGraveyard(choiceContext);
+            await OnAfterNormalTrapSentToGraveyardAsync(choiceContext, cardPlay);
+        }
+        else
+            await OnTrapRemainFaceUpInSpellTrapZoneAfterPlayAsync(choiceContext, cardPlay);
     }
 
     /// <summary>After this normal trap is moved to the graveyard by <see cref="OnPlay"/> (e.g. attach equip-link while the card is in the GY).</summary>
     protected virtual Task OnAfterNormalTrapSentToGraveyardAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
+
+    /// <summary>When <see cref="SendsTrapToGraveyardAfterPlay"/> is false, runs after <see cref="OnTrapPlay"/> instead of sending to the GY.</summary>
+    protected virtual Task OnTrapRemainFaceUpInSpellTrapZoneAfterPlayAsync(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay) =>
         Task.CompletedTask;
 
     protected override bool IsPlayable
@@ -97,6 +114,14 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         SetThisTurn = true;
         WasSetIntoSpellTrapZone = true;
         FaceDown = true;
+        SyncFaceDownPresentationKeyword();
+    }
+
+    /// <summary>Trap resolves face-up in the zone (not a set card): clears set/facedown presentation before <see cref="CardPileCmd.Add"/>.</summary>
+    internal void MarkResolvingFaceUpInSpellTrapZone()
+    {
+        WasSetIntoSpellTrapZone = false;
+        FaceDown = false;
         SyncFaceDownPresentationKeyword();
     }
 
@@ -179,7 +204,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         return true;
     }
 
-    private async Task SendThisTrapToGraveyard(PlayerChoiceContext choiceContext)
+    protected async Task SendThisTrapToGraveyard(PlayerChoiceContext choiceContext)
     {
         var player = Owner;
         if (player == null)

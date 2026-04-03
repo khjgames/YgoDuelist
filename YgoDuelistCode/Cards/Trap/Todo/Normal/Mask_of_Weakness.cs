@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
@@ -20,9 +18,9 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 /// <summary>
-/// Normal Trap. Target a field monster; this card goes to the GY and stays linked like an equip.
-/// While this card is in your GY and linked, that monster's ATK/DEF are multiplied by {Mgc}% (each copy stacks),
-/// and it pays [E] 1 less for attack and defense commands.
+/// Normal Trap: cancelable pick a field monster, pay cost, then remain face-up in the Spell/Trap zone linked to that monster
+/// (equip-style hover overlay). While active, applies ATK/DEF multiplier and −1 attack/defense command energy. Destroyed when the
+/// monster leaves the field; unlinking does not destroy the monster when this trap is sent to the GY.
 /// </summary>
 public sealed class Mask_of_Weakness : BaseTrapCard,
     IYgoSpellTrapEquipLink,
@@ -31,6 +29,7 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
 {
     private BaseMonsterCard? _equipLinkedMonster;
     private BaseMonsterCard? _pendingEquipLinkTarget;
+    private bool _fizzleToGraveyard;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 55m) };
@@ -51,16 +50,22 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
         typeof(Mask_of_Weakness),
     };
 
+    protected override bool CanActivateDirectlyFromHand => true;
+
+    protected override bool SendsTrapToGraveyardAfterPlay => false;
+
     public BaseMonsterCard? EquipLinkedMonster => _equipLinkedMonster;
 
     public void SetEquipLinkedMonster(BaseMonsterCard? monster) => _equipLinkedMonster = monster;
 
-    bool IYgoSpellTrapEquipLink.DetachSpellTrapEquipLinkOnSpellTrapZoneToGraveyard => false;
+    bool IYgoSpellTrapEquipLink.DetachSpellTrapEquipLinkOnSpellTrapZoneToGraveyard => true;
 
     bool IYgoSpellTrapEquipLink.DestroyLinkedDuelMonsterOnSpellTrapZoneToGraveyard => false;
 
     public bool IsSpellTrapEquipLinkStatEffectActive =>
-        Pile?.Type == GraveyardPile.CustomType && EquipLinkedMonster != null;
+        Pile?.Type == SpellTrapZonePile.CustomType
+        && !FaceDown
+        && EquipLinkedMonster != null;
 
     public StatEffectTotalMultiplier GetSpellTrapEquipLinkStatMultiplier()
     {
@@ -76,10 +81,25 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
     public int GetSpellTrapEquipLinkDefensePlayEnergyDiscount() =>
         IsSpellTrapEquipLinkStatEffectActive ? 1 : 0;
 
-    protected override bool IsPlayable =>
-        base.IsPlayable
-        && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Count > 0;
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (Pile?.Type == SpellTrapZonePile.CustomType && !FaceDown && EquipLinkedMonster != null)
+                return false;
+
+            if (!base.IsPlayable)
+                return false;
+
+            if (Owner == null)
+                return false;
+
+            if (Pile?.Type == PileType.Hand && !YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
+                return false;
+
+            return DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Count > 0;
+        }
+    }
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
@@ -113,31 +133,49 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
 
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        _fizzleToGraveyard = false;
+        _pendingEquipLinkTarget = null;
+
         if (Owner == null)
+        {
+            _fizzleToGraveyard = true;
             return Task.CompletedTask;
+        }
 
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseMonsterCard chosen)
+        {
+            _fizzleToGraveyard = true;
             return Task.CompletedTask;
+        }
 
         if (!DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Contains(chosen))
+        {
+            _fizzleToGraveyard = true;
             return Task.CompletedTask;
+        }
 
         _pendingEquipLinkTarget = chosen;
         return Task.CompletedTask;
     }
 
-    protected override Task OnAfterNormalTrapSentToGraveyardAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnTrapRemainFaceUpInSpellTrapZoneAfterPlayAsync(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay)
     {
-        if (Owner == null || _pendingEquipLinkTarget == null)
+        if (Owner == null)
+            return;
+
+        if (_fizzleToGraveyard || _pendingEquipLinkTarget == null)
         {
-            _pendingEquipLinkTarget = null;
-            return Task.CompletedTask;
+            await SendThisTrapToGraveyard(choiceContext);
+            return;
         }
 
-        YgoSpellTrapEquipLinkRegistry.Attach(this, _pendingEquipLinkTarget);
+        await YgoSpellTrapZoneBridge.ActivateEquipLinkTrapAsync(this, _pendingEquipLinkTarget);
         _pendingEquipLinkTarget = null;
+
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(Owner);
-        return Task.CompletedTask;
+        DuelMonsterPortraitDecorations.RefreshAllEquipLinkLayers();
     }
 
     protected override void OnUpgrade()
