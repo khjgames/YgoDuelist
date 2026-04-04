@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
@@ -28,15 +29,6 @@ public sealed class Activate_Effect : MonsterCommandCard
     public override CardType Type => Effect?.ActivatedEffectCardType ?? CardType.Skill;
 
     public override TargetType TargetType => Effect?.ActivatedEffectTarget ?? TargetType.Self;
-
-    protected override int CanonicalEnergyCost
-    {
-        get
-        {
-            int baseCost = Effect?.ActivatedEffectEnergyCost ?? 0;
-            return baseCost + YgoNarrowPassField.GetMonsterCommandEnergyAdd(SourceMonster?.Owner);
-        }
-    }
 
     protected override bool IsPlayable
     {
@@ -87,6 +79,8 @@ public sealed class Activate_Effect : MonsterCommandCard
             return little.IsAnotherMonsterControlled(commandOwner);
         if (source is Winged_Minion winged)
             return winged.IsAnotherFiendControlled(commandOwner);
+        if (source is Paladin_of_White_Dragon paladin)
+            return paladin.IsActivatedEffectPlayable(commandOwner);
         return impl.IsActivatedEffectAvailable;
     }
 }

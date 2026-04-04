@@ -59,7 +59,7 @@ public static class PlayCardActionTributeSelectionPatch
             if (card is not NormalMonsterCard nmc || nmc.TributeReleaseCount <= 0)
                 return;
 
-            var pets = await TributeSummonSelection.SelectTributesAsync(action.Player, nmc.TributeReleaseCount);
+            var pets = await TributeSummonSelection.SelectTributesForNormalSummonAsync(action.Player, nmc);
             if (pets == null)
             {
                 action.Cancel();

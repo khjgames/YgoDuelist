@@ -37,6 +37,8 @@ public sealed class The_Fiend_Megacyber : EffectMonsterCard
         typeof(The_Fiend_Megacyber),
     };
 
+    protected override bool StumblingBlocksHandSummonInAttackPosition => false;
+
     protected override bool SupportsHandEffectForm => true;
 
     public override bool CanSummonDuelMonster => !IsHandEffectFormActive;

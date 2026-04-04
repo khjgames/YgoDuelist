@@ -43,7 +43,8 @@ public sealed class Great_Maju_Garzett : EffectMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null || mats.Count < tribute)
+                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null
+                    || !DoubleTributeTributeMath.TributePetsMeetCost(this, mats))
                 {
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
                     if (!ShouldSkipCombatActionAfterSummon(cardPlay))

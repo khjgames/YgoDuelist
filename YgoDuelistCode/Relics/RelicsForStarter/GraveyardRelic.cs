@@ -130,6 +130,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
         await YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(player);
         await YgoBlindDestructionContinuous.TryResolvePlayerTurnStart(choiceContext, player);
+        await YgoCardTraderContinuous.TryResolvePlayerTurnStart(choiceContext, player);
     }
 
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)

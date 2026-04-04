@@ -20,6 +20,98 @@ public static class TributeSummonSelection
 {
     private static readonly LocString TributePrompt = new LocString("combat_messages", "TRIBUTE_SUMMON_SELECT");
 
+    private const int MaxInvalidTributeReselects = 16;
+
+    /// <summary>Whether the field can pay <see cref="BaseMonsterCard.TributeReleaseCount"/> for this summon (including double-tribute materials).</summary>
+    public static bool CanMeetTributeCostForSummon(Player? player, BaseMonsterCard summon)
+    {
+        int need = summon.TributeReleaseCount;
+        if (need <= 0)
+            return true;
+        if (player?.PlayerCombatState == null)
+            return false;
+
+        List<BaseMonsterCard> field = BuildTributeCandidateCards(player);
+        int minPets = DoubleTributeTributeMath.MinMonstersNeededToPayTribute(field, summon);
+        if (minPets == int.MaxValue || field.Count < minPets)
+            return false;
+
+        return DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, minPets);
+    }
+
+    /// <summary>Tribute selection for a normal summon, allowing one double-tribute monster when the summon needs two releases.</summary>
+    public static async Task<List<Creature>?> SelectTributesForNormalSummonAsync(Player player, BaseMonsterCard summonCard)
+    {
+        int need = summonCard.TributeReleaseCount;
+        if (need <= 0)
+            return new List<Creature>();
+
+        if (need == 1)
+            return await SelectTributesAsync(player, 1);
+
+        for (int attempt = 0; attempt < MaxInvalidTributeReselects; attempt++)
+        {
+            List<Creature>? pets = await TrySelectVariableTributeAsync(player, need, summonCard);
+            if (pets == null)
+                return null;
+            if (DoubleTributeTributeMath.TributePetsMeetCost(summonCard, pets))
+                return pets;
+        }
+
+        return null;
+    }
+
+    private static async Task<List<Creature>?> TrySelectVariableTributeAsync(Player player, int need, BaseMonsterCard summonCard)
+    {
+        List<BaseMonsterCard> candidates = BuildTributeCandidateCards(player);
+        if (candidates.Count == 0)
+            return null;
+
+        var prefs = new CardSelectorPrefs(TributePrompt, minCount: 1, maxCount: need)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = true
+        };
+
+        IEnumerable<CardModel> selected;
+        try
+        {
+            selected = await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                candidates,
+                player,
+                prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+
+        var picked = selected.OfType<BaseMonsterCard>().ToList();
+        if (picked.Count == 0 || picked.Count > need)
+            return null;
+
+        if (picked.Distinct().Count() != picked.Count)
+            return null;
+
+        if (!DoubleTributeTributeMath.TributeFieldCardsMeetCost(summonCard, picked))
+            return new List<Creature>();
+
+        var pets = new List<Creature>(picked.Count);
+        foreach (BaseMonsterCard c in picked)
+        {
+            Creature? pet = ResolvePetForFieldCard(player, c);
+            if (pet == null || !pet.IsAlive)
+                return null;
+            pets.Add(pet);
+        }
+
+        if (pets.Distinct().Count() != pets.Count)
+            return null;
+
+        return pets;
+    }
+
     /// <summary>Living duel monsters on the field with a registered source card (tribute candidates).</summary>
     public static int CountTributableFieldMonsters(Player? player)
     {

@@ -1,5 +1,4 @@
 using System.Reflection;
-using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -11,8 +10,6 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
-using MegaCrit.Sts2.Core.Nodes;
-using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
@@ -330,31 +327,17 @@ public static class YgoCardPackRewardFlow
 
         return options.RarityOdds switch
         {
-            CardRarityOddsType.BossEncounter => 6,
+            CardRarityOddsType.BossEncounter => 5,
             CardRarityOddsType.EliteEncounter => 5,
             CardRarityOddsType.RegularEncounter => RegularEncounterPackSlots(reward.Player),
-            _ => Math.Clamp(GetOptionCount(reward), 2, 6),
+            _ => Math.Clamp(GetOptionCount(reward), 3, 6),
         };
     }
 
     private static int RegularEncounterPackSlots(Player player)
     {
         int floorTier = Math.Min(2, (Math.Max(1, player.RunState.TotalFloor) - 1) / 6);
-        EncounterModel? enc = TryGetCombatEncounterForRewardsScreen();
-        bool weak = enc?.IsWeak ?? false;
-        int baseSlots = weak ? 2 : 3;
-        return Math.Clamp(baseSlots + floorTier, 2, 4);
-    }
-
-    private static EncounterModel? TryGetCombatEncounterForRewardsScreen()
-    {
-        NCombatRoom? ncr = NRun.Instance?.CombatRoom;
-        if (ncr == null)
-            return null;
-        FieldInfo? f = AccessTools.Field(typeof(NCombatRoom), "_visuals");
-        if (f?.GetValue(ncr) is ICombatRoomVisuals v)
-            return v.Encounter;
-        return null;
+        return Math.Clamp(3 + floorTier, 3, 4);
     }
 
     private static int IndexOfBundleByInstanceSequence(

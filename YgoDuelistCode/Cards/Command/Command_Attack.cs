@@ -39,8 +39,7 @@ public sealed class Command_Attack : MonsterCommandCard
             Creature? pet = FindPetForMonster(SourceMonster);
             if (pet != null && MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn)
                 return 0;
-            int baseCost = SourceMonster.DuelMonsterAttackPlayEnergy;
-            return baseCost + YgoNarrowPassField.GetMonsterCommandEnergyAdd(SourceMonster.Owner);
+            return YgoMonsterCommandEnergyModifiers.GetFieldCommandAttackEnergyCost(SourceMonster);
         }
     }
 

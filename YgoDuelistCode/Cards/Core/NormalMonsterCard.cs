@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -90,6 +91,12 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     //base.IsPlayable &&
     //(Owner == null || !NormalSummonTracker.HasUsedThisTurn(Owner));
     
+    /// <summary>
+    /// When true and <see cref="YgoStumblingField"/> is active, this card cannot be played from hand in attack stance
+    /// (normal / tribute summon must use defense stance). Special-summon-from-hand effects override this to false.
+    /// </summary>
+    protected virtual bool StumblingBlocksHandSummonInAttackPosition => true;
+
     /// <summary>Star cost for display and payment; matches StarsVar base (<see cref="AbstractMonsterCard.MonsterConduitStarCost"/>) in CanonicalVars.</summary>
     public override int CanonicalStarCost => (int)DynamicVars.Stars.BaseValue;
 
@@ -110,11 +117,16 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             if (!CanSummonDuelMonster || Owner == null)
                 return true;
 
-            int tribute = TributeReleaseCount;
-            if (tribute > 0 && TributeSummonSelection.CountTributableFieldMonsters(Owner) < tribute)
+            if (YgoStumblingField.IsActive(Owner)
+                && StumblingBlocksHandSummonInAttackPosition
+                && Type == CardType.Attack)
                 return false;
 
-            return DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tribute);
+            int tribute = TributeReleaseCount;
+            if (tribute > 0 && !TributeSummonSelection.CanMeetTributeCostForSummon(Owner, this))
+                return false;
+
+            return true;
         }
     }
 
@@ -164,11 +176,12 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             for (int i = 0; i < resolutionCount; i++)
             {
                 await ApplyRecklessSelfDamageIfAnyAsync();
-                await DamageCmd.Attack((decimal)atk)
+                AttackCommand attackCommand = await DamageCmd.Attack((decimal)atk)
                     .FromCard(this)
                     .Targeting(cardPlay.Target)
                     .WithHitFx("vfx/vfx_attack_slash")
                     .Execute(choiceContext);
+                await OnAfterMonsterAttackHitAsync(choiceContext, cardPlay, attackCommand);
             }
         }
         else if (Type == CardType.Skill)
@@ -194,6 +207,13 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     protected virtual Task BeforeAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
+    /// <summary>After each <see cref="DamageCmd.Attack"/> hit from <see cref="CombatAction"/> (same resolution loop).</summary>
+    protected virtual Task OnAfterMonsterAttackHitAsync(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay,
+        AttackCommand attackCommand) =>
+        Task.CompletedTask;
+
     /// <summary>After <see cref="CreatureCmd.GainBlock"/> from this card’s skill combat action (defend from hand or command).</summary>
     protected virtual Task OnAfterGainBlockFromCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay, int blockGranted) =>
         Task.CompletedTask;
@@ -205,7 +225,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null || mats.Count < tribute)
+                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null
+                    || !DoubleTributeTributeMath.TributePetsMeetCost(this, mats))
                 {
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
                     if (!ShouldSkipCombatActionAfterSummon(cardPlay))

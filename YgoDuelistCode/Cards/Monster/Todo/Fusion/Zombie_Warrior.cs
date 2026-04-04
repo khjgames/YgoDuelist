@@ -11,7 +11,7 @@ public sealed class Zombie_Warrior : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
@@ -19,8 +19,13 @@ public sealed class Zombie_Warrior : FusionMonsterCard
             baseDef: 9,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Zombie,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Servant),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Battle_Warrior))
+            fusionMaterialTypes: new[]
+            {
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Servant),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Battle_Warrior)
+            },
+            duelMonsterDefensePlayEnergyOverride: 0,
+            duelMonsterAttackPlayEnergyOverride: 0)
     {
     }
 }

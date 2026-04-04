@@ -1,17 +1,20 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Double_Coston : EffectMonsterCard
+public sealed class Double_Coston : EffectMonsterCard, IDoubleTributeMaterial
 {
     public Double_Coston()
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
@@ -22,4 +25,15 @@ public sealed class Double_Coston : EffectMonsterCard
     {
     }
 
+    public DoubleTributeSummonTargetSpec DoubleTributeTargetSpec => new()
+    {
+        RestrictAttribute = true,
+        RequiredAttribute = DuelMonsterAttribute.Dark
+    };
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+
+    public override Type[] RelatedCards =>
+        DoubleTributeRelatedCards.For(typeof(Double_Coston), DoubleTributeTargetSpec);
 }

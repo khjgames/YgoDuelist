@@ -101,9 +101,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 if (discounted < 0)
                     discounted = 0;
                 // Owner asserts mutable; canonical/library templates must not touch it (e.g. NCardGrid sort by EnergyCost).
-                if (IsMutable && bm.CanSummonDuelMonster && YgoCardType != YgoCardType.FusionMonster)
-                    discounted += YgoNarrowPassField.GetMonsterCommandEnergyAdd(bm.Owner);
-                return discounted;
+                return YgoMonsterCommandEnergyModifiers.ApplyHandSummonFieldWideAddIfApplicable(bm, discounted);
             }
 
             return _handSummonFallbackEnergy;

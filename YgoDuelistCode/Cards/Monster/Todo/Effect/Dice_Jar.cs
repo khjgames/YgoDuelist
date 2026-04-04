@@ -77,7 +77,8 @@ public sealed class Dice_Jar : EffectMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null || mats.Count < tribute)
+                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null
+                    || !DoubleTributeTributeMath.TributePetsMeetCost(this, mats))
                 {
                     if (owner.Creature != null)
                         await CreatureCmd.TriggerAnim(owner.Creature, "Cast", owner.Character.AttackAnimDelay);

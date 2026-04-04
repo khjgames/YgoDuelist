@@ -36,8 +36,7 @@ public sealed class Command_Defend : MonsterCommandCard
             Creature? pet = FindPetForMonster(SourceMonster);
             if (pet != null && MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn)
                 return 0;
-            int baseCost = SourceMonster.DuelMonsterDefensePlayEnergy;
-            return baseCost + YgoNarrowPassField.GetMonsterCommandEnergyAdd(SourceMonster.Owner);
+            return YgoMonsterCommandEnergyModifiers.GetFieldCommandDefendEnergyCost(SourceMonster);
         }
     }
 

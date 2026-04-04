@@ -2,10 +2,10 @@ Generic For All Monsters ->
 Double_Summon
 Mausoleum_of_the_Emperor
 
-Warrior Monsters ->
+For Warrior Monsters ->
 Gaia_the_Fierce_Knight_Origin
 
-LIGHT Fairy Monsters ->
+For Light Fairy Monsters ->
 Gellenduo 
 
 For Plant Monsters ->
@@ -30,17 +30,25 @@ For Water Monsters ->
 Unshaven_Angler
 
 For Earth Monsters ->
-Earth_Effigy
 The_Trojan_Horse
 
+For Earth Normal Monsters ->
+Earth_Effigy
+
 For Wind Monsters ->
-Wind_Effigy
 Whirlwind_Prodigy
 
+For Wind Normal Monsters ->
+Wind_Effigy
+
 For Dark Monsters ->
-Dark_Effigy
 Double_Coston
+
+For Dark Normal Monsters ->
+Dark_Effigy
 
 For Light monsters ->
 Kaiser_Sea_Horse
+
+For Light Normal Monsters ->
 Light_Effigy

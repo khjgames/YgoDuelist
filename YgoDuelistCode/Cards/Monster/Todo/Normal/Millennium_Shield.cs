@@ -20,7 +20,8 @@ public sealed class Millennium_Shield : NormalMonsterCard
             baseAtk: 0,
             baseDef: 30,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Warrior)
+            duelMonsterRace: DuelMonsterRace.Warrior,
+            duelMonsterDefensePlayEnergyOverride: 2)
     {
     }
     // Dictates the card pack tags this card will be included in.

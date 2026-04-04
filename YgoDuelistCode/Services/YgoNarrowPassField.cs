@@ -35,8 +35,9 @@ public static class YgoNarrowPassField
         return zone.Cards.OfType<Narrow_Pass>().Any(c => !c.FaceDown);
     }
 
+    /// <summary>+1 energy per face-up Narrow Pass (stacking).</summary>
     public static int GetMonsterCommandEnergyAdd(Player? player) =>
-        IsActive(player) ? 1 : 0;
+        GetActiveCount(player);
 
     public static int GetActiveCount(Player? player)
     {

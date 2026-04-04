@@ -11,16 +11,21 @@ public sealed class Flame_Ghost : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 10,
-            baseDef: 8,
+            baseDef: 11,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Zombie,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Servant),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dissolverock))
+            fusionMaterialTypes: new[]
+            {
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Servant),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dissolverock)
+            },
+            duelMonsterDefensePlayEnergyOverride: 0,
+            duelMonsterAttackPlayEnergyOverride: 0)
     {
     }
 }

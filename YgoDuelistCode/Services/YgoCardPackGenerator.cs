@@ -14,7 +14,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
 /// Builds three YGO card packs for a reward: shared rarity column, per-pack tag masks, weighted tag picks (fatigue + desire),
-/// bundles, owed rare vouchers. Every pack uses the same slot count; tag count only widens the card pool.
+/// bundles, owed rare vouchers. Boss encounter rewards use <see cref="CardRarityOddsType.BossEncounter"/> for column slot 0 only;
+/// remaining slots use <see cref="CardRarityOddsType.RegularEncounter"/>. Every pack uses the same slot count; tag count only widens the card pool.
 /// </summary>
 public static class YgoCardPackGenerator
 {
@@ -26,7 +27,7 @@ public static class YgoCardPackGenerator
         int slotCount,
         CardRarityOddsType oddsType)
     {
-        slotCount = Math.Clamp(slotCount, 2, 6);
+        slotCount = Math.Clamp(slotCount, 3, 6);
         var progress = YgoPackRewardProgress.For(player);
         int owedRareEntering = progress.OwedRareCardVouchers;
         Log.Info(
@@ -44,7 +45,11 @@ public static class YgoCardPackGenerator
             }
             else
             {
-                rolledRarities[i] = odds.Roll(oddsType);
+                CardRarityOddsType slotOdds =
+                    oddsType == CardRarityOddsType.BossEncounter && i > 0
+                        ? CardRarityOddsType.RegularEncounter
+                        : oddsType;
+                rolledRarities[i] = odds.Roll(slotOdds);
             }
         }
 

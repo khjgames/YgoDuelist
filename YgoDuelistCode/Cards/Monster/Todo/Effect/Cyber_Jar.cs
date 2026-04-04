@@ -35,6 +35,8 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
+    protected override bool StumblingBlocksHandSummonInAttackPosition => false;
+
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {
         Player? player = Owner;
