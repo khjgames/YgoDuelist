@@ -26,9 +26,6 @@ public sealed class Dice_Jar : EffectMonsterCard
 
     private static readonly LocString FlipEffectHoverTitle = new("card_keywords", "20041.title");
 
-    private static readonly LocString FlipEffectHoverDescription =
-        new("cards", "YGODUELIST-DICE_JAR.flip_effect.description");
-
     public Dice_Jar()
         : base(
             cost: 1,
@@ -64,7 +61,9 @@ public sealed class Dice_Jar : EffectMonsterCard
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
-            yield return new HoverTip(FlipEffectHoverTitle, FlipEffectHoverDescription);
+            var flipDesc = new LocString("cards", "YGODUELIST-DICE_JAR.flip_effect.description");
+            flipDesc.Add("Mgc", (decimal)BaseMgc);
+            yield return new HoverTip(FlipEffectHoverTitle, flipDesc);
             yield return YgoDeterministicRngResultDisplay.Rolled6SampleHoverTip();
         }
     }

@@ -10,36 +10,36 @@ public static class StringExtensions
 
     public static string CardImagePath(this string path)
     {
-        return Path.Join(MainFile.ModId, "images", "card_portraits", path);
+        return Path.Join(MainFile.ModId, "images", "card_portraits", path).Replace('\\', '/');
     }
 
     public static string BigCardImagePath(this string path)
     {
-        return Path.Join(MainFile.ModId, "images", "card_portraits", "big", path);
+        return Path.Join(MainFile.ModId, "images", "card_portraits", "big", path).Replace('\\', '/');
     }
 
     public static string PowerImagePath(this string path)
     {
-        return Path.Join(MainFile.ModId, "images", "powers", path);
+        return Path.Join(MainFile.ModId, "images", "powers", path).Replace('\\', '/');
     }
 
     public static string BigPowerImagePath(this string path)
     {
-        return Path.Join(MainFile.ModId, "images", "powers", "big", path);
+        return Path.Join(MainFile.ModId, "images", "powers", "big", path).Replace('\\', '/');
     }
 
     public static string RelicImagePath(this string path)
     {
-        return Path.Join(MainFile.ModId, "images", "relics", path);
+        return Path.Join(MainFile.ModId, "images", "relics", path).Replace('\\', '/');
     }
 
     public static string BigRelicImagePath(this string path)
     {
-        return Path.Join(MainFile.ModId, "images", "relics", "big", path);
+        return Path.Join(MainFile.ModId, "images", "relics", "big", path).Replace('\\', '/');
     }
 
     public static string CharacterUiPath(this string path)
     {
-        return Path.Join(MainFile.ModId, "images", "charui", path);
+        return Path.Join(MainFile.ModId, "images", "charui", path).Replace('\\', '/');
     }
 }

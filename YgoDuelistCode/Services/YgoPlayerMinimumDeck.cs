@@ -29,6 +29,13 @@ public static class YgoPlayerMinimumDeck
         box.Value++;
     }
 
+    /// <summary>Undo <see cref="IncreaseAfterPackRewardConfirmed"/> when the player backs out of deck assignment back to pack choice.</summary>
+    public static void RevertLastPackOpenBump(Player player)
+    {
+        StrongBox<int> box = Table.GetValue(player, static _ => new StrongBox<int>(StartingMinimum));
+        box.Value = Math.Max(StartingMinimum, box.Value - 1);
+    }
+
     public static void DecreaseAfterVoluntaryRemovals(Player player, int cardsRemoved)
     {
         if (cardsRemoved <= 0)

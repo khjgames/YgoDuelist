@@ -12,6 +12,9 @@ using YgoDuelist.YgoDuelistCode.Cards;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
+/// <summary>One generated pack before instances are cloned for the reward UI.</summary>
+public sealed record PackTemplateRoll(YgoCardPackTags TagMask, List<CardModel> Templates);
+
 /// <summary>
 /// Builds three YGO card packs for a reward: shared rarity column, per-pack tag masks, weighted tag picks (fatigue + desire),
 /// bundles, owed rare vouchers. Boss encounter rewards use <see cref="CardRarityOddsType.BossEncounter"/> for column slot 0 only;
@@ -21,7 +24,7 @@ public static class YgoCardPackGenerator
 {
     public const int MaxCardsPerPack = 10;
 
-    public static List<List<CardModel>> GenerateThreePackTemplates(
+    public static List<PackTemplateRoll> GenerateThreePackTemplates(
         Player player,
         Rng rng,
         int slotCount,
@@ -62,7 +65,7 @@ public static class YgoCardPackGenerator
             .Concat(YgoPackCardCatalog.PackThemeSubTags)
             .ToList();
 
-        var packs = new List<List<CardModel>>(3);
+        var packs = new List<PackTemplateRoll>(3);
         for (int p = 0; p < 3; p++)
         {
             YgoCardPackTags tagMask = RollPackTagMask(rng, workingMain, workingCombined, progress);
@@ -73,7 +76,7 @@ public static class YgoCardPackGenerator
                 rolledRarities,
                 slotCount,
                 progress);
-            packs.Add(onePack);
+            packs.Add(new PackTemplateRoll(tagMask, onePack));
             Log.Info(
                 $"[YgoDuelist][PackGen] phase=after_pack_{p}_filled | tagMask={tagMask} | {SummarizePackRarities(onePack)} | cards={onePack.Count} | owedRareVouchers={progress.OwedRareCardVouchers}");
         }

@@ -13,6 +13,8 @@
   "YGODUELIST-NEOW_STARTER_GRID.prompt": "Build your starter deck: choose at least [blue]{MinCount}[/blue] and up to [blue]{MaxCount}[/blue] cards from the grid to add to your deck before Neow's blessing. (When a ritual spell appears, its ritual monster may show as an extra option next to it.)",
   "YGODUELIST-PACK_REWARD_DECK.prompt": "Pack opened: choose cards to add to your deck (0–[blue]{MaxCount}[/blue]). Cancel returns to pack choice.",
   "YGODUELIST-PACK_REWARD_SIDE.prompt": "Choose cards for your side deck from the rest (0–[blue]{MaxCount}[/blue]). Cancel returns to deck selection.",
+  "YGODUELIST-SEALED_PACK.banner": "Choose a sealed pack to open.",
+  "YGODUELIST-SEALED_PACK.confirm": "Open pack",
   "YGODUELIST-CAMPFIRE_DECK_ROW.label": "YGO deck edits: [blue]{Count}[/blue] remaining (usable even after your main campfire action).",
   "YGODUELIST-CAMPFIRE_DECK_ROW.replace": "Replace",
   "YGODUELIST-CAMPFIRE_DECK_ROW.add": "Add",

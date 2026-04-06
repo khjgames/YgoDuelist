@@ -3,7 +3,7 @@ Detailing Cardpack Visuals Creation
 All of these elements are bundled under a node in the scene tree, it has an aespect ratio of 600 x 846.
 
 First we need to create the background for the cardpack.
-@YgoDuelist/YgoDuelist/images/card_frames/Cardpacks/Cardpack_Background.png
+@YgoDuelist/YgoDuelist/images/card_frames/Sealed_Cardpacks/Cardpack_Background.png
 
 
 
@@ -48,4 +48,4 @@ First we need to create the background for the cardpack.
 
 
 Lastly we need to create the Outline for the Cardpack, overlayed on top of the background.
-@YgoDuelist/YgoDuelist/images/card_frames/Cardpacks/Cardpack_Outline.png
+@YgoDuelist/YgoDuelist/images/card_frames/Sealed_Cardpacks/Cardpack_Background_Outline.png

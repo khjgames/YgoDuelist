@@ -4,6 +4,8 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
@@ -15,6 +17,8 @@ using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Runs.History;
+using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Nodes;
 using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -87,19 +91,22 @@ public static class YgoCardPackRewardFlow
             $"cardSource={options.Source} | rarityOdds={options.RarityOdds} | slotCount={slotCount} | canSkipReward={reward.CanSkip}");
 
         var bundles = new List<IReadOnlyList<CardModel>>(3);
+        var packTagMasks = new List<YgoCardPackTags>(3);
 
         void BuildBundlesFromGenerator()
         {
             bundles.Clear();
-            List<List<CardModel>> templatePacks = YgoCardPackGenerator.GenerateThreePackTemplates(
+            packTagMasks.Clear();
+            List<PackTemplateRoll> rolls = YgoCardPackGenerator.GenerateThreePackTemplates(
                 player,
                 rng,
                 slotCount,
                 options.RarityOdds);
-            foreach (List<CardModel> pack in templatePacks)
+            foreach (PackTemplateRoll roll in rolls)
             {
-                var row = new List<CardModel>(pack.Count);
-                foreach (CardModel template in pack)
+                packTagMasks.Add(roll.TagMask);
+                var row = new List<CardModel>(roll.Templates.Count);
+                foreach (CardModel template in roll.Templates)
                     row.Add(player.RunState.CreateCard(template, player));
                 bundles.Add(row);
             }
@@ -116,7 +123,7 @@ public static class YgoCardPackRewardFlow
         {
             chosenPack = Pack_Style_Visible_Bundles
                 ? (await CardSelectCmd.FromChooseABundleScreen(player, bundles)).ToList()
-                : await ChoosePackWithoutVisibleBundlesAsync(player, choiceContext, bundles, reward.CanSkip);
+                : await ChoosePackWithoutVisibleBundlesAsync(player, choiceContext, bundles, packTagMasks, reward.CanSkip);
         }
         catch (OperationCanceledException)
         {
@@ -140,6 +147,8 @@ public static class YgoCardPackRewardFlow
             "choose_pack_phase_end",
             $"chosenBundleIndex={chosenBundleIndex} | chosenSize={chosenPack.Count} | {SummarizeRarities(chosenPack)}");
 
+        YgoPlayerMinimumDeck.IncreaseAfterPackRewardConfirmed(player);
+
         var deckPrefs = new CardSelectorPrefs(
             new LocString("combat_messages", "YGODUELIST-PACK_REWARD_DECK.prompt"),
             0,
@@ -162,6 +171,7 @@ public static class YgoCardPackRewardFlow
         }
         catch (OperationCanceledException)
         {
+            YgoPlayerMinimumDeck.RevertLastPackOpenBump(player);
             LogPackFlowPhase(player, "assign_deck_cancelled_back_to_choose_pack", "");
             goto PickBundle;
         }
@@ -216,8 +226,6 @@ public static class YgoCardPackRewardFlow
             $"deck={deckPicks.Count} side={sidePicks.Count} trunkFromPack={chosenPack.Count - deckPicks.Count - sidePicks.Count}");
         UnsubscribeRelicHandler(reward, player);
 
-        YgoPlayerMinimumDeck.IncreaseAfterPackRewardConfirmed(player);
-
         var history = player.RunState.CurrentMapPointHistoryEntry!.GetEntry(LocalContext.NetId!.Value);
         var deckSetFinal = new HashSet<CardModel>(deckPicks);
 
@@ -270,7 +278,7 @@ public static class YgoCardPackRewardFlow
 
         player.Deck.InvokeCardAddFinished();
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
-        LogPackFlowPhase(player, "flow_end_success", "minDeck bump applied; cards committed");
+        LogPackFlowPhase(player, "flow_end_success", "cards committed (min deck bumped at pack confirm)");
         return true;
     }
 
@@ -329,19 +337,57 @@ public static class YgoCardPackRewardFlow
     }
 
     /// <summary>
-    /// Pack pick without <see cref="CardSelectCmd.FromChooseABundleScreen"/>: one representative card per pack on
-    /// <see cref="CardSelectCmd.FromChooseACardScreen"/>, then the full bundle for that index. Same contract as the bundle screen
-    /// (empty list = skip reward, <see cref="OperationCanceledException"/> on cancel).
+    /// Sealed-pack overlay with back + confirm; or test/autoplay via <see cref="CardSelectCmd.FromChooseACardScreen"/> (skip allowed there).
+    /// Empty list = no pack from representative pick; <see cref="OperationCanceledException"/> = back out of the reward.
     /// </summary>
     private static async Task<List<CardModel>> ChoosePackWithoutVisibleBundlesAsync(
         Player player,
         BlockingPlayerChoiceContext choiceContext,
         List<IReadOnlyList<CardModel>> bundles,
+        List<YgoCardPackTags> packTagMasks,
         bool canSkip)
     {
         if (CombatManager.Instance!.IsEnding)
             return [];
 
+        if (CardSelectCmd.Selector != null)
+            return await ChoosePackViaRepresentativesCardScreenAsync(player, choiceContext, bundles, canSkip);
+
+        uint choiceId = RunManager.Instance!.PlayerChoiceSynchronizer.ReserveChoiceId(player);
+        await choiceContext.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
+        try
+        {
+            int idx;
+            if (ShouldSelectLocalPackChoice(player))
+            {
+                MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand.Instance?.CancelAllCardPlay();
+                NYgoSealedPackSelectionScreen screen = NYgoSealedPackSelectionScreen.Push(packTagMasks);
+                idx = await screen.WaitPackResultAsync();
+                RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(player, choiceId, PlayerChoiceResult.FromIndex(idx));
+            }
+            else
+                idx = (await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(player, choiceId)).AsIndex();
+
+            if (idx < 0)
+                return [];
+
+            return bundles[idx].ToList();
+        }
+        finally
+        {
+            await choiceContext.SignalPlayerChoiceEnded();
+        }
+    }
+
+    private static bool ShouldSelectLocalPackChoice(Player player) =>
+        LocalContext.IsMe(player) && RunManager.Instance!.NetService.Type != NetGameType.Replay;
+
+    private static async Task<List<CardModel>> ChoosePackViaRepresentativesCardScreenAsync(
+        Player player,
+        BlockingPlayerChoiceContext choiceContext,
+        List<IReadOnlyList<CardModel>> bundles,
+        bool canSkip)
+    {
         var representatives = new List<CardModel>(bundles.Count);
         foreach (IReadOnlyList<CardModel> pack in bundles)
             representatives.Add(pack[0]);
