@@ -28,6 +28,12 @@ public static class YgoCardPackRewardFlow
 {
     public const int NeowBlessingPackSlots = 3;
 
+    /// <summary>
+    /// When <c>true</c>, pack choice uses <see cref="CardSelectCmd.FromChooseABundleScreen"/> (full visible bundles).
+    /// When <c>false</c>, pack choice uses <see cref="ChoosePackWithoutVisibleBundlesAsync"/> instead.
+    /// </summary>
+    public const bool Pack_Style_Visible_Bundles = false;
+
     private static readonly BindingFlags RewardMemberFlags =
         BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
@@ -108,7 +114,9 @@ public static class YgoCardPackRewardFlow
         LogPackFlowPhase(player, "choose_pack_phase_start", SummarizeBundlesForLog(bundles));
         try
         {
-            chosenPack = (await CardSelectCmd.FromChooseABundleScreen(player, bundles)).ToList();
+            chosenPack = Pack_Style_Visible_Bundles
+                ? (await CardSelectCmd.FromChooseABundleScreen(player, bundles)).ToList()
+                : await ChoosePackWithoutVisibleBundlesAsync(player, choiceContext, bundles, reward.CanSkip);
         }
         catch (OperationCanceledException)
         {
@@ -318,6 +326,35 @@ public static class YgoCardPackRewardFlow
                 RunManager.Instance.RewardSynchronizer.SyncLocalSkippedCard(c);
             }
         }
+    }
+
+    /// <summary>
+    /// Pack pick without <see cref="CardSelectCmd.FromChooseABundleScreen"/>: one representative card per pack on
+    /// <see cref="CardSelectCmd.FromChooseACardScreen"/>, then the full bundle for that index. Same contract as the bundle screen
+    /// (empty list = skip reward, <see cref="OperationCanceledException"/> on cancel).
+    /// </summary>
+    private static async Task<List<CardModel>> ChoosePackWithoutVisibleBundlesAsync(
+        Player player,
+        BlockingPlayerChoiceContext choiceContext,
+        List<IReadOnlyList<CardModel>> bundles,
+        bool canSkip)
+    {
+        if (CombatManager.Instance!.IsEnding)
+            return [];
+
+        var representatives = new List<CardModel>(bundles.Count);
+        foreach (IReadOnlyList<CardModel> pack in bundles)
+            representatives.Add(pack[0]);
+
+        CardModel? pick = await CardSelectCmd.FromChooseACardScreen(choiceContext, representatives, player, canSkip);
+        if (pick == null)
+            return [];
+
+        int idx = representatives.IndexOf(pick);
+        if (idx < 0)
+            return [];
+
+        return bundles[idx].ToList();
     }
 
     private static int GetPackSlotCount(CardCreationOptions options, CardReward reward)
