@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cku0c8l6meu3m"
-path="res://.godot/imported/Portrait_Mask_E.png-8ec40f6018417ee9e46898c598cb24a3.ctex"
+path="res://.godot/imported/Portrait_Mask_E.png-02d5298b742eea585767311aee95cda2.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://YgoDuelist/images/card_frames/Sealed_Cardpacks/Portrait_Mask_E.png"
-dest_files=["res://.godot/imported/Portrait_Mask_E.png-8ec40f6018417ee9e46898c598cb24a3.ctex"]
+dest_files=["res://.godot/imported/Portrait_Mask_E.png-02d5298b742eea585767311aee95cda2.ctex"]
 
 [params]
 

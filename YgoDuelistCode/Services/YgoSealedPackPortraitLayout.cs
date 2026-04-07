@@ -54,24 +54,31 @@ public static class YgoSealedPackPortraitLayout
     }
 
     /// <summary>Six slots: first three portraits for <paramref name="firstBit"/>, last three for <paramref name="secondBit"/>.</summary>
-    public static SealedPackPortraitSlot[] BuildTripleTagSlots(YgoCardPackTags firstBit, YgoCardPackTags secondBit, YgoCardPackTags thirdBit)
+    public static SealedPackPortraitSlot[] BuildTripleTagSlots_A(YgoCardPackTags firstBit, YgoCardPackTags secondBit)
     {
         string[] t1 = YgoPackTagVisualDefaults.GetTagPortraits(firstBit);
         string[] t2 = YgoPackTagVisualDefaults.GetTagPortraits(secondBit);
-        string[] t3 = YgoPackTagVisualDefaults.GetTagPortraits(thirdBit);
         return
         [
             new(SealedPackPortraitTemplate.A, new Vector2(6f, 218f), new Vector2(248f, 197f), t1[0]),
             new(SealedPackPortraitTemplate.B, new Vector2(35f, 29f), new Vector2(298f, 236f), t1[1]),
             new(SealedPackPortraitTemplate.A, new Vector2(315f, 31f), new Vector2(248f, 197f), t1[2]),
-            
+
             new(SealedPackPortraitTemplate.A, new Vector2(345f, 424f), new Vector2(248f, 197f), t2[0]),
             new(SealedPackPortraitTemplate.B, new Vector2(260f, 577f), new Vector2(298f, 236f), t2[1]),
             new(SealedPackPortraitTemplate.A, new Vector2(28f, 603f), new Vector2(248f, 197f), t2[2]),
-
-            new(SealedPackPortraitTemplate.C, new Vector2(295f, 225f), new Vector2(248f, 197f), t3[0]),
+        ];
+    }
+    
+        /// <summary>Six slots: first three portraits for <paramref name="firstBit"/>, last three for <paramref name="secondBit"/>.</summary>
+    public static SealedPackPortraitSlot[] BuildTripleTagSlots_B(YgoCardPackTags thirdBit)
+    {
+        string[] t3 = YgoPackTagVisualDefaults.GetTagPortraits(thirdBit);
+        return
+        [
+            new(SealedPackPortraitTemplate.E, new Vector2(295f, 225f), new Vector2(248f, 197f), t3[0]),
             new(SealedPackPortraitTemplate.D, new Vector2(149f, 304f), new Vector2(298f, 236f), t3[1]),
-            new(SealedPackPortraitTemplate.E, new Vector2(54f, 424f), new Vector2(248f, 197f), t3[2])
+            new(SealedPackPortraitTemplate.C, new Vector2(54f, 424f), new Vector2(248f, 197f), t3[2])
         ];
     }
 }

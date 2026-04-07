@@ -47,7 +47,8 @@ public partial class NYgoSealedPackWidget : Button
     /// <summary>Draw selection glow under <c>PackArtStack</c> (stack uses z ≥ 0).</summary>
     public const int PackSelectionGlowZIndex = -1;
 
-    private const int OutlineZBase = 10;
+    /// <summary>Pack outline layers (<see cref="AddOutlineLayer"/>, background outline) must stay above portrait slots, which use <see cref="_fillZ"/> up to ~12 on triple-tag packs.</summary>
+    private const int OutlineZBase = 13;
 
     /// <summary>Max blend toward tag darken tint; same as 142/255 in pack art spec.</summary>
     private const float TagTintLayerOpacity = 142f / 255f;
@@ -130,8 +131,9 @@ public partial class NYgoSealedPackWidget : Button
         {
             AddTintLayer(stack, Png("Cardpack_T_Tag_1_Darken_Tint.png"), YgoPackTagVisualDefaults.GetTintColor(bits[0]), packBackground);
             AddTintLayer(stack, Png("Cardpack_T_Tag_2_Darken_Tint.png"), YgoPackTagVisualDefaults.GetTintColor(bits[1]), packBackground);
+            AddPortraitSlots(stack, YgoSealedPackPortraitLayout.BuildTripleTagSlots_A(bits[0], bits[1]));
             AddFillLayer(stack, Png("Cardpack_T_Rift.png"), Colors.White, CanvasItemMaterial.BlendModeEnum.Mix);
-            AddPortraitSlots(stack, YgoSealedPackPortraitLayout.BuildTripleTagSlots(bits[0], bits[1], bits[2]));
+            AddPortraitSlots(stack, YgoSealedPackPortraitLayout.BuildTripleTagSlots_B(bits[2]));
             AddOutlineLayer(stack, Png("Cardpack_T_Outline.png"), Colors.White, CanvasItemMaterial.BlendModeEnum.Mix);
         }
 
