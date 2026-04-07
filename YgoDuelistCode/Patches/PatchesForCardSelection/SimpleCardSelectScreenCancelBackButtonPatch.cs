@@ -77,7 +77,8 @@ public static class SimpleCardSelectScreenCancelBackButtonPatch
             return;
 
         var tcs = (TaskCompletionSource<IEnumerable<CardModel>>)CompletionField.GetValue(screen)!;
-        tcs.SetResult(Array.Empty<CardModel>());
+        if (!tcs.TrySetCanceled())
+            return;
         NOverlayStack.Instance?.Remove(screen);
     }
 

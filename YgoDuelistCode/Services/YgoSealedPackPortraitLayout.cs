@@ -70,7 +70,7 @@ public static class YgoSealedPackPortraitLayout
             new(SealedPackPortraitTemplate.A, new Vector2(28f, 603f), new Vector2(248f, 197f), t2[2]),
 
             new(SealedPackPortraitTemplate.C, new Vector2(295f, 225f), new Vector2(248f, 197f), t3[0]),
-            new(SealedPackPortraitTemplate.D, new Vector2(260f, 577f), new Vector2(298f, 236f), t3[1]),
+            new(SealedPackPortraitTemplate.D, new Vector2(149f, 304f), new Vector2(298f, 236f), t3[1]),
             new(SealedPackPortraitTemplate.E, new Vector2(54f, 424f), new Vector2(248f, 197f), t3[2])
         ];
     }

@@ -227,12 +227,12 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
 
         _backButton.Name = "SealedPackClose";
         _backButton.Visible = true;
-        _backButton.Enable();
         _backButton.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnCancel()));
         AddChild(_backButton);
+        // NBackButton._Ready ends with OnDisable(); Enable() must run after AddChild or the button stays off-screen.
+        _backButton.Enable();
 
         _confirmButton.Name = "SealedPackConfirm";
-        _confirmButton.Disable();
         _confirmButton.Visible = true;
         _confirmButton.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnConfirm()));
         AddChild(_confirmButton);
@@ -495,10 +495,12 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
         }
 
         _bannerCenter?.QueueSort();
+        RefreshPackSelectFloatingChrome();
 
         Callable.From(() =>
         {
             _bannerCenter?.QueueSort();
+            RefreshPackSelectFloatingChrome();
             LogBannerDebug("AfterOverlayShown+1frame");
         }).CallDeferred();
     }
@@ -507,5 +509,23 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
     {
         LogBannerDebug("AfterOverlayHidden");
         Visible = false;
+        if (_backButton != null && GodotObject.IsInstanceValid(_backButton))
+            _backButton.Disable();
+        if (_confirmButton != null && GodotObject.IsInstanceValid(_confirmButton))
+            _confirmButton.Disable();
+    }
+
+    /// <summary>Keep deck chrome aligned with overlay visibility (same idea as <c>SimpleCardSelectScreenCancelBackButtonPatch</c>).</summary>
+    private void RefreshPackSelectFloatingChrome()
+    {
+        if (_backButton != null && GodotObject.IsInstanceValid(_backButton))
+            _backButton.Enable();
+        if (_confirmButton != null && GodotObject.IsInstanceValid(_confirmButton))
+        {
+            if (_selectedIndex >= 0)
+                _confirmButton.Enable();
+            else
+                _confirmButton.Disable();
+        }
     }
 }

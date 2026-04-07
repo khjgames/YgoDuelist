@@ -91,7 +91,7 @@ public static class YgoPackTagVisualDefaults
             YgoCardPackTags.Trap => ["spellbinding_circle.png", "dark_mirror_force.png", "call_of_the_haunted.png"],
             YgoCardPackTags.Banish => ["dimension_fusion.png", "chaos_end.png", "banisher_of_the_light.png"],
             YgoCardPackTags.WinCon => ["exodia_the_forbidden_one.png", "final_countdown.png", "destiny_board.png"],
-            YgoCardPackTags.God => ["the_winged_dragon_of_ra.png", "slifer_the_sky_dragon.png", "obelisk_the_tormentor.png"],
+            YgoCardPackTags.God => ["obelisk_the_tormentor.png", "slifer_the_sky_dragon.png", "the_winged_dragon_of_ra.png"],
             _ => ["aaaaaa.png", "bbbbbb.png", "cccccc.png"]
         };
     }

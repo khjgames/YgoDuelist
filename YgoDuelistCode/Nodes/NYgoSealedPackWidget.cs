@@ -75,6 +75,13 @@ public partial class NYgoSealedPackWidget : Button
 
     private static string Png(string fileName) => $"{SealedDir}/{fileName}";
 
+    /// <summary>Portrait mask for <see cref="SealedPackPortraitTemplate"/> (A–E under <see cref="SealedDir"/>).</summary>
+    private static string PortraitMaskPngPath(SealedPackPortraitTemplate template) =>
+        Png($"Portrait_Mask_{template}.png");
+
+    private static string PortraitOutlinePngPath(SealedPackPortraitTemplate template) =>
+        Png($"Portrait_Outline_{template}.png");
+
     public void Build(int packIndexForLog, YgoCardPackTags tagMask)
     {
         _debugPackIndex = packIndexForLog;
@@ -302,12 +309,8 @@ public partial class NYgoSealedPackWidget : Button
                 portraitTex = PreloadManager.Cache.GetTexture2D(cardPortraitPath);
             }
 
-            string maskRel = slot.Template == SealedPackPortraitTemplate.A
-                ? Png("Portrait_Mask_A.png")
-                : Png("Portrait_Mask_B.png");
-            string outlineRel = slot.Template == SealedPackPortraitTemplate.A
-                ? Png("Portrait_Outline_A.png")
-                : Png("Portrait_Outline_B.png");
+            string maskRel = PortraitMaskPngPath(slot.Template);
+            string outlineRel = PortraitOutlinePngPath(slot.Template);
 
             Texture2D? maskTex = PreloadManager.Cache.GetTexture2D(maskRel.ImagePath());
             Texture2D? outlineTex = PreloadManager.Cache.GetTexture2D(outlineRel.ImagePath());

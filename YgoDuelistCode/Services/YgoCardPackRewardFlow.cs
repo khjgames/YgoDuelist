@@ -149,13 +149,15 @@ public static class YgoCardPackRewardFlow
 
         YgoPlayerMinimumDeck.IncreaseAfterPackRewardConfirmed(player);
 
+        // Deck assignment: no back button — player must finish splitting into deck vs remainder (side/trunk next).
+        // Side assignment: Cancelable so back returns to the deck step (see SimpleCardSelectScreenCancelBackButtonPatch).
         var deckPrefs = new CardSelectorPrefs(
             new LocString("combat_messages", "YGODUELIST-PACK_REWARD_DECK.prompt"),
             0,
             chosenPack.Count)
         {
             RequireManualConfirmation = true,
-            Cancelable = true
+            Cancelable = false
         };
 
         List<CardModel> deckPicks;
