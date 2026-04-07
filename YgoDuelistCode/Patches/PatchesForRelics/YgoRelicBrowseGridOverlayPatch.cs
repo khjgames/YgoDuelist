@@ -12,8 +12,8 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Tracks relic browse grids (<see cref="NSimpleCardSelectScreen"/> and trunk/side <see cref="NDeckCardSelectScreen"/>)
-/// so the same relic click can dismiss them.
+/// Tracks exactly one zone-relic browse UI at a time (graveyard / shadow realm / extra deck) and the trunk/side deck editor.
+/// Only overlays opened immediately after <see cref="SetPendingKind"/> are bound — vanilla card/potion/power grids never set pending, so they are never touched.
 /// </summary>
 public static class YgoRelicBrowseGridOverlayPatch
 {
@@ -26,13 +26,13 @@ public static class YgoRelicBrowseGridOverlayPatch
         TrunkSideDeckSelect
     }
 
+    /// <summary>Set in <see cref="GraveyardRelicClickPatch"/> / <see cref="TrunkSideDeckGuiService"/> right before the overlay Push; cleared when the matching screen is bound.</summary>
     private static RelicGridKind _pendingKind;
-    private static RelicGridKind _activeKind;
-    private static NSimpleCardSelectScreen? _activeScreen;
-    private static NDeckCardSelectScreen? _activeTrunkSideDeckScreen;
 
-    private static readonly MethodInfo? CompleteSelection =
-        AccessTools.Method(typeof(NSimpleCardSelectScreen), "CompleteSelection", Type.EmptyTypes);
+    private static RelicGridKind _relicZoneBrowseKind;
+    private static NSimpleCardSelectScreen? _relicZoneBrowseScreen;
+
+    private static NDeckCardSelectScreen? _activeTrunkSideDeckScreen;
 
     private static readonly FieldInfo? DeckSelectedCardsField =
         AccessTools.Field(typeof(NDeckCardSelectScreen), "_selectedCards");
@@ -44,64 +44,85 @@ public static class YgoRelicBrowseGridOverlayPatch
 
     public static void ClearPendingKind() => _pendingKind = RelicGridKind.None;
 
-    /// <summary>
-    /// Binds the trunk/side editor screen for nav dismissal. Called from chrome injection so it is set even if <see cref="NOverlayStack.Push"/> postfix
-    /// has not run yet relative to <see cref="NDeckCardSelectScreen._Ready"/>.
-    /// </summary>
+    public static bool IsRelicSimpleGridOpenInFlight(RelicGridKind kind) =>
+        kind is RelicGridKind.Graveyard or RelicGridKind.ShadowRealm or RelicGridKind.ExtraDeck
+        && _pendingKind == kind;
+
     public static void RegisterActiveTrunkSideDeckScreen(NDeckCardSelectScreen deck)
     {
         if (deck == null || !GodotObject.IsInstanceValid(deck))
             return;
-        _activeKind = RelicGridKind.TrunkSideDeckSelect;
         _activeTrunkSideDeckScreen = deck;
     }
 
-    /// <summary>Closes the trunk/side grid with an empty selection and queues opening <paramref name="targetPage"/> on the next editor loop iteration.</summary>
     public static void CompleteActiveTrunkSideNavigate(TrunkSideDeckEditorPage targetPage)
     {
-        if (_activeKind != RelicGridKind.TrunkSideDeckSelect || _activeTrunkSideDeckScreen == null || !GodotObject.IsInstanceValid(_activeTrunkSideDeckScreen))
+        if (_activeTrunkSideDeckScreen == null || !GodotObject.IsInstanceValid(_activeTrunkSideDeckScreen))
             return;
         TrunkSideDeckEditorSession.RequestNavigateTo(targetPage);
         if (_activeTrunkSideDeckScreen != null && GodotObject.IsInstanceValid(_activeTrunkSideDeckScreen))
             ClearTrunkSideDeckScreenEmpty(_activeTrunkSideDeckScreen);
     }
 
-    /// <summary>If this browse grid is already open for the same relic type, close it and return true.</summary>
     public static bool TryToggleClose(RelicGridKind relicKind)
     {
-        if (_activeKind != relicKind)
-            return false;
-
-        if (relicKind == RelicGridKind.TrunkSideDeckSelect)
+        switch (relicKind)
         {
-            if (_activeTrunkSideDeckScreen == null || !GodotObject.IsInstanceValid(_activeTrunkSideDeckScreen))
+            case RelicGridKind.TrunkSideDeckSelect:
+                if (_activeTrunkSideDeckScreen == null || !GodotObject.IsInstanceValid(_activeTrunkSideDeckScreen))
+                    return false;
+                TrunkSideDeckEditorSession.ClearNavigateRequest();
+                ClearTrunkSideDeckScreenEmpty(_activeTrunkSideDeckScreen);
+                return true;
+
+            case RelicGridKind.Graveyard:
+            case RelicGridKind.ShadowRealm:
+            case RelicGridKind.ExtraDeck:
+                if (_relicZoneBrowseKind != relicKind)
+                    return false;
+                if (_relicZoneBrowseScreen == null || !GodotObject.IsInstanceValid(_relicZoneBrowseScreen))
+                {
+                    _relicZoneBrowseKind = RelicGridKind.None;
+                    _relicZoneBrowseScreen = null;
+                    return false;
+                }
+
+                DismissRelicZoneSimpleScreen(_relicZoneBrowseScreen);
+                _relicZoneBrowseKind = RelicGridKind.None;
+                _relicZoneBrowseScreen = null;
+                return true;
+
+            default:
                 return false;
-            TrunkSideDeckEditorSession.ClearNavigateRequest();
-            ClearTrunkSideDeckScreenEmpty(_activeTrunkSideDeckScreen);
-            return true;
         }
-
-        if (_activeScreen == null || !GodotObject.IsInstanceValid(_activeScreen))
-            return false;
-
-        CompleteSelection?.Invoke(_activeScreen, null);
-        return true;
     }
 
-    /// <summary>Opening a different relic browse screen stacks on the overlay; dismiss any active browse grid first.</summary>
     public static void CloseAnyActiveBrowseGrid()
     {
         if (_activeTrunkSideDeckScreen != null && GodotObject.IsInstanceValid(_activeTrunkSideDeckScreen))
         {
             TrunkSideDeckEditorSession.ClearNavigateRequest();
             ClearTrunkSideDeckScreenEmpty(_activeTrunkSideDeckScreen);
-            return;
         }
 
-        if (_activeScreen == null || !GodotObject.IsInstanceValid(_activeScreen))
-            return;
+        if (_relicZoneBrowseScreen != null && GodotObject.IsInstanceValid(_relicZoneBrowseScreen))
+            DismissRelicZoneSimpleScreen(_relicZoneBrowseScreen);
 
-        CompleteSelection?.Invoke(_activeScreen, null);
+        _relicZoneBrowseScreen = null;
+        _relicZoneBrowseKind = RelicGridKind.None;
+    }
+
+    private static void DismissRelicZoneSimpleScreen(NSimpleCardSelectScreen screen)
+    {
+        if (!GodotObject.IsInstanceValid(screen))
+            return;
+        if (CompletionSourceField?.GetValue(screen) is TaskCompletionSource<IEnumerable<CardModel>> tcs)
+        {
+            if (!tcs.TrySetResult(Array.Empty<CardModel>()))
+                tcs.TrySetCanceled();
+        }
+
+        NOverlayStack.Instance?.Remove(screen);
     }
 
     private static void ClearTrunkSideDeckScreenEmpty(NDeckCardSelectScreen screen)
@@ -110,28 +131,48 @@ public static class YgoRelicBrowseGridOverlayPatch
             set.Clear();
         if (CompletionSourceField?.GetValue(screen) is TaskCompletionSource<IEnumerable<CardModel>> tcs)
             tcs.SetResult(Array.Empty<CardModel>());
-        NOverlayStack.Instance.Remove(screen);
+        NOverlayStack.Instance?.Remove(screen);
     }
 
     [HarmonyPostfix]
+    [HarmonyPriority(Priority.First)]
     [HarmonyPatch(typeof(NOverlayStack), nameof(NOverlayStack.Push))]
     private static void AfterOverlayPush(IOverlayScreen screen)
     {
         if (_pendingKind == RelicGridKind.None)
             return;
 
-        if (_pendingKind == RelicGridKind.TrunkSideDeckSelect && screen is NDeckCardSelectScreen deck)
+        if (_pendingKind == RelicGridKind.TrunkSideDeckSelect)
         {
-            _activeKind = RelicGridKind.TrunkSideDeckSelect;
-            _activeTrunkSideDeckScreen = deck;
-        }
-        else if (screen is NSimpleCardSelectScreen simple)
-        {
-            _activeKind = _pendingKind;
-            _activeScreen = simple;
+            if (screen is NDeckCardSelectScreen deck)
+            {
+                _activeTrunkSideDeckScreen = deck;
+                _pendingKind = RelicGridKind.None;
+            }
+
+            return;
         }
 
-        _pendingKind = RelicGridKind.None;
+        if (screen is not NSimpleCardSelectScreen simple)
+            return;
+
+        switch (_pendingKind)
+        {
+            case RelicGridKind.Graveyard:
+            case RelicGridKind.ShadowRealm:
+            case RelicGridKind.ExtraDeck:
+                if (_relicZoneBrowseScreen != null
+                    && GodotObject.IsInstanceValid(_relicZoneBrowseScreen)
+                    && !ReferenceEquals(_relicZoneBrowseScreen, simple))
+                {
+                    DismissRelicZoneSimpleScreen(_relicZoneBrowseScreen);
+                }
+
+                _relicZoneBrowseKind = _pendingKind;
+                _relicZoneBrowseScreen = simple;
+                _pendingKind = RelicGridKind.None;
+                break;
+        }
     }
 
     [HarmonyPostfix]
@@ -143,14 +184,12 @@ public static class YgoRelicBrowseGridOverlayPatch
             if (screen is NDeckCardSelectScreen deck)
                 TrunkSideDeckDeckCardSelectScreenPatch.ClearActiveEditorChrome(deck);
             _activeTrunkSideDeckScreen = null;
-            if (_activeKind == RelicGridKind.TrunkSideDeckSelect)
-                _activeKind = RelicGridKind.None;
         }
 
-        if (_activeScreen != null && ReferenceEquals(screen, _activeScreen))
+        if (_relicZoneBrowseScreen != null && ReferenceEquals(screen, _relicZoneBrowseScreen))
         {
-            _activeScreen = null;
-            _activeKind = RelicGridKind.None;
+            _relicZoneBrowseScreen = null;
+            _relicZoneBrowseKind = RelicGridKind.None;
         }
     }
 }

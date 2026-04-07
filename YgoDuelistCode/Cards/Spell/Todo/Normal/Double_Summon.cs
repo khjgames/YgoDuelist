@@ -9,16 +9,20 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Patches;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Double_Summon : BaseSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new CardsVar(0) };
     private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
+    public override bool UseAlternateUpgradedDescription => true;
 
     public Double_Summon()
-        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
     // Dictates the card pack tags this card will be included in.
@@ -41,6 +45,7 @@ public sealed class Double_Summon : BaseSpellCard
         if (Owner?.Creature == null)
             return;
         await PlayerCmd.GainStars(1, Owner);
+        await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
     }
 
     protected override void AddExtraArgsToDescription(LocString description)
@@ -50,6 +55,6 @@ public sealed class Double_Summon : BaseSpellCard
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

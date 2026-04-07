@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
@@ -22,8 +23,9 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// Trunk/side/split editor uses <see cref="NDeckCardSelectScreen"/>; injects deck-view-style sort row (Obtained / Type / Cost / A–Z)
-/// and two nav buttons. Split page replaces the scene <see cref="NCardGrid"/> with two fresh instances (same source as the right column)
+/// with two nav buttons below it. Split page replaces the scene <see cref="NCardGrid"/> with two fresh instances (same source as the right column)
 /// so neither grid runs <see cref="NCardGrid.SetCards"/> while full-width; vanilla deferred scroll sizing otherwise pins the trunk column to full width.
+/// Enables <see cref="Control.ClipContents"/> on the editor grids so cards are clipped at the grid bounds (no overdraw past the scroll viewport).
 /// </summary>
 [HarmonyPatch(typeof(NDeckCardSelectScreen), nameof(NDeckCardSelectScreen._Ready))]
 public static class TrunkSideDeckDeckCardSelectScreenPatch
@@ -107,6 +109,9 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         if (__instance.GetNodeOrNull(ChromeName) != null)
             return;
 
+        // Vanilla %PeekButton (eye) hides overlay chrome; not wanted for trunk/side editor (NPeekButton.Disable() clears visibility).
+        __instance.GetNodeOrNull<NPeekButton>("%PeekButton")?.Disable();
+
         YgoRelicBrowseGridOverlayPatch.RegisterActiveTrunkSideDeckScreen(__instance);
 
         if (GridField.GetValue(__instance) is not NCardGrid grid)
@@ -122,6 +127,12 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         if (splitMode && rightSplitGrid != null)
             TrunkSideDeckSplitGridState.Activate(grid, rightSplitGrid);
 
+        // Clip card drawing to the grid rect (vanilla grid scrolls a Control, not ScrollContainer — without this, cards can overdraw past the viewport).
+        // Split mode also sets clip on grids + column slots inside TryBeginSplitDualLayout.
+        grid.ClipContents = true;
+        if (rightSplitGrid != null)
+            rightSplitGrid.ClipContents = true;
+
         var sortingPriority = new List<SortingOrders>
         {
             SortingOrders.Ascending,
@@ -136,7 +147,7 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         const float sortButtonHeight = 42f;
         const float deckViewSortingOptionsOffsetTop = 92f;
         float chromeOffsetTop = 0.99f * deckViewSortingOptionsOffsetTop;
-        float navGapPx = 0.99f * sortButtonHeight;
+        float navGapPx = 1.5f * sortButtonHeight;
         const float chromeExtraMargin = 16f;
         float chromeHeight = sortButtonHeight + navGapPx + sortButtonHeight + chromeExtraMargin;
 
@@ -196,6 +207,7 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         navRow.AddChild(navPh3);
 
         var gap = new Control { CustomMinimumSize = new Vector2(0, navGapPx) };
+        var gap2 = new Control { CustomMinimumSize = new Vector2(0, 12f) };
 
         var sortRow = new HBoxContainer
         {
@@ -255,9 +267,11 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
                 AlphabetSorter = alphabetSorter
             };
 
-        rootVBox.AddChild(navRow);
+        // Sort filters on top; Trunk / Side / Split nav row below (same total chrome height).
         rootVBox.AddChild(gap);
         rootVBox.AddChild(sortRow);
+        rootVBox.AddChild(gap2);
+        rootVBox.AddChild(navRow);
 
         __instance.AddChild(chrome);
         __instance.MoveChild(chrome, __instance.GetChildCount() - 1);
@@ -282,7 +296,12 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
             gridTop.OffsetTop = chromeOffsetTop + chromeHeight;
             if (splitMode)
             {
-                gridTop.OffsetTop += TrunkSideDeckGuiService.SplitEditorHBoxOffsetTopAdjust;
+                // Only changing OffsetTop would stretch the split hbox vs the single %CardGrid (clip area becomes too tall).
+                // Nudge top and bottom in opposite directions by the same amount to shift the block without changing height.
+                float shift = TrunkSideDeckGuiService.SplitEditorHBoxOffsetTopAdjust;
+                gridTop.OffsetTop += shift;
+                gridTop.OffsetBottom -= shift;
+                // Optional: extra bottom inset only (positive usually shortens the split viewport — tune for your theme).
                 gridTop.OffsetBottom += TrunkSideDeckGuiService.SplitEditorHBoxOffsetBottomAdjust;
             }
         }
@@ -375,6 +394,12 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         rg.LayoutMode = 1;
         rg.SetAnchorsPreset(Control.LayoutPreset.FullRect);
         rg.OffsetLeft = rg.OffsetRight = rg.OffsetTop = rg.OffsetBottom = 0;
+
+        // Split columns: clip at grid and slot so card scroll content cannot overdraw past the column bounds.
+        freshLeft.ClipContents = true;
+        rg.ClipContents = true;
+        leftSlot.ClipContents = true;
+        rightSlot.ClipContents = true;
 
         grid = freshLeft;
         GridField.SetValue(screen, freshLeft);

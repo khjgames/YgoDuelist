@@ -53,14 +53,14 @@ public static class TrunkSideDeckGuiService
     public static List<CardModel>? SplitSessionSideOrder { get; private set; }
 
     /// <summary>
-    /// Split editor only: added to <c>YgoTrunkSideSplitHBox</c> <c>OffsetTop</c> after chrome (negative moves both grids + scrollbars up).
+    /// Split editor only: vertical <b>shift</b> of <c>YgoTrunkSideSplitHBox</c> after chrome without changing its height (patch applies the same value as <c>OffsetTop</c> += shift and <c>OffsetBottom</c> -= shift so split matches single-column vertical space). Use <see cref="SplitEditorHBoxOffsetBottomAdjust"/> only if you want to shorten/lengthen the split viewport.
     /// </summary>
-    public static float SplitEditorHBoxOffsetTopAdjust { get; set; } = -235f;
+    public static float SplitEditorHBoxOffsetTopAdjust { get; set; } = -80f;
 
     /// <summary>
-    /// Split editor only: added to the split hbox <c>OffsetBottom</c> to change vertical size (default +20 grows the area when the hbox is fully anchored; flip sign if your theme behaves the opposite).
+    /// Split editor only: extra delta applied to split hbox <c>OffsetBottom</c> only (after the height-preserving shift). Use small positive values to pull the bottom edge up / shorten the grid area if clipping still feels too tall.
     /// </summary>
-    public static float SplitEditorHBoxOffsetBottomAdjust { get; set; } = 20f;
+    public static float SplitEditorHBoxOffsetBottomAdjust { get; set; } = 0f;
 
     /// <summary>
     /// Split editor only: <see cref="MegaCrit.Sts2.Core.Nodes.Cards.NCardGrid.YOffset"/> for both columns (internal card / scroll layout; vanilla deck screen uses 100).

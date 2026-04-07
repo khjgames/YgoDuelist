@@ -1520,6 +1520,7 @@
   "YGODUELIST-DOUBLE_SPELL.description": "TODO: implement card effect.",
   "YGODUELIST-DOUBLE_SPELL.title": "Double Spell",
   "YGODUELIST-DOUBLE_SUMMON.description": "Gain {conduitIcon}",
+  "YGODUELIST-DOUBLE_SUMMON.description_upgraded": "Gain {conduitIcon}\nDraw [blue]1[/blue] card.",
   "YGODUELIST-DOUBLE_SUMMON.title": "Double Summon",
   "YGODUELIST-DRAGGED_DOWN_INTO_THE_GRAVE.description": "TODO: implement card effect.",
   "YGODUELIST-DRAGGED_DOWN_INTO_THE_GRAVE.title": "Dragged Down into the Grave",

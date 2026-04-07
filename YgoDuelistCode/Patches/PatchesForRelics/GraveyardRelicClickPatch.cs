@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -18,6 +20,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 [HarmonyPatch(typeof(NRelicInventory), "OnRelicClicked")]
+[HarmonyPriority(Priority.First)]
 public static class GraveyardRelicClickPatch
 {
     [HarmonyPrefix]
@@ -38,6 +41,25 @@ public static class GraveyardRelicClickPatch
         return true;
     }
 
+    /// <summary>
+    /// <see cref="RunManager.DebugOnlyGetState"/> is null during some combat moments; <see cref="LocalContext.GetMe(CombatState)"/> still resolves the local player.
+    /// </summary>
+    private static Player? ResolveLocalPlayerForZoneRelicClick()
+    {
+        IRunState? runState = RunManager.Instance?.DebugOnlyGetState();
+        if (runState != null)
+            return LocalContext.GetMe((IPlayerCollection)runState);
+
+        if (CombatManager.Instance is { IsInProgress: true })
+        {
+            CombatState? combat = CombatManager.Instance.DebugOnlyGetState();
+            if (combat != null)
+                return LocalContext.GetMe(combat);
+        }
+
+        return null;
+    }
+
     private static bool TryOpenGraveyardGrid(RelicModel model)
     {
         GraveyardRelic? graveyard = GraveyardRelic.AsGraveyard(model);
@@ -47,11 +69,7 @@ public static class GraveyardRelicClickPatch
         if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.Graveyard))
             return true;
 
-        IRunState? runState = RunManager.Instance.DebugOnlyGetState();
-        if (runState == null)
-            return false;
-
-        Player? player = LocalContext.GetMe((IPlayerCollection)runState);
+        Player? player = ResolveLocalPlayerForZoneRelicClick();
         if (player == null)
             return false;
 
@@ -71,11 +89,7 @@ public static class GraveyardRelicClickPatch
         if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ShadowRealm))
             return true;
 
-        IRunState? runState = RunManager.Instance.DebugOnlyGetState();
-        if (runState == null)
-            return false;
-
-        Player? player = LocalContext.GetMe((IPlayerCollection)runState);
+        Player? player = ResolveLocalPlayerForZoneRelicClick();
         if (player == null)
             return false;
 
@@ -95,11 +109,7 @@ public static class GraveyardRelicClickPatch
         if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ExtraDeck))
             return true;
 
-        IRunState? runState = RunManager.Instance.DebugOnlyGetState();
-        if (runState == null)
-            return false;
-
-        Player? player = LocalContext.GetMe((IPlayerCollection)runState);
+        Player? player = ResolveLocalPlayerForZoneRelicClick();
         if (player == null)
             return false;
 
@@ -118,11 +128,7 @@ public static class GraveyardRelicClickPatch
         if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.TrunkSideDeckSelect))
             return true;
 
-        IRunState? runState = RunManager.Instance.DebugOnlyGetState();
-        if (runState == null)
-            return false;
-
-        Player? player = LocalContext.GetMe((IPlayerCollection)runState);
+        Player? player = ResolveLocalPlayerForZoneRelicClick();
         if (player == null || !TrunkSideDeckGuiService.HasAnyTrunkOrSideCards(player))
             return false;
 
@@ -142,21 +148,29 @@ public static class GraveyardRelicClickPatch
         Player player,
         IReadOnlyList<CardModel> cards)
     {
+        if (YgoRelicBrowseGridOverlayPatch.IsRelicSimpleGridOpenInFlight(gridKind))
+            return true;
+
         YgoRelicBrowseGridOverlayPatch.CloseAnyActiveBrowseGrid();
 
         var selectionPromptProp = AccessTools.Property(typeof(RelicModel), "SelectionScreenPrompt");
         object? selectionPrompt = selectionPromptProp.GetValue(model);
 
+        // Cancelable: SimpleCardSelectScreenCancelBackButtonPatch / NSimpleCardSelectScreenCancelablePatch wire close/back to TrySetCanceled + Remove (same close path we need for toggle).
         var prefs = new CardSelectorPrefs(
             (dynamic)selectionPrompt!,
             0,
-            0);
+            0)
+        {
+            Cancelable = true
+        };
 
+        // Set before the async work starts so overlay tracking matches the first Push; duplicate Pushes dismiss the prior grid in AfterOverlayPush.
+        YgoRelicBrowseGridOverlayPatch.SetPendingKind(gridKind);
         TaskHelper.RunSafely(ShowAsync());
 
         async Task ShowAsync()
         {
-            YgoRelicBrowseGridOverlayPatch.SetPendingKind(gridKind);
             try
             {
                 await CardSelectCmd.FromSimpleGrid(
@@ -164,6 +178,10 @@ public static class GraveyardRelicClickPatch
                     cards,
                     player,
                     prefs);
+            }
+            catch (OperationCanceledException)
+            {
+                // Cancelable=true: back/close (SimpleCardSelectScreenCancelBackButtonPatch) uses TrySetCanceled on the grid task.
             }
             finally
             {
