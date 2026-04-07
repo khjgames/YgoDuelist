@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -41,6 +42,37 @@ public static class YgoCardPackRewardFlow
     private static readonly BindingFlags RewardMemberFlags =
         BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
+    /// <summary>One RNG roll per <see cref="CardReward"/> until the reward is consumed; reopening the same offer rematerializes cards from these rolls.</summary>
+    private static readonly ConditionalWeakTable<CardReward, CachedPackTemplateRolls> PackOfferRollsCache = new();
+
+    private sealed class CachedPackTemplateRolls
+    {
+        public required int SlotCount;
+        public required CardRarityOddsType RarityOdds;
+        public required List<PackTemplateRoll> Rolls;
+    }
+
+    private static void ClearPackOfferCache(CardReward reward) => PackOfferRollsCache.Remove(reward);
+
+    /// <summary>Rebuild <paramref name="bundles"/> / <paramref name="packTagMasks"/> from template rolls (new <see cref="CardModel"/> instances each call).</summary>
+    private static void MaterializeBundlesFromRolls(
+        Player player,
+        List<PackTemplateRoll> rolls,
+        List<IReadOnlyList<CardModel>> bundles,
+        List<YgoCardPackTags> packTagMasks)
+    {
+        bundles.Clear();
+        packTagMasks.Clear();
+        foreach (PackTemplateRoll roll in rolls)
+        {
+            packTagMasks.Add(roll.TagMask);
+            var row = new List<CardModel>(roll.Templates.Count);
+            foreach (CardModel template in roll.Templates)
+                row.Add(player.RunState.CreateCard(template, player));
+            bundles.Add(row);
+        }
+    }
+
     public static bool ShouldReplaceCardRewardSelection(CardReward reward)
     {
         if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(reward.Player))
@@ -50,6 +82,10 @@ public static class YgoCardPackRewardFlow
             return true;
         return IsNeowBlessingStyleCardReward(options, reward);
     }
+
+    /// <summary>Cards per sealed pack for map/reward UI; only meaningful when <see cref="ShouldReplaceCardRewardSelection"/> is true.</summary>
+    public static int GetOfferedPackSlotCount(CardReward reward) =>
+        GetPackSlotCount(GetCardCreationOptions(reward), reward);
 
     /// <summary>
     /// Matches vanilla <c>Draft</c> Neow blessing: <see cref="CardCreationSource.Other"/>, <see cref="CardRarityOddsType.RegularEncounter"/>,
@@ -93,26 +129,26 @@ public static class YgoCardPackRewardFlow
         var bundles = new List<IReadOnlyList<CardModel>>(3);
         var packTagMasks = new List<YgoCardPackTags>(3);
 
-        void BuildBundlesFromGenerator()
+        if (!PackOfferRollsCache.TryGetValue(reward, out CachedPackTemplateRolls? cached)
+            || cached.SlotCount != slotCount
+            || cached.RarityOdds != options.RarityOdds)
         {
-            bundles.Clear();
-            packTagMasks.Clear();
             List<PackTemplateRoll> rolls = YgoCardPackGenerator.GenerateThreePackTemplates(
                 player,
                 rng,
                 slotCount,
                 options.RarityOdds);
-            foreach (PackTemplateRoll roll in rolls)
+            cached = new CachedPackTemplateRolls
             {
-                packTagMasks.Add(roll.TagMask);
-                var row = new List<CardModel>(roll.Templates.Count);
-                foreach (CardModel template in roll.Templates)
-                    row.Add(player.RunState.CreateCard(template, player));
-                bundles.Add(row);
-            }
+                SlotCount = slotCount,
+                RarityOdds = options.RarityOdds,
+                Rolls = rolls
+            };
+            PackOfferRollsCache.Remove(reward);
+            PackOfferRollsCache.Add(reward, cached);
         }
 
-        BuildBundlesFromGenerator();
+        MaterializeBundlesFromRolls(player, cached.Rolls, bundles, packTagMasks);
 
         List<CardModel> chosenPack;
         int chosenBundleIndex;
@@ -138,6 +174,7 @@ public static class YgoCardPackRewardFlow
             UnsubscribeRelicHandler(reward, player);
             RecordAllPackCardsSkippedForReward(player, bundles);
             LogPackFlowPhase(player, "flow_end_skip_no_pack", "removed preview clones; reward consumed");
+            ClearPackOfferCache(reward);
             return true;
         }
 
@@ -281,6 +318,7 @@ public static class YgoCardPackRewardFlow
         player.Deck.InvokeCardAddFinished();
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
         LogPackFlowPhase(player, "flow_end_success", "cards committed (min deck bumped at pack confirm)");
+        ClearPackOfferCache(reward);
         return true;
     }
 

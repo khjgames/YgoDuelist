@@ -8,8 +8,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1775539082
-YgoDuelist.deps.json::JSON::-1::1775539082::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1775541488
+YgoDuelist.deps.json::JSON::-1::1775541488::0::1::::<><><>0<>0<><>::
 ::res://docs/::1774723882
 card_database_import.schema.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
@@ -2453,7 +2453,7 @@ ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
 cards.json::JSON::-1::1775447019::0::1::::<><><>0<>0<><>::
 card_keywords.json::JSON::-1::1775256609::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
-combat_messages.json::JSON::-1::1775529447::0::1::::<><><>0<>0<><>::
+combat_messages.json::JSON::-1::1775541487::0::1::::<><><>0<>0<><>::
 monsters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 powers.json::JSON::-1::1775447018::0::1::::<><><>0<>0<><>::
 relics.json::JSON::-1::1774802659::0::1::::<><><>0<>0<><>::
@@ -4126,7 +4126,7 @@ StatEffectTotalMultiplier.cs::CSharpScript::7022054075029544953::1775447018::0::
 NYgoConvulsionPreviewHolder.cs::CSharpScript::1626144052045855264::1774723882::0::1::::<><><>0<>0<><>::
 NYgoOptionCardHolder.cs::CSharpScript::4837965220185115671::1774301852::0::1::::<><><>0<>0<><>::
 NYgoSealedPackSelectionScreen.cs::CSharpScript::454642122818788915::1775534564::0::1::::<><><>0<>0<><>::
-NYgoSealedPackWidget.cs::CSharpScript::7849126189180578001::1775538831::0::1::::<><><>0<>0<><>::
+NYgoSealedPackWidget.cs::CSharpScript::7849126189180578001::1775539908::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Nodes/CardLibrary/::1775195174
 CardLibraryFilterSortingRuleCategoryFilterToggleGUI.cs::CSharpScript::8074772425166268968::1775195002::0::1::::<><><>0<>0<><>::
 CardLibraryFilterSortingRuleCategoryGUI.cs::CSharpScript::1751260109907694422::1775189353::0::1::::<><><>0<>0<><>::
@@ -4288,8 +4288,9 @@ YgoRelicInventoryRightClickPatch.cs::CSharpScript::400587442969204419::177472388
 ::res://YgoDuelistCode/Patches/PatchesForRestSite/::1775040989
 YgoCampfireRestSitePatches.cs::CSharpScript::1454065712297427891::1775026637::0::1::::<><><>0<>0<><>::
 YgoSmithRestSiteOptionPatch.cs::CSharpScript::2500621191229723954::1775081158::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Patches/PatchesForRewards/::1775107895
+::res://YgoDuelistCode/Patches/PatchesForRewards/::1775541301
 NSimpleCardSelectScreenCancelablePatch.cs::CSharpScript::165793800929947136::1775107802::0::1::::<><><>0<>0<><>::
+YgoCardRewardDescriptionPatch.cs::CSharpScript::4358270730026536294::1775541185::0::1::::<><><>0<>0<><>::
 YgoCardRewardPackPatch.cs::CSharpScript::4719037090447043436::1774809631::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForRuns/::1774237807
 RunStateCreateSharedMoveFusionToExtraDeckPatch.cs::CSharpScript::7768574374123798331::1774236692::0::1::::<><><>0<>0<><>::
@@ -4406,7 +4407,7 @@ YgoCancelableConfirmGridPrefs.cs::CSharpScript::3300693368874129580::1775076078:
 YgoCardLibraryLayoutTuning.cs::CSharpScript::8101545935485669240::1775185241::0::1::::<><><>0<>0<><>::
 YgoCardLibraryYgoCardTypeFilterIcons.cs::CSharpScript::452709787439450289::1775189657::0::1::::<><><>0<>0<><>::
 YgoCardPackGenerator.cs::CSharpScript::559839963261001960::1775449650::0::1::::<><><>0<>0<><>::
-YgoCardPackRewardFlow.cs::CSharpScript::781940021435502597::1775534544::0::1::::<><><>0<>0<><>::
+YgoCardPackRewardFlow.cs::CSharpScript::781940021435502597::1775541180::0::1::::<><><>0<>0<><>::
 YgoCardTraderContinuous.cs::CSharpScript::1159867960904450307::1775273167::0::1::::<><><>0<>0<><>::
 YgoCurseOfDarknessField.cs::CSharpScript::2990994571329592099::1774931944::0::1::::<><><>0<>0<><>::
 YgoCurseOfDarknessSpellHook.cs::CSharpScript::638584438807993087::1774933591::0::1::::<><><>0<>0<><>::
@@ -4455,7 +4456,7 @@ YgoRandomOutcomeCommandCards.cs::CSharpScript::8856084106174325820::1774723882::
 YgoRelatedCardWeighting.cs::CSharpScript::4806796913852076361::1775179082::0::1::::<><><>0<>0<><>::
 YgoSaveTrunkSideMarkerCard.cs::CSharpScript::2283240139375736833::1775111565::0::1::::<><><>0<>0<><>::
 YgoSaveTrunkSideMarkerNetPropertyNames.cs::CSharpScript::7135094096493996596::1775111557::0::1::::<><><>0<>0<><>::
-YgoSealedPackPortraitLayout.cs::CSharpScript::8300894549511085101::1775537901::0::1::::<><><>0<>0<><>::
+YgoSealedPackPortraitLayout.cs::CSharpScript::8300894549511085101::1775539726::0::1::::<><><>0<>0<><>::
 YgoSealmasterMeiseiGate.cs::CSharpScript::1883223700310268464::1774723882::0::1::::<><><>0<>0<><>::
 YgoShadowRealmService.cs::CSharpScript::5055389697179448171::1774723676::0::1::::<><><>0<>0<><>::
 YgoSkullInvitationGraveyard.cs::CSharpScript::644935970993975461::1774808810::0::1::::<><><>0<>0<><>::
