@@ -54,6 +54,9 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     private bool _sevenWeaponsBonusActive;
 
+    /// <summary>While true, nested <see cref="DamageCmd.Attack"/> from splinter chain must not start another splinter chain.</summary>
+    private bool _splinterChainRunning;
+
     private readonly List<BaseMonsterCard> _sevenWeaponsBonusCards = new();
 
     public override Task BeforeCombatStart()
@@ -166,7 +169,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     public bool IsAnnualAvailable(string key) => !_annualKeysConsumedThisTurn.Contains(key);
 
-    /// <summary>Chunk Z: Splinter (50% splash to other enemies); on-hit Blight (50% of hit damage as stacks, including blocked); Shinato Corpse-Blight (execute kill: 50% of that damage as Blight to all enemies) after duel monster <see cref="AttackCommand"/>.</summary>
+    /// <summary>Chunk Z: Splinter (first 50% of past-block to each other enemy, then N−1 independent decay chains); on-hit Blight (50% of hit damage as stacks, including blocked); Shinato Corpse-Blight (execute kill: 50% of that damage as Blight to all enemies) after duel monster <see cref="AttackCommand"/>.</summary>
     public override async Task AfterAttack(AttackCommand command)
     {
         if (Owner == null || command.Attacker?.Player != Owner)
@@ -204,28 +207,16 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             }
         }
 
-        if (splinter)
+        if (splinter && !_splinterChainRunning)
         {
-            foreach (DamageResult r in command.Results)
+            _splinterChainRunning = true;
+            try
             {
-                if (r.Receiver.Side != CombatSide.Enemy || r.UnblockedDamage <= 0)
-                    continue;
-
-                int splash = (int)decimal.Floor(r.UnblockedDamage * 0.5m);
-                if (splash <= 0)
-                    continue;
-
-                foreach (Creature other in cs.GetOpponentsOf(command.Attacker))
-                {
-                    if (!other.IsAlive || other == r.Receiver)
-                        continue;
-
-                    await DamageCmd.Attack(splash)
-                        .FromCard(monster)
-                        .Targeting(other)
-                        .WithHitFx("vfx/vfx_attack_slash")
-                        .Execute(ctx);
-                }
+                await ResolveSplinterChainAsync(ctx, command, monster, cs);
+            }
+            finally
+            {
+                _splinterChainRunning = false;
             }
         }
 
@@ -247,10 +238,11 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             decimal blightMultiplier = monster.AttackDealsFullBlightedDamage ? 1m : 0.5m;
             foreach (DamageResult r in command.Results)
             {
-                if (r.Receiver.Side != CombatSide.Enemy || r.TotalDamage <= 0)
+                int hitDamage = FullIncomingDamage(r);
+                if (r.Receiver.Side != CombatSide.Enemy || hitDamage <= 0)
                     continue;
 
-                int blight = (int)decimal.Floor(r.TotalDamage * blightMultiplier);
+                int blight = (int)decimal.Floor(hitDamage * blightMultiplier);
                 if (blight <= 0)
                     continue;
 
@@ -258,71 +250,13 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             }
         }
 
-        int killBonus = monster.PermanentAtkDeltaOnEnemyExecute;
-        if (killBonus != 0)
-        {
-            foreach (DamageResult r in command.Results)
-            {
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                    continue;
-                if (!monster.AppliesPermanentAtkDeltaOnEnemyKill(r.Receiver))
-                    continue;
-                monster.ApplyPermanentExecuteAtkDelta(killBonus);
-            }
-        }
-
-        if (monster is Timeater)
-        {
-            bool executed = false;
-            foreach (DamageResult r in command.Results)
-            {
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                    continue;
-                executed = true;
-                break;
-            }
-
-            if (executed)
-            {
-                foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive).ToList())
-                    await CreatureCmd.Stun(e);
-            }
-        }
-
-        if (monster is Shinato_King_of_a_Higher_Plane)
-        {
-            foreach (DamageResult r in command.Results)
-            {
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled || r.TotalDamage <= 0)
-                    continue;
-
-                int blight = (int)decimal.Floor(r.TotalDamage * 0.5m);
-                if (blight <= 0)
-                    continue;
-
-                foreach (Creature enemy in cs.HittableEnemies)
-                {
-                    if (!enemy.IsAlive)
-                        continue;
-                    await PowerCmd.Apply<BlightPower>(enemy, blight, command.Attacker, monster);
-                }
-            }
-        }
+        // Splinter follow-up hits run nested AfterAttack while _splinterChainRunning; execute-style hooks are skipped there and applied in ResolveSplinterChainAsync via ProcessMonsterExecuteKillEffectsAsync so splinter kills count as that monster's execute.
+        if (!_splinterChainRunning)
+            await ProcessMonsterExecuteKillEffectsAsync(command, monster, cs);
 
         Player? atkPlayer = command.Attacker.Player;
         if (atkPlayer?.Creature != null)
         {
-            if (monster is Twin_Headed_Wolf && PlayerControlsAtLeastTwoFiendsOnField(atkPlayer))
-            {
-                foreach (DamageResult r in command.Results)
-                {
-                    if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                        continue;
-                    await PowerCmd.Apply<StrengthPower>(command.Attacker, 1m, atkPlayer.Creature, monster);
-                    await PowerCmd.Apply<ArtifactPower>(command.Attacker, 1m, atkPlayer.Creature, monster);
-                }
-            }
-
             bool anyUnblocked = false;
             foreach (DamageResult r in command.Results)
             {
@@ -417,6 +351,189 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             return hitCount;
         return hitCount * 2;
     }
+
+    /// <summary>
+    /// Permanent execute ATK, Timeater stun, Shinato Corpse-Blight, Twin-Headed Wolf kill bonuses — keyed on <see cref="DamageResult.WasTargetKilled"/> for this attack command.
+    /// Called for the main hit from <see cref="AfterAttack"/> and for each splinter hit from <see cref="ResolveSplinterChainAsync"/> (nested AfterAttack skips while <see cref="_splinterChainRunning"/> to avoid double-processing).
+    /// </summary>
+    private static async Task ProcessMonsterExecuteKillEffectsAsync(
+        AttackCommand command,
+        BaseMonsterCard monster,
+        CombatState cs)
+    {
+        int killBonus = monster.PermanentAtkDeltaOnEnemyExecute;
+        if (killBonus != 0)
+        {
+            foreach (DamageResult r in command.Results)
+            {
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                    continue;
+                if (!monster.AppliesPermanentAtkDeltaOnEnemyKill(r.Receiver))
+                    continue;
+                monster.ApplyPermanentExecuteAtkDelta(killBonus);
+            }
+        }
+
+        if (monster is Timeater)
+        {
+            bool executed = false;
+            foreach (DamageResult r in command.Results)
+            {
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                    continue;
+                executed = true;
+                break;
+            }
+
+            if (executed)
+            {
+                foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive).ToList())
+                    await CreatureCmd.Stun(e);
+            }
+        }
+
+        if (monster is Shinato_King_of_a_Higher_Plane)
+        {
+            foreach (DamageResult r in command.Results)
+            {
+                int hitDamage = FullIncomingDamage(r);
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled || hitDamage <= 0)
+                    continue;
+
+                int blight = (int)decimal.Floor(hitDamage * 0.5m);
+                if (blight <= 0)
+                    continue;
+
+                foreach (Creature enemy in cs.HittableEnemies)
+                {
+                    if (!enemy.IsAlive)
+                        continue;
+                    await PowerCmd.Apply<BlightPower>(enemy, blight, command.Attacker, monster);
+                }
+            }
+        }
+
+        Player? atkPlayer = command.Attacker.Player;
+        if (atkPlayer?.Creature != null
+            && monster is Twin_Headed_Wolf
+            && PlayerControlsAtLeastTwoFiendsOnField(atkPlayer))
+        {
+            foreach (DamageResult r in command.Results)
+            {
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                    continue;
+                await PowerCmd.Apply<StrengthPower>(command.Attacker, 1m, atkPlayer.Creature, monster);
+                await PowerCmd.Apply<ArtifactPower>(command.Attacker, 1m, atkPlayer.Creature, monster);
+            }
+        }
+    }
+
+    /// <summary>
+    /// First splinter = half of damage past block on the struck enemy. That amount fans out to <b>each</b> other living enemy (N−1 branches);
+    /// each branch then chains independently with min(floor(prev base / 2), floor(past block on last hit / 2)) and round-robin picks for later hops.
+    /// </summary>
+    private static async Task ResolveSplinterChainAsync(
+        BlockingPlayerChoiceContext ctx,
+        AttackCommand command,
+        BaseMonsterCard monster,
+        CombatState cs)
+    {
+        Creature attacker = command.Attacker;
+        foreach (DamageResult r in command.Results)
+        {
+            int pastBlock = DamagePastBlock(r);
+            if (r.Receiver.Side != CombatSide.Enemy || pastBlock <= 0)
+                continue;
+
+            int firstBase = (int)decimal.Floor(pastBlock * 0.5m);
+            if (firstBase <= 0)
+                continue;
+
+            Creature mainReceiver = r.Receiver;
+            List<Creature> initialOthers = cs.GetOpponentsOf(attacker)
+                .Where(c => c.IsAlive && !ReferenceEquals(c, mainReceiver))
+                .ToList();
+
+            foreach (Creature initialOther in initialOthers)
+                await ResolveSplinterBranchAsync(ctx, attacker, monster, cs, firstBase, initialOther);
+        }
+    }
+
+    /// <summary>One splinter chain: first hit goes to <paramref name="firstTarget"/>; subsequent hops use <see cref="PickNextSplinterVictim"/>.</summary>
+    private static async Task ResolveSplinterBranchAsync(
+        BlockingPlayerChoiceContext ctx,
+        Creature attacker,
+        BaseMonsterCard monster,
+        CombatState cs,
+        int baseAmount,
+        Creature firstTarget)
+    {
+        Creature? next = firstTarget;
+        while (baseAmount > 0 && next != null)
+        {
+            if (!next.IsAlive)
+                break;
+
+            AttackCommand splinterCmd = await DamageCmd.Attack(baseAmount)
+                .FromCard(monster)
+                .Targeting(next)
+                .WithHitFx("vfx/vfx_attack_slash")
+                .Execute(ctx);
+
+            await ProcessMonsterExecuteKillEffectsAsync(splinterCmd, monster, cs);
+
+            int pastBlockOnVictim = 0;
+            foreach (DamageResult dr in splinterCmd.Results)
+            {
+                if (dr.Receiver == next)
+                    pastBlockOnVictim += DamagePastBlock(dr);
+            }
+
+            int chainCeiling = baseAmount / 2;
+            int damageCandidate = (int)decimal.Floor(pastBlockOnVictim * 0.5m);
+            Creature lastHit = next;
+            baseAmount = Math.Min(chainCeiling, damageCandidate);
+            next = PickNextSplinterVictim(attacker, lastHit, cs);
+        }
+    }
+
+    /// <summary>
+    /// Next splinter target among living opponents. When the struck enemy dies, <paramref name="lastHit"/> may be dead and not in the ring;
+    /// we still splinter to the sole survivor when two enemies started and one was killed by this hit.
+    /// </summary>
+    private static Creature? PickNextSplinterVictim(Creature attacker, Creature lastHit, CombatState cs)
+    {
+        List<Creature> ring = cs.GetOpponentsOf(attacker).Where(c => c.IsAlive).ToList();
+        if (ring.Count == 0)
+            return null;
+
+        if (ring.Count == 1)
+        {
+            Creature only = ring[0];
+            return ReferenceEquals(only, lastHit) ? null : only;
+        }
+
+        int idx = ring.FindIndex(c => ReferenceEquals(c, lastHit));
+        if (idx < 0)
+            return ring[0];
+
+        for (int step = 1; step <= ring.Count; step++)
+        {
+            Creature c = ring[(idx + step) % ring.Count];
+            if (c.IsAlive && !ReferenceEquals(c, lastHit))
+                return c;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// <see cref="DamageResult.TotalDamage"/> is block + HP removed only; killing blows store excess in <see cref="DamageResult.OverkillDamage"/>.
+    /// </summary>
+    private static int FullIncomingDamage(DamageResult r) => r.TotalDamage + r.OverkillDamage;
+
+    /// <summary>Damage that got past block: HP removed + overkill (not half of <see cref="DamageResult.BlockedDamage"/>).</summary>
+    private static int DamagePastBlock(DamageResult r) => r.UnblockedDamage + r.OverkillDamage;
 
     public override decimal ModifyHpLostBeforeOsty(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {

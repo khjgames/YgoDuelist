@@ -126,7 +126,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Duel monster race / type for the card frame icon.</summary>
     public override DuelMonsterRace DuelMonsterRace { get; }
 
-    /// <summary>Splinter (YGO piercing): when this deals unblocked damage, each other enemy takes 50% of that damage.</summary>
+    /// <summary>Splinter (YGO piercing): after unblocked damage on an enemy, a decaying chain splashes other enemies (see <see cref="Relics.GraveyardRelic"/>).</summary>
     public virtual bool AttackDealsSplinterDamage => false;
 
     /// <summary>Blighted (YGO direct attack): 50% of hit damage (blocked and unblocked) applies as Blight stacks on the struck enemy (Blight X ticks at end of your turn, ignores Block, then removes).</summary>
