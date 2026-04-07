@@ -1,9 +1,13 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -37,6 +41,16 @@ public sealed class Draining_Shield : BaseTrapCard
         typeof(Draining_Shield),
     };
 
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (!base.IsPlayable || Owner?.Creature?.CombatState == null)
+                return false;
+            return AnyEnemyWithAttackIntent(Owner);
+        }
+    }
+
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)
@@ -58,4 +72,12 @@ public sealed class Draining_Shield : BaseTrapCard
     }
 
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
+
+    private static bool AnyEnemyWithAttackIntent(Player player)
+    {
+        Creature? pc = player.Creature;
+        if (pc?.CombatState is not CombatState cs)
+            return false;
+        return cs.HittableEnemies.Any(e => e.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) > 0);
+    }
 }

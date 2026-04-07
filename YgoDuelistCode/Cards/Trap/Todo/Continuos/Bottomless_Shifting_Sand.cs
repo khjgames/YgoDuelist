@@ -21,7 +21,7 @@ public sealed class Bottomless_Shifting_Sand : BaseContinuousTrapCard
         };
 
     public Bottomless_Shifting_Sand()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
     // Dictates the card pack tags this card will be included in.

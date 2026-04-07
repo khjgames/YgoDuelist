@@ -62,6 +62,7 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
     public CardType ActivatedEffectCardType => CardType.Skill;
     public TargetType ActivatedEffectTarget => TargetType.AnyEnemy;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-ARCANE_ARCHER_OF_THE_FOREST.activated_effect.description";
+    public bool ActivatedEffectConsumesOncePerTurnSlot => false;
 
     public bool IsActivatedEffectAvailable => IsEarthTributeAvailable(Owner);
 
@@ -99,8 +100,6 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
             .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), chosen));
         if (tributePet == null || !tributePet.IsAlive)
             return;
-
-        MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(sourcePet, true);
 
         await CreatureCmd.Kill(tributePet, force: true);
 

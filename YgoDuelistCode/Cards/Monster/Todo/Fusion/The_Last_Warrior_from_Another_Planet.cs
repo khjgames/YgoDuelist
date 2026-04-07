@@ -17,7 +17,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
 {
-    /// <summary>Sum of printed DEF added by summon effect; reapplied in <see cref="AfterDeserialized"/>.</summary>
+    /// <summary>Sum of printed DEF added by summon effect; reapplied after full save load (see <c>CardModelFromSerializableMonsterPermanentStatsPatch</c>).</summary>
     [SavedProperty]
     public int SummonAbsorbPrintedDefBonus { get; set; }
 
@@ -58,12 +58,6 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
             DynamicVars.Block.UpgradeValueBy(defBonus);
         DynamicVars["Mgc"].UpgradeValueBy(1m);
         SyncPermanentExecuteIncreaseVar();
-    }
-
-    protected override void AfterDeserialized()
-    {
-        base.AfterDeserialized();
-        ApplySavedSummonAbsorbDefBonusToPrintedDefense();
     }
 
     protected override void AfterDowngraded()
@@ -155,12 +149,20 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
         }
     }
 
-    private void ApplySavedSummonAbsorbDefBonusToPrintedDefense()
+    internal void ApplySavedSummonAbsorbDefBonusToPrintedDefense()
     {
         if (SummonAbsorbPrintedDefBonus == 0 || DynamicVars == null)
             return;
-        DynamicVars["Def"].BaseValue += SummonAbsorbPrintedDefBonus;
-        if (DynamicVars.Block != null)
-            DynamicVars.Block.BaseValue += SummonAbsorbPrintedDefBonus;
+        CardModel template = ModelDb.GetById<CardModel>(Id).ToMutable();
+        for (int i = 0; i < CurrentUpgradeLevel; i++)
+        {
+            template.UpgradeInternal();
+            template.FinalizeUpgradeInternal();
+        }
+
+        decimal baselineDef = template.DynamicVars["Def"].BaseValue;
+        DynamicVars["Def"].BaseValue = baselineDef + SummonAbsorbPrintedDefBonus;
+        if (DynamicVars.Block != null && template.DynamicVars.Block != null)
+            DynamicVars.Block.BaseValue = template.DynamicVars.Block.BaseValue + SummonAbsorbPrintedDefBonus;
     }
 }

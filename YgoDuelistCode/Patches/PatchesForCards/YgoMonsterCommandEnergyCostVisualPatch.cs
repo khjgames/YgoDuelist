@@ -8,7 +8,9 @@ using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -17,6 +19,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// face-up <see cref="BaseFieldSpellCard"/> in the Spell/Trap zone, face-up <see cref="BaseContinuousSpellCard"/> in that zone,
 /// face-up <see cref="BaseContinuousTrapCard"/> in that zone,
 /// and face-up equipped <see cref="BaseEquipSpellCard"/> in that zone,
+/// and face-up <see cref="IYgoSpellTrapEquipLink"/> traps with an active link in that zone,
 /// swaps the unplayable overlay to the invisible orb texture
 /// and blanks the cost label (same as Exit_Monster_Options).
 /// Restores the vanilla unplayable texture when pooled <see cref="NCard"/> instances show other cards.
@@ -61,6 +64,13 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
                  && model is BaseContinuousTrapCard zoneCt
                  && model.Pile?.Type == SpellTrapZonePile.CustomType
                  && !zoneCt.FaceDown)
+            customPath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
+        else if (string.IsNullOrEmpty(customPath)
+                 && model is BaseTrapCard zoneLinkTrap
+                 && model is IYgoSpellTrapEquipLink
+                 && model.Pile?.Type == SpellTrapZonePile.CustomType
+                 && !zoneLinkTrap.FaceDown
+                 && YgoSpellTrapEquipLinkRegistry.GetLinkedMonster(model) != null)
             customPath = BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
 
         var useCustomUnplayable = !string.IsNullOrEmpty(customPath);
@@ -114,6 +124,12 @@ public static class YgoMonsterCommandEnergyCostVisualPatch
                                         || model is BaseContinuousTrapCard ctTrap
                                         && model.Pile?.Type == SpellTrapZonePile.CustomType
                                         && !ctTrap.FaceDown;
+        zoneHideEnergyLikeFaceUpField = zoneHideEnergyLikeFaceUpField
+                                        || model is BaseTrapCard zlt
+                                        && model is IYgoSpellTrapEquipLink
+                                        && model.Pile?.Type == SpellTrapZonePile.CustomType
+                                        && !zlt.FaceDown
+                                        && YgoSpellTrapEquipLinkRegistry.GetLinkedMonster(model) != null;
 
         if (!zoneHideEnergyLikeFaceUpField)
         {

@@ -14,7 +14,7 @@ using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>While <see cref="Bottomless_Shifting_Sand"/> is face-up (no player power).</summary>
+/// <summary>While <see cref="Bottomless_Shifting_Sand"/> is face-up (no player power). Invoked from relic <c>BeforeFlush</c> so hand size is read before the discard flush.</summary>
 public static class YgoBottomlessShiftingSandContinuous
 {
     public static async Task TryResolveAfterPlayerTurnEnd(PlayerChoiceContext choiceContext, Player player)
@@ -22,7 +22,8 @@ public static class YgoBottomlessShiftingSandContinuous
         if (player.Creature == null)
             return;
 
-        Bottomless_Shifting_Sand? sand = SpellTrapZonePile.CustomType.GetPile(player)?.Cards.OfType<Bottomless_Shifting_Sand>().FirstOrDefault();
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        Bottomless_Shifting_Sand? sand = zone?.Cards.OfType<Bottomless_Shifting_Sand>().FirstOrDefault(c => !c.FaceDown);
         if (sand == null)
             return;
 
@@ -32,7 +33,7 @@ public static class YgoBottomlessShiftingSandContinuous
         int handCount = hand?.Cards.Count ?? 0;
         if (handCount < handThreshold)
         {
-            await DestroyTrapAndSyncAsync(player);
+            await DestroyTrapAndSyncAsync(player, sand);
             return;
         }
 
@@ -64,12 +65,10 @@ public static class YgoBottomlessShiftingSandContinuous
         await CreatureCmd.Damage(choiceContext, best, dmg, ValueProp.Unpowered, player.Creature, sand);
     }
 
-    private static async Task DestroyTrapAndSyncAsync(Player pl)
+    private static async Task DestroyTrapAndSyncAsync(Player pl, Bottomless_Shifting_Sand sand)
     {
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
-        Bottomless_Shifting_Sand? sand = zone?.Cards.OfType<Bottomless_Shifting_Sand>().FirstOrDefault();
         CardPile? gy = GraveyardPile.CustomType.GetPile(pl);
-        if (sand != null && gy != null)
+        if (gy != null)
             await CardPileCmd.Add(new[] { sand }, gy, CardPilePosition.Top, sand, false);
 
         YgoSpellTrapZoneBridge.SyncFromZonePile(pl);

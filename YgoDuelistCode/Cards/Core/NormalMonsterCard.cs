@@ -73,17 +73,10 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         yield return new ComputedDecimalVar("CalculatedDEF", GetTotalDefForPreview, (decimal)BaseDef);
     }
 
-    protected override void AfterDeserialized()
-    {
-        base.AfterDeserialized();
-        ApplySavedExecuteAtkBonusToPrintedDamage();
-    }
-
     protected override void AfterDowngraded()
     {
         base.AfterDowngraded();
         ApplySavedExecuteAtkBonusToPrintedDamage();
-        SyncPermanentExecuteIncreaseVar();
     }
 
     /// <summary>One normal summon per turn; special summons (e.g. Monster Reborn) bypass this.</summary>
@@ -148,7 +141,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         int resolutionCount = YgoNarrowPassField.GetAttackOrDefendResolutionCount(Owner);
 
-        int recklessSelf = HasRecklessBlockerKeyword ? 0 : GetTotalRecklessCombatSelfDamage();
+        // HasRecklessBlockerKeyword only affects which keyword chips render (see BaseMonsterCard.RecklessKeywordStackCountForDisplay); it must not skip gameplay self-damage.
+        int recklessSelf = GetTotalRecklessCombatSelfDamage();
 
         async Task ApplyRecklessSelfDamageIfAnyAsync()
         {

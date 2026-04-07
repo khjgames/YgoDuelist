@@ -121,7 +121,13 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                 continue;
             decimal maintenance = mermaid.IsUpgraded ? 0m : 1m;
             if (maintenance > 0)
-                await CreatureCmd.Damage(choiceContext, pet, maintenance, ValueProp.Move, player.Creature, mermaid);
+                await CreatureCmd.Damage(
+                    choiceContext,
+                    pet,
+                    maintenance,
+                    ValueProp.Unblockable | ValueProp.Unpowered,
+                    player.Creature,
+                    mermaid);
             await CreatureCmd.Heal(player.Creature, 1m);
         }
 
@@ -133,14 +139,19 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         await YgoCardTraderContinuous.TryResolvePlayerTurnStart(choiceContext, player);
     }
 
+    /// <summary>Bottomless Shifting Sand: hand count for its effect uses size before the end-of-turn discard flush.</summary>
+    public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player == Owner)
+            await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
+    }
+
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {
         if (side == CombatSide.Player && Owner?.PlayerCombatState != null)
         {
             await MonsterCommandRegistry.ResolveKarateManEndOfTurnDestructionAsync(Owner);
             MonsterCommandRegistry.ClearPerTurnExtrasForPlayer(Owner);
-            if (Owner != null)
-                await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
         }
     }
 

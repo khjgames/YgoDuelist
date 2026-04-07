@@ -50,8 +50,6 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
         typeof(Mask_of_Weakness),
     };
 
-    protected override bool CanActivateDirectlyFromHand => true;
-
     protected override bool SendsTrapToGraveyardAfterPlay => false;
 
     public BaseMonsterCard? EquipLinkedMonster => _equipLinkedMonster;

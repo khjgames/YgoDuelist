@@ -26,6 +26,19 @@ public sealed class Activate_Effect : MonsterCommandCard
     {
     }
 
+    protected override int CanonicalEnergyCost
+    {
+        get
+        {
+            if (SourceMonster is not IMonsterActivatedEffect impl)
+                return 0;
+            var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
+            if (pet != null && MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn)
+                return 0;
+            return impl.ActivatedEffectEnergyCost;
+        }
+    }
+
     public override CardType Type => Effect?.ActivatedEffectCardType ?? CardType.Skill;
 
     public override TargetType TargetType => Effect?.ActivatedEffectTarget ?? TargetType.Self;

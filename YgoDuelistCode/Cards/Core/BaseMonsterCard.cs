@@ -108,8 +108,6 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     {
         get
         {
-            if (HasRecklessBlockerKeyword)
-                return 0;
             int d = GetTotalRecklessCombatSelfDamage();
             return d > 0 ? d : 0;
         }
@@ -192,13 +190,23 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     }
 
     /// <summary>
-    /// Re-applies <see cref="PermanentAtkBonusFromExecutes"/> to <see cref="DynamicVars.Damage"/> (load / downgrade / clone init).
+    /// Re-applies <see cref="PermanentAtkBonusFromExecutes"/> to <see cref="DynamicVars.Damage"/> (after full deserialize, downgrade, etc.).
+    /// Uses canonical stats + <see cref="CardModel.CurrentUpgradeLevel"/> as the baseline, then adds the saved execute bonus (not a second += on top of an already-mutated Damage var).
     /// </summary>
-    protected void ApplySavedExecuteAtkBonusToPrintedDamage()
+    internal void ApplySavedExecuteAtkBonusToPrintedDamage()
     {
         if (PermanentAtkBonusFromExecutes == 0 || DynamicVars?.Damage == null)
             return;
-        DynamicVars.Damage.BaseValue += PermanentAtkBonusFromExecutes;
+        CardModel template = ModelDb.GetById<CardModel>(Id).ToMutable();
+        for (int i = 0; i < CurrentUpgradeLevel; i++)
+        {
+            template.UpgradeInternal();
+            template.FinalizeUpgradeInternal();
+        }
+
+        decimal baseline = template.DynamicVars.Damage.BaseValue;
+        DynamicVars.Damage.BaseValue = baseline + PermanentAtkBonusFromExecutes;
+        SyncPermanentExecuteIncreaseVar();
     }
 
     /// <summary>

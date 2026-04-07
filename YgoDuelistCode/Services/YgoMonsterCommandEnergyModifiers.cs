@@ -12,7 +12,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 public static class YgoMonsterCommandEnergyModifiers
 {
     /// <summary>
-    /// Field-wide energy additions applied to every Command Attack/Defend. Add new global modifiers here so they stack with Narrow Pass and each other.
+    /// Field-wide energy additions for Command Attack/Defend and hand ATK/DEF summons only — not field <c>Activate_Effect</c>. Stack Narrow Pass and future sources here.
     /// </summary>
     public static int SumFieldWideMonsterCommandEnergyAdd(Player? player) =>
         YgoNarrowPassField.GetMonsterCommandEnergyAdd(player);

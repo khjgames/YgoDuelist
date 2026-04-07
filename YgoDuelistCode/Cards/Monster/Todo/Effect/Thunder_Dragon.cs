@@ -56,26 +56,6 @@ public sealed class Thunder_Dragon : EffectMonsterCard
 
     public override bool CanSummonDuelMonster => !IsHandEffectFormActive;
 
-    private int? _energyBaseBeforeHandEffectForm;
-
-    protected override void AfterDisplayFormChanged()
-    {
-        base.AfterDisplayFormChanged();
-        if (!IsMutable)
-            return;
-
-        if (IsHandEffectFormActive)
-        {
-            _energyBaseBeforeHandEffectForm ??= EnergyCost.GetWithModifiers(CostModifiers.Local);
-            EnergyCost.SetCustomBaseCost(0);
-        }
-        else if (_energyBaseBeforeHandEffectForm is int saved)
-        {
-            EnergyCost.SetCustomBaseCost(saved);
-            _energyBaseBeforeHandEffectForm = null;
-        }
-    }
-
     protected override PileType GetResultPileType()
     {
         if (IsHandEffectFormActive)

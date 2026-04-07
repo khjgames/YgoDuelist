@@ -13,7 +13,7 @@ using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>Face-up <see cref="Narrow_Pass"/> in the Spell/Trap zone: +1 monster play/command energy, summon pet life payment, and repeated attack/defend resolutions (field commands and hand normal/tribute ATK/DEF summons via <see cref="AbstractMonsterCard.CanonicalEnergyCost"/> / <see cref="NormalMonsterCard"/>).</summary>
+/// <summary>Face-up <see cref="Narrow_Pass"/> in the Spell/Trap zone: +1 energy on Command Attack/Defend and hand ATK/DEF summons (not field activate-effect commands), pet life payment on those plays, and repeated attack/defend resolutions.</summary>
 public static class YgoNarrowPassField
 {
     /// <summary>

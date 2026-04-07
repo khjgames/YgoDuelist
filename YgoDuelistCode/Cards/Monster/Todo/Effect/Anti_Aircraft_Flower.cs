@@ -57,6 +57,7 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
     public CardType ActivatedEffectCardType => CardType.Skill;
     public TargetType ActivatedEffectTarget => TargetType.Self;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-ANTI_AIRCRAFT_FLOWER.activated_effect.description";
+    public bool ActivatedEffectConsumesOncePerTurnSlot => false;
 
     public bool IsActivatedEffectAvailable => IsEarthTributeAvailable(Owner);
 
@@ -90,8 +91,6 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
             .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), chosen));
         if (tributePet == null || !tributePet.IsAlive)
             return;
-
-        MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(sourcePet, true);
 
         await CreatureCmd.Kill(tributePet, force: true);
 

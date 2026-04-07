@@ -80,7 +80,7 @@ public sealed class Command_Defend : MonsterCommandCard
                 await MonsterCommandRegistry.CommitMonsterCommandAfterPlay(pet, isAttackCommand: false, player.Creature, SourceMonster);
         }
 
-        SourceMonster.SetBattlePositionFromDuelCommand(attackPosition: false);
+        await SourceMonster.ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync(choiceContext, player, attackPosition: false);
         await SourceMonster.CombatAction(choiceContext, cardPlay);
     }
 

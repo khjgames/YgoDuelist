@@ -103,7 +103,7 @@ public sealed class Command_Attack : MonsterCommandCard
             && !SourceMonster.IsAttackBattlePosition
             && SourceMonster.FaceDown;
 
-        SourceMonster.SetBattlePositionFromDuelCommand(attackPosition: true);
+        await SourceMonster.ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync(choiceContext, player, attackPosition: true);
 
         if (SourceMonster is Stealth_Bird bird && wasFaceDownDefense && cardPlay.Target != null)
         {

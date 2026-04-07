@@ -108,12 +108,22 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         }
     }
 
+    private readonly CardType _registeredCardType;
+
     protected AbstractMonsterCard(int cost, CardType type, CardRarity rarity, TargetType target)
         : base(cost, type, rarity, target)
     {
         _handSummonFallbackEnergy = cost;
+        _registeredCardType = type;
         _displayForm = type == CardType.Attack ? MonsterDisplayForm.Attack : MonsterDisplayForm.Defense;
     }
+
+    /// <summary>
+    /// Attack vs defense from the card definition (constructor). Vanilla <see cref="EnchantmentModel.CanEnchant"/> uses
+    /// <see cref="CardModel.Type"/>; for duel monsters that becomes <see cref="CardType.Skill"/> in defense position, so
+    /// enchant eligibility for "Attack-only" enchantments uses this value instead.
+    /// </summary>
+    public CardType RegisteredCardType => _registeredCardType;
 
     /// <summary>
     /// Sets whether this monster starts in attack position (Attack card) or defense position (Skill card).
@@ -137,10 +147,28 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// <summary>
     /// Sets attack vs defense position when the player uses <see cref="Command.Command_Attack"/> or <see cref="Command.Command_Defend"/>.
     /// Persists after the command resolves (same rules as <see cref="SetDisplayAttackSkill"/> for face-down).
+    /// Does not run <see cref="OnSwitchedFromDefenseToAttackFromCommandAsync"/> / <see cref="OnSwitchedFromAttackToDefenseFromCommandAsync"/>; use
+    /// <see cref="ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync"/> from those commands when switch effects should fire.
     /// </summary>
-    public void SetBattlePositionFromDuelCommand(bool attackPosition)
-    {
+    public void SetBattlePositionFromDuelCommand(bool attackPosition) =>
         SetDisplayAttackSkill(attackPosition);
+
+    /// <summary>
+    /// Same position update as <see cref="SetBattlePositionFromDuelCommand"/>, and when the stance actually changes, runs the same hooks as
+    /// <see cref="Command.Command_Change_Battle_Position"/> (<see cref="OnSwitchedFromDefenseToAttackFromCommandAsync"/> /
+    /// <see cref="OnSwitchedFromAttackToDefenseFromCommandAsync"/>).
+    /// </summary>
+    public async Task ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        bool attackPosition)
+    {
+        bool wasAttack = IsAttackBattlePosition;
+        SetBattlePositionFromDuelCommand(attackPosition);
+        if (wasAttack && !attackPosition)
+            await OnSwitchedFromAttackToDefenseFromCommandAsync(choiceContext, player);
+        else if (!wasAttack && attackPosition)
+            await OnSwitchedFromDefenseToAttackFromCommandAsync(choiceContext, player);
     }
 
     /// <summary>
@@ -176,13 +204,15 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     }
 
     /// <summary>
-    /// After this card's field monster switches from defense to attack via <see cref="ApplyBattlePositionChangeFromCommandMenu"/>.
+    /// After this card's field monster switches from defense to attack via <see cref="ApplyBattlePositionChangeFromCommandMenu"/> or
+    /// <see cref="ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync"/> (e.g. <see cref="Command.Command_Attack"/>).
     /// </summary>
     public virtual Task OnSwitchedFromDefenseToAttackFromCommandAsync(PlayerChoiceContext choiceContext, Player player) =>
         Task.CompletedTask;
 
     /// <summary>
-    /// After this card's field monster switches from attack to defense via <see cref="ApplyBattlePositionChangeFromCommandMenu"/>.
+    /// After this card's field monster switches from attack to defense via <see cref="ApplyBattlePositionChangeFromCommandMenu"/> or
+    /// <see cref="ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync"/> (e.g. <see cref="Command.Command_Defend"/>).
     /// </summary>
     public virtual Task OnSwitchedFromAttackToDefenseFromCommandAsync(PlayerChoiceContext choiceContext, Player player) =>
         Task.CompletedTask;
