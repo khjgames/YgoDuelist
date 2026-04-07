@@ -1,0 +1,726 @@
+Spell Cards from cards_database.json (text as stored in this file).
+
+================================================================================
+NORMAL SPELLS: 116
+================================================================================
+
+id: 20871001
+name: Blue Medicine
+desc:
+Increase your Life Points by 400 points.
+
+id: 2204140
+name: Book of Life
+desc:
+Target 1 Zombie monster in your GY and 1 monster in your opponent's GY; Special Summon the first target, also banish the second target.
+
+id: 87910978
+name: Brain Control
+desc:
+Pay 800 LP, then target 1 face-up monster your opponent controls that can be Normal Summoned/Set; take control of that target until the End Phase.
+
+
+
+
+
+
+
+
+id: 20101223
+name: 
+    Breath of Light - X cost - Uncommon
+desc: 
+    Gain {Mgc} block & heal all duel monsters {Mgc2} hp. X times 
+    Mgc is 5, upgrades to 8, Mgc2 is 1, upgrades to 3.
+
+Tags: Starter, Light, Spell.
+
+
+id: 60682203
+name: 
+    Cold Wave - X cost - Uncommon
+desc:
+    You cannot play or Set any Spell or Trap Cards on the turn you activate this card. 
+    Gain 8 Block X times.
+
+Tags: Starter, Water, Ocean, Spell.
+
+
+id: 23265313
+name: 
+    Cost Down - 1(0) cost - Uncommon
+desc:
+    Destroy 1 card in your hand, temporarily reduce the Levels of all monsters in your hand by 2.
+
+Tags: Starter, Spell.
+
+id: 16435215
+name: 
+    Dragged Down into the Grave - 1(0) cost - Common
+desc:
+    Destroy 1 card in your hand, then draw 1 card.
+
+
+id: 33423043
+name: 
+    D.D. Designator - 1(0) cost - Uncommon
+desc: 
+    Banish 1 card in your hand, next turn, draw 1 additional card.
+
+Tags: Starter, Spell, Banish.
+
+
+id: 19159413
+name: 
+    De-Spell - Uncommon - 1(0) cost -
+desc: 
+    The next Spell you activate costs {Energy} less. 
+
+Tags: Starter, Spell.
+
+id: 24096228
+name: 
+    Double Spell - Uncommon - 1(0) cost
+desc:
+    Destroy 1 Spell Card in your hand, then activate 1 Spell card in your Graveyard.
+
+
+id: 3027001
+name: 
+    Fake Trap - Uncommon - 1(0) cost
+desc: 
+    The next Trap you activate costs {Energy} less. 
+
+Tags: Starter, Trap.
+
+
+id: 45895206
+name: 
+    Dark-Piercing Light - 1(0) cost - Common
+desc:
+    Gain 5 block for each enemy who intends to attack you.
+
+Tags: Starter, Light, Spell.
+
+
+id: 84257640
+name: 
+    Dian Keto the Cure Master - 1(0) cost - Common
+desc:
+    Heal target duel monster 6 hp.
+
+Tags: Starter, Spell, Heal.
+
+
+
+
+
+
+id: 4031928
+name: Change of Heart
+desc:
+Target 1 monster your opponent controls; take control of it until the End Phase.
+
+id: 21888494
+name: Chosen One
+desc:
+Select 1 Monster Card and 2 non-Monster Cards from your hand. Your opponent randomly selects 1 card among them. If it is a Monster Card, it is Special Summoned and send the remaining 2 cards to the Graveyard. If not, send all the cards to the Graveyard.
+
+id: 33244944
+name: Contract with Exodia
+desc:
+If you have all 5 of "Exodia the Forbidden One", "Right Arm of the Forbidden One", "Left Arm of the Forbidden One", "Right Leg of the Forbidden One", and "Left Leg of the Forbidden One" in your Graveyard: Special Summon 1 "Exodia Necross" from your hand.
+
+id: 99789342
+name: Dark Magic Curtain
+desc:
+Pay half your LP; Special Summon 1 "Dark Magician" from your Deck. You cannot Summon other monsters the turn you activate this card (but you can Set).
+
+id: 11961740
+name: Different Dimension Capsule
+desc:
+Select 1 card from your Deck and remove it from play face-down. During your 2nd Standby Phase after activation, destroy this card and add the removed card to your hand.
+
+id: 23557835
+name: Dimension Fusion
+desc:
+Pay 2000 Life Points. Both players Special Summon as many of their removed from play monsters as possible.
+
+
+id: 55991637
+name: Dragon's Gunfire
+desc:
+If you control a Dragon monster: Activate 1 of these effects;
+● Inflict 800 damage to your opponent.
+● Target 1 monster with 800 or less DEF; destroy that target.
+
+id: 90219263
+name: Elegant Egotist
+desc:
+If "Harpie Lady" is on the field: Special Summon 1 "Harpie Lady" or "Harpie Lady Sisters" from your hand or Deck.
+
+id: 6390406
+name: Emblem of Dragon Destroyer
+desc:
+Add 1 "Buster Blader" from your Deck or Graveyard to your hand.
+
+id: 30531525
+name: Enchanting Fitting Room
+desc:
+Pay 800 LP; excavate the top 4 cards of your Deck and Special Summon all excavated Level 3 or lower Normal Monsters, also, after that, shuffle the rest back into your Deck.
+
+id: 94716515
+name: Eradicating Aerosol
+desc:
+Destroy all Insect monsters on the field.
+
+id: 5556668
+name: Exchange
+desc:
+Both players reveal their hands and add 1 card from each other's hand to their hand.
+
+id: 26725158
+name: Exile of the Wicked
+desc:
+Destroy all Fiend monsters on the field.
+
+id: 57995165
+name: Extra-Foolish Burial
+desc:
+Pay half your LP; send 1 monster from your Extra Deck to the GY. You can only activate 1 "Extra-Foolish Burial" per turn. You cannot Set Spells/Traps during the turn you activate this card.
+
+id: 20188127
+name: Fairy of the Spring
+desc:
+Target 1 Equip Spell Card in your Graveyard; add that target to your hand. That Equip Spell Card cannot be activated this turn.
+
+id: 95308449
+name: Final Countdown
+desc:
+Pay 2000 Life Points. After 20 turns have passed (counting the turn you activate this card as the 1st turn), you win the Duel.
+
+id: 18591904
+name: Final Destiny
+desc:
+Discard 5 cards from your hand. Destroy all cards on the field.
+
+id: 73134082
+name: Final Flame
+desc:
+Inflict 600 points of damage to your opponent's Life Points.
+
+id: 26902560
+name: Fusion Sage
+desc:
+Add 1 "Polymerization" from your Deck to your hand.
+
+id: 42703248
+name: Giant Trunade
+desc:
+Return all Spell and Trap Cards on the field to the hand.
+
+id: 45311864
+name: Goblin Thief
+desc:
+Inflict 500 points of damage to your opponent's Life Points and increase your Life Points by 500 points.
+
+id: 11868825
+name: Goblin's Secret Remedy
+desc:
+Increase your Life Points by 600 points.
+
+id: 79571449
+name: Graceful Charity
+desc:
+Draw 3 cards, then destroy 2 cards in your hand (sent to Graveyard).
+
+id: 82542267
+name: Gravedigger Ghoul
+desc:
+Select up to 2 Monster Card(s) from your opponent's Graveyard. Remove the selected card(s) from play.
+
+id: 34370473
+name: Gryphon's Feather Duster
+desc:
+Destroy all Spell and Trap Cards on your side of the field. Increase your Life Points by the number of destroyed cards x 500 points.
+
+id: 18144507
+name: Harpie's Feather Duster
+desc:
+Destroy all Spell and Trap Cards your opponent controls.
+
+id: 19613556
+name: Heavy Storm
+desc:
+Destroy all Spell and Trap Cards on the field.
+
+id: 46130346
+name: Hinotama
+desc:
+StS2: Apply 6 Blight to all enemies (11 when upgraded). 1-cost Uncommon; Starter / Burn / Spell packs.
+
+id: 96965364
+name: Insect Imitation
+desc:
+Tribute 1 monster. Special Summon 1 Insect-Type monster from your Deck whose Level is 1 higher than the Tributed monster's.
+
+id: 90330453
+name: Last Day of Witch
+desc:
+Destroy all face-up Spellcaster-Type monsters on the field.
+
+id: 85602018
+name: Last Will
+desc:
+If a monster on your side of the field was sent to your Graveyard this turn, you can Special Summon 1 monster with an ATK of 1500 points or less from your Deck once during this turn. Then shuffle your Deck.
+
+id: 27827272
+name: Makiu, the Magical Mist
+desc:
+Target 1 "Summoned Skull", or 1 Thunder monster, in your Monster Zone; destroy all monsters your opponent controls with DEF less than or equal to the ATK of that monster. You cannot conduct your Battle Phase the turn you activate this card.
+
+id: 32062913
+name: Mega Ton Magical Cannon
+desc:
+Remove 10 Spell Counters on your side of the field. Destroy all cards on your opponent's side of the field.
+
+id: 48642904
+name: Mesmeric Control
+desc:
+During your opponent's next turn after you activate this card, your opponent cannot change the battle positions of monsters, except with a card effect.
+
+id: 46411259
+name: Metamorphosis
+desc:
+Tribute 1 monster. Special Summon 1 Fusion Monster from your Extra Deck with the same Level as the Tributed monster.
+
+id: 88032456
+name: Mimicat
+desc:
+If you control "Toon World" and a Toon monster: Target 1 card in your opponent's GY; if it is a monster, Special Summon it to your field, or if it is a Spell/Trap, Set it to your field. You can only activate 1 "Mimicat" per turn.
+
+id: 6343408
+name: Miracle Dig
+desc:
+If 5 or more of your monsters are currently removed from play, return 3 of them to the Graveyard.
+
+id: 43040603
+name: Monster Gate
+desc:
+Tribute 1 monster; excavate cards from the top of your Deck until you excavate a monster that can be Normal Summoned/Set. Special Summon it, also send the other excavated cards to the GY.
+
+id: 83764719
+name: Monster Reborn
+desc:
+Target 1 monster in either GY; Special Summon it.
+
+id: 58074572
+name: Mooyan Curry
+desc:
+Choose 1 player; that player gains 200 Life Points.
+
+id: 22493811
+name: Multiplication of Ants
+desc:
+Tribute 1 Insect-Type Monster on your side of the field. Special Summon 2 "Army Ant Tokens" (Insect-Type/EARTH/Level 4/ATK 500/DEF 1200) on your side of the field. The tokens cannot be used as a Tribute for a Tribute Summon.
+
+id: 25774450
+name: Mystic Box
+desc:
+Target 1 monster your opponent controls and 1 monster you control; destroy the first target, then give control of the second target to your opponent.
+
+id: 58775978
+name: Nightmare's Steelcage
+desc:
+This card remains on the field for 2 of your opponent's turns. While this card is face-up on the field, no monsters can attack.
+
+id: 8251996
+name: Ojama Delta Hurricane!!
+desc:
+You can only activate this card while "Ojama Green", "Ojama Yellow" and "Ojama Black" are face-up on your side of the field. Destroy all cards on your opponent's side of the field.
+
+id: 19523799
+name: Ookazi
+desc:
+Inflict 800 damage to your opponent.
+
+id: 74191942
+name: Painful Choice
+desc:
+Select 5 cards from your Deck and show them to your opponent. Your opponent selects 1 card among them. Add that card to your hand and discard the remaining cards to the Graveyard.
+
+id: 24094653
+name: Polymerization
+desc:
+Fusion Summon 1 Fusion Monster from your Extra Deck, using monsters from your hand or field as Fusion Material.
+
+id: 55144522
+name: Pot of Greed
+desc:
+Draw 2 cards.
+
+id: 23701465
+name: Primal Seed
+desc:
+If "Black Luster Soldier - Envoy of the Beginning" or "Chaos Emperor Dragon - Envoy of the End" is on the field: Target 2 of your banished cards; add both those targets to your hand.
+
+id: 1969506
+name: Puppet Ritual
+desc:
+If your opponent's Life Points are at least 2000 higher than yours: You can target 2 Level 8 "Gimmick Puppet" monsters in your Graveyard; Special Summon those targets. You can only activate 1 "Puppet Ritual" per turn. You cannot conduct your Battle Phase the turn you activate this card.
+
+id: 12580477
+name: Raigeki
+desc:
+Destroy all monsters your opponent controls.
+
+id: 56260110
+name: Raimei
+desc:
+Decrease your opponent's Life Points by 300 points.
+
+id: 66719324
+name: Rain of Mercy
+desc:
+Increases the Life Points of both players by 1000 points.
+
+id: 58577036
+name: Reasoning
+desc:
+Your opponent declares a monster Level from 1 to 12. Excavate cards from the top of your Deck until you excavate a monster that can be Normal Summoned/Set, then, if that monster is the same Level as the one declared by your opponent, send all excavated cards to the GY. If not, Special Summon the excavated monster, also send the remaining cards to the GY.
+
+id: 38199696
+name: Red Medicine
+desc:
+Increase your Life Points by 500 points.
+
+id: 32807846
+name: Reinforcement of the Army
+desc:
+Add 1 Level 4 or lower Warrior monster from your Deck to your hand.
+
+id: 99518961
+name: Restructer Revolution
+desc:
+Inflict 200 points of damage to your opponent's Life Points for each card in your opponent's hand.
+
+id: 19827717
+name: Return of the Doomed
+desc:
+Discard 1 Monster Card from your hand to the Graveyard. Return 1 of your monsters destroyed and sent to your Graveyard as a result of battle during this turn to your hand at the end of this turn.
+
+id: 34016756
+name: Riryoku
+desc:
+Target 2 face-up monsters on the field; halve the ATK of 1 monster, and if you do, add that lost ATK to the other monster. These effects last until the end of this turn.
+
+id: 96947648
+name: Salvage
+desc:
+Target 2 WATER monsters with 1500 or less ATK in your Graveyard; add those targets to your hand.
+
+id: 97809599
+name: Seal of the Ancients
+desc:
+Pay 1000 Life Points. Pick up and see all face-down cards on your opponent's side of the field, then return them to their original positions. (The effects of the face-down cards are not activated.)
+
+id: 77876207
+name: Secret Pass to the Treasures
+desc:
+Select 1 face-up monster with an ATK equal to 1000 points or less on your side of the field. During the turn this card is activated, the selected monster can attack your opponent's Life Points directly.
+
+id: 56830749
+name: Share the Pain
+desc:
+Tribute 1 monster; make your opponent Tribute 1 monster (for no effect).
+
+id: 52097679
+name: Shield & Sword
+desc:
+Switch the original ATK and DEF of all face-up monsters currently on the field, until the end of this turn.
+
+id: 97169186
+name: Smashing Ground
+desc:
+Destroy the 1 face-up monster your opponent controls that has the highest DEF (your choice, if tied).
+
+id: 68005187
+name: Soul Exchange
+desc:
+Target 1 monster your opponent controls; this turn, if you Tribute a monster, you must Tribute that target, as if you controlled it. You cannot conduct your Battle Phase the turn you activate this card.
+
+id: 47852924
+name: Soul of the Pure
+desc:
+Increase your Life Points by 800 points.
+
+id: 5758500
+name: Soul Release
+desc:
+Target up to 5 cards in any GY(s); banish them.
+
+id: 76103675
+name: Sparks
+desc:
+Inflict 200 points of damage to your opponent's Life Points.
+
+id: 29228529
+name: Spell Reproduction
+desc:
+Send 2 Spells from your hand to the GY, then target 1 Spell in your GY; add it to your hand.
+
+id: 15866454
+name: Spiritualism
+desc:
+Return 1 Spell/Trap Card your opponent controls to the hand. This card's activation and effect cannot be negated.
+
+id: 81385346
+name: Stamping Destruction
+desc:
+If you control a Dragon monster: Target 1 Spell/Trap on the field; destroy that target, and if you do, inflict 500 damage to its controller.
+
+id: 60764581
+name: Stray Lambs
+desc:
+Special Summon 2 "Lamb Tokens" (Beast/EARTH/Level 1/ATK 0/DEF 0) in Defense Position. You cannot Summon other monsters the turn you activate this card (but you can Set).
+
+id: 72302403
+name: Swords of Revealing Light
+desc:
+After this card's activation, it remains on the field, but you must destroy it during the End Phase of your opponent's 3rd turn. When this card is activated: If your opponent controls a face-down monster, flip all monsters they control face-up. While this card is face-up on the field, your opponent's monsters cannot declare an attack.
+
+id: 73628505
+name: Terraforming
+desc:
+Add 1 Field Spell from your Deck to your hand.
+
+id: 41142615
+name: The Cheerful Coffin
+desc:
+Discard up to 3 Monster Cards from your hand to the Graveyard.
+
+id: 43973174
+name: The Flute of Summoning Dragon
+desc:
+Special Summon up to 2 Dragon monsters from your hand. "Lord of D." must be on the field to activate and to resolve this effect.
+
+id: 81820689
+name: The Inexperienced Spy
+desc:
+Select and see 1 card in your opponent's hand.
+
+id: 66926224
+name: The Law of the Normal
+desc:
+You can only activate this card while there are 5 face-up Level 2 or lower Normal Monsters on your side of the field. Both players discard all cards in their hands, and destroy all cards on the field except Level 2 or lower Normal Monsters.
+
+id: 22610082
+name: The Mask of Remnants
+desc:
+Shuffle this card into its owner's Deck, OR if this card was put into play by the effect of "Masked Beast Des Gardius", this card is treated as an Equip Card. Control of the equipped monster is switched.
+
+id: 43434803
+name: The Shallow Grave
+desc:
+Each player targets 1 monster in their own GY; each player Special Summons the target from their GY in face-down Defense Position.
+
+id: 95281259
+name: The Warrior Returning Alive
+desc:
+Target 1 Warrior-Type monster in your Graveyard; add that target to your hand.
+
+id: 5703682
+name: Thousand Energy
+desc:
+Increase the original ATK and DEF of all face-up Level 2 Normal Monsters (except Tokens) on your side of the field by 1000 points until the End Phase. Destroy all Level 2 Normal Monsters on your side of the field during the End Phase.
+
+id: 63391643
+name: Thousand Knives
+desc:
+If you control "Dark Magician": Target 1 monster your opponent controls; destroy that target.
+
+id: 69196160
+name: Thunder Crash
+desc:
+Destroy all monsters you control, and if you do, inflict 300 damage to your opponent for each monster destroyed.
+
+id: 57182235
+name: Token Thanksgiving
+desc:
+Destroy all tokens on the field. Increase your Life Points by the number of tokens destroyed x 800 points.
+
+id: 46918794
+name: Tremendous Fire
+desc:
+Inflict 1000 points of damage to your opponent's Life Points and 500 points of damage to your Life Points.
+
+id: 32298781
+name: Triangle Power
+desc:
+Increase the original ATK and DEF of all face-up Level 1 Normal Monsters (except Tokens) on your side of the field by 2000 points until the End Phase. Destroy all Level 1 Normal Monsters on your side of the field during the End Phase.
+
+id: 2903036
+name: Tribute Doll
+desc:
+Tribute 1 monster; Special Summon 1 Level 7 monster from your hand that can be Normal Summoned/Set. It cannot attack this turn.
+
+id: 79759861
+name: Tribute to the Doomed
+desc:
+Discard 1 card, then target 1 monster on the field; destroy it.
+
+id: 22431243
+name: Ultra Evolution Pill
+desc:
+Tribute 1 Reptile monster; Special Summon 1 Dinosaur monster from your hand.
+
+id: 70368879
+name: Upstart Goblin
+desc:
+Draw 1 card, then your opponent gains 1000 LP.
+
+id: 90873992
+name: Warrior Elimination
+desc:
+Destroy all Warrior monsters on the field.
+
+id: 61166988
+name: Wild Nature's Release
+desc:
+Target 1 Beast or Beast-Warrior-Type monster; it gains ATK equal to its current DEF until the End Phase. During the End Phase, destroy it.
+
+================================================================================
+QUICK-PLAY SPELLS: 25
+================================================================================
+
+id: 6850209
+name: A Deal with Dark Ruler
+desc:
+(This card is always treated as an "Archfiend" card.)
+If a Level 8 or higher monster under your control was sent to the Graveyard this turn: Special Summon 1 "Berserk Dragon" from your hand or Deck.
+
+id: 14087893
+name: Book of Moon
+desc:
+Target 1 face-up monster on the field; change that target to face-down Defense Position.
+
+id: 95286165
+name: De-Fusion
+desc:
+Target 1 Fusion Monster on the field; return that target to the Extra Deck, then, if all the Fusion Materials that were used for its Fusion Summon are in your GY, you can Special Summon all of them.
+
+id: 69542930
+name: Dedication through Light and Darkness
+desc:
+Tribute 1 "Dark Magician"; Special Summon 1 "Dark Magician of Chaos" from your hand, Deck, or Graveyard.
+
+id: 53046408
+name: Emergency Provisions
+desc:
+Send any number of other Spell/Trap Cards you control to the Graveyard; gain 1000 LP for each card sent to the Graveyard this way.
+
+id: 98045062
+name: Enemy Controller
+desc:
+Activate 1 of these effects.
+● Target 1 face-up monster your opponent controls; change that target's battle position.
+● Tribute 1 monster, then target 1 face-up monster your opponent controls; take control of that target until the End Phase.
+
+id: 74137509
+name: Graceful Dice
+desc:
+Roll a six-sided die. All monsters you currently control gain ATK/DEF equal to the result x 100, until the end of this turn.
+
+id: 23171610
+name: Limiter Removal
+desc:
+Double the ATK of all Machine monsters you currently control, until the end of this turn. During the End Phase of this turn, destroy those monsters.
+
+id: 93108433
+name: Monster Recovery
+desc:
+Target 1 monster you control that is owned by you; if that monster is still on the field, shuffle it and your entire hand into the Deck, also, after that, draw cards equal to the number of cards you shuffled from your hand into the Deck by this effect. (You cannot activate this card if you have a card in your hand that is owned by your opponent.)
+
+id: 40703222
+name: Multiply
+desc:
+Tribute 1 face-up "Kuriboh"; Special Summon as many "Kuriboh Tokens" (Fiend/DARK/Level 1/ATK 300/DEF 200) as possible, in Defense Position. They cannot be Tributed for a Tribute Summon.
+
+id: 5318639
+name: Mystical Space Typhoon
+desc:
+Target 1 Spell/Trap on the field; destroy that target.
+
+id: 80161395
+name: Mystik Wok
+desc:
+Tribute 1 monster. Select either its ATK or DEF and gain that many Life Points.
+
+id: 19230408
+name: Offerings to the Doomed
+desc:
+Target 1 face-up monster on the field; destroy that target, also skip your next Draw Phase.
+
+id: 78986941
+name: Order to Charge
+desc:
+Target 1 non-Token Normal Monster you control; Tribute that Normal Monster, and if you do, destroy 1 monster your opponent controls.
+
+id: 8842266
+name: Poison of the Old Man
+desc:
+Activate 1 of these effects;
+● Gain 1200 LP.
+● Inflict 800 damage to your opponent.
+
+id: 76754619
+name: Pyramid Energy
+desc:
+You can select and activate 1 of the following effects:
+● Increase the ATK of all face-up monsters on your side of the field by 200 points until the End Phase of the turn this card is activated.
+● Increase the DEF of all face-up monsters on your side of the field by 500 points until the End Phase of the turn this card is activated.
+
+id: 22589918
+name: Reload
+desc:
+Add all cards in your hand to your Deck and shuffle it. Then draw the same number of cards that you added to your Deck.
+
+id: 70046172
+name: Rush Recklessly
+desc:
+Target 1 face-up monster on the field; it gains 700 ATK until the end of this turn.
+
+id: 73915051
+name: Scapegoat
+desc:
+Special Summon 4 "Sheep Tokens" (Beast/EARTH/Level 1/ATK 0/DEF 0) in Defense Position. They cannot be Tributed for a Tribute Summon. You cannot Summon other monsters the turn you activate this card (but you can Normal Set).
+
+id: 22537443
+name: Sebek's Blessing
+desc:
+If your monster inflicts battle damage to your opponent by a direct attack: Gain the same amount of LP.
+
+id: 78864369
+name: Soul Reversal
+desc:
+Return 1 Flip Effect Monster from your Graveyard to the top of your Deck.
+
+id: 96677818
+name: Spellbook Organization
+desc:
+Look at the top 3 cards of your Deck, then return them to the top of the Deck in any order.
+
+id: 27770341
+name: Super Rejuvenation
+desc:
+During the End Phase of the turn this card was activated, draw a number of cards equal to the combined number of Dragon monsters you discarded or Tributed from your hand or field this turn.
+
+id: 43641473
+name: Tailor of the Fickle
+desc:
+Switch 1 Equip Card equipped to a monster to another correct target.
+
+id: 16430187
+name: The Reliable Guardian
+desc:
+Increase 1 face-up monster's DEF by 700 points until the end of this turn.

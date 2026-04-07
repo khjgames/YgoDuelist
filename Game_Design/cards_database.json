@@ -5577,6 +5577,19 @@
     "image_downloaded": true
   },
   {
+    "id": 3027001,
+    "name": "Fake Trap",
+    "type": "Trap Card",
+    "desc": "Activate only when your opponent activates a Spell, Trap, or Effect Monster's effect that would destroy a Trap Card(s) you control. Destroy this card instead. (If the cards that would have been destroyed are face-down, you can look at them to confirm.)",
+    "attribute": null,
+    "race": "Normal",
+    "atk": null,
+    "def": null,
+    "level": null,
+    "image_filename": "fake_trap.jpg",
+    "image_downloaded": true
+  },
+  {
     "id": 77910045,
     "name": "Fatal Abacus",
     "type": "Trap Card",

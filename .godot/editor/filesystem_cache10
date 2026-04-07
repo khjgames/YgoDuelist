@@ -8,8 +8,8 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1775593407
-YgoDuelist.deps.json::JSON::-1::1775593407::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1775593679
+YgoDuelist.deps.json::JSON::-1::1775593679::0::1::::<><><>0<>0<><>::
 ::res://docs/::1774723882
 card_database_import.schema.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
@@ -4286,7 +4286,7 @@ NDeckCardSelectScreenStickyConfirmPatch.cs::CSharpScript::114404970211644690::17
 SpellTrapZoneRelicClickPatch.cs::CSharpScript::8311222830194195958::1775078686::0::1::::<><><>0<>0<><>::
 TrunkSideDeckDeckCardSelectOnCardClickedPatch.cs::CSharpScript::1793565690551218886::1775021305::0::1::::<><><>0<>0<><>::
 TrunkSideDeckDeckCardSelectScreenPatch.cs::CSharpScript::3112270011158836323::1775591049::0::1::::<><><>0<>0<><>::
-YgoRelicBrowseGridOverlayPatch.cs::CSharpScript::7581658626407284271::1775593306::0::1::::<><><>0<>0<><>::
+YgoRelicBrowseGridOverlayPatch.cs::CSharpScript::7581658626407284271::1775593628::0::1::::<><><>0<>0<><>::
 YgoRelicInventoryRightClickPatch.cs::CSharpScript::400587442969204419::1774723882::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForRestSite/::1775040989
 YgoCampfireRestSitePatches.cs::CSharpScript::1454065712297427891::1775026637::0::1::::<><><>0<>0<><>::
