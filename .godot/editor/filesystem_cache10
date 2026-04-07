@@ -8,15 +8,15 @@ YgoDuelist.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1775525480
-YgoDuelist.deps.json::JSON::-1::1775525480::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1775534112
+YgoDuelist.deps.json::JSON::-1::1775533547::0::1::::<><><>0<>0<><>::
 ::res://docs/::1774723882
 card_database_import.schema.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1774723882::0::1::::<><><>0<>0<><>::
 IMPLEMENTED_CARDS.md::TextFile::-1::1774723882::0::1::::<><><>0<>0<><>::
 LOCALIZATION_VARS.md::TextFile::-1::1774723882::0::1::::<><><>0<>0<><>::
 ::res://Game_Design/::1775444852
-Cardpack_Visuals.md::TextFile::-1::1775493312::0::1::::<><><>0<>0<><>::
+Cardpack_Visuals.md::TextFile::-1::1775527720::0::1::::<><><>0<>0<><>::
 cards_database.json::JSON::-1::1775014410::0::1::::<><><>0<>0<><>::
 Cards_Revised.md::TextFile::-1::1774723881::0::1::::<><><>0<>0<><>::
 Card_Library_Filtering.md::TextFile::-1::1775181626::0::1::::<><><>0<>0<><>::
@@ -605,7 +605,7 @@ ygo_card_cs_lists.md::TextFile::-1::1774727938::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelist/::1774305324
 mod_image.png::CompressedTexture2D::5517491298777051254::1773513086::1773589494::1::::<><><>0<>0<>b261cfcd7c85c67ffbf4308175e1a7bd<>res://.godot/imported/mod_image.png-9c8c3c55b87426b075bb5d8261371492.ctex::
 ::res://YgoDuelist/images/::1775186849
-::res://YgoDuelist/images/card_frames/::1775493292
+::res://YgoDuelist/images/card_frames/::1775527185
 12_stars.png::CompressedTexture2D::2673173309859780206::1773963535::1773963852::1::::<><><>0<>0<>0b18bdec9c0e9efd0ecc0a7630223717<>res://.godot/imported/12_stars.png-fa3eae7a760e6933f889b622920ad168.ctex::
 12_stars_facedown.png::CompressedTexture2D::1032518223957739306::1774287633::1774287962::1::::<><><>0<>0<>b7fd12eb88f9caaba83de288e782aa9a<>res://.godot/imported/12_stars_facedown.png-d8f064e32dbf636b4c8980f447dd3d83.ctex::
 12_stars_facedown_perfect.png::CompressedTexture2D::3802907436646191869::1774287640::1774287962::1::::<><><>0<>0<>b38563b9d99dd70ea83c6aa0f7bd5eda<>res://.godot/imported/12_stars_facedown_perfect.png-a7fc39fa16756e2d91b53c5e6b3fafd7.ctex::
@@ -726,7 +726,7 @@ Warrior.png::CompressedTexture2D::1320042563740864243::1773966378::1774009805::1
 Winged Beast.png::CompressedTexture2D::3578172987481161524::1773966406::1774009805::1::::<><><>0<>0<>3dcbe033fc8b2e7586e9eea0039f9e15<>res://.godot/imported/Winged Beast.png-6676e9cd63fe24e2c91e51feda2bf730.ctex::
 Wyrm.png::CompressedTexture2D::1384564222810432908::1773966428::1774009805::1::::<><><>0<>0<>1b59c52305442a33123f9d3cc8225b9e<>res://.godot/imported/Wyrm.png-f0baf332787cba3c620fde035cbd0503.ctex::
 Zombie.png::CompressedTexture2D::2314931981114014436::1773966438::1774009805::1::::<><><>0<>0<>7d68f38d0e5210f4349b39e61b1a0a21<>res://.godot/imported/Zombie.png-b24b1ddc81fba0c9239fbc3857fc9249.ctex::
-::res://YgoDuelist/images/card_frames/Sealed_Cardpacks/::1775525445
+::res://YgoDuelist/images/card_frames/Sealed_Cardpacks/::1775528107
 Cardpack_Background.png::CompressedTexture2D::6082646918995106562::1775482556::1775482687::1::::<><><>0<>0<>4d454485252be21fd7daf5ccc9e719d2<>res://.godot/imported/Cardpack_Background.png-bc26d5a26d590ad57aff0616c5d30268.ctex::
 Cardpack_Background_Outline.png::CompressedTexture2D::1165698569463781367::1775444155::1775446942::1::::<><><>0<>0<>42296ef8e389ffbad7f98d687107b7a0<>res://.godot/imported/Cardpack_Background_Outline.png-6d02f188dd22589410c0d70cd4be25d1.ctex::
 Cardpack_Background_Outline_Selected.png::CompressedTexture2D::2350698274105755558::1775525445::1775525489::1::::<><><>0<>0<>4ca82de42a4257087d5e2ab61d248709<>res://.godot/imported/Cardpack_Background_Outline_Selected.png-3f889b13ff1361a100c63c8d2c9d4de4.ctex::
@@ -734,12 +734,15 @@ Cardpack_D_Outline.png::CompressedTexture2D::7300720494345490164::1775445846::17
 Cardpack_D_Tag_1_Darken_Tint.png::CompressedTexture2D::391719880696039254::1775482626::1775482687::1::::<><><>0<>0<>2de24a8a8830f3171cb8798798359d83<>res://.godot/imported/Cardpack_D_Tag_1_Darken_Tint.png-685bbf2a683d04e0d394ee686aa1e604.ctex::
 Cardpack_D_Tag_2_Darken_Tint.png::CompressedTexture2D::4784428105369194219::1775482630::1775482687::1::::<><><>0<>0<>79e36c2a9267963108eb851d417b6bc3<>res://.godot/imported/Cardpack_D_Tag_2_Darken_Tint.png-1ef113ed36bc367f80ef998800ff7468.ctex::
 Cardpack_S_Tag_Darken_Tint.png::CompressedTexture2D::8555330777984082781::1775482633::1775482687::1::::<><><>0<>0<>8e4d0338c635629e5892ba743ed77d1b<>res://.godot/imported/Cardpack_S_Tag_Darken_Tint.png-74776c1f8fff0c776fdf49a0823718a1.ctex::
-Cardpack_T_Outline.png::CompressedTexture2D::6760893955278555314::1775445718::1775446942::1::::<><><>0<>0<>34dc78cdde5c19f73d40ed369e637b73<>res://.godot/imported/Cardpack_T_Outline.png-406b9b304098d9e7b97ee23446d9ba4f.ctex::
+Cardpack_T_Outline.png::CompressedTexture2D::6760893955278555314::1775526753::1775528107::1::::<><><>0<>0<>34dc78cdde5c19f73d40ed369e637b73<>res://.godot/imported/Cardpack_T_Outline.png-406b9b304098d9e7b97ee23446d9ba4f.ctex::
 Cardpack_T_Rift.png::CompressedTexture2D::2499322197220227293::1775482611::1775482687::1::::<><><>0<>0<>1629ca4e5ca97198eebed73b809fd845<>res://.godot/imported/Cardpack_T_Rift.png-fae09e24f746a31d2d184fc9e1cc0e66.ctex::
 Cardpack_T_Tag_1_Darken_Tint.png::CompressedTexture2D::7250032964102783778::1775482636::1775482687::1::::<><><>0<>0<>dfc1719144c595a466e58b0454bb3721<>res://.godot/imported/Cardpack_T_Tag_1_Darken_Tint.png-2133cf8c919e5d7c3ce55b99df97ca55.ctex::
 Cardpack_T_Tag_2_Darken_Tint.png::CompressedTexture2D::4493594225783308014::1775482639::1775482687::1::::<><><>0<>0<>27b97bcb891d59ff8fa3c2631065adf0<>res://.godot/imported/Cardpack_T_Tag_2_Darken_Tint.png-5738c8cfe1c6b4badaaf0ec5cfd75793.ctex::
 Portrait_Mask_A.png::CompressedTexture2D::7472666542606180245::1775495274::1775495304::1::::<><><>0<>0<>38afffaf0dcf4b5f6e7c2150ec2662ad<>res://.godot/imported/Portrait_Mask_A.png-42b8789baa95dfe6db26d566245f7110.ctex::
 Portrait_Mask_B.png::CompressedTexture2D::8507728537407737093::1775495276::1775495304::1::::<><><>0<>0<>d88530376a806ac5c80f3baa03dd2301<>res://.godot/imported/Portrait_Mask_B.png-672ba10cae89229c0d80ee1f2597ddfa.ctex::
+Portrait_Mask_C.png::CompressedTexture2D::9217716744810804211::1775527251::1775528107::1::::<><><>0<>0<>7a63896228e4299c4fa09798e40a89df<>res://.godot/imported/Portrait_Mask_C.png-2d48108bc5beb232c702ffcd9089a310.ctex::
+Portrait_Mask_D.png.png::CompressedTexture2D::6255873682559367027::1775527119::1775528107::1::::<><><>0<>0<>f0b01586462c24126f4b7af6350c87dd<>res://.godot/imported/Portrait_Mask_D.png.png-cdcc3cdc26590e13def147ac503ca1e1.ctex::
+Portrait_Mask_E.png.png::CompressedTexture2D::5517540606942811668::1775527144::1775528107::1::::<><><>0<>0<>7ffe4aad9df3d1875bc154a8775f3644<>res://.godot/imported/Portrait_Mask_E.png.png-8ec40f6018417ee9e46898c598cb24a3.ctex::
 Portrait_Outline_A.png::CompressedTexture2D::6409887070016411108::1775495011::1775495036::1::::<><><>0<>0<>ff3fa90a09dd4e1b8aa407c0bda20574<>res://.godot/imported/Portrait_Outline_A.png-58f2b4a55dda76eaa4598b1b0f1e5074.ctex::
 Portrait_Outline_B.png::CompressedTexture2D::1220137193267813568::1775495001::1775495036::1::::<><><>0<>0<>61265f8f75f06f31fb8cbc0b60f9f3f1<>res://.godot/imported/Portrait_Outline_B.png-b040afb4f513e2caaf2f6a9d372890dd.ctex::
 ::res://YgoDuelist/images/card_frames/Sealed_Cardpacks/Tag_Portraits/::1775504178
@@ -2447,7 +2450,7 @@ ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
 cards.json::JSON::-1::1775447019::0::1::::<><><>0<>0<><>::
 card_keywords.json::JSON::-1::1775256609::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
-combat_messages.json::JSON::-1::1775450243::0::1::::<><><>0<>0<><>::
+combat_messages.json::JSON::-1::1775529447::0::1::::<><><>0<>0<><>::
 monsters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 powers.json::JSON::-1::1775447018::0::1::::<><><>0<>0<><>::
 relics.json::JSON::-1::1774802659::0::1::::<><><>0<>0<><>::
@@ -4116,11 +4119,11 @@ DuelMonsterRace.cs::CSharpScript::2608448294061355445::1775190309::0::1::::<><><
 DuelMonsterStats.cs::CSharpScript::1718013779746394636::1773591288::0::1::::<><><>0<>0<><>::
 StatEffectTotal.cs::CSharpScript::780836345608928495::1774723882::0::1::::<><><>0<>0<><>::
 StatEffectTotalMultiplier.cs::CSharpScript::7022054075029544953::1775447018::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Nodes/::1775450654
+::res://YgoDuelistCode/Nodes/::1775533280
 NYgoConvulsionPreviewHolder.cs::CSharpScript::1626144052045855264::1774723882::0::1::::<><><>0<>0<><>::
 NYgoOptionCardHolder.cs::CSharpScript::4837965220185115671::1774301852::0::1::::<><><>0<>0<><>::
-NYgoSealedPackSelectionScreen.cs::CSharpScript::454642122818788915::1775511468::0::1::::<><><>0<>0<><>::
-NYgoSealedPackWidget.cs::CSharpScript::7849126189180578001::1775525468::0::1::::<><><>0<>0<><>::
+NYgoSealedPackSelectionScreen.cs::CSharpScript::454642122818788915::1775534059::0::1::::<><><>0<>0<><>::
+NYgoSealedPackWidget.cs::CSharpScript::7849126189180578001::1775528082::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Nodes/CardLibrary/::1775195174
 CardLibraryFilterSortingRuleCategoryFilterToggleGUI.cs::CSharpScript::8074772425166268968::1775195002::0::1::::<><><>0<>0<><>::
 CardLibraryFilterSortingRuleCategoryGUI.cs::CSharpScript::1751260109907694422::1775189353::0::1::::<><><>0<>0<><>::
@@ -4449,7 +4452,7 @@ YgoRandomOutcomeCommandCards.cs::CSharpScript::8856084106174325820::1774723882::
 YgoRelatedCardWeighting.cs::CSharpScript::4806796913852076361::1775179082::0::1::::<><><>0<>0<><>::
 YgoSaveTrunkSideMarkerCard.cs::CSharpScript::2283240139375736833::1775111565::0::1::::<><><>0<>0<><>::
 YgoSaveTrunkSideMarkerNetPropertyNames.cs::CSharpScript::7135094096493996596::1775111557::0::1::::<><><>0<>0<><>::
-YgoSealedPackPortraitLayout.cs::CSharpScript::8300894549511085101::1775500864::0::1::::<><><>0<>0<><>::
+YgoSealedPackPortraitLayout.cs::CSharpScript::8300894549511085101::1775528050::0::1::::<><><>0<>0<><>::
 YgoSealmasterMeiseiGate.cs::CSharpScript::1883223700310268464::1774723882::0::1::::<><><>0<>0<><>::
 YgoShadowRealmService.cs::CSharpScript::5055389697179448171::1774723676::0::1::::<><><>0<>0<><>::
 YgoSkullInvitationGraveyard.cs::CSharpScript::644935970993975461::1774808810::0::1::::<><><>0<>0<><>::

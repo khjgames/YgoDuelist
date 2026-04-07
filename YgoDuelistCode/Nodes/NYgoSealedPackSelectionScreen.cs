@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
+using Godot.Collections;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
@@ -16,7 +18,9 @@ using YgoDuelist.YgoDuelistCode.Cards;
 namespace YgoDuelist.YgoDuelistCode.Nodes;
 
 /// <summary>
-/// Pick one of three sealed packs, then confirm — banner centered, bottom bar Back + Confirm like card grid flows.
+/// Pick one of three sealed packs, then confirm — one <see cref="NOverlayStack"/> screen (shared dimmer on). Bottom chrome uses the
+/// same <c>%Close</c> / <c>%Confirm</c> as <see cref="NDeckCardSelectScreen"/> (trunk/side deck), as <b>direct children</b> of
+/// this full-rect screen — <see cref="NBackButton"/> / <see cref="NConfirmButton"/> tween to window/game coordinates and break inside an <see cref="HBoxContainer"/> slot.
 /// </summary>
 public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IScreenContext
 {
@@ -26,13 +30,22 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
     private readonly TaskCompletionSource<int> _completion = new();
 
     private int _selectedIndex = -1;
-    private NConfirmButton? _confirmButton;
     private NBackButton? _backButton;
+    private NConfirmButton? _confirmButton;
+    private bool _bannerFadeStarted;
     private HBoxContainer? _packRow;
+    private Control? _bottomPad;
     private VBoxContainer? _mainVBox;
-    private HBoxContainer? _bottomBar;
     private MarginContainer? _rootMargin;
-    private Tween? _fadeTween;
+    private CenterContainer? _bannerCenter;
+    private NCommonBanner? _banner;
+    private Tween? _bannerModulateTween;
+
+    /// <summary>Space above the banner row (pushes title banner + packs + bar down).</summary>
+    private const float BannerTopInset = 170f;
+
+    /// <summary>Extra space below banner before pack row (loot-style layout uses more vertical gap).</summary>
+    private const float PackRowTopSpacing = 55f;
 
     public NetScreenType ScreenType => NetScreenType.CardSelection;
 
@@ -53,6 +66,7 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         MouseFilter = Control.MouseFilterEnum.Stop;
+        Modulate = Colors.White;
 
         _rootMargin = new MarginContainer { MouseFilter = Control.MouseFilterEnum.Stop, Name = "SealedPackRootMargin" };
         _rootMargin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
@@ -72,6 +86,16 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
         _rootMargin.AddChild(vbox);
         _mainVBox = vbox;
 
+        var aboveBannerSpacer = new Control
+        {
+            Name = "SealedPackAboveBannerSpacer",
+            CustomMinimumSize = new Vector2(0f, BannerTopInset),
+            SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        };
+        vbox.AddChild(aboveBannerSpacer);
+
         var bannerCenter = new CenterContainer
         {
             Name = "SealedPackBannerCenter",
@@ -79,6 +103,7 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
             SizeFlagsVertical = Control.SizeFlags.ShrinkBegin
         };
         vbox.AddChild(bannerCenter);
+        _bannerCenter = bannerCenter;
 
         NCommonBanner banner = DuplicateBanner();
         banner.Name = "SealedPackBanner";
@@ -87,10 +112,24 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
         banner.SizeFlagsVertical = Control.SizeFlags.ShrinkBegin;
         banner.Visible = true;
         bannerCenter.AddChild(banner);
+        _banner = banner;
         banner.label.SetTextAutoSize(new LocString("combat_messages", "YGODUELIST-SEALED_PACK.banner").GetRawText());
-        banner.AnimateIn();
+        banner.TopLevel = false;
+        DisconnectCommonBannerViewportResizeListener(banner);
+        banner.Position = Vector2.Zero;
+        LogBannerDebug("after_AddChild+disconnect");
 
-        // Vertical ExpandFill steals all space below the banner; bottom HBox then gets height 0 and Back/Confirm stay 0×0.
+        var belowBannerSpacer = new Control
+        {
+            Name = "SealedPackBelowBannerSpacer",
+            CustomMinimumSize = new Vector2(0f, PackRowTopSpacing),
+            SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        };
+        vbox.AddChild(belowBannerSpacer);
+
+        // Pack row stays shrink-height; bottom pad reserves space so content does not sit under floating deck chrome.
         var row = new HBoxContainer
         {
             Name = "SealedPackRow",
@@ -114,44 +153,32 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
         }
 
         _packRow = row;
+
+        var bottomPad = new Control
+        {
+            Name = "SealedPackBottomPad",
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
+            CustomMinimumSize = new Vector2(0f, 96f),
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        };
+        vbox.AddChild(bottomPad);
+        _bottomPad = bottomPad;
+
+        AttachDeckFloatingChrome();
+
         GetTree().CreateTimer(0.05, processAlways: false, ignoreTimeScale: true).Timeout += () => DebugDumpFullLayout("timer+0.05s");
         GetTree().CreateTimer(0.35, processAlways: false, ignoreTimeScale: true).Timeout += () => DebugDumpFullLayout("timer+0.35s");
 
-        var bottom = new HBoxContainer
-        {
-            Name = "SealedPackBottomBar",
-            Alignment = BoxContainer.AlignmentMode.Center,
-            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-            SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
-            CustomMinimumSize = new Vector2(0f, 96f)
-        };
-        bottom.AddThemeConstantOverride("separation", 24);
-        vbox.AddChild(bottom);
-        _bottomBar = bottom;
-
-        _backButton = PreloadManager.Cache.GetScene(SceneHelper.GetScenePath("ui/back_button")).Instantiate<NBackButton>(PackedScene.GenEditState.Disabled);
-        _backButton.Name = "SealedPackBack";
-        _backButton.Visible = true;
-        _backButton.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnCancel()));
-        bottom.AddChild(WrapBottomChromeSlot("SealedPackBackSlot", _backButton));
-
-        var spacer = new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
-        bottom.AddChild(spacer);
-
-        PackedScene confirmScene = PreloadManager.Cache.GetScene(SceneHelper.GetScenePath("screens/card_selection/simple_card_select_screen"));
-        var confirmSrc = confirmScene.Instantiate<Control>(PackedScene.GenEditState.Disabled);
-        _confirmButton = confirmSrc.GetNodeOrNull<NConfirmButton>("%Confirm")
-            ?? throw new InvalidOperationException(
-                "NYgoSealedPackSelectionScreen: %Confirm missing from simple_card_select_screen scene.");
-        _confirmButton = (NConfirmButton)_confirmButton.Duplicate();
-        _confirmButton.Name = "SealedPackConfirm";
-        _confirmButton.Disable();
-        _confirmButton.Visible = true;
-        _confirmButton.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnConfirm()));
-        bottom.AddChild(WrapBottomChromeSlot("SealedPackConfirmSlot", _confirmButton));
-
-        confirmSrc.QueueFree();
         Callable.From(() => DebugDumpFullLayout("_Ready deferred")).CallDeferred();
+
+        Callable.From(DeferredBannerShowPass1).CallDeferred();
+    }
+
+    public override void _Notification(int what)
+    {
+        if (what == NotificationVisibilityChanged)
+            LogBannerDebug("NotificationVisibilityChanged");
     }
 
     public override void _ExitTree()
@@ -177,6 +204,43 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
         }
     }
 
+    /// <summary>
+    /// Same <c>%Close</c> / <c>%Confirm</c> as <see cref="NDeckCardSelectScreen"/>: duplicated as siblings of the root margin on this
+    /// full-rect overlay. Those controls assume a full-screen parent (they tween to <see cref="Viewport"/> / <see cref="NGame"/> coordinates).
+    /// </summary>
+    private void AttachDeckFloatingChrome()
+    {
+        PackedScene deckScene = PreloadManager.Cache.GetScene(SceneHelper.GetScenePath("screens/card_selection/deck_card_select_screen"));
+        var deckSrc = deckScene.Instantiate<Control>(PackedScene.GenEditState.Disabled);
+        NBackButton? closeSrc = deckSrc.GetNodeOrNull<NBackButton>("%Close");
+        NConfirmButton? confirmSrc = deckSrc.GetNodeOrNull<NConfirmButton>("%Confirm");
+        if (closeSrc == null || confirmSrc == null)
+        {
+            deckSrc.QueueFree();
+            throw new InvalidOperationException(
+                "NYgoSealedPackSelectionScreen: deck_card_select_screen must expose %Close and %Confirm (same as NDeckCardSelectScreen).");
+        }
+
+        _backButton = (NBackButton)closeSrc.Duplicate();
+        _confirmButton = (NConfirmButton)confirmSrc.Duplicate();
+        deckSrc.QueueFree();
+
+        _backButton.Name = "SealedPackClose";
+        _backButton.Visible = true;
+        _backButton.Enable();
+        _backButton.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnCancel()));
+        AddChild(_backButton);
+
+        _confirmButton.Name = "SealedPackConfirm";
+        _confirmButton.Disable();
+        _confirmButton.Visible = true;
+        _confirmButton.Connect(NClickableControl.SignalName.Released, Callable.From<NButton>(_ => OnConfirm()));
+        AddChild(_confirmButton);
+
+        LogChromeDebug("AttachDeckFloatingChrome_immediate");
+        Callable.From(() => LogChromeDebug("AttachDeckFloatingChrome_deferred")).CallDeferred();
+    }
+
     private void OnPackPressed(int index)
     {
         _selectedIndex = index;
@@ -195,29 +259,161 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
 
     private void OnCancel() => _completion.TrySetCanceled();
 
-    /// <summary>
-    /// <see cref="NBackButton"/> / <see cref="NConfirmButton"/> report 0×0 minimum under <see cref="HBoxContainer"/> with
-    /// <c>LayoutMode = Container</c>. Fixed slots + anchor fill match <see cref="SimpleCardSelectScreenCancelBackButtonPatch"/> (anchors, not container).
-    /// </summary>
-    private static Control WrapBottomChromeSlot(string slotName, Control chrome)
+    private void LogChromeDebug(string tag)
     {
-        var slot = new Control
+        Window w = GetWindow();
+        Vector2 content = w.ContentScaleSize;
+        Vector2 viewport = GetViewport().GetVisibleRect().Size;
+        Vector2? gameSize = GodotObject.IsInstanceValid(NGame.Instance) ? NGame.Instance.Size : null;
+        GD.PrintErr(
+            $"[YgoSealedPackChrome] {tag} contentScaleSize={content} viewportVisible={viewport} nGameSize={gameSize}");
+
+        void Dump(string label, Control? c)
         {
-            Name = slotName,
-            CustomMinimumSize = new Vector2(220f, 88f),
-            SizeFlagsHorizontal = Control.SizeFlags.ShrinkBegin,
-            SizeFlagsVertical = Control.SizeFlags.ExpandFill,
-            MouseFilter = Control.MouseFilterEnum.Pass
-        };
-        slot.AddChild(chrome);
-        chrome.LayoutMode = 1;
-        chrome.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        chrome.MouseFilter = Control.MouseFilterEnum.Stop;
-        return slot;
+            if (c == null || !GodotObject.IsInstanceValid(c))
+            {
+                GD.PrintErr($"[YgoSealedPackChrome] {tag} {label}: null");
+                return;
+            }
+
+            Control? p = c.GetParent() as Control;
+            Rect2 g = c.GetGlobalRect();
+            GD.PrintErr(
+                $"[YgoSealedPackChrome] {tag} {label} parent={(p == null ? "null" : $"{p.GetType().Name}:{p.Name}")} " +
+                $"topLevel={c.TopLevel} layoutMode={c.LayoutMode} pos={c.Position} size={c.Size} globalRect={g.Position} {g.Size} " +
+                $"anchors L={c.AnchorLeft} T={c.AnchorTop} R={c.AnchorRight} B={c.AnchorBottom}");
+        }
+
+        Dump("back", _backButton);
+        Dump("confirm", _confirmButton);
+    }
+
+    private void DeferredBannerShowPass1()
+    {
+        LogBannerDebug("DeferredBannerShowPass1");
+        Callable.From(DeferredBannerShowPass2).CallDeferred();
+    }
+
+    private void DeferredBannerShowPass2()
+    {
+        LogBannerDebug("DeferredBannerShowPass2");
+        if (_banner != null && GodotObject.IsInstanceValid(_banner))
+        {
+            _banner.TopLevel = false;
+            DisconnectCommonBannerViewportResizeListener(_banner);
+        }
+
+        // Re-run CenterContainer layout without touching child Position (zero would pin banner to local origin = left).
+        _bannerCenter?.QueueSort();
+        StartBannerModulateFadeIn();
+    }
+
+    /// <summary>
+    /// <see cref="NCommonBanner"/> mixes local <see cref="Control.Position"/> math with a <c>global_position</c> tween in
+    /// <c>AnimateIn</c>; under a <see cref="CenterContainer"/> that snaps the banner to the viewport top. We keep container layout
+    /// and only fade <see cref="CanvasItem.Modulate"/>.
+    /// </summary>
+    private void StartBannerModulateFadeIn()
+    {
+        if (_bannerFadeStarted)
+            return;
+        if (_banner == null || !GodotObject.IsInstanceValid(_banner))
+        {
+            LogBannerDebug("StartBannerModulateFadeIn_skip_no_banner");
+            return;
+        }
+
+        _bannerFadeStarted = true;
+        _bannerModulateTween?.Kill();
+        _banner.Modulate = new Color(1f, 1f, 1f, 0f);
+        LogBannerDebug("StartBannerModulateFadeIn_begin");
+        _bannerModulateTween = CreateTween();
+        _bannerModulateTween.TweenProperty(_banner, "modulate:a", 1f, 0.4)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Expo);
+        _bannerModulateTween.Finished += () => LogBannerDebug("StartBannerModulateFadeIn_tweenFinished");
+    }
+
+    private void LogBannerDebug(string tag)
+    {
+        Rect2 vr = GetViewport().GetVisibleRect();
+        Rect2 screenG = GetGlobalRect();
+        GD.PrintErr(
+            $"[YgoSealedPackBanner] {tag} screen visible={Visible} modulate={Modulate} globalRect={screenG.Position} {screenG.Size} " +
+            $"viewportRect={vr.Position} {vr.Size}");
+
+        if (_banner == null || !GodotObject.IsInstanceValid(_banner))
+        {
+            GD.PrintErr($"[YgoSealedPackBanner] {tag} banner=null");
+            return;
+        }
+
+        Rect2 bg = _banner.GetGlobalRect();
+        Control? parent = _banner.GetParent() as Control;
+        Rect2? pg = parent != null ? parent.GetGlobalRect() : null;
+        GD.PrintErr(
+            $"[YgoSealedPackBanner] {tag} banner visible={_banner.Visible} modulate={_banner.Modulate} topLevel={_banner.TopLevel} " +
+            $"layoutMode={_banner.LayoutMode} pos={_banner.Position} size={_banner.Size} globalRect={bg.Position} {bg.Size} " +
+            $"globalPos={_banner.GlobalPosition} " +
+            $"parent={(parent == null ? "null" : parent.GetType().Name + ":" + parent.Name)} parentGlobal={pg?.Position} {pg?.Size}");
+
+        var labRef = _banner.label;
+        if (labRef != null && GodotObject.IsInstanceValid(labRef) && labRef is Control labCtrl)
+        {
+            Rect2 lg = labCtrl.GetGlobalRect();
+            int textLen = labCtrl is Label plain ? plain.Text.Length : -1;
+            GD.PrintErr(
+                $"[YgoSealedPackBanner] {tag} label type={labCtrl.GetType().Name} visible={labCtrl.Visible} modulate={labCtrl.Modulate} " +
+                $"textLen={textLen} globalRect={lg.Position} {lg.Size} globalPos={labCtrl.GlobalPosition}");
+        }
+        else
+            GD.PrintErr($"[YgoSealedPackBanner] {tag} label missing or not Control (labelRef={(labRef == null ? "null" : labRef.GetType().Name)})");
+
+        if (_bannerCenter != null && GodotObject.IsInstanceValid(_bannerCenter))
+        {
+            Rect2 bc = _bannerCenter.GetGlobalRect();
+            GD.PrintErr($"[YgoSealedPackBanner] {tag} bannerCenter type={_bannerCenter.GetType().Name} globalRect={bc.Position} {bc.Size}");
+        }
+
+        if (_packRow != null && GodotObject.IsInstanceValid(_packRow))
+        {
+            Rect2 pr = _packRow.GetGlobalRect();
+            float deltaY = pr.GetCenter().Y - bg.GetCenter().Y;
+            GD.PrintErr(
+                $"[YgoSealedPackBanner] {tag} packRow globalRect={pr.Position} {pr.Size} centerY={pr.GetCenter().Y} " +
+                $"deltaPackCenterY_minus_bannerCenterY={deltaY}");
+        }
+        else
+            GD.PrintErr($"[YgoSealedPackBanner] {tag} packRow=null");
+    }
+
+    private static void DisconnectCommonBannerViewportResizeListener(NCommonBanner banner)
+    {
+        Window root = banner.GetTree().Root;
+        StringName sig = Viewport.SignalName.SizeChanged;
+        var list = root.GetSignalConnectionList(sig);
+        int removed = 0;
+        foreach (Variant item in list)
+        {
+            if (item.VariantType != Variant.Type.Dictionary)
+                continue;
+            var d = item.AsGodotDictionary();
+            if (!d.ContainsKey("callable"))
+                continue;
+            Callable cb = d["callable"].AsCallable();
+            if (cb.Target == banner)
+            {
+                root.Disconnect(sig, cb);
+                removed++;
+            }
+        }
+
+        GD.PrintErr($"[YgoSealedPackBanner] DisconnectViewportResize removed={removed} for banner={banner.Name}");
     }
 
     private void DebugDumpFullLayout(string tag)
     {
+        LogBannerDebug($"layout_dump_hook:{tag}");
         Vector2 vps = GetViewport().GetVisibleRect().Size;
         Rect2 screenG = GetGlobalRect();
         GD.PrintErr(
@@ -241,7 +437,7 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
         DumpCtrl("rootMargin", _rootMargin);
         DumpCtrl("mainVBox", _mainVBox);
         DumpCtrl("packRow", _packRow);
-        DumpCtrl("bottomBar", _bottomBar);
+        DumpCtrl("bottomPad", _bottomPad);
         DumpCtrl("backButton", _backButton);
         DumpCtrl("confirmButton", _confirmButton);
 
@@ -260,27 +456,16 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
             }
         }
 
-        if (_bottomBar != null && GodotObject.IsInstanceValid(_bottomBar))
-        {
-            GD.PrintErr($"[YgoSealedPack] layout_dump [{tag}] bottomBar children={_bottomBar.GetChildCount()}");
-            for (int j = 0; j < _bottomBar.GetChildCount(); j++)
-            {
-                if (_bottomBar.GetChild(j) is Control bc)
-                {
-                    Rect2 bg = bc.GetGlobalRect();
-                    GD.PrintErr(
-                        $"[YgoSealedPack] layout_dump [{tag}] bottom[{j}] {bc.GetType().Name} name={bc.Name} global={bg.Position} size={bg.Size} visible={bc.Visible}");
-                }
-            }
-        }
+        LogChromeDebug($"layout_dump_hook:{tag}");
     }
 
+    /// <summary>Same <see cref="NCommonBanner"/> node as card loot / <see cref="NCardRewardSelectionScreen"/> (<c>UI/Banner</c>).</summary>
     private static NCommonBanner DuplicateBanner()
     {
         var root = PreloadManager.Cache
-            .GetScene(SceneHelper.GetScenePath("screens/card_selection/choose_a_card_selection_screen"))
+            .GetScene(SceneHelper.GetScenePath("screens/card_selection/card_reward_selection_screen"))
             .Instantiate<Control>(PackedScene.GenEditState.Disabled);
-        var b = root.GetNode<NCommonBanner>("Banner");
+        var b = root.GetNode<NCommonBanner>("UI/Banner");
         var dup = (NCommonBanner)b.Duplicate();
         root.QueueFree();
         return dup;
@@ -288,19 +473,39 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
 
     public void AfterOverlayOpened()
     {
-        Modulate = Colors.Transparent;
-        _fadeTween?.Kill();
-        _fadeTween = CreateTween();
-        _fadeTween.TweenProperty(this, "modulate:a", 1f, 0.35);
+        Modulate = Colors.White;
+        LogBannerDebug("AfterOverlayOpened");
     }
 
     public void AfterOverlayClosed()
     {
-        _fadeTween?.Kill();
+        _bannerModulateTween?.Kill();
         QueueFree();
     }
 
-    public void AfterOverlayShown() => Visible = true;
+    public void AfterOverlayShown()
+    {
+        Visible = true;
+        LogBannerDebug("AfterOverlayShown");
+        if (_banner != null && GodotObject.IsInstanceValid(_banner))
+        {
+            _banner.TopLevel = false;
+            DisconnectCommonBannerViewportResizeListener(_banner);
+            StartBannerModulateFadeIn();
+        }
 
-    public void AfterOverlayHidden() => Visible = false;
+        _bannerCenter?.QueueSort();
+
+        Callable.From(() =>
+        {
+            _bannerCenter?.QueueSort();
+            LogBannerDebug("AfterOverlayShown+1frame");
+        }).CallDeferred();
+    }
+
+    public void AfterOverlayHidden()
+    {
+        LogBannerDebug("AfterOverlayHidden");
+        Visible = false;
+    }
 }
