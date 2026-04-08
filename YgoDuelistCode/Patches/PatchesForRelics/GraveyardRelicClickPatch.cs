@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Runs;
@@ -27,13 +22,13 @@ public static class GraveyardRelicClickPatch
     public static bool Prefix(NRelicInventory __instance, RelicModel model)
     {
         if (GraveyardRelic.IsGraveyardRelic(model))
-            return !TryOpenGraveyardGrid(model);
+            return !TryZoneRelicPageClick(ZoneRelicViewPage.Graveyard, GraveyardRelic.GetGraveyardCards);
 
         if (ShadowRealmRelic.IsShadowRealmRelic(model))
-            return !TryOpenShadowRealmGrid(model);
+            return !TryZoneRelicPageClick(ZoneRelicViewPage.ShadowRealm, ShadowRealmRelic.GetShadowRealmCards);
 
         if (ExtraDeckRelic.IsExtraDeckRelic(model))
-            return !TryOpenExtraDeckGrid(model);
+            return !TryZoneRelicPageClick(ZoneRelicViewPage.ExtraDeck, ExtraDeckRelic.GetExtraDeckCards);
 
         if (TrunkSideDeckRelic.IsTrunkSideDeckRelic(model))
             return !TryTrunkSideDeckRelicClick(model);
@@ -60,64 +55,32 @@ public static class GraveyardRelicClickPatch
         return null;
     }
 
-    private static bool TryOpenGraveyardGrid(RelicModel model)
+    private static bool TryZoneRelicPageClick(ZoneRelicViewPage page, Func<Player, IReadOnlyList<CardModel>> getCards)
     {
-        GraveyardRelic? graveyard = GraveyardRelic.AsGraveyard(model);
-        if (graveyard == null)
-            return false;
-
-        if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.Graveyard))
+        if (ZoneRelicViewGuiService.IsViewerSessionRunning())
+        {
+            if (YgoRelicBrowseGridOverlayPatch.TryToggleCloseZoneView(page))
+                return true;
+            if (YgoRelicBrowseGridOverlayPatch.IsZoneViewGridOpenInFlight())
+                return true;
+            YgoRelicBrowseGridOverlayPatch.CompleteActiveZoneViewNavigate(page);
             return true;
+        }
 
         Player? player = ResolveLocalPlayerForZoneRelicClick();
         if (player == null)
             return false;
 
-        IReadOnlyList<CardModel> cards = GraveyardRelic.GetGraveyardCards(player);
-        if (cards.Count == 0)
+        if (getCards(player).Count == 0)
             return false;
 
-        return TryOpenRelicCardGrid(YgoRelicBrowseGridOverlayPatch.RelicGridKind.Graveyard, model, player, cards);
-    }
-
-    private static bool TryOpenShadowRealmGrid(RelicModel model)
-    {
-        ShadowRealmRelic? shadow = ShadowRealmRelic.AsShadowRealm(model);
-        if (shadow == null)
-            return false;
-
-        if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ShadowRealm))
+        if (YgoRelicBrowseGridOverlayPatch.IsZoneViewGridOpenInFlight())
             return true;
 
-        Player? player = ResolveLocalPlayerForZoneRelicClick();
-        if (player == null)
-            return false;
-
-        IReadOnlyList<CardModel> cards = ShadowRealmRelic.GetShadowRealmCards(player);
-        if (cards.Count == 0)
-            return false;
-
-        return TryOpenRelicCardGrid(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ShadowRealm, model, player, cards);
-    }
-
-    private static bool TryOpenExtraDeckGrid(RelicModel model)
-    {
-        ExtraDeckRelic? extra = ExtraDeckRelic.AsExtraDeck(model);
-        if (extra == null)
-            return false;
-
-        if (YgoRelicBrowseGridOverlayPatch.TryToggleClose(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ExtraDeck))
-            return true;
-
-        Player? player = ResolveLocalPlayerForZoneRelicClick();
-        if (player == null)
-            return false;
-
-        IReadOnlyList<CardModel> cards = ExtraDeckRelic.GetExtraDeckCards(player);
-        if (cards.Count == 0)
-            return false;
-
-        return TryOpenRelicCardGrid(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ExtraDeck, model, player, cards);
+        YgoRelicBrowseGridOverlayPatch.CloseAnyActiveBrowseGrid();
+        ZoneRelicViewSession.ActivePage = page;
+        TaskHelper.RunSafely(ZoneRelicViewGuiService.RunViewerAsync(player));
+        return true;
     }
 
     private static bool TryTrunkSideDeckRelicClick(RelicModel model)
@@ -139,56 +102,6 @@ public static class GraveyardRelicClickPatch
 
         YgoRelicBrowseGridOverlayPatch.CloseAnyActiveBrowseGrid();
         TaskHelper.RunSafely(TrunkSideDeckGuiService.RunEditorAsync(player));
-        return true;
-    }
-
-    private static bool TryOpenRelicCardGrid(
-        YgoRelicBrowseGridOverlayPatch.RelicGridKind gridKind,
-        RelicModel model,
-        Player player,
-        IReadOnlyList<CardModel> cards)
-    {
-        if (YgoRelicBrowseGridOverlayPatch.IsRelicSimpleGridOpenInFlight(gridKind))
-            return true;
-
-        YgoRelicBrowseGridOverlayPatch.CloseAnyActiveBrowseGrid();
-
-        var selectionPromptProp = AccessTools.Property(typeof(RelicModel), "SelectionScreenPrompt");
-        object? selectionPrompt = selectionPromptProp.GetValue(model);
-
-        // Cancelable: SimpleCardSelectScreenCancelBackButtonPatch / NSimpleCardSelectScreenCancelablePatch wire close/back to TrySetCanceled + Remove (same close path we need for toggle).
-        var prefs = new CardSelectorPrefs(
-            (dynamic)selectionPrompt!,
-            0,
-            0)
-        {
-            Cancelable = true
-        };
-
-        // Set before the async work starts so overlay tracking matches the first Push; duplicate Pushes dismiss the prior grid in AfterOverlayPush.
-        YgoRelicBrowseGridOverlayPatch.SetPendingKind(gridKind);
-        TaskHelper.RunSafely(ShowAsync());
-
-        async Task ShowAsync()
-        {
-            try
-            {
-                await CardSelectCmd.FromSimpleGrid(
-                    new BlockingPlayerChoiceContext(),
-                    cards,
-                    player,
-                    prefs);
-            }
-            catch (OperationCanceledException)
-            {
-                // Cancelable=true: back/close (SimpleCardSelectScreenCancelBackButtonPatch) uses TrySetCanceled on the grid task.
-            }
-            finally
-            {
-                YgoRelicBrowseGridOverlayPatch.ClearPendingKind();
-            }
-        }
-
         return true;
     }
 }

@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
@@ -12,7 +15,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Tracks exactly one zone-relic browse UI at a time (graveyard / shadow realm / extra deck) and the trunk/side deck editor.
+/// Tracks exactly one zone-relic browse session (Graveyard / Shadow Realm / Extra Deck in one flow) and the trunk/side deck editor.
 /// Only overlays opened immediately after <see cref="SetPendingKind"/> are bound — vanilla card/potion/power grids never set pending, so they are never touched.
 /// </summary>
 public static class YgoRelicBrowseGridOverlayPatch
@@ -20,16 +23,13 @@ public static class YgoRelicBrowseGridOverlayPatch
     public enum RelicGridKind
     {
         None,
-        Graveyard,
-        ShadowRealm,
-        ExtraDeck,
+        ZoneRelicView,
         TrunkSideDeckSelect
     }
 
-    /// <summary>Set in <see cref="GraveyardRelicClickPatch"/> / <see cref="TrunkSideDeckGuiService"/> right before the overlay Push; cleared when the matching screen is bound.</summary>
+    /// <summary>Set in <see cref="GraveyardRelicClickPatch"/> / <see cref="TrunkSideDeckGuiService"/> / <see cref="ZoneRelicViewGuiService"/> right before the overlay Push; cleared when the matching screen is bound.</summary>
     private static RelicGridKind _pendingKind;
 
-    private static RelicGridKind _relicZoneBrowseKind;
     private static NSimpleCardSelectScreen? _relicZoneBrowseScreen;
 
     private static NDeckCardSelectScreen? _activeTrunkSideDeckScreen;
@@ -40,13 +40,15 @@ public static class YgoRelicBrowseGridOverlayPatch
     private static readonly FieldInfo? CompletionSourceField =
         AccessTools.Field(typeof(NCardGridSelectionScreen), "_completionSource");
 
+    private static readonly FieldInfo? OverlayStackOverlaysField =
+        AccessTools.Field(typeof(NOverlayStack), "_overlays");
+
     public static void SetPendingKind(RelicGridKind kind) => _pendingKind = kind;
 
     public static void ClearPendingKind() => _pendingKind = RelicGridKind.None;
 
-    public static bool IsRelicSimpleGridOpenInFlight(RelicGridKind kind) =>
-        kind is RelicGridKind.Graveyard or RelicGridKind.ShadowRealm or RelicGridKind.ExtraDeck
-        && _pendingKind == kind;
+    /// <summary>True while <see cref="RelicGridKind.ZoneRelicView"/> is pending bind to the next pushed <see cref="NSimpleCardSelectScreen"/> (dedupes duplicate relic clicks before the overlay attaches).</summary>
+    public static bool IsZoneViewGridOpenInFlight() => _pendingKind == RelicGridKind.ZoneRelicView;
 
     public static void RegisterActiveTrunkSideDeckScreen(NDeckCardSelectScreen deck)
     {
@@ -64,6 +66,127 @@ public static class YgoRelicBrowseGridOverlayPatch
             ClearTrunkSideDeckScreenEmpty(_activeTrunkSideDeckScreen);
     }
 
+    /// <summary>Ends the current zone simple grid with an empty result so <see cref="ZoneRelicViewGuiService"/> can advance to <paramref name="targetPage"/>.</summary>
+    public static void CompleteActiveZoneViewNavigate(ZoneRelicViewPage targetPage)
+    {
+        NSimpleCardSelectScreen? screen = ResolveZoneViewSimpleScreen();
+        if (screen == null)
+            return;
+        ZoneRelicViewSession.RequestNavigateTo(targetPage);
+        DismissRelicZoneSimpleScreen(screen);
+    }
+
+    /// <summary>Closes the zone viewer only when <paramref name="clickedPage"/> matches <see cref="ZoneRelicViewSession.ActivePage"/> (same-relic toggle).</summary>
+    public static bool TryToggleCloseZoneView(ZoneRelicViewPage clickedPage)
+    {
+        if (ZoneRelicViewSession.ActivePage != clickedPage)
+            return false;
+        ZoneRelicViewSession.ClearNavigateRequest();
+        NSimpleCardSelectScreen? screen = ResolveZoneViewSimpleScreen();
+        if (screen == null)
+            return false;
+        DismissRelicZoneSimpleScreen(screen);
+        return true;
+    }
+
+    /// <summary>
+    /// Prefer finding the open <see cref="NSimpleCardSelectScreen"/> whose bottom prompt matches <see cref="ZoneRelicViewSession.ActivePage"/> (same keys as
+    /// <c>relics.json</c> <c>*.selectionScreenPrompt</c>); then cached ref; then Peek while the zone session is running.
+    /// </summary>
+    private static NSimpleCardSelectScreen? ResolveZoneViewSimpleScreen()
+    {
+        string expected = GetFormattedZoneSelectionPrompt(ZoneRelicViewSession.ActivePage);
+        if (!string.IsNullOrEmpty(expected))
+        {
+            NSimpleCardSelectScreen? byPrompt = FindSimpleCardSelectWithBottomPromptText(expected);
+            if (byPrompt != null)
+            {
+                _relicZoneBrowseScreen = byPrompt;
+                return byPrompt;
+            }
+        }
+
+        if (_relicZoneBrowseScreen != null && GodotObject.IsInstanceValid(_relicZoneBrowseScreen))
+            return _relicZoneBrowseScreen;
+        if (!ZoneRelicViewGuiService.IsViewerSessionRunning())
+            return null;
+        if (NOverlayStack.Instance?.Peek() is not NSimpleCardSelectScreen peek)
+            return null;
+        if (!GodotObject.IsInstanceValid(peek))
+            return null;
+        _relicZoneBrowseScreen = peek;
+        return peek;
+    }
+
+    /// <summary>Matches <c>YgoDuelist/localization/*/relics.json</c> <c>YGODUELIST-*_RELIC.selectionScreenPrompt</c>.</summary>
+    private static string GetFormattedZoneSelectionPrompt(ZoneRelicViewPage page)
+    {
+        string key = page switch
+        {
+            ZoneRelicViewPage.Graveyard => "YGODUELIST-GRAVEYARD_RELIC.selectionScreenPrompt",
+            ZoneRelicViewPage.ShadowRealm => "YGODUELIST-SHADOW_REALM_RELIC.selectionScreenPrompt",
+            ZoneRelicViewPage.ExtraDeck => "YGODUELIST-EXTRA_DECK_RELIC.selectionScreenPrompt",
+            _ => ""
+        };
+        if (string.IsNullOrEmpty(key))
+            return "";
+        return new LocString("relics", key).GetFormattedText();
+    }
+
+    private static NSimpleCardSelectScreen? FindSimpleCardSelectWithBottomPromptText(string expectedFormatted)
+    {
+        if (NOverlayStack.Instance == null || OverlayStackOverlaysField == null)
+            return null;
+        if (OverlayStackOverlaysField.GetValue(NOverlayStack.Instance) is not List<IOverlayScreen> overlays)
+            return null;
+
+        string normExpected = NormalizePromptForCompare(expectedFormatted);
+        if (string.IsNullOrEmpty(normExpected))
+            return null;
+
+        for (int i = overlays.Count - 1; i >= 0; i--)
+        {
+            if (overlays[i] is not NSimpleCardSelectScreen simple)
+                continue;
+            if (!GodotObject.IsInstanceValid(simple))
+                continue;
+            string? label = ReadSimpleCardSelectBottomPromptText(simple);
+            if (string.IsNullOrEmpty(label))
+                continue;
+            if (string.Equals(NormalizePromptForCompare(label), normExpected, StringComparison.Ordinal))
+                return simple;
+        }
+
+        return null;
+    }
+
+    private static string? ReadSimpleCardSelectBottomPromptText(NSimpleCardSelectScreen screen)
+    {
+        if (!GodotObject.IsInstanceValid(screen))
+            return null;
+        try
+        {
+            Control? bottomText = screen.GetNodeOrNull<Control>("%BottomText");
+            MegaRichTextLabel? label = bottomText?.GetNodeOrNull<MegaRichTextLabel>("%BottomLabel");
+            return label?.Text;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static string NormalizePromptForCompare(string s)
+    {
+        if (string.IsNullOrEmpty(s))
+            return "";
+        string stripped = StripBbCode(s).Trim();
+        return Regex.Replace(stripped, @"\s+", " ");
+    }
+
+    private static string StripBbCode(string s) =>
+        Regex.Replace(s, @"\[[^\]]*\]", "", RegexOptions.CultureInvariant);
+
     public static bool TryToggleClose(RelicGridKind relicKind)
     {
         switch (relicKind)
@@ -73,23 +196,6 @@ public static class YgoRelicBrowseGridOverlayPatch
                     return false;
                 TrunkSideDeckEditorSession.ClearNavigateRequest();
                 ClearTrunkSideDeckScreenEmpty(_activeTrunkSideDeckScreen);
-                return true;
-
-            case RelicGridKind.Graveyard:
-            case RelicGridKind.ShadowRealm:
-            case RelicGridKind.ExtraDeck:
-                if (_relicZoneBrowseKind != relicKind)
-                    return false;
-                if (_relicZoneBrowseScreen == null || !GodotObject.IsInstanceValid(_relicZoneBrowseScreen))
-                {
-                    _relicZoneBrowseKind = RelicGridKind.None;
-                    _relicZoneBrowseScreen = null;
-                    return false;
-                }
-
-                DismissRelicZoneSimpleScreen(_relicZoneBrowseScreen);
-                _relicZoneBrowseKind = RelicGridKind.None;
-                _relicZoneBrowseScreen = null;
                 return true;
 
             default:
@@ -105,11 +211,14 @@ public static class YgoRelicBrowseGridOverlayPatch
             ClearTrunkSideDeckScreenEmpty(_activeTrunkSideDeckScreen);
         }
 
-        if (_relicZoneBrowseScreen != null && GodotObject.IsInstanceValid(_relicZoneBrowseScreen))
-            DismissRelicZoneSimpleScreen(_relicZoneBrowseScreen);
+        NSimpleCardSelectScreen? zone = ResolveZoneViewSimpleScreen();
+        if (zone != null)
+        {
+            ZoneRelicViewSession.ClearNavigateRequest();
+            DismissRelicZoneSimpleScreen(zone);
+        }
 
         _relicZoneBrowseScreen = null;
-        _relicZoneBrowseKind = RelicGridKind.None;
     }
 
     private static void DismissRelicZoneSimpleScreen(NSimpleCardSelectScreen screen)
@@ -135,7 +244,7 @@ public static class YgoRelicBrowseGridOverlayPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPriority(Priority.First)]
+    [HarmonyPriority(Priority.Last)]
     [HarmonyPatch(typeof(NOverlayStack), nameof(NOverlayStack.Push))]
     private static void AfterOverlayPush(IOverlayScreen screen)
     {
@@ -156,22 +265,17 @@ public static class YgoRelicBrowseGridOverlayPatch
         if (screen is not NSimpleCardSelectScreen simple)
             return;
 
-        switch (_pendingKind)
+        if (_pendingKind == RelicGridKind.ZoneRelicView)
         {
-            case RelicGridKind.Graveyard:
-            case RelicGridKind.ShadowRealm:
-            case RelicGridKind.ExtraDeck:
-                if (_relicZoneBrowseScreen != null
-                    && GodotObject.IsInstanceValid(_relicZoneBrowseScreen)
-                    && !ReferenceEquals(_relicZoneBrowseScreen, simple))
-                {
-                    DismissRelicZoneSimpleScreen(_relicZoneBrowseScreen);
-                }
+            if (_relicZoneBrowseScreen != null
+                && GodotObject.IsInstanceValid(_relicZoneBrowseScreen)
+                && !ReferenceEquals(_relicZoneBrowseScreen, simple))
+            {
+                DismissRelicZoneSimpleScreen(_relicZoneBrowseScreen);
+            }
 
-                _relicZoneBrowseKind = _pendingKind;
-                _relicZoneBrowseScreen = simple;
-                _pendingKind = RelicGridKind.None;
-                break;
+            _relicZoneBrowseScreen = simple;
+            _pendingKind = RelicGridKind.None;
         }
     }
 
@@ -187,9 +291,6 @@ public static class YgoRelicBrowseGridOverlayPatch
         }
 
         if (_relicZoneBrowseScreen != null && ReferenceEquals(screen, _relicZoneBrowseScreen))
-        {
             _relicZoneBrowseScreen = null;
-            _relicZoneBrowseKind = RelicGridKind.None;
-        }
     }
 }
