@@ -130,11 +130,21 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
                 (CardKeyword)(RaceKeywordBase + (int)source.DuelMonsterRace)
             };
 
-            int level = source.GetEffectiveDuelMonsterLevel();
-            if (level >= 7)
-                result.Add((CardKeyword)20035); // Tribute Summon (2)
-            else if (level >= 5)
-                result.Add((CardKeyword)20034); // Tribute Summon (1)
+            if (source is BaseMonsterCard bm)
+            {
+                switch (bm.TributeReleaseCount)
+                {
+                    case 1:
+                        result.Add((CardKeyword)20034);
+                        break;
+                    case 2:
+                        result.Add((CardKeyword)20035);
+                        break;
+                    case >= 3:
+                        result.Add((CardKeyword)20047);
+                        break;
+                }
+            }
 
             return result;
         }

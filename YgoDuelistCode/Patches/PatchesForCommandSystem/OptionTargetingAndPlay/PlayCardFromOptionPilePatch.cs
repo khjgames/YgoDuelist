@@ -192,7 +192,10 @@ public static class PlayCardFromOptionPilePatch
                 GD.Print("[YgoDuelist] PlayCardFromOptionPile: card requires target but target is null (TargetId=", action.TargetId, ") - skipping play so card is not consumed");
                 Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
                 if (preparedPreplaySelection && preplaySource != null)
+                {
                     ActivatedEffectTributeSelectionPayload.ClearForSource(preplaySource);
+                    ObeliskActivatedTributePayload.ClearForSource(preplaySource);
+                }
                 return;
             }
 
@@ -219,7 +222,10 @@ public static class PlayCardFromOptionPilePatch
                 GD.Print("[YgoDuelist] PlayCardFromOptionPile: calling action.Cancel() and returning");
                 action.Cancel();
                 if (preparedPreplaySelection && preplaySource != null)
+                {
                     ActivatedEffectTributeSelectionPayload.ClearForSource(preplaySource);
+                    ObeliskActivatedTributePayload.ClearForSource(preplaySource);
+                }
                 return;
             }
 

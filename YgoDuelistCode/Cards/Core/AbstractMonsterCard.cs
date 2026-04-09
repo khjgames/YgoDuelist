@@ -45,6 +45,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
     private static CardKeyword TributeSummon1Keyword => (CardKeyword)20034;
     private static CardKeyword TributeSummon2Keyword => (CardKeyword)20035;
+    private static CardKeyword TributeSummon3Keyword => (CardKeyword)20047;
     private static CardKeyword FusionMonsterKeyword => (CardKeyword)20036;
     private static CardKeyword RitualMonsterKeyword => (CardKeyword)20037;
     private static CardKeyword HandEffectMonsterKeyword => (CardKeyword)20038;
@@ -296,6 +297,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// </summary>
     public int TributeReleaseCount => ComputeTributeReleaseCount();
 
+    /// <summary>When set, overrides level-based <see cref="TributeReleaseCount"/> (e.g. Egyptian God cards require 3).</summary>
+    protected virtual int? TributeReleaseCountOverride => null;
+
     /// <summary>Returns the correct description LocString for attack vs skill form. Used by description patch.</summary>
     public LocString GetDescriptionLocString()
     {
@@ -399,6 +403,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
 
     private int ComputeTributeReleaseCount()
     {
+        if (TributeReleaseCountOverride is int ovr)
+            return ovr;
+
         if (IsRitualOrFusionMonster)
             return 0;
 
@@ -415,8 +422,10 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         int n = ComputeTributeReleaseCount();
         if (n == 1)
             yield return TributeSummon1Keyword;
-        else if (n >= 2)
+        else if (n == 2)
             yield return TributeSummon2Keyword;
+        else if (n >= 3)
+            yield return TributeSummon3Keyword;
     }
 
     private IEnumerable<CardKeyword> GetFaceDownKeywordsFromBool()
@@ -530,7 +539,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
 
     /// <summary>
     /// Call this after changing <see cref="DuelMonsterLevel"/> so the card's keyword hover tooltips
-    /// stay correct. Removes and re-applies 20033/20034/20035 based on current level.
+    /// stay correct. Removes and re-applies 20033/20034/20035/20047 based on current level.
     /// </summary>
     public void RefreshSummonKeywordsForMonsterLevel()
     {
@@ -540,6 +549,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         RemoveKeyword(SpecialSummonKeyword);
         RemoveKeyword(TributeSummon1Keyword);
         RemoveKeyword(TributeSummon2Keyword);
+        RemoveKeyword(TributeSummon3Keyword);
 
         foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
         {

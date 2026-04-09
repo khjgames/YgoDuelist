@@ -11,6 +11,8 @@
   "10004.description": "This is a [gold]Light[/gold] attribute monster.",
   "10005.title": "Dark",
   "10005.description": "This is a [gold]Dark[/gold] attribute monster.",
+  "10006.title": "Divine",
+  "10006.description": "This is a [gold]Divine[/gold] attribute monster.",
 
   "20000.title": "Aqua",
   "20000.description": "This monster is an [gold]Aqua[/gold] type.",
@@ -139,6 +141,9 @@
   "20045.description": "Blight ticks at end of turn, ignores Block, then falls off.",
 
   "20046.title": "Corpse-Blight",
-  "20046.description": "When this card executes an enemy, [purple]Blight[/purple] all enemies (50% of damage as stacks)."
+  "20046.description": "When this card executes an enemy, [purple]Blight[/purple] all enemies (50% of damage as stacks).",
+
+  "20047.title": "Tribute Summon",
+  "20047.description": "requires 3 monsters to be [red]sacrificed[/red] to be played."
 
 }

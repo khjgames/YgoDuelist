@@ -107,7 +107,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
         // Normal/tribute summons: mark Command as used this turn. Special summons pass canAttackThisTurn: true.
         // Stumbling: summons may still Command Defend; YgoStumblingDefendOnlyPower blocks Attack only.
-        if (!canAttackThisTurn && !stumblingField)
+        bool skipStiff = card is BaseMonsterCard bm && bm.NormalSummonSkipsStiffFatigueOnSummonTurn;
+        if (!canAttackThisTurn && !stumblingField && !skipStiff)
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(petCreature, true, player.Creature, card);
 
         await DuelMonsterStancePowerSync.SyncForPetAsync(petCreature, card, player.Creature, card);

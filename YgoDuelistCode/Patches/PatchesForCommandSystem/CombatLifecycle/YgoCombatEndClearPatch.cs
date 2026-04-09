@@ -1,11 +1,14 @@
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
+using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -21,6 +24,13 @@ public static class YgoCombatEndClearPatch
     [HarmonyPostfix]
     public static async void Postfix(IRunState runState, CombatState? combatState, CombatRoom room)
     {
+        if (combatState != null)
+        {
+            var ctx = new BlockingPlayerChoiceContext();
+            foreach (Player p in combatState.Players)
+                await RaDoomedPower.ResolveCombatEndDamageAsync(ctx, p);
+        }
+
         DuelMonsterFieldRegistry.ClearAll();
         YgoDuelistPassivePowerState.ClearAll();
         MonsterCommandRegistry.ClearAll();
@@ -34,6 +44,7 @@ public static class YgoCombatEndClearPatch
         TailorOfTheFicklePlayPayload.ClearAll();
         EmergencyProvisionsPlayPayload.ClearAll();
         ActivatedEffectTributeSelectionPayload.ClearAll();
+        ObeliskActivatedTributePayload.ClearAll();
         RushReliablePlayPayload.ClearAll();
         YgoEquipSpellRegistry.ClearAll();
         YgoSpellTrapEquipLinkRegistry.ClearAll();

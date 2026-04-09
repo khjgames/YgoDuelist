@@ -154,6 +154,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public virtual bool AllowsSeparateAttackAndDefendCommandsPerTurn => false;
 
     /// <summary>
+    /// When true, normal/tribute summon does not apply stiff/fatigue for that turn (same timing as special summon).
+    /// </summary>
+    public virtual bool NormalSummonSkipsStiffFatigueOnSummonTurn => false;
+
+    /// <summary>
     /// ATK change per qualifying execute kill; applied via <see cref="ApplyPermanentExecuteAtkDelta"/> and persisted in <see cref="PermanentAtkBonusFromExecutes"/>.
     /// Exposed as <c>Increase</c> in <see cref="NormalMonsterCard.CanonicalVars"/> for <c>{Increase:diff()}</c> text (cf. <c>TheScythe</c>).
     /// </summary>

@@ -173,5 +173,14 @@
   "YGODUELIST-CHAIN_SUMMONING_POWER.smartDescription": "Every [blue]{Amount}[/blue] duel monster summons, gain [gold]1[/gold] Conduit.",
   "YGODUELIST-HARNESSED_ENERGY_POWER.title": "Harnessed Energy",
   "YGODUELIST-HARNESSED_ENERGY_POWER.description": "Draw [blue]1[/blue] fewer card each turn. At the start of each of your turns, gain {Amount:energyIcons()}.",
-  "YGODUELIST-HARNESSED_ENERGY_POWER.smartDescription": "Draw [blue]1[/blue] fewer card each turn. At the start of each of your turns, gain {Amount:energyIcons()}."
+  "YGODUELIST-HARNESSED_ENERGY_POWER.smartDescription": "Draw [blue]1[/blue] fewer card each turn. At the start of each of your turns, gain {Amount:energyIcons()}.",
+  "YGODUELIST-SLIFERS_PRESSURE_POWER.title": "Slifer's Pressure",
+  "YGODUELIST-SLIFERS_PRESSURE_POWER.description": "Enemies lose 5 strength, those who attack for 0 receive 10 Blight",
+  "YGODUELIST-SLIFERS_PRESSURE_POWER.smartDescription": "Lose [red]{Amount}[/red] Strength until end of turn. If this enemy would deal [red]0[/red] attack damage to you before your turn ends, gain [purple]10[/purple] Blight.",
+  "YGODUELIST-SLIFERS_PRESSURE_POWER_PLUS.title": "Slifer's Pressure +",
+  "YGODUELIST-SLIFERS_PRESSURE_POWER_PLUS.description": "Enemies lose 7 strength, those who attack for 0 receive 13 Blight",
+  "YGODUELIST-SLIFERS_PRESSURE_POWER_PLUS.smartDescription": "Lose [red]{Amount}[/red] Strength until end of turn. If this enemy would deal [red]0[/red] attack damage to you before your turn ends, gain [purple]13[/purple] Blight.",
+  "YGODUELIST-RA_DOOMED_POWER.title": "Doomed",
+  "YGODUELIST-RA_DOOMED_POWER.description": "You take damage equal to your doom before the end of combat.",
+  "YGODUELIST-RA_DOOMED_POWER.smartDescription": "When combat ends, take damage equal to your [red]Doom[/red] stacks."
 }

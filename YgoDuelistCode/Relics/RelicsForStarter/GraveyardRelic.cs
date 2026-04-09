@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Patches.Content;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -140,6 +141,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         await YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(player);
         await YgoBlindDestructionContinuous.TryResolvePlayerTurnStart(choiceContext, player);
         await YgoCardTraderContinuous.TryResolvePlayerTurnStart(choiceContext, player);
+        await SliferSkyDragonService.ApplySliferPressureToAllEnemiesAsync(choiceContext, player);
     }
 
     /// <summary>Bottomless Shifting Sand: hand count for its effect uses size before the end-of-turn discard flush.</summary>
@@ -147,6 +149,25 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         if (player == Owner)
             await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
+        await SliferSkyDragonService.BeforePlayerTurnEndFlushAsync(choiceContext, player);
+    }
+
+    public override async Task AfterCreatureAddedToCombat(Creature creature)
+    {
+        await base.AfterCreatureAddedToCombat(creature);
+        if (creature.Side != CombatSide.Enemy || !creature.IsAlive || creature.CombatState == null)
+            return;
+
+        var ctx = new BlockingPlayerChoiceContext();
+        foreach (Player p in creature.CombatState.Players)
+        {
+            if (p.Creature?.Side != CombatSide.Player)
+                continue;
+            Slifer_the_Sky_Dragon? slifer = SliferSkyDragonService.GetControllingSlifer(p);
+            if (slifer == null)
+                continue;
+            await SliferSkyDragonService.ApplySliferPressureToEnemyAsync(ctx, p, creature, slifer);
+        }
     }
 
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -414,6 +435,18 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         }
 
         Player? atkPlayer = command.Attacker.Player;
+        if (atkPlayer?.Creature != null && monster is The_Winged_Dragon_of_Ra ra)
+        {
+            int heal = (int)ra.DynamicVars["Mgc2"].BaseValue;
+            foreach (DamageResult r in command.Results)
+            {
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                    continue;
+                await CreatureCmd.Heal(atkPlayer.Creature, heal);
+                break;
+            }
+        }
+
         if (atkPlayer?.Creature != null
             && monster is Twin_Headed_Wolf
             && PlayerControlsAtLeastTwoFiendsOnField(atkPlayer))
