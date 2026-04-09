@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -29,6 +30,9 @@ public sealed class D_D_Warrior_Lady : EffectMonsterCard, IMonsterActivatedEffec
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Attack;

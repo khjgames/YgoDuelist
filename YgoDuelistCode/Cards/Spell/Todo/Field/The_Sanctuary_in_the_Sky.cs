@@ -14,6 +14,9 @@ public sealed class The_Sanctuary_in_the_Sky : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>

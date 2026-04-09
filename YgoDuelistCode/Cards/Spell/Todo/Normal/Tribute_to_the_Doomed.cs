@@ -5,16 +5,18 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-/// <summary>Discard 1 card, then destroy one enemy (heavy damage).</summary>
+/// <summary>Destroy 1 card in your hand (send to Graveyard), then deal damage to targeted enemy.</summary>
 public sealed class Tribute_to_the_Doomed : BaseSpellCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -24,6 +26,9 @@ public sealed class Tribute_to_the_Doomed : BaseSpellCard
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Burn;
 
     protected override bool IsPlayable =>
         base.IsPlayable
@@ -39,11 +44,11 @@ public sealed class Tribute_to_the_Doomed : BaseSpellCard
         if (target == null || !target.IsAlive)
             return;
 
-        CardModel? toDiscard = await ChooseOtherHandCardToDiscard(choiceContext);
-        if (toDiscard == null)
+        CardModel? toDestroy = await ChooseOtherHandCardToDestroy(choiceContext);
+        if (toDestroy == null)
             return;
 
-        await CardCmd.Discard(choiceContext, toDiscard);
+        await SendHandCardToGraveyard(choiceContext, Owner, toDestroy);
 
         await CreatureCmd.Damage(choiceContext, target, DynamicVars["Mgc"].BaseValue, ValueProp.Unpowered, Owner.Creature, this);
     }
@@ -54,7 +59,7 @@ public sealed class Tribute_to_the_Doomed : BaseSpellCard
         DynamicVars["Mgc"].UpgradeValueBy(5m);
     }
 
-    private async Task<CardModel?> ChooseOtherHandCardToDiscard(PlayerChoiceContext choiceContext)
+    private async Task<CardModel?> ChooseOtherHandCardToDestroy(PlayerChoiceContext choiceContext)
     {
         var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
         {
@@ -70,5 +75,19 @@ public sealed class Tribute_to_the_Doomed : BaseSpellCard
             this);
 
         return selected.FirstOrDefault();
+    }
+
+    private static async Task SendHandCardToGraveyard(PlayerChoiceContext choiceContext, Player player, CardModel card)
+    {
+        CardPile? graveyardPile = GraveyardPile.CustomType.GetPile(player);
+        if (graveyardPile == null)
+            return;
+
+        await CardPileCmd.Add(
+            new[] { card },
+            graveyardPile,
+            CardPilePosition.Top,
+            card,
+            false);
     }
 }

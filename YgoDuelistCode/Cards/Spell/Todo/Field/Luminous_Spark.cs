@@ -23,6 +23,9 @@ public sealed class Luminous_Spark : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
         target.DuelMonsterAttribute == DuelMonsterAttribute.Light
             ? new StatEffectTotal(

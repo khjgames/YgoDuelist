@@ -219,8 +219,13 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null
-                    || !DoubleTributeTributeMath.TributePetsMeetCost(this, mats))
+                if (!TributeSummonPlayPayload.TryTakePending(this, out var pending) || pending == null
+                    || !TributeSummonSelection.TributeSelectionMeetsCost(
+                        this,
+                        Owner,
+                        pending.Pets,
+                        pending.MausoleumHpTributes,
+                        pending.MausoleumHpLossTotal))
                 {
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
                     if (!ShouldSkipCombatActionAfterSummon(cardPlay))
@@ -231,8 +236,17 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                     return;
                 }
 
-                foreach (Creature pet in mats)
+                foreach (Creature pet in pending.Pets)
                     await CreatureCmd.Kill(pet, force: true);
+
+                int hpLoss = pending.MausoleumHpLossTotal;
+                if (hpLoss > 0 && Owner.Creature != null)
+                {
+                    int nextHp = Owner.Creature.CurrentHp - hpLoss;
+                    if (nextHp < 0)
+                        nextHp = 0;
+                    await CreatureCmd.SetCurrentHp(Owner.Creature, nextHp);
+                }
             }
 
             await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);

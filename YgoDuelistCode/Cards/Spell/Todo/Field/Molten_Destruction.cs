@@ -23,6 +23,9 @@ public sealed class Molten_Destruction : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Fire | YgoCardPackTags.Burn;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
         target.DuelMonsterAttribute == DuelMonsterAttribute.Fire
             ? new StatEffectTotal(

@@ -14,6 +14,9 @@ public sealed class Sword_of_Dark_Destruction : BaseEquipSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;

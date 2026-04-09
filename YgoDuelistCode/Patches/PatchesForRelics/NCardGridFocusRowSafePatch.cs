@@ -52,3 +52,30 @@ public static class NCardGridDefaultFocusedControlSafePatch
         return true;
     }
 }
+
+/// <summary>
+/// Vanilla <see cref="NCardGrid"/> virtualizes scrolling by swapping rows between <c>_cardRows[0]</c> and <c>_cardRows[^1]</c>.
+/// <c>ReallocateAbove</c> / <c>ReallocateBelow</c> index <c>_cardRows[1]</c> and <c>_cardRows[^2]</c>, which throws when only one row
+/// exists — <c>CalculateRowsNeeded</c> caps at total row count, so a single compendium row (all cards fit in one row) hits this while scrolling.
+/// </summary>
+[HarmonyPatch(typeof(NCardGrid), "ReallocateAbove")]
+public static class NCardGridReallocateAboveSingleRowSafePatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(NCardGrid __instance)
+    {
+        List<List<NGridCardHolder>> rows = Traverse.Create(__instance).Field<List<List<NGridCardHolder>>>("_cardRows").Value;
+        return rows.Count >= 2;
+    }
+}
+
+[HarmonyPatch(typeof(NCardGrid), "ReallocateBelow")]
+public static class NCardGridReallocateBelowSingleRowSafePatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(NCardGrid __instance)
+    {
+        List<List<NGridCardHolder>> rows = Traverse.Create(__instance).Field<List<List<NGridCardHolder>>>("_cardRows").Value;
+        return rows.Count >= 2;
+    }
+}

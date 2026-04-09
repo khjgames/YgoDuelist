@@ -43,6 +43,7 @@ public partial class CardLibraryFilterStatRangeSortingRuleCategoryGUI : VBoxCont
         AddChild(row);
 
         var minLabel = new MegaLabel();
+        minLabel.AddThemeFontOverride(ThemeConstants.Label.font, new SystemFont());
         minLabel.SetTextAutoSize("Min");
         minLabel.CustomMinimumSize = new Vector2(28, 0);
         row.AddChild(minLabel);
@@ -53,6 +54,7 @@ public partial class CardLibraryFilterStatRangeSortingRuleCategoryGUI : VBoxCont
         row.AddChild(_minEdit);
 
         var maxLabel = new MegaLabel();
+        maxLabel.AddThemeFontOverride(ThemeConstants.Label.font, new SystemFont());
         maxLabel.SetTextAutoSize("Max");
         maxLabel.CustomMinimumSize = new Vector2(32, 0);
         row.AddChild(maxLabel);

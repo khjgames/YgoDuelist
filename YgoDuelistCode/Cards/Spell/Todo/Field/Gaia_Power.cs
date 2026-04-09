@@ -23,6 +23,9 @@ public sealed class Gaia_Power : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
         target.DuelMonsterAttribute == DuelMonsterAttribute.Earth
             ? new StatEffectTotal(

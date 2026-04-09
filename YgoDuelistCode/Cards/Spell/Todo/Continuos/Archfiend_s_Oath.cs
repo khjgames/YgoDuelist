@@ -16,6 +16,9 @@ public sealed class Archfiend_s_Oath : BaseContinuousSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Fiend;
+
     public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

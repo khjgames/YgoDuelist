@@ -4,21 +4,20 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 
-namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+namespace YgoDuelist.YgoDuelistCode.Cards.Power;
 
-public sealed class Fortified_Beasts : BaseSpellCard
+public sealed class Fortified_Beasts : BaseYgoPowerCard
 {
     public override bool UseAlternateUpgradedDescription => true;
 
     public Fortified_Beasts()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
 
-    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPowerPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature == null)
             return;

@@ -24,6 +24,8 @@ public sealed class The_A_Forces : BaseContinuousSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+
     public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target)
     {
         if (Owner == null || target.Owner != Owner)

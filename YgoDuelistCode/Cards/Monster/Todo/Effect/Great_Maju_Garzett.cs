@@ -43,8 +43,13 @@ public sealed class Great_Maju_Garzett : EffectMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null
-                    || !DoubleTributeTributeMath.TributePetsMeetCost(this, mats))
+                if (!TributeSummonPlayPayload.TryTakePending(this, out var pending) || pending == null
+                    || !TributeSummonSelection.TributeSelectionMeetsCost(
+                        this,
+                        Owner,
+                        pending.Pets,
+                        pending.MausoleumHpTributes,
+                        pending.MausoleumHpLossTotal))
                 {
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
                     if (!ShouldSkipCombatActionAfterSummon(cardPlay))
@@ -52,15 +57,25 @@ public sealed class Great_Maju_Garzett : EffectMonsterCard
                     return;
                 }
 
-                Creature primaryTribute = mats[0];
-                int tributePrintedAtk = GetTributePrintedAtk(primaryTribute);
+                int tributePrintedAtk = pending.Pets.Count > 0
+                    ? GetTributePrintedAtk(pending.Pets[0])
+                    : 0;
                 int doubled = Math.Clamp(tributePrintedAtk * 2, 0, 9999) + PermanentAtkBonusFromExecutes;
                 if (doubled > 9999)
                     doubled = 9999;
                 DynamicVars.Damage.BaseValue = doubled;
 
-                foreach (Creature pet in mats)
+                foreach (Creature pet in pending.Pets)
                     await CreatureCmd.Kill(pet, force: true);
+
+                int hpLoss = pending.MausoleumHpLossTotal;
+                if (hpLoss > 0 && Owner.Creature != null)
+                {
+                    int nextHp = Owner.Creature.CurrentHp - hpLoss;
+                    if (nextHp < 0)
+                        nextHp = 0;
+                    await CreatureCmd.SetCurrentHp(Owner.Creature, nextHp);
+                }
             }
 
             await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);

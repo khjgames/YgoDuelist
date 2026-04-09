@@ -72,6 +72,17 @@ public static class NHealthBarBlockTrackingDisposeGuardPatch
         return NHealthBarNodesAlive(__instance);
     }
 
+    /// <summary>
+    /// Prefix checks can still let the original run when <see cref="GodotObject.IsInstanceValid(GodotObject?)"/>
+    /// disagrees with the next property read (dispose race on the same frame). Swallow only this failure mode.
+    /// </summary>
+    [HarmonyFinalizer]
+    [HarmonyPatch(typeof(NHealthBar), "RefreshBlockUi")]
+    public static Exception? RefreshBlockUi_SwallowDisposedControl(Exception? __exception)
+    {
+        return __exception is ObjectDisposedException ? null : __exception;
+    }
+
     private static bool NHealthBarNodesAlive(NHealthBar bar)
     {
         foreach (FieldInfo f in new[]

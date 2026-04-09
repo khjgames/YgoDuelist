@@ -36,6 +36,9 @@ public sealed class Chaos_End : BaseSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Dark | YgoCardPackTags.Banish;
+
     /// <summary>Same structure as vanilla stack multipliers (e.g. SoulStorm × Souls): 0 outside combat hand preview path.</summary>
     private static decimal ShadowRealmMultiplier(CardModel card, Creature? _)
     {

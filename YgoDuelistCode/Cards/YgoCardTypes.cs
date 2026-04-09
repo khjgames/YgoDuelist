@@ -12,7 +12,7 @@ public enum YgoCardType
     Monster,
     EffectMonster,
     FusionMonster,
-    RitualMonster
+    RitualMonster,
 }
 
 [Flags]

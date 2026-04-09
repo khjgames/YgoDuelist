@@ -4,9 +4,11 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -51,6 +53,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword HandEffectMonsterKeyword => (CardKeyword)20038;
     private static CardKeyword CycleMonsterKeyword => (CardKeyword)20039;
     private static CardKeyword FlipEffectKeyword => (CardKeyword)20041;
+    private static CardKeyword ActivateEffectKeyword => (CardKeyword)20051;
     private static CardKeyword RecklessBlockerKeyword => (CardKeyword)20042;
     private static CardKeyword RecklessKeyword => (CardKeyword)20043;
     private static CardKeyword SplinterKeyword => (CardKeyword)20044;
@@ -379,6 +382,12 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return FlipEffectKeyword;
     }
 
+    private IEnumerable<CardKeyword> GetActivateEffectKeywords()
+    {
+        if (this is IMonsterActivatedEffect)
+            yield return ActivateEffectKeyword;
+    }
+
     protected virtual bool HasRecklessBlockerKeyword => false;
 
     /// <summary>Level 3+ normal-line monsters: <see cref="NormalMonsterCard"/>; drives Reckless keyword and CombatAction self-damage.</summary>
@@ -455,6 +464,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             keywords.AddRange(GetHandEffectMonsterKeywords());
             keywords.AddRange(GetCycleMonsterKeywordWhenEligible());
             keywords.AddRange(GetFlipEffectKeywords());
+            keywords.AddRange(GetActivateEffectKeywords());
             keywords.AddRange(GetRecklessBlockerKeywords());
             keywords.AddRange(GetRecklessKeywords());
             keywords.AddRange(GetFaceDownKeywordsFromBool());
@@ -484,6 +494,19 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 var description = new LocString("cards", Id.Entry + ".flip_effect.description");
                 tips.Add(new HoverTip(title, description));
             }
+
+            if (this is IMonsterActivatedEffect ia)
+            {
+                var activateTitle = new LocString("card_keywords", "20051.title");
+                var activateDesc = new LocString("cards", ia.ActivatedEffectDescriptionLocKey);
+                DynamicVars.AddTo(activateDesc);
+                UpgradeDisplay ifUpgradedDisplay = IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
+                    ? UpgradeDisplay.Upgraded
+                    : UpgradeDisplay.Normal;
+                activateDesc.Add(new IfUpgradedVar(ifUpgradedDisplay));
+                tips.Add(new HoverTip(activateTitle, activateDesc));
+            }
+
             foreach (CardKeyword kw in GetRecklessBlockerKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetRecklessKeywords())

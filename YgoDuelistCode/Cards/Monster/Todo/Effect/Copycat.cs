@@ -83,6 +83,8 @@ public sealed class Copycat : EffectMonsterCard, IMonsterActivatedEffect
         Creature? playerCreature = player?.Creature;
         if (playerCreature?.CombatState is not CombatState cs)
             return;
+        if (player == null)
+            return;
 
         Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source, player);
         if (pet == null)

@@ -7,17 +7,20 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 
-public sealed class Mausoleum_of_the_Emperor : BaseSpellCard
+public sealed class Mausoleum_of_the_Emperor : BaseFieldSpellCard
 {
     public Mausoleum_of_the_Emperor()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellField)
+        : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.Self)
     {
     }
+
+    public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
     }
 }

@@ -14,6 +14,9 @@ public sealed class Salamandra : BaseEquipSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Fire | YgoCardPackTags.Burn | YgoCardPackTags.Dragon;
+
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;

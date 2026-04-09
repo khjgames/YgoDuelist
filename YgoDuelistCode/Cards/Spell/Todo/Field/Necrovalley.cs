@@ -23,6 +23,9 @@ public sealed class Necrovalley : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Earth | YgoCardPackTags.Dark;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
         IsGravekeepersMonster(target)
             ? new StatEffectTotal(

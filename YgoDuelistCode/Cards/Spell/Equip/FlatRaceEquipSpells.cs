@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -43,6 +44,32 @@ public abstract class FlatRaceEquipSpell : BaseEquipSpellCard
 
     public sealed override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) =>
         new StatEffectTotal(_bonusAtk, _bonusDef);
+
+    /// <summary>Sealed pack tags: same race→bit mapping as <see cref="FusionMonsterCard"/>.</summary>
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | RaceToPackTag(_requiredRace);
+
+    private static YgoCardPackTags RaceToPackTag(DuelMonsterRace race) =>
+        race switch
+        {
+            DuelMonsterRace.Dragon => YgoCardPackTags.Dragon,
+            DuelMonsterRace.Wyrm => YgoCardPackTags.Dragon,
+            DuelMonsterRace.Machine => YgoCardPackTags.Machine,
+            DuelMonsterRace.Zombie => YgoCardPackTags.Zombie,
+            DuelMonsterRace.Fiend => YgoCardPackTags.Fiend,
+            DuelMonsterRace.Spellcaster => YgoCardPackTags.Spellcaster,
+            DuelMonsterRace.Warrior => YgoCardPackTags.Warrior,
+            DuelMonsterRace.BeastWarrior => YgoCardPackTags.Warrior,
+            DuelMonsterRace.Insect => YgoCardPackTags.Insect,
+            DuelMonsterRace.Aqua => YgoCardPackTags.Ocean,
+            DuelMonsterRace.Fish => YgoCardPackTags.Ocean,
+            DuelMonsterRace.SeaSerpent => YgoCardPackTags.Ocean,
+            DuelMonsterRace.DivineBeast => YgoCardPackTags.God,
+            DuelMonsterRace.Pyro => YgoCardPackTags.Burn,
+            DuelMonsterRace.Thunder => YgoCardPackTags.Wind,
+            DuelMonsterRace.Rock => YgoCardPackTags.Earth,
+            _ => YgoCardPackTags.None
+        };
 }
 
 public sealed class Beast_Fangs : FlatRaceEquipSpell

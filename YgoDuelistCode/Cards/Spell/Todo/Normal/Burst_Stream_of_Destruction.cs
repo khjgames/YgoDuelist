@@ -29,6 +29,9 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light | YgoCardPackTags.Dragon;
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null

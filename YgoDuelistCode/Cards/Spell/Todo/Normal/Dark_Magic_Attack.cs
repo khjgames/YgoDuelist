@@ -28,6 +28,9 @@ public sealed class Dark_Magic_Attack : BaseSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null

@@ -22,6 +22,9 @@ public sealed class Forest : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target)
     {
         DuelMonsterRace r = target.DuelMonsterRace;

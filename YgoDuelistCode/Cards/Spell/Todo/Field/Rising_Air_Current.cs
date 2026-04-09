@@ -23,6 +23,9 @@ public sealed class Rising_Air_Current : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Wind;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
         target.DuelMonsterAttribute == DuelMonsterAttribute.Wind
             ? new StatEffectTotal(

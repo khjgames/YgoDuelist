@@ -8,15 +8,14 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 
-namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+namespace YgoDuelist.YgoDuelistCode.Cards.Power;
 
-public sealed class Harnessed_Energy : BaseSpellCard
+public sealed class Harnessed_Energy : BaseYgoPowerCard
 {
     public Harnessed_Energy()
-        : base(cost: 3, rarity: CardRarity.Rare, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 3, rarity: CardRarity.Rare, target: TargetType.Self)
     {
     }
 
@@ -33,10 +32,12 @@ public sealed class Harnessed_Energy : BaseSpellCard
         }
     }
 
-    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnPowerPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature == null)
             return;
         await PowerCmd.Apply<HarnessedEnergyPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
+
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

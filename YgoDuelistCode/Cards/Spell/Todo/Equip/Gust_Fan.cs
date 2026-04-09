@@ -14,6 +14,9 @@ public sealed class Gust_Fan : BaseEquipSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Wind;
+
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;

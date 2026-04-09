@@ -298,28 +298,6 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
             if (anyUnblocked)
             {
-                BaseEquipSpellCard? burningBeast = null;
-                foreach (BaseEquipSpellCard eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))
-                {
-                    if (eq is Burning_Beast)
-                    {
-                        burningBeast = eq;
-                        break;
-                    }
-                }
-
-                if (burningBeast != null)
-                {
-                    foreach (DamageResult r in command.Results)
-                    {
-                        if (r.Receiver.Side != CombatSide.Enemy || r.UnblockedDamage <= 0)
-                            continue;
-
-                        await PowerCmd.Apply<WeakPower>(r.Receiver, 1m, atkPlayer.Creature, burningBeast);
-                        await PowerCmd.Apply<VulnerablePower>(r.Receiver, 1m, atkPlayer.Creature, burningBeast);
-                    }
-                }
-
                 foreach (BaseEquipSpellCard eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))
                 {
                     if (eq is Cestus_of_Dagla cestus)

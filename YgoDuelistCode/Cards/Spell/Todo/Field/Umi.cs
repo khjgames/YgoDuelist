@@ -23,6 +23,9 @@ public sealed class Umi : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target)
     {
         DuelMonsterRace r = target.DuelMonsterRace;

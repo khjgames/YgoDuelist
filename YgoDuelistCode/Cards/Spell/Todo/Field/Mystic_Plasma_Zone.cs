@@ -23,6 +23,9 @@ public sealed class Mystic_Plasma_Zone : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Dark;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) =>
         target.DuelMonsterAttribute == DuelMonsterAttribute.Dark
             ? new StatEffectTotal(

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -9,6 +10,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -21,6 +23,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivatedEffect
 {
+    private static readonly CardKeyword DoomedKeyword = (CardKeyword)20048;
+
     public The_Winged_Dragon_of_Ra()
         : base(
             cost: 1,
@@ -59,12 +63,16 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
         }
     }
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Append(DoomedKeyword);
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
+            yield return HoverTipFactory.FromKeyword(DoomedKeyword);
             yield return HoverTipFactory.FromPower<DoomPower>();
         }
     }
@@ -116,6 +124,8 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
 
     private static decimal GetDoomGainPreview(CardModel card)
     {
+        if (card == null || card.IsCanonical)
+            return 0m;
         if (card.Owner?.Creature == null)
             return 0m;
         int hp = (int)card.Owner.Creature.CurrentHp;

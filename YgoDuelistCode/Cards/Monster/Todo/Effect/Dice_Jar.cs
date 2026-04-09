@@ -76,8 +76,13 @@ public sealed class Dice_Jar : EffectMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePending(this, out var mats) || mats == null
-                    || !DoubleTributeTributeMath.TributePetsMeetCost(this, mats))
+                if (!TributeSummonPlayPayload.TryTakePending(this, out var pending) || pending == null
+                    || !TributeSummonSelection.TributeSelectionMeetsCost(
+                        this,
+                        owner,
+                        pending.Pets,
+                        pending.MausoleumHpTributes,
+                        pending.MausoleumHpLossTotal))
                 {
                     if (owner.Creature != null)
                         await CreatureCmd.TriggerAnim(owner.Creature, "Cast", owner.Character.AttackAnimDelay);
@@ -86,8 +91,17 @@ public sealed class Dice_Jar : EffectMonsterCard
                     return;
                 }
 
-                foreach (Creature pet in mats)
+                foreach (Creature pet in pending.Pets)
                     await CreatureCmd.Kill(pet, force: true);
+
+                int hpLoss = pending.MausoleumHpLossTotal;
+                if (hpLoss > 0 && owner.Creature != null)
+                {
+                    int nextHp = owner.Creature.CurrentHp - hpLoss;
+                    if (nextHp < 0)
+                        nextHp = 0;
+                    await CreatureCmd.SetCurrentHp(owner.Creature, nextHp);
+                }
             }
 
             await DuelMonsterSummon.TrySummonDuelMonster(owner, this, choiceContext);

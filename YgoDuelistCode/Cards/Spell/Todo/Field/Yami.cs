@@ -23,6 +23,9 @@ public sealed class Yami : BaseFieldSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Dark;
+
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target)
     {
         DuelMonsterRace r = target.DuelMonsterRace;

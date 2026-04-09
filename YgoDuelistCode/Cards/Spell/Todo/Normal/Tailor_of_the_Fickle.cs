@@ -18,6 +18,8 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null

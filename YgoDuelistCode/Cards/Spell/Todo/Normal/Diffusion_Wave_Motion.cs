@@ -29,6 +29,9 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light | YgoCardPackTags.Spellcaster;
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
