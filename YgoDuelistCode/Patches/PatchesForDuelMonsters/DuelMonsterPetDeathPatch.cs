@@ -121,6 +121,14 @@ public static class DuelMonsterPetDeathPatch
                 && cmdRigorous.DestroyedByEnemyBattleDamage)
                 TaskHelper.RunSafely(Rigorous_Reaver.ApplyWhenDestroyedByBattleAsync(player, rigorous));
 
+            if (player.Creature?.HasPower<AccumulatedSpiritsPower>() == true)
+                YgoDuelistPassivePowerState.RegisterAccumulatedSpiritsFieldLoss(player);
+
+            TaskHelper.RunSafely(GuardianSpiritPower.OnPlayerDuelMonsterDestroyedAsync(
+                new BlockingPlayerChoiceContext(),
+                player,
+                pet));
+
             var graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
             bool bounceToHand = YgoDuelMonsterBounceToHand.TryConsume(pet);
 

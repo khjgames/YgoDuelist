@@ -6769,5 +6769,22 @@
   "YGODUELIST-THE_LIGHT_HEX_SEALED_FUSION.description_skill_combat": "Gain [blue]{CalculatedDEF}[/blue] block.\\nSubstitute for any 1 Fusion Material; Tribute materials on the field (including this card) to Special Summon 1 matching LIGHT Fusion Monster from the Extra Deck.\\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
   "YGODUELIST-THE_LIGHT_HEX_SEALED_FUSION.title": "The Light - Hex-Sealed Fusion",
   "YGODUELIST-ANTI_AIRCRAFT_FLOWER.activated_effect.description": "Tribute 1 Earth monster.\nDeal [blue]{Mgc}[/blue] damage to all enemies.",
-  "YGODUELIST-ARCANE_ARCHER_OF_THE_FOREST.activated_effect.description": "Tribute 1 Earth monster.\nInflict [blue]{Mgc}[/blue] Weak and [blue]{Mgc2}[/blue] Vulnerable to a targeted enemy."
+  "YGODUELIST-ARCANE_ARCHER_OF_THE_FOREST.activated_effect.description": "Tribute 1 Earth monster.\nInflict [blue]{Mgc}[/blue] Weak and [blue]{Mgc2}[/blue] Vulnerable to a targeted enemy.",
+  "YGODUELIST-ACCUMULATED_SPIRITS.description": "At the end of your turn, if you lost [blue]2[/blue] or more duel monsters from the field this turn, gain [orange]1[/orange] Strength and [green]1[/green] Dexterity.",
+  "YGODUELIST-ACCUMULATED_SPIRITS.description_upgraded": "At the end of your turn, if you lost [blue]2[/blue] or more duel monsters from the field this turn, gain [orange]1[/orange] Strength and [green]1[/green] Dexterity.\nCosts [green]2[/green] Energy.",
+  "YGODUELIST-ACCUMULATED_SPIRITS.title": "Accumulated Spirits",
+  "YGODUELIST-CHAIN_SUMMONING.description": "Every [blue]4[/blue] monsters you summon, gain {conduitIcon}.",
+  "YGODUELIST-CHAIN_SUMMONING.description_upgraded": "Every [blue]3[/blue] monsters you summon, gain {conduitIcon}.",
+  "YGODUELIST-CHAIN_SUMMONING.title": "Chain Summoning",
+  "YGODUELIST-FALLEN_INSIGHTS.description": "For every [blue]5[/blue] cards you send to the Graveyard, draw [blue]1[/blue] card.",
+  "YGODUELIST-FALLEN_INSIGHTS.description_upgraded": "For every [blue]4[/blue] cards you send to the Graveyard, draw [blue]1[/blue] card.",
+  "YGODUELIST-FALLEN_INSIGHTS.title": "Fallen Insights",
+  "YGODUELIST-FORTIFIED_BEASTS.description": "All duel monsters gain [blue]2[/blue] Max HP.",
+  "YGODUELIST-FORTIFIED_BEASTS.description_upgraded": "All duel monsters gain [blue]3[/blue] Max HP.",
+  "YGODUELIST-FORTIFIED_BEASTS.title": "Fortified Beasts",
+  "YGODUELIST-GUARDIAN_SPIRIT.description": "Whenever a duel monster on the field is destroyed: gain [blue]2[/blue] Block, then heal each other duel monster [green]1[/green] HP.",
+  "YGODUELIST-GUARDIAN_SPIRIT.description_upgraded": "Whenever a duel monster on the field is destroyed: gain [blue]3[/blue] Block, then heal each other duel monster [green]1[/green] HP.",
+  "YGODUELIST-GUARDIAN_SPIRIT.title": "Guardian Spirit",
+  "YGODUELIST-HARNESSED_ENERGY.description": "Draw [blue]1[/blue] fewer card each turn. At the start of each of your turns, gain [gold]1[/gold] [gold]Energy[/gold].",
+  "YGODUELIST-HARNESSED_ENERGY.title": "Harnessed Energy"
 }

@@ -32,7 +32,7 @@ public static class YgoCampfireDeckEditLayout
     public static float CornerButtonFixedHeightPixels = 72f;
 
     /// <summary>Draw order for the full-screen layer that holds the corner button (higher = on top).</summary>
-    public static int CornerLayerZIndex = 200;
+    public static int CornerLayerZIndex = 20;
 
     /// <summary>Set false to silence GD.Print / PrintErr diagnostics.</summary>
     public static bool DebugLogCornerUi = true;

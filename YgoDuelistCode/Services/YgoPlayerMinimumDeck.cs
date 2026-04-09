@@ -4,11 +4,11 @@ using MegaCrit.Sts2.Core.Entities.Players;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// YgoDuelist minimum deck size from <c>Deck_Trunk_Side_System</c> / pack rewards: starts at 16, +1 per confirmed pack, −N when removing N cards via reward or Cook.
+/// YgoDuelist minimum deck size from <c>Deck_Trunk_Side_System</c> / pack rewards: starts at 15, +1 per confirmed pack, −N when removing N cards via reward or Cook.
 /// </summary>
 public static class YgoPlayerMinimumDeck
 {
-    public const int StartingMinimum = 16;
+    public const int StartingMinimum = 14;
 
     private static readonly ConditionalWeakTable<Player, StrongBox<int>> Table = new();
 

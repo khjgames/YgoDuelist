@@ -14,6 +14,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Relics;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -127,6 +128,19 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         // After the summon completes, move the monster card into the MonsterPile
         // so it is no longer in Hand/Discard/etc.
         await MoveCardToMonsterPile(player, card);
+
+        if (player.Creature?.GetPower<ChainSummoningPower>() is { } chain)
+        {
+            int every = (int)chain.Amount;
+            if (every > 0)
+            {
+                int stars = YgoDuelistPassivePowerState.RegisterChainSummoningSummon(player, every);
+                for (int i = 0; i < stars; i++)
+                    await PlayerCmd.GainStars(1, player);
+            }
+        }
+
+        await FortifiedBeastsDuelMonsterHp.SyncPetFromCardAsync(petCreature, card, player);
 
         LegionFiendJesterSpellcasterConduit.RegisterWaivedSummonAfterNormalSpellcasterSummon(
             player,

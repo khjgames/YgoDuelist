@@ -38,4 +38,9 @@ public sealed class Mask_of_Darkness : EffectMonsterCard
         typeof(Mask_of_Darkness),
     };
 
+    /// <summary>Upgrade (with inherited printed stat scaling): −1 energy for defense stance / Command Defend.</summary>
+    public override int GetDuelMonsterDefensePlayEnergyDiscount() =>
+        base.GetDuelMonsterDefensePlayEnergyDiscount() +
+        (IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None ? 1 : 0);
+
 }

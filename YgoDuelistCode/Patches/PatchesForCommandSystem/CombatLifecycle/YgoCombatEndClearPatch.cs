@@ -22,6 +22,7 @@ public static class YgoCombatEndClearPatch
     public static async void Postfix(IRunState runState, CombatState? combatState, CombatRoom room)
     {
         DuelMonsterFieldRegistry.ClearAll();
+        YgoDuelistPassivePowerState.ClearAll();
         MonsterCommandRegistry.ClearAll();
         YgoDarkSpiritSilentState.ClearAll();
         NormalSummonTracker.ClearAll();
