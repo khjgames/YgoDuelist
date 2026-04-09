@@ -1,23 +1,41 @@
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Dark_Piercing_Light : BaseSpellCard
 {
+    private const decimal BlockPerAttackingEnemy = 5m;
+
     public Dark_Piercing_Light()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        Task.CompletedTask;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Spell;
 
-    protected override void OnUpgrade()
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        if (Owner?.Creature?.CombatState is not CombatState cs)
+            return;
+
+        int count = cs.HittableEnemies.Count(e =>
+            e.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, Owner.Creature) > 0);
+
+        if (count <= 0)
+            return;
+
+        await CreatureCmd.GainBlock(Owner.Creature, BlockPerAttackingEnemy * count, default, cardPlay);
     }
+
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

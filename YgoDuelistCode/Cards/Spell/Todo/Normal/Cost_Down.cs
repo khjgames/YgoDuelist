@@ -1,11 +1,18 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -15,38 +22,60 @@ public sealed class Cost_Down : BaseSpellCard
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
-    // Dictates the card pack tags this card will be included in.
+
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
-    // You will always see bundled cards when RNG rolls this card, but not the other way around.
-    //public override Type[] BundledCards => new[]
-    //{
-    //    typeof(This_Card),
-    //    typeof(Another_Bundled_Card)
-    //};
+    public override Type[] RelatedCards => new[] { typeof(Cost_Down) };
 
-    // You will see these related cards more often with this card in your deck or side deck.
-    public override Type[] RelatedCards => new[]
-    {
-        typeof(Cost_Down),
-    };
+    protected override bool IsPlayable =>
+        base.IsPlayable
+        && Owner != null
+        && PileType.Hand.GetPile(Owner)?.Cards.Any(c => !ReferenceEquals(c, this)) == true;
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner?.Creature == null)
+            return;
+
+        CardModel? toDestroy = await ChooseOtherHandCardToDestroy(choiceContext);
+        if (toDestroy == null)
+            return;
+
+        await SendHandCardToGraveyard(choiceContext, Owner, toDestroy);
+        await PowerCmd.Apply<CostDownHandLevelPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade()
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
+    private async Task<CardModel?> ChooseOtherHandCardToDestroy(PlayerChoiceContext choiceContext)
     {
-        ExecuteSpellUpgradePlaceholder();
+        var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = false
+        };
+
+        var selected = await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner!,
+            prefs,
+            c => !ReferenceEquals(c, this),
+            this);
+
+        return selected.FirstOrDefault();
     }
 
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    private static async Task SendHandCardToGraveyard(PlayerChoiceContext choiceContext, Player player, CardModel card)
     {
-    }
+        CardPile? graveyardPile = GraveyardPile.CustomType.GetPile(player);
+        if (graveyardPile == null)
+            return;
 
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        await CardPileCmd.Add(
+            new[] { card },
+            graveyardPile,
+            CardPilePosition.Top,
+            card,
+            false);
     }
 }

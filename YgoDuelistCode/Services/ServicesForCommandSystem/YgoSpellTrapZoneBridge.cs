@@ -119,6 +119,8 @@ public static class YgoSpellTrapZoneBridge
     {
         if (card?.Owner == null)
             return false;
+        if (ColdWaveSpellTrapLockGate.IsPlayerLockedThisTurn(card.Owner))
+            return false;
         if (card.Pile?.Type != PileType.Hand)
             return false;
         if (!IsSpellOrTrapCard(card))

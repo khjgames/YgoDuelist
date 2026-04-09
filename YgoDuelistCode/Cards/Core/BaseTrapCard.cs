@@ -93,6 +93,9 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             if (!base.IsPlayable)
                 return false;
 
+            if (Owner != null && ColdWaveSpellTrapLockGate.IsPlayerLockedThisTurn(Owner))
+                return false;
+
             if (Pile?.Type == PileType.Hand && !CanActivateDirectlyFromHand)
                 return false;
 

@@ -1,7 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -9,27 +16,43 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Rain_of_Mercy : BaseSpellCard
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc2", 4m) };
+
     public Rain_of_Mercy()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Heal | YgoCardPackTags.Water;
+
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner?.Creature?.CombatState is not CombatState cs)
+            return;
+
+        decimal heal = DynamicVars["Mgc2"].BaseValue;
+
+        foreach (Creature enemy in cs.HittableEnemies.Where(e => e.IsAlive))
+            await CreatureCmd.Heal(enemy, heal);
+
+        if (Owner.PlayerCombatState == null)
+            return;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.ToList())
+        {
+            if (pet == null || !pet.IsAlive)
+                continue;
+            if (pet.Monster is not DuelMonsterModel)
+                continue;
+            await CreatureCmd.Heal(pet, heal);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc2"].UpgradeValueBy(2m);
     }
 }

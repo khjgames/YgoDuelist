@@ -324,6 +324,21 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         RushRecklesslyPower? rush = GetSourcePetRushRecklesslyPower();
         if (rush != null)
             atk += (int)rush.Amount;
+
+        PyramidEnergyAtkBonusPower? pyramidAtk = GetSourcePetPyramidEnergyAtkBonusPower();
+        if (pyramidAtk != null)
+            atk += (int)pyramidAtk.Amount;
+        PyramidEnergyDefBonusPower? pyramidDef = GetSourcePetPyramidEnergyDefBonusPower();
+        if (pyramidDef != null)
+            def += (int)pyramidDef.Amount;
+
+        RiryokuAtkShiftDonorPower? riryokuDonor = GetSourcePetRiryokuAtkShiftDonorPower();
+        if (riryokuDonor != null)
+            atk -= (int)riryokuDonor.Amount;
+        RiryokuAtkShiftReceiverPower? riryokuRecv = GetSourcePetRiryokuAtkShiftReceiverPower();
+        if (riryokuRecv != null)
+            atk += (int)riryokuRecv.Amount;
+
         WingedMinionTributeAtkPower? wingedTribute = GetSourcePetWingedMinionTributeAtkPower();
         if (wingedTribute != null)
             atk += (int)wingedTribute.Amount;
@@ -442,6 +457,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public int GetEffectiveDuelMonsterLevel()
     {
         int lv = DuelMonsterLevel;
+        if (!IsCanonical && Owner != null && Pile?.Type == PileType.Hand && Owner.Creature?.GetPower<CostDownHandLevelPower>() != null)
+            lv -= CostDownHandLevelPower.LevelReduction;
+
         if (!IsCanonical && Owner != null)
         {
             foreach (BaseFieldSpellCard fieldSpell in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))
@@ -515,6 +533,66 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
             return pet.GetPower<RushRecklesslyPower>();
+        }
+
+        return null;
+    }
+
+    private PyramidEnergyAtkBonusPower? GetSourcePetPyramidEnergyAtkBonusPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<PyramidEnergyAtkBonusPower>();
+        }
+
+        return null;
+    }
+
+    private PyramidEnergyDefBonusPower? GetSourcePetPyramidEnergyDefBonusPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<PyramidEnergyDefBonusPower>();
+        }
+
+        return null;
+    }
+
+    private RiryokuAtkShiftDonorPower? GetSourcePetRiryokuAtkShiftDonorPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<RiryokuAtkShiftDonorPower>();
+        }
+
+        return null;
+    }
+
+    private RiryokuAtkShiftReceiverPower? GetSourcePetRiryokuAtkShiftReceiverPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<RiryokuAtkShiftReceiverPower>();
         }
 
         return null;

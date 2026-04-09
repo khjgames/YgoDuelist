@@ -46,6 +46,9 @@ public static class YgoCombatEndClearPatch
         ActivatedEffectTributeSelectionPayload.ClearAll();
         ObeliskActivatedTributePayload.ClearAll();
         RushReliablePlayPayload.ClearAll();
+        RiryokuPlayPayload.ClearAll();
+        SecretPassPlayPayload.ClearAll();
+        FairyOfSpringReturnedEquipLock.ClearAll();
         YgoEquipSpellRegistry.ClearAll();
         YgoSpellTrapEquipLinkRegistry.ClearAll();
         YgoCurseOfDarknessSpellHook.ClearAll();

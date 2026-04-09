@@ -71,6 +71,9 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             if (!base.IsPlayable)
                 return false;
 
+            if (Owner != null && ColdWaveSpellTrapLockGate.IsPlayerLockedThisTurn(Owner))
+                return false;
+
             if (Pile?.Type == PileType.Hand && IsSetModeInHand)
                 return false;
 
@@ -119,6 +122,16 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             CardPilePosition.Top,
             this,
             false);
+    }
+
+    /// <summary>Full cast + GY resolution for <see cref="Double_Spell"/> replaying a spell from the Graveyard (card should already be in hand).</summary>
+    internal async Task ResolveAsDoubleSpellReplayAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        PrepareSpellForActiveFieldZone();
+        await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
+        await OnSpellPlay(choiceContext, cardPlay);
+        await YgoCurseOfDarknessSpellHook.AfterSpellResolved(choiceContext, this);
+        await SendThisSpellToGraveyard(choiceContext);
     }
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>

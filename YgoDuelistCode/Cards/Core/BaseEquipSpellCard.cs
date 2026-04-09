@@ -85,6 +85,9 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
             if (Pile?.Type != PileType.Hand || Owner == null)
                 return true;
 
+            if (FairyOfSpringReturnedEquipLock.IsLocked(this))
+                return false;
+
             if (!YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
                 return false;
 

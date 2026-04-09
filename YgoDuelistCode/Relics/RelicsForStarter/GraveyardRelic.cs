@@ -89,6 +89,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             _dragonMonstersDestroyedThisTurn = 0;
             _sanctuaryHalveNextSpillToPlayer = false;
             YgoDarkSpiritSilentState.ClearForPlayer(player);
+            FairyOfSpringReturnedEquipLock.ClearAll();
         }
 
         if (player != Owner || player.PlayerCombatState == null || player.Creature == null)
@@ -254,9 +255,16 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             }
         }
 
+        if (!blighted && command.Attacker?.GetPower<SecretPassTreasuresBlightPower>() != null)
+            blighted = true;
+
         if (blighted)
         {
-            decimal blightMultiplier = monster.AttackDealsFullBlightedDamage ? 1m : 0.5m;
+            decimal blightMultiplier = 0.5m;
+            if (command.Attacker?.GetPower<SecretPassTreasuresBlightPower>() is { Amount: var secretPassPct })
+                blightMultiplier = secretPassPct / 100m;
+            else if (monster.AttackDealsFullBlightedDamage)
+                blightMultiplier = 1m;
             foreach (DamageResult r in command.Results)
             {
                 int hitDamage = FullIncomingDamage(r);

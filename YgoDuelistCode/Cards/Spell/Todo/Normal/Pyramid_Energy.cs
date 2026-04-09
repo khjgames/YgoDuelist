@@ -1,35 +1,113 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Pyramid_Energy : BaseSpellCard
+public sealed class Pyramid_Energy : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
+    private const int OptionAtk = 0;
+    private const int OptionDef = 1;
+
+    private const decimal AtkBonus = 200m;
+    private const decimal DefBonus = 500m;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", AtkBonus), new DynamicVar("Mgc2", DefBonus) };
+
     public Pyramid_Energy()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
+        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+
+    public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (player.Creature?.CombatState is not CombatState cs)
+            return false;
+
+        YgoTransientSpellOptionCommandCard atkOpt = YgoTransientSpellOptionCommandCard.Create(
+            cs,
+            player,
+            OptionAtk,
+            "YGODUELIST-PYRAMID_ENERGY_OPT_ATK.title",
+            "YGODUELIST-PYRAMID_ENERGY_OPT_ATK.description",
+            this,
+            "pyramid_energy.png");
+
+        YgoTransientSpellOptionCommandCard defOpt = YgoTransientSpellOptionCommandCard.Create(
+            cs,
+            player,
+            OptionDef,
+            "YGODUELIST-PYRAMID_ENERGY_OPT_DEF.title",
+            "YGODUELIST-PYRAMID_ENERGY_OPT_DEF.description",
+            this,
+            "pyramid_energy.png");
+
+        var options = new List<CardModel> { atkOpt, defOpt };
+        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
+
+        IEnumerable<CardModel> selected;
+        try
+        {
+            selected = await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                options,
+                player,
+                prefs);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+
+        CardModel? pick = selected.FirstOrDefault();
+        if (pick is not YgoTransientSpellOptionCommandCard chosen)
+            return false;
+
+        YgoPrePlayOptionIdPayload.SetPending(sourceCard, chosen.OptionId);
+        return true;
+    }
+
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner?.Creature == null || Owner.PlayerCombatState == null)
+            return;
+
+        if (!YgoPrePlayOptionIdPayload.TryTakePending(this, out int optionId))
+            return;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.ToList())
+        {
+            if (pet == null || !pet.IsAlive || pet.Monster is not DuelMonsterModel)
+                continue;
+
+            if (optionId == OptionAtk)
+                await PowerCmd.Apply<PyramidEnergyAtkBonusPower>(pet, AtkBonus, Owner.Creature, this);
+            else
+                await PowerCmd.Apply<PyramidEnergyDefBonusPower>(pet, DefBonus, Owner.Creature, this);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        ExecuteSpellUpgradePlaceholder();
-    }
-
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
+        EnergyCost.UpgradeBy(-1);
     }
 }
