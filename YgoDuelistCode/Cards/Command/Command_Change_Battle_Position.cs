@@ -45,26 +45,31 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
     protected internal override string? CustomCommandEnergyTexturePath =>
         "YgoDuelist/images/card_frames/Invisible_Energy.png";
 
-    public async Task OnClickedOption(Creature? enemyTarget = null)
+    /// <summary>Shared by UI click and <see cref="GameActions.YgoMonsterMenuCommandGameAction"/> (MP).</summary>
+    public static async Task ExecuteChangeBattlePositionFromPetAsync(Player player, Creature pet, Creature? enemyTarget)
     {
-        var player = Owner;
-        if (player == null || SourceMonster is not AbstractMonsterCard monster)
+        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not NormalMonsterCard sourceMonster)
+            return;
+        if (sourceMonster is not AbstractMonsterCard monster)
             return;
 
-        var pet = FindPetForMonster(SourceMonster, player);
-        if (pet != null && pet.HasPower<StiffPower>())
+        if (pet.HasPower<StiffPower>())
             return;
 
         bool wasAttackPosition = monster.IsAttackBattlePosition;
         bool wasFaceDownDefense =
-            SourceMonster is Stealth_Bird
+            sourceMonster is Stealth_Bird
             && !monster.IsAttackBattlePosition
             && monster.FaceDown;
 
         bool switchedDefToAtk = monster.ApplyBattlePositionChangeFromCommandMenu();
 
-        if (pet != null)
-            await MonsterCommandRegistry.ApplyStiffFromBattlePositionChangeOnly(pet, player.Creature, this);
+        // UpdateFaceDownKeywordFromBool queues stance sync asynchronously; GameAction must finish after powers match card state.
+        await DuelMonsterStancePowerSync.SyncForPetAsync(pet, monster, player.Creature, sourceMonster);
+
+        // Do not `new Command_Change_Battle_Position(...)` — runtime construction throws DuplicateModelException
+        // ("Use ModelDb instead"). Use the field monster card as the power source (same logical source as menu `this`).
+        await MonsterCommandRegistry.ApplyStiffFromBattlePositionChangeOnly(pet, player.Creature, sourceMonster);
 
         var ctx = new BlockingPlayerChoiceContext();
         if (switchedDefToAtk)
@@ -72,10 +77,23 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
         else if (wasAttackPosition)
             await monster.OnSwitchedFromAttackToDefenseFromCommandAsync(ctx, player);
 
-        if (SourceMonster is Stealth_Bird bird && wasFaceDownDefense && switchedDefToAtk)
+        if (sourceMonster is Stealth_Bird bird && wasFaceDownDefense && switchedDefToAtk)
             await Stealth_Bird.DealFlipSummonDamageIfEligibleAsync(ctx, bird, wasFaceDownDefense, enemyTarget, player.Creature);
 
         YgoOptionHandBridge.RequestDeferredSyncFromOptionPile(player);
+    }
+
+    public async Task OnClickedOption(Creature? enemyTarget = null)
+    {
+        var player = Owner;
+        if (player == null || SourceMonster is not AbstractMonsterCard)
+            return;
+
+        var pet = FindPetForMonster(SourceMonster, player);
+        if (pet == null)
+            return;
+
+        await ExecuteChangeBattlePositionFromPetAsync(player, pet, enemyTarget);
     }
 
     private static Creature? FindPetForMonster(NormalMonsterCard source, Player player)

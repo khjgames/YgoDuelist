@@ -49,6 +49,10 @@ public sealed class Zone_Eater : EffectMonsterCard
         typeof(Zone_Eater),
     };
 
+    /// <inheritdoc cref="BaseMonsterCard.NonAttackPlayTargetType" />
+    /// Summon marks an enemy (chosen or deterministic).
+    protected override TargetType NonAttackPlayTargetType => TargetType.AnyEnemy;
+
     protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)

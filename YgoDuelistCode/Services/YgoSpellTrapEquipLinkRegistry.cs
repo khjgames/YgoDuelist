@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -33,6 +34,7 @@ public static class YgoSpellTrapEquipLinkRegistry
             list.Add(trapCard);
             TrapToMonster[trapCard] = monster;
             link.SetEquipLinkedMonster(monster);
+            link.SetEquipLinkedPetCombatId(YgoDuelMonsterPetBinding.TryFindPetCombatIdForFieldMonster(monster));
         }
     }
 
@@ -53,6 +55,7 @@ public static class YgoSpellTrapEquipLinkRegistry
             return;
 
         TrapToMonster.Remove(trapCard);
+        link.SetEquipLinkedPetCombatId(0);
         link.SetEquipLinkedMonster(null);
 
         if (ByMonster.TryGetValue(monster, out var list))
@@ -96,8 +99,27 @@ public static class YgoSpellTrapEquipLinkRegistry
     {
         if (trapCard == null)
             return null;
+        TryRebindEquipLinkIfNeeded(trapCard);
         lock (Gate)
             return TrapToMonster.TryGetValue(trapCard, out var m) ? m : null;
+    }
+
+    /// <summary>
+    /// MP: restores registry + <see cref="IYgoSpellTrapEquipLink.SetEquipLinkedMonster"/> from <see cref="IYgoSpellTrapEquipLink.EquipLinkedPetCombatId"/>.
+    /// </summary>
+    public static void TryRebindEquipLinkIfNeeded(CardModel trapCard)
+    {
+        if (trapCard is not IYgoSpellTrapEquipLink link)
+            return;
+        Player? player = trapCard.Owner;
+        if (player?.PlayerCombatState == null)
+            return;
+        if (link.EquipLinkedPetCombatId == 0)
+            return;
+        BaseMonsterCard? m = YgoDuelMonsterPetBinding.TryGetFieldMonsterForPetCombatId(player, link.EquipLinkedPetCombatId);
+        if (m == null)
+            return;
+        Attach(trapCard, m);
     }
 
     public static void ClearAll()
@@ -107,7 +129,10 @@ public static class YgoSpellTrapEquipLinkRegistry
             foreach (var kv in TrapToMonster)
             {
                 if (kv.Key is IYgoSpellTrapEquipLink link)
+                {
+                    link.SetEquipLinkedPetCombatId(0);
                     link.SetEquipLinkedMonster(null);
+                }
             }
 
             ByMonster.Clear();
@@ -131,7 +156,10 @@ public static class YgoSpellTrapEquipLinkRegistry
             {
                 TrapToMonster.Remove(trap);
                 if (trap is IYgoSpellTrapEquipLink link)
+                {
+                    link.SetEquipLinkedPetCombatId(0);
                     link.SetEquipLinkedMonster(null);
+                }
             }
 
             ByMonster.Remove(monster);

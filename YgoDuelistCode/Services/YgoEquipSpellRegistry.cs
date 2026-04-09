@@ -31,6 +31,7 @@ public static class YgoEquipSpellRegistry
             list.Add(equip);
             EquipToMonster[equip] = monster;
             equip.SetEquippedMonster(monster);
+            equip.SetEquippedTargetPetCombatId(YgoDuelMonsterPetBinding.TryFindPetCombatIdForFieldMonster(monster));
         }
     }
 
@@ -49,6 +50,7 @@ public static class YgoEquipSpellRegistry
 
         EquipToMonster.Remove(equip);
         equip.SetEquippedMonster(null);
+        equip.SetEquippedTargetPetCombatId(0);
 
         if (ByMonster.TryGetValue(monster, out var list))
         {
@@ -75,6 +77,7 @@ public static class YgoEquipSpellRegistry
     {
         if (equip == null)
             return null;
+        equip.TryResolveEquippedMonsterFromStoredPetId();
         lock (Gate)
             return EquipToMonster.TryGetValue(equip, out var m) ? m : null;
     }
@@ -84,7 +87,10 @@ public static class YgoEquipSpellRegistry
         lock (Gate)
         {
             foreach (var equip in EquipToMonster.Keys)
+            {
                 equip.SetEquippedMonster(null);
+                equip.SetEquippedTargetPetCombatId(0);
+            }
             ByMonster.Clear();
             EquipToMonster.Clear();
         }
@@ -106,6 +112,7 @@ public static class YgoEquipSpellRegistry
             {
                 EquipToMonster.Remove(eq);
                 eq.SetEquippedMonster(null);
+                eq.SetEquippedTargetPetCombatId(0);
             }
 
             ByMonster.Remove(monster);

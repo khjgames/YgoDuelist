@@ -28,8 +28,21 @@ public static class StaticImageCreateVisualsPatch
         var path = (string)_visualsPathGetter.Invoke(__instance, null)!;
         var scene = PreloadManager.Cache.GetScene(path);
 
-        // C# scenes often root as Node2D + NCreatureVisuals script; Instantiate<T>() throws (see godot.log).
-        var root = scene.Instantiate(PackedScene.GenEditState.Disabled);
+        // Missing/corrupt exports (e.g. client without duel_monster.tscn in the PCK) leave scene null; Instantiate
+        // would NRE, CreatureCmd.Add throws, and MoveCardToMonsterPile never runs → MP state diverges from host.
+        Node root;
+        if (scene == null)
+        {
+            GD.PrintErr(
+                $"[YgoDuelist][MP] StaticImageCreateVisualsPatch: PackedScene missing for '{path}'. " +
+                "Using built-in static portrait layout so summon logic and pile moves stay in sync (reinstall/sync mod).");
+            root = CreateFallbackStaticPortraitRoot();
+        }
+        else
+        {
+            // C# scenes often root as Node2D + NCreatureVisuals script; Instantiate<T>() throws (see godot.log).
+            root = scene.Instantiate(PackedScene.GenEditState.Disabled);
+        }
         if (root is NCreatureVisuals direct)
         {
             __result = direct;
@@ -64,6 +77,59 @@ public static class StaticImageCreateVisualsPatch
         visuals.ChildEnteredTree += OnStaticPortraitChildEnteredTree;
         __result = visuals;
         return false;
+    }
+
+    /// <summary>
+    /// Mirrors <c>YgoDuelist/monsters/duel_monster/duel_monster.tscn</c> so <see cref="NCreatureVisuals"/> receives the
+    /// same %Visuals / %Bounds / marker nodes when the packed scene failed to load (broken install, missing PCK file).
+    /// </summary>
+    private static Node2D CreateFallbackStaticPortraitRoot()
+    {
+        var raw = new Node2D { Name = "YgoDuelMonster" };
+
+        var sprite = new Sprite2D
+        {
+            Name = "Visuals",
+            Position = new Vector2(0, -115),
+            UniqueNameInOwner = true
+        };
+        raw.AddChild(sprite);
+
+        var bounds = new Control
+        {
+            Name = "Bounds",
+            UniqueNameInOwner = true,
+            AnchorLeft = 0f,
+            AnchorTop = 0f,
+            AnchorRight = 1f,
+            AnchorBottom = 1f,
+            OffsetLeft = -90f,
+            OffsetTop = -110f,
+            OffsetRight = 90f,
+            OffsetBottom = 0f,
+            GrowHorizontal = Control.GrowDirection.Both,
+            GrowVertical = Control.GrowDirection.Both,
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        };
+        raw.AddChild(bounds);
+
+        var centerPos = new Marker2D
+        {
+            Name = "CenterPos",
+            Position = new Vector2(0, -100),
+            UniqueNameInOwner = true
+        };
+        raw.AddChild(centerPos);
+
+        var intentPos = new Marker2D
+        {
+            Name = "IntentPos",
+            Position = new Vector2(0, -270),
+            UniqueNameInOwner = true
+        };
+        raw.AddChild(intentPos);
+
+        return raw;
     }
 
     private static void OnStaticPortraitChildEnteredTree(Node child)

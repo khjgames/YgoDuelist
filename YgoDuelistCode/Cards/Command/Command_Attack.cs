@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -87,7 +88,14 @@ public sealed class Command_Attack : MonsterCommandCard
     {
         var player = Owner;
         if (player == null || cardPlay.Target == null || SourceMonster == null)
+        {
+            GD.PrintErr(
+                $"[YgoDuelist][MP][Command_Attack] OnPlay early exit: playerNull={player == null} targetNull={cardPlay.Target == null} sourceNull={SourceMonster == null} ownerNet={player?.NetId}");
             return;
+        }
+
+        GD.Print(
+            $"[YgoDuelist][MP][Command_Attack] OnPlay source={SourceMonster.Id.Entry} targetCombat={cardPlay.Target.CombatId} owner={player.NetId}");
 
         var pet = FindPetForMonster(SourceMonster);
         bool skipRegistryCommit = TryConsumeRegularDeckCommandWithoutFatigueOrSlots(cardPlay, pet);

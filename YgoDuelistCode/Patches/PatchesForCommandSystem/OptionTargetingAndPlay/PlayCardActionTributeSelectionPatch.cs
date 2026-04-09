@@ -1,8 +1,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
+using Godot;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions;
@@ -17,8 +16,13 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// Before spending resources, tribute monsters open a grid to pick field materials; cancel aborts the play.
+/// Must run for <b>every</b> peer in MP: <see cref="MegaCrit.Sts2.Core.Commands.CardSelectCmd.FromSimpleGrid"/> uses
+/// <c>ShouldSelectLocalCard</c> / <c>WaitForRemoteChoice</c> so only the summoning player sees the grid; remotes block until
+/// the owner syncs confirm or cancel. Gating on <see cref="LocalContext.IsMe"/> let remotes execute vanilla
+/// <see cref="PlayCardAction"/> immediately (no tribute wait), causing checksum divergence and broken cancel flows.
 /// </summary>
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
+[HarmonyPriority(850)]
 public static class PlayCardActionTributeSelectionPatch
 {
     private static readonly PropertyInfo? PlayerChoiceContextProp =
@@ -26,24 +30,7 @@ public static class PlayCardActionTributeSelectionPatch
 
     static bool Prefix(PlayCardAction __instance, ref Task __result)
     {
-        if (!CombatManager.Instance.IsInProgress)
-            return true;
-
-        try
-        {
-            if (!LocalContext.IsMe(__instance.Player))
-                return true;
-        }
-        catch
-        {
-            return true;
-        }
-
-        var card = __instance.NetCombatCard.ToCardModel();
-        if (card is not NormalMonsterCard nmc || !nmc.CanSummonDuelMonster || nmc.TributeReleaseCount <= 0)
-            return true;
-
-        if (card.Pile?.Type != PileType.Hand)
+        if (!TributeSummonSelection.IsHandTributeDuelNormalSummonPlay(__instance))
             return true;
 
         __result = ExecuteWithTributeSelectionAsync(__instance);
@@ -66,13 +53,15 @@ public static class PlayCardActionTributeSelectionPatch
                 return;
             }
 
-            TributeSummonPlayPayload.SetPending(card, resolution);
+            GD.Print(
+                $"[YgoDuelist][MP][Tribute] SetPending netCardIdx={action.NetCombatCard.CombatCardIndex} owner={action.Player.NetId} pets={resolution.Pets.Count} card={card.Id?.Entry}");
+            TributeSummonPlayPayload.SetPending(action.Player.NetId, action.NetCombatCard.CombatCardIndex, resolution);
             await ExecuteVanillaPlayCardActionBody(action);
         }
         finally
         {
             if (card != null)
-                TributeSummonPlayPayload.ClearForCard(card);
+                TributeSummonPlayPayload.ClearForKey(action.Player.NetId, action.NetCombatCard.CombatCardIndex);
         }
     }
 
@@ -83,6 +72,8 @@ public static class PlayCardActionTributeSelectionPatch
         if (card == null)
             return;
 
+        GD.Print(
+            $"[YgoDuelist][Queue][Defer] Execute body: UpdateCardBeforeExecution after tribute confirm (player {action.Player.NetId}, card {card.Id?.Entry})");
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
         CardPile? pile = card.Pile;

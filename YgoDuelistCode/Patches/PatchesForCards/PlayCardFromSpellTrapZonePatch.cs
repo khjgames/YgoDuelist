@@ -4,6 +4,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -11,12 +12,15 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
+/// <summary>Run before other <see cref="PlayCardAction"/> prefixes that call <see cref="NetCombatCard.ToCardModel"/> — it throws when the combat id only exists on the host.</summary>
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
+[HarmonyPriority(900)]
 public static class PlayCardFromSpellTrapZonePatch
 {
     private static readonly PropertyInfo? PlayerChoiceContextProp =
@@ -28,7 +32,7 @@ public static class PlayCardFromSpellTrapZonePatch
         if (player == null)
             return true;
 
-        CardModel? card = __instance.NetCombatCard.ToCardModel();
+        CardModel? card = YgoSpellTrapPlayCardMpResolver.ResolveSpellTrapPlayCard(__instance);
         if (card == null)
             return true;
 
@@ -51,7 +55,8 @@ public static class PlayCardFromSpellTrapZonePatch
 
     private static async Task ExecutePlayFromSpellTrapZoneAsync(PlayCardAction action)
     {
-        CardModel? card = action.NetCombatCard.ToCardModel();
+        YgoSpellTrapPlayCardMpResolver.TryRebindNetCombatCardIfSpellTrapZone(action);
+        CardModel? card = YgoSpellTrapPlayCardMpResolver.ResolveSpellTrapPlayCard(action);
         if (card == null)
             return;
 

@@ -34,6 +34,34 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
     protected internal override string? CustomCommandEnergyTexturePath =>
         "YgoDuelist/images/card_frames/Invisible_Energy.png";
 
+    /// <summary>Shared by UI click and <see cref="GameActions.YgoMonsterMenuCommandGameAction"/> (MP).</summary>
+    public static async Task ExecuteToggleFromPetAsync(Player player, Creature pet)
+    {
+        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard sourceMonster)
+            return;
+
+        var state = MonsterCommandRegistry.GetOrCreate(pet);
+        if (state.DieForYouForced)
+            return;
+
+        state.DieForYouEnabled = !state.DieForYouEnabled;
+
+        if (state.DieForYouEnabled)
+        {
+            await PowerCmd.Apply<DieForYouPower>(pet, 1m, player.Creature, sourceMonster);
+            var petNode = NCombatRoom.Instance?.GetCreatureNode(pet);
+            petNode?.TrackBlockStatus(player.Creature);
+        }
+        else
+            await PowerCmd.Remove<DieForYouPower>(pet);
+
+        if (sourceMonster is BaseMonsterCard bm)
+        {
+            bm.AssertMutable();
+            bm.YgoDieForYouUserToggleOn = state.DieForYouEnabled;
+        }
+    }
+
     public async Task OnClickedOption()
     {
         GD.Print("[ZGO] Toggle_Die_For_You.OnClickedOption() entered");
@@ -45,25 +73,10 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
         }
 
         var pet = FindPetForMonster(SourceMonster, player);
-        if (pet != null)
-        {
-            var state = MonsterCommandRegistry.GetOrCreate(pet);
-            if (state.DieForYouForced)
-                return;
+        if (pet == null)
+            return;
 
-            state.DieForYouEnabled = !state.DieForYouEnabled;
-
-            if (state.DieForYouEnabled)
-            {
-                await PowerCmd.Apply<DieForYouPower>(pet, 1m, player.Creature, SourceMonster);
-                var petNode = NCombatRoom.Instance?.GetCreatureNode(pet);
-                petNode?.TrackBlockStatus(player.Creature);
-            }
-            else
-            {
-                await PowerCmd.Remove<DieForYouPower>(pet);
-            }
-        }
+        await ExecuteToggleFromPetAsync(player, pet);
 
         GD.Print("[ZGO] Toggle_Die_For_You.OnClickedOption() done (option pile not cleared)");
     }
@@ -78,6 +91,7 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
             if (pet.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == source)
                 return pet;
         }
+
         return null;
     }
 }

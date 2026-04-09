@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using YgoDuelist.YgoDuelistCode.GameActions;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -118,6 +119,28 @@ public static class DuelMonsterRightClickUiPatch
             }
 
             GD.Print($"[YgoDuelist] Right-click on duel pet: {pet.Monster?.GetType().Name}");
+
+            Player? owner = pet.PetOwner;
+            if (owner != null
+                && YgoNetCombatActionRouter.IsMultiplayerCombatQueueActive
+                && pet.CombatId is uint petCid
+                && petCid != 0)
+            {
+                var payload = new NetYgoMonsterMenuCommandAction
+                {
+                    Kind = YgoMonsterMenuCommandKind.OpenMonsterOptions,
+                    PetCombatId = petCid,
+                    HasEnemyTarget = false,
+                    EnemyTargetCombatId = 0
+                };
+                var openGa = new YgoMonsterMenuCommandGameAction(owner, payload);
+                if (YgoNetCombatActionRouter.TryRequestEnqueue(openGa, "OpenMonsterOptions"))
+                {
+                    GD.Print($"[YgoDuelist][MP] OpenMonsterOptions enqueued ownerNetId={owner.NetId} petCombatId={petCid}");
+                    return;
+                }
+            }
+
             DuelMonsterMonsterOptionsMenu.OpenMonsterOptions(pet);
         }
         catch (Exception e)

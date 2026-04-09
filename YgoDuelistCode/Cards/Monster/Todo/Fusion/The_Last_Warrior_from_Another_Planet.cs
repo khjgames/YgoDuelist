@@ -73,7 +73,7 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePending(this, out var pending) || pending == null
+                if (!TributeSummonPlayPayload.TryTakePendingForCard(this, out var pending) || pending == null
                     || !TributeSummonSelection.TributeSelectionMeetsCost(
                         this,
                         Owner,

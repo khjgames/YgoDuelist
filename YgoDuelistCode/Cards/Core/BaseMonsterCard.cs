@@ -21,6 +21,20 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 {
     public override YgoCardType YgoCardType => YgoCardType.Monster;
 
+    /// <summary>
+    /// When this card is played as <see cref="CardType.Skill"/> (defense stance or hand-effect form), vanilla uses this for
+    /// targeting and <see cref="CardModel.IsValidTarget"/>. Default <see cref="TargetType.Self"/> for plain summons.
+    /// Override to <see cref="TargetType.AnyEnemy"/>, <see cref="TargetType.AnyAlly"/>, etc. when the play applies a targeted
+    /// effect (e.g. Weak on an enemy, heal on an ally) even from defense. You may branch on <see cref="AbstractMonsterCard.IsHandEffectFormActive"/>.
+    /// </summary>
+    protected virtual TargetType NonAttackPlayTargetType => TargetType.Self;
+
+    /// <summary>
+    /// Attack stance uses <see cref="TargetType.AnyEnemy"/>. Non-attack uses <see cref="NonAttackPlayTargetType"/>.
+    /// </summary>
+    public override TargetType TargetType =>
+        Type == CardType.Attack ? TargetType.AnyEnemy : NonAttackPlayTargetType;
+
     private int _duelMonsterLevel;
 
     private readonly int? _duelMonsterAttackPlayEnergyOverride;
@@ -174,6 +188,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// </summary>
     [SavedProperty]
     public int PermanentAtkBonusFromExecutes { get; set; }
+
+    /// <summary>
+    /// When true, the player enabled optional Die For You via <see cref="Command.Toggle_Die_For_You"/> (not Cure Mermaid forced).
+    /// Serialized on the field monster card so multiplayer can reconcile <see cref="MegaCrit.Sts2.Core.Models.Powers.DieForYouPower"/> on the duel pet.
+    /// </summary>
+    [SavedProperty]
+    public bool YgoDieForYouUserToggleOn { get; set; }
 
     /// <summary>
     /// Applies a permanent printed-ATK change from an execute kill and mirrors it to <see cref="CardModel.DeckVersion"/> when set.

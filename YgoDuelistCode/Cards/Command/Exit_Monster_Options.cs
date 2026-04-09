@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -29,21 +29,20 @@ public sealed class Exit_Monster_Options : MonsterCommandCard
     protected internal override string? CustomCommandEnergyTexturePath =>
         BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
 
-    public Task OnClickedOption()
+    /// <summary>Shared by UI click and <see cref="GameActions.YgoMonsterMenuCommandGameAction"/> (MP).</summary>
+    public static Task ExecuteExitAsync(Player player)
     {
-        GD.Print("[ZGO] Exit_Monster_Options.OnClickedOption() entered");
-        var player = Owner;
+        GD.Print("[ZGO] Exit_Monster_Options.ExecuteExitAsync() entered");
         if (player == null)
         {
-            GD.Print("[ZGO_ERROR] Exit_Monster_Options.OnClickedOption() early exit: player null");
+            GD.Print("[ZGO_ERROR] Exit_Monster_Options.ExecuteExitAsync() early exit: player null");
             return Task.CompletedTask;
         }
 
-        // Same clear pattern as DuelMonsterRightClickUiPatch.OpenMonsterOptions (builds options pile list).
         var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
         if (optionPile == null)
         {
-            GD.Print("[ZGO_ERROR] Exit_Monster_Options.OnClickedOption() early exit: optionPile null");
+            GD.Print("[ZGO_ERROR] Exit_Monster_Options.ExecuteExitAsync() early exit: optionPile null");
             return Task.CompletedTask;
         }
 
@@ -51,8 +50,15 @@ public sealed class Exit_Monster_Options : MonsterCommandCard
         YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.MonsterOptions);
         optionPile.Clear();
         YgoOptionHandBridge.SyncFromOptionPile(player);
-        GD.Print("[ZGO] Exit_Monster_Options.OnClickedOption() done");
+        GD.Print("[ZGO] Exit_Monster_Options.ExecuteExitAsync() done");
         return Task.CompletedTask;
     }
-}
 
+    public Task OnClickedOption()
+    {
+        var player = Owner;
+        if (player == null)
+            return Task.CompletedTask;
+        return ExecuteExitAsync(player);
+    }
+}

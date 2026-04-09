@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using BaseLib.Abstracts;
 using Godot;
 using HarmonyLib;
@@ -34,7 +35,83 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         }
     }
 
-    private static void RestoreFromPending(Player player, YgoTrunkSideDeckLoadPending pending, string sourceTag)
+    /// <summary>
+    /// Mutates <paramref name="deck"/> in place: removes marker and trailing extra/trunk/side serial rows.
+    /// Used by <see cref="Player.LoadInventory"/> and <see cref="Player.SyncWithSerializedPlayer"/> (multiplayer).
+    /// </summary>
+    internal static bool TryStripTrailerFromDeckList(
+        List<SerializableCard> deck,
+        ulong netId,
+        string logPrefix,
+        [NotNullWhen(true)] out YgoTrunkSideDeckLoadPending? pending)
+    {
+        pending = null;
+        if (deck.Count == 0)
+            return false;
+
+        ModelId markerId = ModelDb.Card<YgoSaveTrunkSideMarkerCard>().Id;
+        SerializableCard last = deck[^1];
+        if (!YgoSaveTrunkSideMarkerCard.IsMarker(last, markerId))
+            return false;
+
+        YgoSaveTrunkSideMarkerCard.ReadTrailerCounts(last, out int extraCount, out int trunkCount, out int sideCount);
+        int loadedMinDeck = YgoSaveTrunkSideMarkerCard.ReadMinimumDeckSizeOrDefault(
+            last,
+            YgoPlayerMinimumDeck.StartingMinimum);
+        int loadedOwedRare = YgoSaveTrunkSideMarkerCard.ReadOwedRareCardVouchersOrDefault(last);
+        string? loadedPackTagBalance = YgoSaveTrunkSideMarkerCard.ReadPackTagBalanceOrNull(last);
+
+        int need = 1 + extraCount + trunkCount + sideCount;
+        if (deck.Count < need)
+        {
+            GD.Print(
+                $"{logPrefix} trailer rejected netId={netId} deckCount={deck.Count} need={need} " +
+                $"extra={extraCount} trunk={trunkCount} side={sideCount}");
+            return false;
+        }
+
+        deck.RemoveAt(deck.Count - 1);
+
+        var p = new YgoTrunkSideDeckLoadPending
+        {
+            LoadedMinimumDeckSize = loadedMinDeck,
+            LoadedOwedRareCardVouchers = loadedOwedRare,
+            LoadedPackTagBalance = loadedPackTagBalance
+        };
+        for (int i = 0; i < sideCount; i++)
+        {
+            p.Side.Insert(0, deck[^1]);
+            deck.RemoveAt(deck.Count - 1);
+        }
+
+        for (int i = 0; i < trunkCount; i++)
+        {
+            p.Trunk.Insert(0, deck[^1]);
+            deck.RemoveAt(deck.Count - 1);
+        }
+
+        for (int i = 0; i < extraCount; i++)
+        {
+            p.Extra.Insert(0, deck[^1]);
+            deck.RemoveAt(deck.Count - 1);
+        }
+
+        pending = p;
+        GD.Print(
+            $"{logPrefix} trailer parsed netId={netId} extra={extraCount} trunk={trunkCount} side={sideCount} " +
+            $"minDeck={loadedMinDeck} owedRare={loadedOwedRare} remainingMainDeck={deck.Count}");
+        return true;
+    }
+
+    /// <summary>Clears off-deck piles before re-applying a sync payload (avoids duplicate cards).</summary>
+    internal static void ClearYgoOffDeckPiles(Player player)
+    {
+        PlayerRunExtraDeck.GetPileIfExists(player)?.Clear(silent: true);
+        PlayerRunTrunk.GetPileIfExists(player)?.Clear(silent: true);
+        PlayerRunSideDeck.GetPileIfExists(player)?.Clear(silent: true);
+    }
+
+    internal static void RestoreFromPending(Player player, YgoTrunkSideDeckLoadPending pending, string sourceTag)
     {
         GD.Print(
             $"[YgoDuelist][SaveLoad] RestorePending {sourceTag} netId={player.NetId} " +
@@ -70,62 +147,8 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         if (__instance.Character is not YgoChar)
             return;
 
-        List<SerializableCard> deck = save.Deck;
-        if (deck.Count == 0)
-            return;
-
-        ModelId markerId = ModelDb.Card<YgoSaveTrunkSideMarkerCard>().Id;
-        SerializableCard last = deck[^1];
-        if (!YgoSaveTrunkSideMarkerCard.IsMarker(last, markerId))
-            return;
-
-        YgoSaveTrunkSideMarkerCard.ReadTrailerCounts(last, out int extraCount, out int trunkCount, out int sideCount);
-        int loadedMinDeck = YgoSaveTrunkSideMarkerCard.ReadMinimumDeckSizeOrDefault(
-            last,
-            YgoPlayerMinimumDeck.StartingMinimum);
-        int loadedOwedRare = YgoSaveTrunkSideMarkerCard.ReadOwedRareCardVouchersOrDefault(last);
-        string? loadedPackTagBalance = YgoSaveTrunkSideMarkerCard.ReadPackTagBalanceOrNull(last);
-
-        int need = 1 + extraCount + trunkCount + sideCount;
-        if (deck.Count < need)
-        {
-            GD.Print(
-                $"[YgoDuelist][SaveLoad] LoadInventory trailer rejected netId={__instance.NetId} " +
-                $"deckCount={deck.Count} need={need} extra={extraCount} trunk={trunkCount} side={sideCount}");
-            return;
-        }
-
-        deck.RemoveAt(deck.Count - 1);
-
-        var pending = new YgoTrunkSideDeckLoadPending
-        {
-            LoadedMinimumDeckSize = loadedMinDeck,
-            LoadedOwedRareCardVouchers = loadedOwedRare,
-            LoadedPackTagBalance = loadedPackTagBalance
-        };
-        for (int i = 0; i < sideCount; i++)
-        {
-            pending.Side.Insert(0, deck[^1]);
-            deck.RemoveAt(deck.Count - 1);
-        }
-
-        for (int i = 0; i < trunkCount; i++)
-        {
-            pending.Trunk.Insert(0, deck[^1]);
-            deck.RemoveAt(deck.Count - 1);
-        }
-
-        for (int i = 0; i < extraCount; i++)
-        {
-            pending.Extra.Insert(0, deck[^1]);
-            deck.RemoveAt(deck.Count - 1);
-        }
-
-        __state = pending;
-        GD.Print(
-            $"[YgoDuelist][SaveLoad] LoadInventory trailer parsed netId={__instance.NetId} " +
-            $"extra={extraCount} trunk={trunkCount} side={sideCount} " +
-            $"minDeck={loadedMinDeck} owedRare={loadedOwedRare} remainingMainDeck={deck.Count}");
+        if (TryStripTrailerFromDeckList(save.Deck, __instance.NetId, "[YgoDuelist][SaveLoad] LoadInventory", out YgoTrunkSideDeckLoadPending? pending))
+            __state = pending;
     }
 
     public static void Postfix(Player __instance, object? __state)

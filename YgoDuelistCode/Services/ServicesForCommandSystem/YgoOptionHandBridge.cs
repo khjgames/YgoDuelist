@@ -153,6 +153,12 @@ public static class YgoOptionHandBridge
             .Take(Math.Max(0, maxCount))
             .ToList();
 
+        foreach (CardModel c in cards)
+        {
+            if (c is MonsterCommandCard mcc)
+                mcc.TryResolveSourceMonsterFromStoredPetId();
+        }
+
         bool changed = forceNotify
                        || !_visibleOptions.TryGetValue(player, out var prev)
                        || !SameOptionOrder(prev, cards);

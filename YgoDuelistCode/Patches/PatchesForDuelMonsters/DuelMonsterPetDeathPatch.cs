@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -57,6 +58,18 @@ public static class DuelMonsterPetDeathPatch
             {
                 GD.Print("[ZGO] DuelMonsterPetDeathPatch: no source card found for pet.");
                 return;
+            }
+
+            try
+            {
+                NetCombatCard nc = NetCombatCard.FromModel(card);
+                GD.Print(
+                    $"[YgoDuelist][MP][DuelDeath] card={card.Id?.Entry} combatCardIdx={nc.CombatCardIndex} ownerNet={player.NetId} petCombatId={pet.CombatId}");
+            }
+            catch (Exception ex)
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][DuelDeath] NetCombatCard missing for source card={card.Id?.Entry} ownerNet={player.NetId} petCombatId={pet.CombatId}: {ex.Message}");
             }
 
             if (card is Burning_Algae)

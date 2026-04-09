@@ -28,6 +28,7 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
     IYgoPrePlayCancelableGridSelection
 {
     private BaseMonsterCard? _equipLinkedMonster;
+    private uint _equipLinkedPetCombatId;
     private BaseMonsterCard? _pendingEquipLinkTarget;
     private bool _fizzleToGraveyard;
 
@@ -52,9 +53,20 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
 
     protected override bool SendsTrapToGraveyardAfterPlay => false;
 
-    public BaseMonsterCard? EquipLinkedMonster => _equipLinkedMonster;
+    public BaseMonsterCard? EquipLinkedMonster
+    {
+        get
+        {
+            YgoSpellTrapEquipLinkRegistry.TryRebindEquipLinkIfNeeded(this);
+            return _equipLinkedMonster;
+        }
+    }
+
+    public uint EquipLinkedPetCombatId => _equipLinkedPetCombatId;
 
     public void SetEquipLinkedMonster(BaseMonsterCard? monster) => _equipLinkedMonster = monster;
+
+    public void SetEquipLinkedPetCombatId(uint petCombatId) => _equipLinkedPetCombatId = petCombatId;
 
     bool IYgoSpellTrapEquipLink.DetachSpellTrapEquipLinkOnSpellTrapZoneToGraveyard => true;
 

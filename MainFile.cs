@@ -35,6 +35,9 @@ public partial class MainFile : Node
         // so no patches from this mod would register. Always scan our assembly explicitly.
         harmony.PatchAll(typeof(MainFile).Assembly);
 
+        // MP: set true while debugging NetCombatCard index desync (very verbose — every combat pile add).
+        // YgoMpNetCardAssignLog.Verbose = true;
+
         YgoMerchantShopBundlePurchasePatch.ApplyMerchantCardEntryPatches(harmony);
 
         MethodInfo? ancientSetInitial = AccessTools.DeclaredMethod(typeof(MegaCrit.Sts2.Core.Models.AncientEventModel), "SetInitialEventState");

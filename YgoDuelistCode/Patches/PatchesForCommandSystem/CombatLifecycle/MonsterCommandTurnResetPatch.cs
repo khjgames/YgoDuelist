@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using HarmonyLib;
+using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -8,6 +9,7 @@ using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -15,7 +17,11 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch(typeof(Hook), nameof(Hook.AfterPlayerTurnStart))]
 public static class MonsterCommandTurnResetPatch
 {
-    // Match Hook.AfterPlayerTurnStart signature and use async void, like Oddmelt.
+    /// <summary>
+    /// Per-turn YGO cleanup for the player whose turn started. Stiff/Fatigue removal must also be reconciled at the
+    /// "After player turn start" checksum — see <see cref="YgoMonsterCommandChecksumReconcile"/> (async void here cannot
+    /// complete before that snapshot; blocking with GetResult() can deadlock PowerCmd on the main thread).
+    /// </summary>
     [HarmonyPostfix]
     public static async void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, Player player)
     {
@@ -28,9 +34,15 @@ public static class MonsterCommandTurnResetPatch
 
         foreach (Creature pet in combatPlayer.PlayerCombatState.Pets)
         {
-            if (MonsterCommandRegistry.TryGet(pet, out _))
+            if (!MonsterCommandRegistry.TryGet(pet, out _))
+                continue;
+
+            bool hadStiffOrFatigue = pet.HasPower<StiffPower>() || pet.HasPower<FatiguePower>();
+            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, false, combatPlayer.Creature, null);
+            if (hadStiffOrFatigue)
             {
-                await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, false, combatPlayer.Creature, null);
+                GD.Print(
+                    $"[YgoDuelist][MP][MonsterCommandTurnReset] hook cleared command lock powers petCombatId={pet.CombatId} netId={combatPlayer.NetId}");
             }
         }
 

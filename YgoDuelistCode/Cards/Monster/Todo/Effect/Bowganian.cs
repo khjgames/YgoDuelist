@@ -43,6 +43,10 @@ public sealed class Bowganian : EffectMonsterCard
         typeof(Bowganian),
     };
 
+    /// <inheritdoc cref="BaseMonsterCard.NonAttackPlayTargetType" />
+    /// Annual effect deals damage to an enemy (target or deterministic).
+    protected override TargetType NonAttackPlayTargetType => TargetType.AnyEnemy;
+
     protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)

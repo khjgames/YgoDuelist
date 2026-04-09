@@ -54,11 +54,14 @@ desc:
 
 Tags: Starter, Spell.
 
+
 id: 16435215
 name: 
     Dragged Down into the Grave - 1(0) cost - Common
 desc:
     Destroy 1 card in your hand, then draw 1 card.
+
+Tags: Starter, Spell.
 
 
 id: 33423043
@@ -78,11 +81,14 @@ desc:
 
 Tags: Starter, Spell.
 
+
 id: 24096228
 name: 
     Double Spell - Uncommon - 1(0) cost
 desc:
     Destroy 1 Spell Card in your hand, then activate 1 Spell card in your Graveyard.
+
+Tags: Starter, Spell.
 
 
 id: 3027001

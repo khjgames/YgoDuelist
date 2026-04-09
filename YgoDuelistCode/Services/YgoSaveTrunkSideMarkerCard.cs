@@ -25,6 +25,13 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
     /// <summary>Clamp for <see cref="OwedRareCardVouchersProp"/> (run state; pack rare IOU).</summary>
     public const int MaxSerializedOwedRareVouchers = 255;
 
+    /// <summary>
+    /// Trunk count is stored in <see cref="SerializableCard.CurrentUpgradeLevel"/> (see
+    /// <c>PlayerToSerializableAppendYgoTrunkSidePatch</c>). Must allow the full serialized range or
+    /// <see cref="CardModel.FromSerializable"/> throws on multiplayer sync / load.
+    /// </summary>
+    public override int MaxUpgradeLevel => MaxSerializedPileCount;
+
     public YgoSaveTrunkSideMarkerCard()
         : base(0, CardType.Skill, CardRarity.Token, TargetType.Self, showInCardLibrary: false, autoAdd: false)
     {

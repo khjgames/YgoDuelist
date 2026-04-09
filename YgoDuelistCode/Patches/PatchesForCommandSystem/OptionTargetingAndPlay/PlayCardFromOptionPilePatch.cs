@@ -17,6 +17,7 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Helpers;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.GameActions;
 using YgoDuelist.YgoDuelistCode.Nodes;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -130,6 +131,8 @@ public static class PlayCardFromOptionPilePatch
         var card = __instance.NetCombatCard.ToCardModel();
         if (card == null)
             return true;
+        if (card is MonsterCommandCard mccPrefix)
+            mccPrefix.TryResolveSourceMonsterFromStoredPetId();
 
         var pile = card.Pile;
         if (pile == null)
@@ -157,16 +160,29 @@ public static class PlayCardFromOptionPilePatch
             bool preparedPreplaySelection = false;
             if (card == null)
             {
-                GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is null, exiting");
+                GD.PrintErr("[YgoDuelist][MP][OptionPile] card is null after NetCombatCard.ToCardModel — Cancel");
+                action.Cancel();
                 return;
             }
             GD.Print("[YgoDuelist] PlayCardFromOptionPile: card=", card.Id.Entry, " type=", card.GetType().Name, " TargetType=", card.TargetType);
+
+            if (card is MonsterCommandCard mccPlay)
+                mccPlay.TryResolveSourceMonsterFromStoredPetId();
 
             var pile = card.Pile;
             var optionPile = YgoCardOptionPile.CustomType.GetPile(action.Player);
             if (pile == null || optionPile == null || pile != optionPile)
             {
-                GD.Print("[YgoDuelist] PlayCardFromOptionPile: card not in option pile, exiting");
+                GD.PrintErr("[YgoDuelist][MP][OptionPile] card left option pile before execute — Cancel");
+                action.Cancel();
+                return;
+            }
+
+            if (card is MonsterCommandCard mccNeedSource && mccNeedSource.SourceMonster == null)
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][OptionPile] MonsterCommandCard SourceMonster null after TryResolve; card={card.Id.Entry} SourcePetCombatId={mccNeedSource.SourcePetCombatId} owner={action.Player?.NetId}");
+                action.Cancel();
                 return;
             }
 
@@ -186,36 +202,36 @@ public static class PlayCardFromOptionPilePatch
             NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
             Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
 
+            if (card is MonsterCommandCard mccResolved)
+            {
+                GD.Print(
+                    $"[YgoDuelist][MP][OptionPile] post-target-resolve card={card.Id.Entry} source={mccResolved.SourceMonster?.Id.Entry} sourcePetId={mccResolved.SourcePetCombatId} actionTargetId={action.TargetId} resolvedTargetCombatId={target?.CombatId}");
+            }
+
             bool needsTarget = card.TargetType == TargetType.AnyEnemy || card.TargetType == TargetType.AnyAlly;
             if (needsTarget && target == null)
             {
-                GD.Print("[YgoDuelist] PlayCardFromOptionPile: card requires target but target is null (TargetId=", action.TargetId, ") - skipping play so card is not consumed");
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][OptionPile] AnyEnemy/AnyAlly requires target but GetCreatureAsync returned null (TargetId={action.TargetId}) — Cancel so queue/state match peers");
                 Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
                 if (preparedPreplaySelection && preplaySource != null)
                 {
                     ActivatedEffectTributeSelectionPayload.ClearForSource(preplaySource);
                     ObeliskActivatedTributePayload.ClearForSource(preplaySource);
                 }
+                action.Cancel();
                 return;
             }
 
-            if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+            if (!card.CanPlay(out UnplayableReason unplayable, out AbstractModel? _) || !card.IsValidTarget(target))
             {
+                GD.Print(
+                    $"[YgoDuelist][MP][OptionPile] unplayable or invalid target card={card?.Id.Entry} unplayable={unplayable} targetCombat={target?.CombatId}");
                 GD.Print("[YgoDuelist] PlayCardFromOptionPile: CanPlay false or invalid target, card=", card?.Id.Entry ?? "null");
-                if (card is Exit_Monster_Options exit)
+                if (card is Exit_Monster_Options or Command_Change_Battle_Position or Toggle_Die_For_You)
                 {
-                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Exit_Monster_Options.OnClickedOption()");
-                    TaskHelper.RunSafely(exit.OnClickedOption());
-                }
-                else if (card is Command_Change_Battle_Position changePos)
-                {
-                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Command_Change_Battle_Position.OnClickedOption()");
-                    TaskHelper.RunSafely(changePos.OnClickedOption(target));
-                }
-                else if (card is Toggle_Die_For_You toggle)
-                {
-                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: running Toggle_Die_For_You.OnClickedOption()");
-                    TaskHelper.RunSafely(toggle.OnClickedOption());
+                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: unplayable menu card — YgoMonsterMenuCommandNetHelper");
+                    YgoMonsterMenuCommandNetHelper.TryEnqueueOrRunLocal(card, target);
                 }
                 else
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is not a known option-pile click handler, skipping OnClickedOption");

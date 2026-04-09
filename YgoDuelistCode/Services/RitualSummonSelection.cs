@@ -271,7 +271,15 @@ public static class RitualSummonSelection
         if (!LevelSumValid(sum, effectiveReq, effectiveCompare))
             return false;
 
-        RitualSpellPlayPayload.SetPending(spell, new RitualSpellPendingResolution(ritualCard, picked));
+        if (!YgoPlayPayloadNetKey.TryGetKey(spell, out ulong ownerNetId, out uint combatIdx))
+        {
+            Godot.GD.PrintErr($"[YgoDuelist][MP] RitualSummonSelection: could not get NetCombatCard key for spell {spell.Id?.Entry}; ritual payload not stored");
+            return false;
+        }
+
+        RitualSpellPlayPayload.SetPending(ownerNetId, combatIdx, new RitualSpellPendingResolution(ritualCard, picked));
+        Godot.GD.Print(
+            $"[YgoDuelist][MP][Ritual] SetPending spell={spell.Id?.Entry} key=({ownerNetId},{combatIdx}) ritual={ritualCard.Id?.Entry} mats={picked.Count}");
         return true;
     }
 

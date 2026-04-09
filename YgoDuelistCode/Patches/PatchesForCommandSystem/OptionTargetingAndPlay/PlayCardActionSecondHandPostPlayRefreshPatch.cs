@@ -2,7 +2,9 @@ using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.GameActions;
+using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -22,7 +24,10 @@ public static class PlayCardActionSecondHandPostPlayRefreshPatch
     private static void CaptureStartPile(PlayCardAction __instance, ref object? __state)
     {
         __state = null;
-        var c = __instance?.NetCombatCard.ToCardModel();
+        CardModel? c = __instance?.NetCombatCard.ToCardModelOrNull();
+        if (c == null && __instance != null)
+            GD.Print(
+                $"[YgoDuelist][MP] PlayCardActionSecondHandPostPlayRefresh: NetCombatCard index {__instance.NetCombatCard.CombatCardIndex} did not resolve (skip spell/trap refresh)");
         if (c?.Pile != null)
             __state = c.Pile.Type;
     }

@@ -5,6 +5,7 @@ using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
@@ -28,6 +29,12 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     private const int RaceKeywordBase = 20000;
 
     public NormalMonsterCard? SourceMonster { get; private set; }
+
+    /// <summary>
+    /// MP: <see cref="SourceMonster"/> is not serialized; stash the field pet's <see cref="Creature.CombatId"/> so peers can
+    /// re-bind via <see cref="TryResolveSourceMonsterFromStoredPetId"/> after replication.
+    /// </summary>
+    public uint SourcePetCombatId { get; private set; }
 
     /// <summary>
     /// Filled by <c>CardPileCmdStampMonsterCommandManualSourcePilePatch</c> from the pile the card was in
@@ -74,12 +81,47 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
         InitializeSource(source);
     }
 
-    public void InitializeSource(NormalMonsterCard source)
+    public void InitializeSource(NormalMonsterCard source, Creature? pet = null)
     {
         SourceMonster = source;
+        if (pet?.CombatId is uint pcid && pcid != 0)
+            SourcePetCombatId = pcid;
+        else
+            SourcePetCombatId = YgoDuelMonsterPetBinding.TryFindPetCombatIdForFieldMonster(source);
         if (MirrorSourceMonsterUpgradeVisual)
             SyncCurrentUpgradeLevelToSourceMonster(source);
         CardModelEnergyCache.Invalidate(this);
+    }
+
+    /// <summary>
+    /// Rebinds <see cref="SourceMonster"/> from <see cref="SourcePetCombatId"/> when the reference was lost (e.g. MP replication).
+    /// </summary>
+    public bool TryResolveSourceMonsterFromStoredPetId()
+    {
+        if (SourceMonster != null)
+            return true;
+        if (SourcePetCombatId == 0)
+            return false;
+        Player? player = Owner;
+        if (player?.PlayerCombatState == null)
+            return false;
+        if (YgoDuelMonsterPetBinding.TryGetFieldMonsterForPetCombatId(player, SourcePetCombatId) is NormalMonsterCard nm)
+        {
+            Creature? pet = null;
+            foreach (Creature p in player.PlayerCombatState.Pets)
+            {
+                if (p.CombatId == SourcePetCombatId)
+                {
+                    pet = p;
+                    break;
+                }
+            }
+
+            InitializeSource(nm, pet);
+            return true;
+        }
+
+        return false;
     }
 
     private void SyncCurrentUpgradeLevelToSourceMonster(NormalMonsterCard source)
@@ -97,14 +139,26 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
 
     public YgoCardType YgoCardType => YgoCardType.Spell;
 
-    public DuelMonsterRace DuelMonsterRace =>
-        SourceMonster?.DuelMonsterRace ?? DuelMonsterRace.Warrior;
+    public DuelMonsterRace DuelMonsterRace
+    {
+        get
+        {
+            TryResolveSourceMonsterFromStoredPetId();
+            return SourceMonster?.DuelMonsterRace ?? DuelMonsterRace.Warrior;
+        }
+    }
 
     // Default to the source monster's portrait if available; otherwise use the generic card back so command cards always have art.
-    public override string PortraitPath =>
-        !string.IsNullOrEmpty(SourceMonster?.PortraitPath)
-            ? SourceMonster.PortraitPath
-            : "card.png".CardImagePath();
+    public override string PortraitPath
+    {
+        get
+        {
+            TryResolveSourceMonsterFromStoredPetId();
+            return !string.IsNullOrEmpty(SourceMonster?.PortraitPath)
+                ? SourceMonster.PortraitPath
+                : "card.png".CardImagePath();
+        }
+    }
 
     // Use the dedicated command card pool so these menu-only commands render in UIs without falling back to MockCardPool.
     public override CardPoolModel VisualCardPool => ModelDb.CardPool<YgoCommandCardPool>();
@@ -120,6 +174,7 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     {
         get
         {
+            TryResolveSourceMonsterFromStoredPetId();
             var source = SourceMonster;
             if (source == null)
                 return base.CanonicalKeywords;
@@ -154,6 +209,7 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     {
         get
         {
+            TryResolveSourceMonsterFromStoredPetId();
             var source = SourceMonster;
             if (source == null)
                 return base.ExtraHoverTips;

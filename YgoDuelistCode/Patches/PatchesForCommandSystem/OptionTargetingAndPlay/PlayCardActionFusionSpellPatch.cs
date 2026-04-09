@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions;
@@ -16,7 +15,12 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
+/// <summary>
+/// Fusion spell: grids for materials run before spend/OnPlay. Must run on <b>every</b> MP peer (see
+/// <see cref="FusionSpellPlayPayload"/> keyed by net combat card id); do not gate on <c>LocalContext.IsMe</c>.
+/// </summary>
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
+[HarmonyPriority(850)]
 public static class PlayCardActionFusionSpellPatch
 {
     private static readonly PropertyInfo? PlayerChoiceContextProp =
@@ -26,16 +30,6 @@ public static class PlayCardActionFusionSpellPatch
     {
         if (!CombatManager.Instance.IsInProgress)
             return true;
-
-        try
-        {
-            if (!LocalContext.IsMe(__instance.Player))
-                return true;
-        }
-        catch
-        {
-            return true;
-        }
 
         CardModel? card = __instance.NetCombatCard.ToCardModel();
         if (card is not FusionSpellCard)
@@ -74,7 +68,7 @@ public static class PlayCardActionFusionSpellPatch
         finally
         {
             FusionSummonSelection.EndCompletingFusionSpellPlay();
-            FusionSpellPlayPayload.ClearForCard(card);
+            FusionSpellPlayPayload.ClearForKey(action.Player.NetId, action.NetCombatCard.CombatCardIndex);
         }
     }
 

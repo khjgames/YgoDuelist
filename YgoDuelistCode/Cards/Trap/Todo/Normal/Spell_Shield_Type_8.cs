@@ -80,7 +80,7 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
         if (!anySpell)
             return null;
 
-        var prefs = new CardSelectorPrefs(SendSpellToGraveyardPrompt, 1, 1)
+        var prefs = new CardSelectorPrefs(SendSpellToGraveyardPrompt, 0, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true,

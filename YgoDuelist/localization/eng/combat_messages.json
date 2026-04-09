@@ -10,7 +10,7 @@
   "DARK_SPIRIT_PICK_DOUBLE_HIT": "Choose a different enemy with an attack intent (that enemy will attack twice).",
   "BURST_STREAM_PICK_BLUE_EYES": "Select a [gold]Blue-Eyes White Dragon[/gold] on your field.",
   "DIFFUSION_WAVE_PICK_SPELLCASTER": "Select a Level 7+ [gold]Spellcaster[/gold] on your field.",
-  "YGODUELIST-NEOW_STARTER_GRID.prompt": "Build your starter deck: choose at least [blue]{MinCount}[/blue] and up to [blue]{MaxCount}[/blue] cards from the grid to add to your deck before Neow's blessing. (When a ritual spell appears, its ritual monster may show as an extra option next to it.)",
+  "YGODUELIST-NEOW_STARTER_GRID.prompt": "Build your starter deck: choose at least [blue]{MinCount}[/blue] cards, the rest go in your trunk.",
   "YGODUELIST-PACK_REWARD_MAP_LABEL": "Draft a pack [{PackSize}] for your deck.",
   "YGODUELIST-PACK_REWARD_DECK.prompt": "Pack opened: choose cards to add to your deck (0–[blue]{MaxCount}[/blue]).",
   "YGODUELIST-PACK_REWARD_SIDE.prompt": "Choose cards for your side deck, the rest go into your trunk. (0–[blue]{MaxCount}[/blue]). Cancel returns to deck selection.",

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -19,6 +20,30 @@ public static class YgoSpellTrapZoneAfterPlayUi
     /// </summary>
     private const double TurnStartSpellTrapSecondHandRefreshDelaySec = 0.05;
 
+    /// <summary>
+    /// Spell/trap zone (and GY) cards use custom <see cref="MegaCrit.Sts2.Core.Entities.Cards.PileType"/> values.
+    /// Vanilla <see cref="NCard.FindOnTable"/> only handles hand/play/etc. and throws on unknown pile kinds, which
+    /// aborts deferred cleanup and leaves play-queue / second-hand <see cref="NCard"/>s stuck (common in MP).
+    /// Same resolution order as option-pile play cleanup (play container, then play queue, then hand/option row).
+    /// </summary>
+    private static NCard? FindNCardForZonePlayCleanup(CardModel card)
+    {
+        NCombatUi? ui = NCombatRoom.Instance?.Ui;
+        if (ui == null)
+            return null;
+
+        NCard? n = ui.GetCardFromPlayContainer(card);
+        if (n != null && GodotObject.IsInstanceValid(n))
+            return n;
+
+        n = NCardPlayQueue.Instance?.GetCardNode(card);
+        if (n != null && GodotObject.IsInstanceValid(n))
+            return n;
+
+        n = NPlayerHand.Instance?.GetCard(card);
+        return n != null && GodotObject.IsInstanceValid(n) ? n : null;
+    }
+
     public static void ScheduleCleanup(Player? player, CardModel? card)
     {
         if (player == null || card == null)
@@ -31,7 +56,7 @@ public static class YgoSpellTrapZoneAfterPlayUi
         SceneTreeTimer timer = tree.CreateTimer(0.0);
         timer.Timeout += () =>
         {
-            NCard? ncard = NCard.FindOnTable(card);
+            NCard? ncard = FindNCardForZonePlayCleanup(card);
             if (ncard != null && GodotObject.IsInstanceValid(ncard))
             {
                 ncard.Visible = false;

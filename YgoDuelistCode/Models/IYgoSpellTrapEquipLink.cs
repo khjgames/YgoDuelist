@@ -11,6 +11,13 @@ public interface IYgoSpellTrapEquipLink
 
     void SetEquipLinkedMonster(BaseMonsterCard? monster);
 
+    /// <summary>
+    /// MP: field monster reference is not serialized; stash the field pet id so equip-link traps can re-bind after state sync.
+    /// </summary>
+    uint EquipLinkedPetCombatId { get; }
+
+    void SetEquipLinkedPetCombatId(uint petCombatId);
+
     /// <summary>When this card moves from the spell/trap zone to the graveyard, remove its registry link (default: true).</summary>
     bool DetachSpellTrapEquipLinkOnSpellTrapZoneToGraveyard => true;
 

@@ -86,7 +86,7 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource
             if (!await FusionSummonSelection.TrySelectFusionResolutionAsync(player, gate))
                 return;
 
-            if (!FusionSpellPlayPayload.TryTakePending(gate, out FusionSpellPendingResolution? pending) || pending == null)
+            if (!FusionSpellPlayPayload.TryTakePendingForCard(gate, out FusionSpellPendingResolution? pending) || pending == null)
                 return;
 
             var ctx = new BlockingPlayerChoiceContext();

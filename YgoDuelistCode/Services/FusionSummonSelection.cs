@@ -263,7 +263,15 @@ public static class FusionSummonSelection
         if (!FusionMaterialSlotMatching.MaterialsMatchSlots(slots, pickedMats))
             return false;
 
-        FusionSpellPlayPayload.SetPending(spellCard, new FusionSpellPendingResolution(fusionCard, pickedMats));
+        if (!YgoPlayPayloadNetKey.TryGetKey(spellCard, out ulong ownerNetId, out uint combatIdx))
+        {
+            Godot.GD.PrintErr($"[YgoDuelist][MP] FusionSummonSelection: could not get NetCombatCard key for spell {spellCard.Id?.Entry}; fusion payload not stored");
+            return false;
+        }
+
+        FusionSpellPlayPayload.SetPending(ownerNetId, combatIdx, new FusionSpellPendingResolution(fusionCard, pickedMats));
+        Godot.GD.Print(
+            $"[YgoDuelist][MP][Fusion] SetPending spell={spellCard.Id?.Entry} key=({ownerNetId},{combatIdx}) fusion={fusionCard.Id?.Entry} mats={pickedMats.Count}");
         return true;
     }
 

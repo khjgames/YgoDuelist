@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
@@ -21,6 +23,20 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 public static class TributeSummonSelection
 {
     private static readonly LocString TributePrompt = new LocString("combat_messages", "TRIBUTE_SUMMON_SELECT");
+
+    /// <summary>
+    /// Hand normal monster with tribute cost uses a cancelable material grid before spend/OnPlay.
+    /// Queue timing: see <see cref="YgoPlayCardQueueDeferral"/>.
+    /// </summary>
+    public static bool IsHandTributeDuelNormalSummonPlay(PlayCardAction action)
+    {
+        if (!CombatManager.Instance.IsInProgress)
+            return false;
+
+        CardModel? card = action.NetCombatCard.ToCardModel();
+        return card is NormalMonsterCard nmc && nmc.CanSummonDuelMonster && nmc.TributeReleaseCount > 0
+            && card.Pile?.Type == PileType.Hand;
+    }
 
     private const int MaxInvalidTributeReselects = 16;
 

@@ -39,29 +39,29 @@ public static class DuelMonsterMonsterOptionsMenu
         var commands = new List<CardModel>();
 
         Command_Defend cmdDefend = combatState.CreateCard<Command_Defend>(player);
-        cmdDefend.InitializeSource(monsterCard);
+        cmdDefend.InitializeSource(monsterCard, pet);
         commands.Add(cmdDefend);
 
         Command_Attack cmdAttack = combatState.CreateCard<Command_Attack>(player);
-        cmdAttack.InitializeSource(monsterCard);
+        cmdAttack.InitializeSource(monsterCard, pet);
         commands.Add(cmdAttack);
 
         Command_Change_Battle_Position changePos = combatState.CreateCard<Command_Change_Battle_Position>(player);
-        changePos.InitializeSource(monsterCard);
+        changePos.InitializeSource(monsterCard, pet);
         commands.Add(changePos);
 
         bool hideDieToggle = MonsterCommandRegistry.TryGet(pet, out var cmdState) && cmdState.DieForYouForced;
         if (!hideDieToggle)
         {
             Toggle_Die_For_You toggle = combatState.CreateCard<Toggle_Die_For_You>(player);
-            toggle.InitializeSource(monsterCard);
+            toggle.InitializeSource(monsterCard, pet);
             commands.Add(toggle);
         }
 
         if (monsterCard is IMonsterActivatedEffect)
         {
             Activate_Effect activate = combatState.CreateCard<Activate_Effect>(player);
-            activate.InitializeSource(monsterCard);
+            activate.InitializeSource(monsterCard, pet);
             commands.Add(activate);
         }
 
@@ -71,13 +71,13 @@ public static class DuelMonsterMonsterOptionsMenu
             {
                 if (extra == null)
                     continue;
-                extra.InitializeSource(monsterCard);
+                extra.InitializeSource(monsterCard, pet);
                 commands.Add(extra);
             }
         }
 
         Exit_Monster_Options exit = combatState.CreateCard<Exit_Monster_Options>(player);
-        exit.InitializeSource(monsterCard);
+        exit.InitializeSource(monsterCard, pet);
         commands.Add(exit);
 
         foreach (var cmd in commands.OfType<MonsterCommandCard>())

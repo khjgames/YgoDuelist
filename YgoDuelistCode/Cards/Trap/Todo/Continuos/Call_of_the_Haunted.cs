@@ -18,6 +18,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapEquipLink, IYgoPrePlayCancelableGridSelection
 {
     private BaseMonsterCard? _equipLinkedMonster;
+    private uint _equipLinkedPetCombatId;
     private BaseMonsterCard? _pendingLinkAfterZone;
 
     public Call_of_the_Haunted()
@@ -39,9 +40,20 @@ public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapE
         typeof(Call_of_the_Haunted),
     };
 
-    public BaseMonsterCard? EquipLinkedMonster => _equipLinkedMonster;
+    public BaseMonsterCard? EquipLinkedMonster
+    {
+        get
+        {
+            YgoSpellTrapEquipLinkRegistry.TryRebindEquipLinkIfNeeded(this);
+            return _equipLinkedMonster;
+        }
+    }
+
+    public uint EquipLinkedPetCombatId => _equipLinkedPetCombatId;
 
     public void SetEquipLinkedMonster(BaseMonsterCard? monster) => _equipLinkedMonster = monster;
+
+    public void SetEquipLinkedPetCombatId(uint petCombatId) => _equipLinkedPetCombatId = petCombatId;
 
     protected override void OnUpgrade()
     {

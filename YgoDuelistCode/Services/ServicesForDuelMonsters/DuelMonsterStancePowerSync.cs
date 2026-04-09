@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Powers;
 
@@ -61,6 +62,54 @@ public static class DuelMonsterStancePowerSync
         await AmazonessSwordsWomanThornsSync.SyncForPetAsync(pet, card, app, src);
 
         DuelMonsterPortraitDecorations.RefreshPet(pet);
+    }
+
+    /// <summary>
+    /// MP checksum / <see cref="MegaCrit.Sts2.Core.Entities.Multiplayer.NetFullCombatState.FromRun"/> only:
+    /// align stance powers on the pet with the field source card without awaiting <see cref="PowerCmd"/> (same race as
+    /// <see cref="RequestSyncIfSummoned"/> completing after the snapshot). Uses <see cref="PowerModel.RemoveInternal"/> /
+    /// <see cref="PowerModel.ApplyInternal"/> like <see cref="MonsterCommandRegistry.ApplyDieForYouSyncForChecksum"/>.
+    /// </summary>
+    public static void ApplyStanceFromSourceCardSyncForChecksum(Creature pet, AbstractMonsterCard card, Creature? applier)
+    {
+        if (CombatManager.Instance?.IsEnding == true || !pet.CanReceivePowers)
+            return;
+
+        Creature? app = applier ?? card.Owner?.Creature;
+        if (app == null)
+            return;
+
+        RemoveStancePowersSyncForChecksum(pet);
+
+        if (card.Type == CardType.Attack)
+            ApplyPowerSyncForChecksum<AttackPositionPower>(pet, app);
+        else
+            ApplyPowerSyncForChecksum<DefensePositionPower>(pet, app);
+
+        if (card.FaceDown)
+            ApplyPowerSyncForChecksum<FaceDownStancePower>(pet, app);
+    }
+
+    private static void RemoveStancePowersSyncForChecksum(Creature pet)
+    {
+        RemovePowerIfPresentSyncForChecksum<AttackPositionPower>(pet);
+        RemovePowerIfPresentSyncForChecksum<DefensePositionPower>(pet);
+        RemovePowerIfPresentSyncForChecksum<FaceDownStancePower>(pet);
+    }
+
+    private static void RemovePowerIfPresentSyncForChecksum<T>(Creature pet) where T : PowerModel
+    {
+        T? power = pet.GetPower<T>();
+        if (power != null)
+            power.RemoveInternal();
+    }
+
+    private static void ApplyPowerSyncForChecksum<T>(Creature pet, Creature applier) where T : PowerModel
+    {
+        PowerModel proto = ModelDb.Power<T>();
+        PowerModel power = proto.ToMutable();
+        power.Applier = applier;
+        power.ApplyInternal(pet, 1m, silent: true);
     }
 
     private static Creature? FindLivePetForCard(Player owner, BaseMonsterCard card)

@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions;
@@ -18,8 +17,10 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// Before spending resources, ritual spells open grids for ritual monster + materials; cancel aborts the play.
+/// Must run on <b>every</b> MP peer (see <see cref="RitualSpellPlayPayload"/> keyed by net combat card id).
 /// </summary>
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
+[HarmonyPriority(850)]
 public static class PlayCardActionRitualSpellPatch
 {
     private static readonly PropertyInfo? PlayerChoiceContextProp =
@@ -29,16 +30,6 @@ public static class PlayCardActionRitualSpellPatch
     {
         if (!CombatManager.Instance.IsInProgress)
             return true;
-
-        try
-        {
-            if (!LocalContext.IsMe(__instance.Player))
-                return true;
-        }
-        catch
-        {
-            return true;
-        }
 
         var card = __instance.NetCombatCard.ToCardModel();
         if (card is not RitualSpellCard)
@@ -77,7 +68,7 @@ public static class PlayCardActionRitualSpellPatch
         finally
         {
             RitualSummonSelection.EndCompletingRitualSpellPlay();
-            RitualSpellPlayPayload.ClearForCard(card);
+            RitualSpellPlayPayload.ClearForKey(action.Player.NetId, action.NetCombatCard.CombatCardIndex);
         }
     }
 

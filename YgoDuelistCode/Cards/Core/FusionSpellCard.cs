@@ -62,7 +62,7 @@ public abstract class FusionSpellCard : BaseSpellCard, IFusionSpellSource
     protected sealed override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner != null
-            && FusionSpellPlayPayload.TryTakePending(this, out FusionSpellPendingResolution? pending)
+            && FusionSpellPlayPayload.TryTakePendingForCard(this, out FusionSpellPendingResolution? pending)
             && pending != null)
         {
             await FusionSummonSelection.ApplyResolvedFusionAsync(Owner, this, pending, choiceContext);

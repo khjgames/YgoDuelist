@@ -76,8 +76,6 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     public bool IsAttackBattlePosition => _displayForm == MonsterDisplayForm.Attack;
 
     public override CardType Type => _displayForm == MonsterDisplayForm.Attack ? CardType.Attack : CardType.Skill;
-    public override TargetType TargetType =>
-        _displayForm == MonsterDisplayForm.Attack ? TargetType.AnyEnemy : TargetType.Self;
 
     public new LocString Description => GetDescriptionLocString();
 

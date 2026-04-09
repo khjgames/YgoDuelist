@@ -18,15 +18,47 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 public abstract class BaseEquipSpellCard : BaseSpellCard
 {
     private BaseMonsterCard? _equippedMonster;
+    private uint _equippedTargetPetCombatId;
+
+    /// <summary>
+    /// MP: the equipped monster reference is not serialized; stash the field pet id so peers can re-bind via
+    /// <see cref="TryResolveEquippedMonsterFromStoredPetId"/> after replication (see <see cref="YgoEquipSpellRegistry.Attach"/>).
+    /// </summary>
+    public uint EquippedTargetPetCombatId => _equippedTargetPetCombatId;
 
     protected BaseEquipSpellCard(int cost, CardRarity rarity, TargetType target)
         : base(cost, rarity, target, DuelMonsterRace.SpellEquip)
     {
     }
 
-    public BaseMonsterCard? EquippedMonster => _equippedMonster;
+    public BaseMonsterCard? EquippedMonster
+    {
+        get
+        {
+            TryResolveEquippedMonsterFromStoredPetId();
+            return _equippedMonster;
+        }
+    }
 
     internal void SetEquippedMonster(BaseMonsterCard? monster) => _equippedMonster = monster;
+
+    internal void SetEquippedTargetPetCombatId(uint petCombatId) => _equippedTargetPetCombatId = petCombatId;
+
+    /// <summary>
+    /// Rebinds from <see cref="EquippedTargetPetCombatId"/> when the equipped monster reference or registry mapping was lost (MP).
+    /// </summary>
+    public bool TryResolveEquippedMonsterFromStoredPetId()
+    {
+        if (Owner?.PlayerCombatState == null)
+            return false;
+        if (EquippedTargetPetCombatId == 0)
+            return _equippedMonster != null;
+        BaseMonsterCard? m = YgoDuelMonsterPetBinding.TryGetFieldMonsterForPetCombatId(Owner, EquippedTargetPetCombatId);
+        if (m == null)
+            return false;
+        YgoEquipSpellRegistry.Attach(this, m);
+        return true;
+    }
 
     public abstract bool CanEquipTo(BaseMonsterCard target);
 

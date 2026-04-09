@@ -219,7 +219,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePending(this, out var pending) || pending == null
+                if (!TributeSummonPlayPayload.TryTakePendingForCard(this, out var pending) || pending == null
                     || !TributeSummonSelection.TributeSelectionMeetsCost(
                         this,
                         Owner,
@@ -227,6 +227,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                         pending.MausoleumHpTributes,
                         pending.MausoleumHpLossTotal))
                 {
+                    if (YgoPlayPayloadNetKey.TryGetKey(this, out ulong kOid, out uint kIdx))
+                        GD.PrintErr(
+                            $"[YgoDuelist][MP][Tribute] OnPlay fallback (no kill/summon): key=({kOid},{kIdx}) card={Id?.Entry} pendingNull={pending == null}");
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
                     if (!ShouldSkipCombatActionAfterSummon(cardPlay))
                     {

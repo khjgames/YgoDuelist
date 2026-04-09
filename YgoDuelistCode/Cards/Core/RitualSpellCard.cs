@@ -84,7 +84,7 @@ public abstract class RitualSpellCard : BaseSpellCard
     protected sealed override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner != null
-            && RitualSpellPlayPayload.TryTakePending(this, out RitualSpellPendingResolution? pending)
+            && RitualSpellPlayPayload.TryTakePendingForCard(this, out RitualSpellPendingResolution? pending)
             && pending != null)
         {
             await RitualSummonSelection.ApplyResolvedRitualAsync(Owner, pending, choiceContext);

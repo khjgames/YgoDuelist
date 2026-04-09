@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -96,6 +98,48 @@ public static class MonsterCommandRegistry
         await PowerCmd.Remove<FatiguePower>(pet);
     }
 
+    /// <summary>
+    /// MP checksum only: same registry fields and Stiff/Fatigue removal as <see cref="SetHasUsedCommandThisTurn"/> (false),
+    /// but uses <see cref="PowerModel.RemoveInternal"/> only. Do not use <see cref="PowerCmd.Remove{T}"/> with
+    /// <c>GetResult()</c> on the main thread — it awaits animation delays and can freeze the process.
+    /// </summary>
+    public static void ResetCommandLockStateSyncForChecksum(Creature pet)
+    {
+        var state = GetOrCreate(pet);
+        state.HasUsedCommandThisTurn = false;
+        state.HasUsedActivatedEffectThisTurn = false;
+        state.HasUsedAttackCommandThisTurn = false;
+        state.HasUsedDefendCommandThisTurn = false;
+
+        RemovePowerIfPresentSyncForChecksum<StiffPower>(pet);
+        RemovePowerIfPresentSyncForChecksum<FatiguePower>(pet);
+    }
+
+    private static void RemovePowerIfPresentSyncForChecksum<T>(Creature pet) where T : PowerModel
+    {
+        T? power = pet.GetPower<T>();
+        if (power != null)
+            power.RemoveInternal();
+    }
+
+    /// <summary>
+    /// MP checksum / <see cref="MegaCrit.Sts2.Core.Entities.Multiplayer.NetFullCombatState.FromRun"/> only:
+    /// align <see cref="DieForYouPower"/> with registry + field card without awaiting <see cref="PowerCmd.Apply"/>,
+    /// which can deadlock when blocked with <c>GetResult()</c> on the main thread.
+    /// </summary>
+    public static void ApplyDieForYouSyncForChecksum(Creature pet, Creature applier, CardModel? sourceCard)
+    {
+        if (CombatManager.Instance?.IsEnding == true || !pet.CanReceivePowers)
+            return;
+        if (pet.HasPower<DieForYouPower>())
+            return;
+
+        PowerModel proto = ModelDb.Power<DieForYouPower>();
+        PowerModel power = proto.ToMutable();
+        power.Applier = applier;
+        power.ApplyInternal(pet, 1m, silent: true);
+    }
+
     public static bool CanUseMonsterAttackCommand(Creature pet, NormalMonsterCard? sourceMonster)
     {
         var state = GetOrCreate(pet);
@@ -185,6 +229,12 @@ public static class MonsterCommandRegistry
         if (forced)
         {
             state.DieForYouEnabled = true;
+            if (CombatManager.Instance?.IsInProgress == true)
+            {
+                GD.Print(
+                    $"[YgoDuelist][MP][DieForYou] SetDieForYouForcedAsync apply playerNetId={player.NetId} petCombatId={pet.CombatId} source={sourceCard?.Id?.Entry}");
+            }
+
             await PowerCmd.Apply<DieForYouPower>(pet, 1m, player.Creature, sourceCard);
         }
         else

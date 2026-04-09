@@ -60,6 +60,19 @@ public static class YgoSpellTrapZoneBridge
             .OrderByDescending(IsFieldSpell)
             .ToList();
 
+        foreach (CardModel c in ordered)
+        {
+            switch (c)
+            {
+                case BaseEquipSpellCard eq:
+                    eq.TryResolveEquippedMonsterFromStoredPetId();
+                    break;
+                case IYgoSpellTrapEquipLink:
+                    YgoSpellTrapEquipLinkRegistry.TryRebindEquipLinkIfNeeded(c);
+                    break;
+            }
+        }
+
         bool notifyUi = forceNotify
                         || !VisibleCardsByPlayer.TryGetValue(player, out var prevVisible)
                         || !SameVisibleOrder(prevVisible, ordered);

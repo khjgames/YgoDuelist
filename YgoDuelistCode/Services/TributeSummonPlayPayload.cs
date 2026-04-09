@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
 
@@ -23,37 +22,50 @@ public sealed class TributeSummonPendingResolution
 
 /// <summary>
 /// Holds tribute <see cref="Creature"/> pets chosen in the selection UI for the next
-/// <see cref="YgoDuelist.YgoDuelistCode.Cards.Core.NormalMonsterCard.OnPlay"/> of this card instance.
+/// <see cref="YgoDuelist.YgoDuelistCode.Cards.Core.NormalMonsterCard.OnPlay"/> of this play.
+/// Keyed by owner net id + combat card index (<see cref="YgoPlayPayloadNetKey"/>) so host and clients resolve the same entry.
 /// </summary>
 public static class TributeSummonPlayPayload
 {
-    private static readonly Dictionary<CardModel, TributeSummonPendingResolution> Pending = new();
+    private static readonly Dictionary<(ulong OwnerNetId, uint CombatCardIndex), TributeSummonPendingResolution> Pending = new();
     private static readonly object Gate = new();
 
-    public static void SetPending(CardModel card, TributeSummonPendingResolution resolution)
+    public static void SetPending(ulong ownerNetId, uint combatCardIndex, TributeSummonPendingResolution resolution)
     {
         lock (Gate)
-            Pending[card] = resolution;
+            Pending[(ownerNetId, combatCardIndex)] = resolution;
     }
 
-    /// <summary>Removes and returns pending tributes for <paramref name="card"/>, if any.</summary>
-    public static bool TryTakePending(CardModel card, out TributeSummonPendingResolution? resolution)
+    /// <summary>Removes and returns pending tributes for the given net card key, if any.</summary>
+    public static bool TryTakePending(ulong ownerNetId, uint combatCardIndex, out TributeSummonPendingResolution? resolution)
     {
         lock (Gate)
         {
-            if (!Pending.TryGetValue(card, out resolution))
+            if (!Pending.TryGetValue((ownerNetId, combatCardIndex), out resolution))
                 return false;
-            Pending.Remove(card);
+            Pending.Remove((ownerNetId, combatCardIndex));
             return true;
         }
     }
 
+    /// <summary>Same as <see cref="TryTakePending(ulong, uint, out TributeSummonPendingResolution?)"/> using <see cref="YgoPlayPayloadNetKey.TryGetKey"/>.</summary>
+    public static bool TryTakePendingForCard(CardModel card, out TributeSummonPendingResolution? resolution)
+    {
+        resolution = null;
+        return YgoPlayPayloadNetKey.TryGetKey(card, out ulong oid, out uint idx) && TryTakePending(oid, idx, out resolution);
+    }
+
+    public static void ClearForKey(ulong ownerNetId, uint combatCardIndex)
+    {
+        lock (Gate)
+            Pending.Remove((ownerNetId, combatCardIndex));
+    }
+
     public static void ClearForCard(CardModel? card)
     {
-        if (card == null)
+        if (card == null || !YgoPlayPayloadNetKey.TryGetKey(card, out ulong oid, out uint idx))
             return;
-        lock (Gate)
-            Pending.Remove(card);
+        ClearForKey(oid, idx);
     }
 
     public static void ClearAll()

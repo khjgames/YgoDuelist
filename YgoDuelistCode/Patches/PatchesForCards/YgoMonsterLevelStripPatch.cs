@@ -452,14 +452,18 @@ public static class YgoMonsterLevelStripPatch
             return true;
         }
 
-        if (model is MonsterCommandCard cmd && cmd.SourceMonster != null)
+        if (model is MonsterCommandCard cmd)
         {
-            var src = cmd.SourceMonster;
-            attribute = src.DuelMonsterAttribute;
-            race = src.DuelMonsterRace;
-            level = src.GetEffectiveDuelMonsterLevel();
-            useFaceDownStrip = false;
-            return true;
+            cmd.TryResolveSourceMonsterFromStoredPetId();
+            if (cmd.SourceMonster != null)
+            {
+                var src = cmd.SourceMonster;
+                attribute = src.DuelMonsterAttribute;
+                race = src.DuelMonsterRace;
+                level = src.GetEffectiveDuelMonsterLevel();
+                useFaceDownStrip = false;
+                return true;
+            }
         }
 
         attribute = DuelMonsterAttribute.Earth;
