@@ -4,42 +4,40 @@ using MegaCrit.Sts2.Core.Entities.Players;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Per–rest-site bonus YGO deck edits: 4 on each campfire visit, +6 when choosing Deck Revamp (paid option).
+/// Per–rest-site YGO deck edits at the campfire: 3 “store to trunk” and 3 “put in deck” actions (separate pools).
 /// </summary>
 public static class YgoCampfireDeckEditCharges
 {
-    public const int FreeActionsPerRestVisit = 4;
+    public const int StoreTrunkPerVisit = 3;
 
-    public const int DeckRevampBonusActions = 6;
+    public const int PutInDeckPerVisit = 3;
 
-    private static readonly ConditionalWeakTable<Player, StrongBox<int>> Table = new();
+    private sealed class ChargeState
+    {
+        public int StoreTrunk;
+        public int PutInDeck;
+    }
+
+    private static readonly ConditionalWeakTable<Player, ChargeState> Table = new();
 
     public static void ResetForRestVisit(Player player)
     {
         if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
             return;
 
-        StrongBox<int> box = Table.GetValue(player, static _ => new StrongBox<int>(0));
-        box.Value = FreeActionsPerRestVisit;
+        ChargeState state = Table.GetValue(player, static _ => new ChargeState());
+        state.StoreTrunk = StoreTrunkPerVisit;
+        state.PutInDeck = PutInDeckPerVisit;
     }
 
-    public static void GrantDeckRevampBonus(Player player)
-    {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
-            return;
+    public static int GetStoreRemaining(Player player) =>
+        Table.TryGetValue(player, out ChargeState? s) ? s.StoreTrunk : 0;
 
-        StrongBox<int> box = Table.GetValue(player, static _ => new StrongBox<int>(0));
-        box.Value += DeckRevampBonusActions;
-    }
-
-    public static int GetRemaining(Player player)
-    {
-        return Table.TryGetValue(player, out StrongBox<int>? box) ? box.Value : 0;
-    }
+    public static int GetPutInDeckRemaining(Player player) =>
+        Table.TryGetValue(player, out ChargeState? s) ? s.PutInDeck : 0;
 
     /// <summary>
     /// If charges were never initialized for this player (ordering edge case before <see cref="ResetForRestVisit"/>), grant the standard visit allowance.
-    /// Does not reset an existing entry (preserves spent bonus edits).
     /// </summary>
     public static void EnsureInitializedForRestSiteUi(Player player)
     {
@@ -50,21 +48,19 @@ public static class YgoCampfireDeckEditCharges
         ResetForRestVisit(player);
     }
 
-    public static bool TryConsumeOne(Player player)
+    public static void ConsumeStore(Player player, int amount)
     {
-        if (!Table.TryGetValue(player, out StrongBox<int>? box) || box.Value <= 0)
-            return false;
-
-        box.Value--;
-        return true;
+        if (amount <= 0 || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+            return;
+        ChargeState state = Table.GetValue(player, static _ => new ChargeState());
+        state.StoreTrunk = Math.Max(0, state.StoreTrunk - amount);
     }
 
-    public static void RefundOne(Player player)
+    public static void ConsumePutInDeck(Player player, int amount)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (amount <= 0 || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
             return;
-
-        StrongBox<int> box = Table.GetValue(player, static _ => new StrongBox<int>(0));
-        box.Value++;
+        ChargeState state = Table.GetValue(player, static _ => new ChargeState());
+        state.PutInDeck = Math.Max(0, state.PutInDeck - amount);
     }
 }

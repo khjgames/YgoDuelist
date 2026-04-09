@@ -13,7 +13,7 @@ public sealed class Iron_Blacksmith_Kotetsu : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
@@ -37,5 +37,9 @@ public sealed class Iron_Blacksmith_Kotetsu : EffectMonsterCard
     {
         typeof(Iron_Blacksmith_Kotetsu),
     };
+
+    /// <summary>Upgrade: −1 energy to play in attack stance and in defense stance (summon / Command Attack / Command Defend).</summary>
+    public override int GetDuelMonsterPlayEnergyDiscount() =>
+        IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None ? 1 : 0;
 
 }

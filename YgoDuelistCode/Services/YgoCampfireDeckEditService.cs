@@ -14,7 +14,7 @@ using YgoDuelist.YgoDuelistCode.Relics;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Replace / add / remove flows for bonus campfire YGO deck edits (max deck = min(2× minimum, 99)).
+/// Campfire deck edits: move 1–3 YGO cards from deck to trunk, or from the side deck into the deck (max deck = min(2× minimum, 99)).
 /// </summary>
 public static class YgoCampfireDeckEditService
 {
@@ -24,14 +24,32 @@ public static class YgoCampfireDeckEditService
     public static int GetDeckCap(Player player) =>
         Math.Min(YgoPlayerMinimumDeck.Get(player) * 2, 99);
 
-    public static async Task RunRemoveAsync(Player player)
+    /// <summary>
+    /// How many cards can still be removed from the deck without going below the run minimum (same cap as the store-to-trunk picker).
+    /// </summary>
+    public static int GetMaxRemovableFromDeck(Player player)
     {
-        if (!YgoCampfireDeckEditCharges.TryConsumeOne(player))
+        int minDeck = YgoPlayerMinimumDeck.Get(player);
+        return Math.Max(0, player.Deck.Cards.Count - minDeck);
+    }
+
+    public static async Task RunStoreToTrunkAsync(Player player)
+    {
+        YgoCampfireDeckEditCharges.EnsureInitializedForRestSiteUi(player);
+        int minDeck = YgoPlayerMinimumDeck.Get(player);
+        if (player.Deck.Cards.Count <= minDeck)
+            return;
+
+        int storeRem = YgoCampfireDeckEditCharges.GetStoreRemaining(player);
+        int maxRemovable = GetMaxRemovableFromDeck(player);
+        int maxPick = Math.Min(Math.Min(3, storeRem), maxRemovable);
+        if (maxPick < 1)
             return;
 
         var prefs = new CardSelectorPrefs(
-            new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_REMOVE.prompt"),
-            1)
+            new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_STORE.prompt"),
+            1,
+            maxPick)
         {
             Cancelable = true,
             RequireManualConfirmation = true
@@ -47,196 +65,91 @@ public static class YgoCampfireDeckEditService
         }
         catch (OperationCanceledException)
         {
-            YgoCampfireDeckEditCharges.RefundOne(player);
             return;
         }
 
         if (picked.Count == 0)
-        {
-            YgoCampfireDeckEditCharges.RefundOne(player);
             return;
+
+        foreach (CardModel card in picked)
+        {
+            await CardPileCmd.RemoveFromDeck(card);
+            PlayerRunTrunk.GetOrCreatePile(player).AddInternal(card, -1, silent: true);
         }
 
-        CardModel removed = picked[0];
-        await CardPileCmd.RemoveFromDeck(removed);
-        PlayerRunTrunk.GetOrCreatePile(player).AddInternal(removed, -1, silent: true);
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
+        YgoCampfireDeckEditCharges.ConsumeStore(player, picked.Count);
     }
 
-    public static async Task RunAddAsync(Player player)
+    public static async Task RunPutInDeckAsync(Player player)
     {
-        if (!YgoCampfireDeckEditCharges.TryConsumeOne(player))
+        YgoCampfireDeckEditCharges.EnsureInitializedForRestSiteUi(player);
+        int putRem = YgoCampfireDeckEditCharges.GetPutInDeckRemaining(player);
+        int deckRoom = GetDeckCap(player) - player.Deck.Cards.Count;
+        int maxPick = Math.Min(Math.Min(3, putRem), deckRoom);
+        if (maxPick < 1)
             return;
-
-        if (player.Deck.Cards.Count >= GetDeckCap(player))
-        {
-            YgoCampfireDeckEditCharges.RefundOne(player);
-            return;
-        }
 
         List<CardModel> grid = BuildPickGrid(player);
         if (grid.Count == 0)
-        {
-            YgoCampfireDeckEditCharges.RefundOne(player);
-            return;
-        }
-
-        CardModel? chosen = null;
-        {
-            var prefs = new CardSelectorPrefs(
-                new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_ADD.prompt"),
-                0,
-                1)
-            {
-                Cancelable = true,
-                RequireManualConfirmation = true
-            };
-
-            List<CardModel> pick;
-            try
-            {
-                pick = (await CardSelectCmd.FromSimpleGrid(
-                    new BlockingPlayerChoiceContext(),
-                    grid,
-                    player,
-                    prefs)).ToList();
-            }
-            catch (OperationCanceledException)
-            {
-                YgoCampfireDeckEditCharges.RefundOne(player);
-                return;
-            }
-
-            if (pick.Count == 0)
-            {
-                YgoCampfireDeckEditCharges.RefundOne(player);
-                return;
-            }
-
-            chosen = pick[0];
-            if (player.Deck.Cards.Count >= GetDeckCap(player))
-            {
-                YgoCampfireDeckEditCharges.RefundOne(player);
-                return;
-            }
-            if (!IsCampfireDeckEditEligible(chosen))
-            {
-                YgoCampfireDeckEditCharges.RefundOne(player);
-                return;
-            }
-
-            DetachFromTrunkOrSideIfNeeded(player, chosen);
-            // Non-null source: Bing Bong only duplicates when source is null; trunk/side use PileType.None + AddInternal so this add would otherwise read as a normal deck gain.
-            await CardPileCmd.Add(chosen, PileType.Deck, source: chosen);
-            TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
-        }
-    }
-
-    public static async Task RunReplaceAsync(Player player)
-    {
-        if (!YgoCampfireDeckEditCharges.TryConsumeOne(player))
             return;
 
-        var prefsOld = new CardSelectorPrefs(
-            new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_REPLACE.pick_old"),
-            1)
+        var prefs = new CardSelectorPrefs(
+            new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_PUT.prompt"),
+            1,
+            maxPick)
         {
             Cancelable = true,
             RequireManualConfirmation = true
         };
 
-        List<CardModel> oldPick;
+        List<CardModel> pick;
         try
         {
-            oldPick = (await CardSelectCmd.FromDeckForRemoval(
+            pick = (await CardSelectCmd.FromSimpleGrid(
+                new BlockingPlayerChoiceContext(),
+                grid,
                 player,
-                prefsOld,
-                IsCampfireDeckEditEligible)).ToList();
+                prefs)).ToList();
         }
         catch (OperationCanceledException)
         {
-            YgoCampfireDeckEditCharges.RefundOne(player);
             return;
         }
 
-        if (oldPick.Count == 0)
-        {
-            YgoCampfireDeckEditCharges.RefundOne(player);
+        if (pick.Count == 0)
             return;
+
+        int added = 0;
+        foreach (CardModel chosen in pick)
+        {
+            if (player.Deck.Cards.Count >= GetDeckCap(player))
+                break;
+            if (!IsCampfireDeckEditEligible(chosen))
+                break;
+
+            DetachFromTrunkOrSideIfNeeded(player, chosen);
+            await CardPileCmd.Add(chosen, PileType.Deck, source: chosen);
+            added++;
         }
 
-        CardModel oldCard = oldPick[0];
-
-        List<CardModel> grid = BuildPickGrid(player);
-        if (grid.Count == 0)
+        if (added > 0)
         {
-            YgoCampfireDeckEditCharges.RefundOne(player);
-            return;
-        }
-
-        CardModel? newCard = null;
-        {
-            var prefsNew = new CardSelectorPrefs(
-                new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_REPLACE.pick_new"),
-                0,
-                1)
-            {
-                Cancelable = true,
-                RequireManualConfirmation = true
-            };
-
-            List<CardModel> newPick;
-            try
-            {
-                newPick = (await CardSelectCmd.FromSimpleGrid(
-                    new BlockingPlayerChoiceContext(),
-                    grid,
-                    player,
-                    prefsNew)).ToList();
-            }
-            catch (OperationCanceledException)
-            {
-                YgoCampfireDeckEditCharges.RefundOne(player);
-                return;
-            }
-
-            if (newPick.Count == 0)
-            {
-                YgoCampfireDeckEditCharges.RefundOne(player);
-                return;
-            }
-
-            newCard = newPick[0];
-            if (!IsCampfireDeckEditEligible(newCard))
-            {
-                YgoCampfireDeckEditCharges.RefundOne(player);
-                return;
-            }
-            YgoDeckRemovalMinTracker.SkipNextRunDeckRemovalMin(oldCard);
-            await CardPileCmd.RemoveFromDeck(oldCard);
-            DetachFromTrunkOrSideIfNeeded(player, newCard);
-            await CardPileCmd.Add(newCard, PileType.Deck, source: newCard);
             TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
+            YgoCampfireDeckEditCharges.ConsumePutInDeck(player, added);
         }
     }
 
     private static List<CardModel> BuildPickGrid(Player player)
     {
         var grid = new List<CardModel>();
-
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
         CardPile side = PlayerRunSideDeck.GetOrCreatePile(player);
-        foreach (CardModel c in trunk.Cards)
-        {
-            if (IsCampfireDeckEditEligible(c))
-                grid.Add(c);
-        }
-
         foreach (CardModel c in side.Cards)
         {
             if (IsCampfireDeckEditEligible(c))
                 grid.Add(c);
         }
+
         return grid;
     }
 
@@ -253,5 +166,4 @@ public static class YgoCampfireDeckEditService
         if (side.Cards.Contains(card))
             side.RemoveInternal(card, silent: true);
     }
-
 }
