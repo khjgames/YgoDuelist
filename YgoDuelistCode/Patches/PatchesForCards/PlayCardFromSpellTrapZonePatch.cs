@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -10,8 +11,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -36,12 +37,23 @@ public static class PlayCardFromSpellTrapZonePatch
         if (card == null)
             return true;
 
-        // Harmony aborts later Prefix patches when one returns false. Fusion/ritual use their own
-        // PlayCardAction.ExecuteAction handlers (selection grids, then vanilla body); they must run instead of this path.
+        // Harmony aborts later Prefix patches when one returns false. Any card with a custom ExecuteAction
+        // (pre-play grids, payloads, then mirrored body) must bypass this shortcut — same idea as fusion/ritual/equip.
         if (card is FusionSpellCard or RitualSpellCard)
             return true;
 
         if (card is BaseEquipSpellCard)
+            return true;
+
+        if (card is IYgoPrePlayCancelableGridSelection)
+            return true;
+
+        if (card is Emergency_Provisions
+            or Riryoku
+            or Secret_Pass_to_the_Treasures
+            or Tailor_of_the_Fickle
+            or Rush_Recklessly
+            or The_Reliable_Guardian)
             return true;
 
         CardPile? pile = card.Pile;
@@ -91,7 +103,9 @@ public static class PlayCardFromSpellTrapZonePatch
             return;
         }
 
-        if (!card.CanPlay(out _, out _) || !IsValidTargetForSpellTrapZonePlay(card, target))
+        bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+        if (!observingOtherPlayer
+            && (!card.CanPlay(out _, out _) || !IsValidTargetForSpellTrapZonePlay(card, target)))
         {
             action.Cancel();
             return;

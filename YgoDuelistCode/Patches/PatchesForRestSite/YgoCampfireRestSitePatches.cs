@@ -19,6 +19,8 @@ public static class YgoRestSiteSynchronizerBeginChargesPatch
         IPlayerCollection coll = Traverse.Create(__instance).Field<IPlayerCollection>("_playerCollection").Value;
         foreach (Player p in coll.Players)
             YgoCampfireDeckEditCharges.ResetForRestVisit(p);
+
+        YgoRestSiteMpHealSync.Register(__instance);
     }
 }
 

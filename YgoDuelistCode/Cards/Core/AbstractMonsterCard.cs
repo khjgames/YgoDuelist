@@ -156,6 +156,39 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         SetDisplayAttackSkill(attackPosition);
 
     /// <summary>
+    /// Multiplayer: apply owner hand battle state deserialized from trailing <c>NetPlayCardAction</c> bits on observing
+    /// peers (replaces inferring stance from <see cref="RegisteredCardType"/> alone).
+    /// </summary>
+    public void ApplyNetworkObserverHandPlayBattleState(
+        bool attackPosition,
+        bool handEffect,
+        bool faceDownValue,
+        bool willSetValue)
+    {
+        if (SupportsHandEffectForm && handEffect)
+        {
+            _displayForm = MonsterDisplayForm.HandEffect;
+            FaceDown = false;
+            WillSet = willSetValue;
+        }
+        else if (attackPosition)
+        {
+            _displayForm = MonsterDisplayForm.Attack;
+            FaceDown = false;
+            WillSet = willSetValue;
+        }
+        else
+        {
+            _displayForm = MonsterDisplayForm.Defense;
+            FaceDown = faceDownValue;
+            WillSet = willSetValue;
+        }
+
+        UpdateFaceDownKeywordFromBool();
+        AfterDisplayFormChanged();
+    }
+
+    /// <summary>
     /// Same position update as <see cref="SetBattlePositionFromDuelCommand"/>, and when the stance actually changes, runs the same hooks as
     /// <see cref="Command.Command_Change_Battle_Position"/> (<see cref="OnSwitchedFromDefenseToAttackFromCommandAsync"/> /
     /// <see cref="OnSwitchedFromAttackToDefenseFromCommandAsync"/>).
@@ -519,7 +552,11 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         }
     }
 
-    public void UpdateFaceDownKeywordFromBool()
+    /// <param name="requestStanceSync">
+    /// When false, only refreshes <see cref="CardModel.Keywords"/> from <see cref="FaceDown"/> (used before MP checksum
+    /// snapshots; stance is reconciled separately in <c>NetFullCombatStateYgoChecksumPatch</c>).
+    /// </param>
+    public void UpdateFaceDownKeywordFromBool(bool requestStanceSync = true)
     {
         if (!IsMutable)
             return;
@@ -529,24 +566,33 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
             AddKeyword(kw);
 
-        DuelMonsterStancePowerSync.RequestSyncIfSummoned(this);
+        if (requestStanceSync)
+            DuelMonsterStancePowerSync.RequestSyncIfSummoned(this);
     }
 
     /// <summary>
     /// Recomputes <see cref="FaceDown"/> from the current display mode and <see cref="WillSet"/>.
     /// Useful after load/deserialize to avoid stale face-down overlays in hand UI.
     /// </summary>
-    public void NormalizeFaceDownStateForCurrentDisplayMode()
+    /// <param name="requestStanceSyncAfterKeyword">Passed to <see cref="UpdateFaceDownKeywordFromBool"/>.</param>
+    /// <param name="preserveExplicitFaceDownWhenAlreadyTrue">
+    /// When true (default), keeps <see cref="FaceDown"/> if already set so field flip/set effects are not cleared.
+    /// When false, always sets <see cref="FaceDown"/> from display mode — used for hand/play piles before MP checksums
+    /// so UI-only stale face-down (keyword 10012) cannot diverge across peers.
+    /// </param>
+    public void NormalizeFaceDownStateForCurrentDisplayMode(
+        bool requestStanceSyncAfterKeyword = true,
+        bool preserveExplicitFaceDownWhenAlreadyTrue = true)
     {
-        // Preserve explicit face-down states (set/flip effects). Only recompute when not already face-down.
-        if (!FaceDown)
+        if (!preserveExplicitFaceDownWhenAlreadyTrue || !FaceDown)
         {
             bool shouldBeFaceDown = _displayForm == MonsterDisplayForm.Defense
                                     && WillSet
                                     && CanUseSetVisualStateInCurrentForm();
             FaceDown = shouldBeFaceDown;
         }
-        UpdateFaceDownKeywordFromBool();
+
+        UpdateFaceDownKeywordFromBool(requestStanceSyncAfterKeyword);
     }
 
     private bool CanUseSetVisualStateInCurrentForm()

@@ -102,8 +102,14 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         && MonsterEnergyCostCalculator.EfficiencyTaxRaisesPlayEnergyUnupgraded(
             _duelMonsterLevel, YgoCardType, BaseDef, isAttackStat: false, DuelMonsterStatsAreUnknown);
 
+    /// <summary>Cost Down and similar: −1 energy for monsters in hand while <see cref="CostDownHandLevelPower"/> is active.</summary>
+    protected int GetCostDownHandPlayEnergyDiscount() =>
+        !IsCanonical && Owner != null && Pile?.Type == PileType.Hand && Owner.Creature?.GetPower<CostDownHandLevelPower>() != null
+            ? CostDownHandLevelPower.HandEnergyDiscount
+            : 0;
+
     /// <summary>Subtracts from attack/defense play energy (e.g. The Legendary Fisherman while Umi is up). Clamped to 0.</summary>
-    public virtual int GetDuelMonsterPlayEnergyDiscount() => 0;
+    public virtual int GetDuelMonsterPlayEnergyDiscount() => GetCostDownHandPlayEnergyDiscount();
 
     /// <summary>Attack-stance discount: <see cref="GetDuelMonsterPlayEnergyDiscount"/> plus face-up equip attack discounts.</summary>
     public virtual int GetDuelMonsterAttackPlayEnergyDiscount() =>
@@ -112,6 +118,32 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Defense-stance discount: <see cref="GetDuelMonsterPlayEnergyDiscount"/> plus face-up equip defense discounts.</summary>
     public virtual int GetDuelMonsterDefensePlayEnergyDiscount() =>
         GetDuelMonsterPlayEnergyDiscount() + SumFaceUpEquipDefenseDiscount() + SumLinkedTrapDefensePlayEnergyDiscount();
+
+    /// <summary>
+    /// Intrinsic discount for field <c>Command_Attack</c> only. The monster may be ATK or DEF on field; default matches
+    /// <see cref="GetDuelMonsterPlayEnergyDiscount"/>. Override when stance-gated hand rules should not hide an upgraded attack discount on Command Attack.
+    /// </summary>
+    public virtual int GetDuelMonsterPlayEnergyDiscountForFieldCommandAttack() =>
+        GetDuelMonsterPlayEnergyDiscount();
+
+    /// <summary>
+    /// Intrinsic discount for field <c>Command_Defend</c> only. Default matches <see cref="GetDuelMonsterPlayEnergyDiscount"/>.
+    /// Override when an attack-only stance bonus must not reduce Command Defend (see Terrorking Archfiend).
+    /// </summary>
+    public virtual int GetDuelMonsterPlayEnergyDiscountForFieldCommandDefend() =>
+        GetDuelMonsterPlayEnergyDiscount();
+
+    /// <summary>Command Attack row: <see cref="GetDuelMonsterPlayEnergyDiscountForFieldCommandAttack"/> plus face-up equip and linked trap attack discounts.</summary>
+    public virtual int GetDuelMonsterAttackPlayEnergyDiscountForFieldCommand() =>
+        GetDuelMonsterPlayEnergyDiscountForFieldCommandAttack()
+        + SumFaceUpEquipAttackDiscount()
+        + SumLinkedTrapAttackPlayEnergyDiscount();
+
+    /// <summary>Command Defend row: <see cref="GetDuelMonsterPlayEnergyDiscountForFieldCommandDefend"/> plus face-up equip and linked trap defense discounts.</summary>
+    public virtual int GetDuelMonsterDefensePlayEnergyDiscountForFieldCommand() =>
+        GetDuelMonsterPlayEnergyDiscountForFieldCommandDefend()
+        + SumFaceUpEquipDefenseDiscount()
+        + SumLinkedTrapDefensePlayEnergyDiscount();
 
     /// <summary>Intrinsic reckless self-hit before each attack or block (normal line: level 3+ = 1).</summary>
     public virtual int GetIntrinsicRecklessCombatSelfDamage() => 0;
@@ -322,13 +354,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         atk += secAtk;
         def += secDef;
 
-        StatEffectTotalMultiplier selfMult = GetSelfStatMultiplier();
-        if (selfMult.Atk != 1m || selfMult.Def != 1m)
-        {
-            atk = (int)(atk * selfMult.Atk);
-            def = (int)(def * selfMult.Def);
-        }
-
+        // --- Additive phase: all flat ATK/DEF before any multipliers ---
         if (fieldMonsters != null)
         {
             foreach (BaseMonsterCard? source in fieldMonsters)
@@ -363,6 +389,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         WingedMinionTributeAtkPower? wingedTribute = GetSourcePetWingedMinionTributeAtkPower();
         if (wingedTribute != null)
             atk += (int)wingedTribute.Amount;
+        atk += GetSourcePetSevenWeaponsAtkBonus();
         if (SourcePetHasPower<ReliableDefenderPower>())
             def += ReliableDefenderPower.DefBonus;
 
@@ -402,16 +429,28 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
                 def += ee.BonusDef;
             }
 
+            foreach (BaseContinuousSpellCard continuous in YgoFieldSpellStatAggregator.GetActiveFaceUpContinuousSpells(Owner))
+            {
+                StatEffectTotal ce = continuous.GetContinuousStatEffect(this);
+                atk += ce.BonusAtk;
+                def += ce.BonusDef;
+            }
+        }
+
+        // --- Multiplicative phase: self, equips, equip-link traps, Limiter Removal (product then one truncate) ---
+        StatEffectTotalMultiplier multAtkDef = GetSelfStatMultiplier();
+        decimal factorAtk = multAtkDef.Atk;
+        decimal factorDef = multAtkDef.Def;
+
+        if (!IsCanonical && Owner != null)
+        {
             foreach (BaseEquipSpellCard equip in YgoEquipSpellRegistry.GetEquipsForMonster(this))
             {
                 if (equip.Pile?.Type != SpellTrapZonePile.CustomType || equip.FaceDown)
                     continue;
                 StatEffectTotalMultiplier em = equip.GetEquipStatMultiplier(this);
-                if (em.Atk != 1m || em.Def != 1m)
-                {
-                    atk = (int)(atk * em.Atk);
-                    def = (int)(def * em.Def);
-                }
+                factorAtk *= em.Atk;
+                factorDef *= em.Def;
             }
 
             foreach (CardModel trap in YgoSpellTrapEquipLinkRegistry.GetLinkedTrapsForMonster(this))
@@ -419,18 +458,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
                 if (trap is not IYgoSpellTrapEquipLinkStatEffect fx || !fx.IsSpellTrapEquipLinkStatEffectActive)
                     continue;
                 StatEffectTotalMultiplier tm = fx.GetSpellTrapEquipLinkStatMultiplier();
-                if (tm.Atk != 1m || tm.Def != 1m)
-                {
-                    atk = (int)(atk * tm.Atk);
-                    def = (int)(def * tm.Def);
-                }
-            }
-
-            foreach (BaseContinuousSpellCard continuous in YgoFieldSpellStatAggregator.GetActiveFaceUpContinuousSpells(Owner))
-            {
-                StatEffectTotal ce = continuous.GetContinuousStatEffect(this);
-                atk += ce.BonusAtk;
-                def += ce.BonusDef;
+                factorAtk *= tm.Atk;
+                factorDef *= tm.Def;
             }
 
             if (DuelMonsterRace == DuelMonsterRace.Machine && Owner.Creature != null)
@@ -439,11 +468,14 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
                 if (limiter != null)
                 {
                     StatEffectTotalMultiplier mult = limiter.MachineDuelMonsterStatMultiplier;
-                    atk = (int)(atk * mult.Atk);
-                    def = (int)(def * mult.Def);
+                    factorAtk *= mult.Atk;
+                    factorDef *= mult.Def;
                 }
             }
         }
+
+        atk = (int)(atk * factorAtk);
+        def = (int)(def * factorDef);
 
         // Clamp like the Java version (0..9999).
         if (atk < 0) atk = 0;
@@ -632,6 +664,26 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         }
 
         return null;
+    }
+
+    /// <summary><see cref="SevenWeaponsPower"/> / <see cref="SevenWeaponsPlusPower"/> ATK while at max stacks (any source that applies these powers).</summary>
+    private int GetSourcePetSevenWeaponsAtkBonus()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return 0;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            if (pet.GetPower<SevenWeaponsPlusPower>() is { } plus)
+                return plus.GetDuelMonsterAtkBonusFromStacks();
+            if (pet.GetPower<SevenWeaponsPower>() is { } sw)
+                return sw.GetDuelMonsterAtkBonusFromStacks();
+            return 0;
+        }
+
+        return 0;
     }
 
     private int SumFaceUpEquipAttackDiscount()

@@ -8,12 +8,14 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -59,7 +61,18 @@ public sealed class TypeZeroMagicCrusherFieldPower : YgoDuelistPower
                 Cancelable = true
             };
 
-            var pick = await CardSelectCmd.FromHand(choiceContext, player, prefs, IsSpellInHand, this);
+            List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsSpellInHand, null);
+            if (candidates.Count == 0)
+                continue;
+
+            var pick = await TributeSummonGridSelect.FromSimpleGrid(
+                choiceContext,
+                candidates,
+                player,
+                prefs,
+                rebuildCanonicalForRemoteApply: () =>
+                    TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsSpellInHand, null),
+                PlayerChoiceOptions.None);
             CardModel? spell = pick.FirstOrDefault();
             if (spell == null)
                 continue;

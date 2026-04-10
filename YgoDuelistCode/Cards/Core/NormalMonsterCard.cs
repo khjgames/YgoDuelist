@@ -5,6 +5,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -219,7 +220,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePendingForCard(this, out var pending) || pending == null
+                if (!TributeSummonPlayPayload.TryTakePendingForManualPlay(choiceContext, this, out var pending) || pending == null
                     || !TributeSummonSelection.TributeSelectionMeetsCost(
                         this,
                         Owner,

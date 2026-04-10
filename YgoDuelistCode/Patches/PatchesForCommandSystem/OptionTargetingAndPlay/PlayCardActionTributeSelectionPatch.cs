@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions;
@@ -95,7 +96,8 @@ public static class PlayCardActionTributeSelectionPatch
             Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
         }
 
-        if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+        bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+        if (!observingOtherPlayer && (!card.CanPlay(out _, out _) || !card.IsValidTarget(target)))
         {
             action.Cancel();
             return;

@@ -7,19 +7,21 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Cost_Down : BaseSpellCard
 {
     public Cost_Down()
-        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
@@ -43,24 +45,32 @@ public sealed class Cost_Down : BaseSpellCard
 
         await SendHandCardToGraveyard(choiceContext, Owner, toDestroy);
         await PowerCmd.Apply<CostDownHandLevelPower>(Owner.Creature, 1m, Owner.Creature, this);
+        CardModelEnergyCache.InvalidateHandMonstersEnergy(Owner);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 
     private async Task<CardModel?> ChooseOtherHandCardToDestroy(PlayerChoiceContext choiceContext)
     {
+        var hand = PileType.Hand.GetPile(Owner!);
+        if (hand == null)
+            return null;
+
+        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner!, null, this);
+
         var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = false
         };
 
-        var selected = await CardSelectCmd.FromHand(
+        var selected = await TributeSummonGridSelect.FromSimpleGrid(
             choiceContext,
+            candidates,
             Owner!,
             prefs,
-            c => !ReferenceEquals(c, this),
-            this);
+            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner!, null, this),
+            PlayerChoiceOptions.CancelPlayCardActions);
 
         return selected.FirstOrDefault();
     }

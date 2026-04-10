@@ -1,9 +1,11 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Logging;
@@ -18,9 +20,10 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// <summary>
 /// Fusion spell: grids for materials run before spend/OnPlay. Must run on <b>every</b> MP peer (see
 /// <see cref="FusionSpellPlayPayload"/> keyed by net combat card id); do not gate on <c>LocalContext.IsMe</c>.
+/// Priority is before <see cref="PlayCardFromOptionPilePatch"/> so fusion spells in the second-hand row still run prep on every peer.
 /// </summary>
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
-[HarmonyPriority(850)]
+[HarmonyPriority(-1000)]
 public static class PlayCardActionFusionSpellPatch
 {
     private static readonly PropertyInfo? PlayerChoiceContextProp =
@@ -37,8 +40,15 @@ public static class PlayCardActionFusionSpellPatch
 
         bool fromHand = card.Pile?.Type == PileType.Hand;
         bool fromSpellTrapZone = card.Pile?.Type == SpellTrapZonePile.CustomType;
-        if (!fromHand && !fromSpellTrapZone)
+        bool fromOptionPile = card.Pile?.Type == YgoCardOptionPile.CustomType;
+        if (!fromHand && !fromSpellTrapZone && !fromOptionPile)
             return true;
+
+        if (fromOptionPile)
+        {
+            Godot.GD.Print(
+                $"[YgoDuelist][MP][Fusion] Prefix: intercept fusion from option pile card={card.Id?.Entry} ownerNet={__instance.Player?.NetId}");
+        }
 
         __result = ExecuteWithFusionAsync(__instance);
         return false;
@@ -84,11 +94,19 @@ public static class PlayCardActionFusionSpellPatch
         bool playedFromSpellTrapZone = card.Pile?.Type == SpellTrapZonePile.CustomType;
 
         CardPile? pile = card.Pile;
-        if (pile == null || (pile.Type != PileType.Hand && pile.Type != SpellTrapZonePile.CustomType))
+        bool pileOk = pile != null
+            && (pile.Type == PileType.Hand
+                || pile.Type == SpellTrapZonePile.CustomType
+                || pile.Type == YgoCardOptionPile.CustomType);
+        if (!pileOk)
         {
             NCardPlayQueue.Instance?.RemoveCardFromQueueForCancellation(action);
             return;
         }
+
+        bool wasFromOptionPile = pile!.Type == YgoCardOptionPile.CustomType;
+        Player? optCleanupPlayer = action.Player;
+        CardModel? optCleanupCard = card;
 
         bool warnMissingTarget = target == null;
         if (warnMissingTarget)
@@ -102,7 +120,8 @@ public static class PlayCardActionFusionSpellPatch
             Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
         }
 
-        if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+        bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+        if (!observingOtherPlayer && (!card.CanPlay(out _, out _) || !card.IsValidTarget(target)))
         {
             action.Cancel();
             if (playedFromSpellTrapZone)
@@ -121,7 +140,15 @@ public static class PlayCardActionFusionSpellPatch
 
         var context = new GameActionPlayerChoiceContext(action);
         PlayerChoiceContextProp?.SetValue(action, context);
-        await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
+        try
+        {
+            await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
+        }
+        finally
+        {
+            if (wasFromOptionPile)
+                PlayCardFromOptionPilePatch.SchedulePostPlayCleanup(optCleanupPlayer, optCleanupCard);
+        }
 
         if (playedFromSpellTrapZone)
             YgoSpellTrapZoneAfterPlayUi.ScheduleCleanup(action.Player, card);

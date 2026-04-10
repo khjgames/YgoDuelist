@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -23,11 +24,21 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 public sealed class The_Law_of_the_Normal : BaseSpellCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[] { new DynamicVar("Mgc", 4m) };
+        new[] { new DynamicVar("Mgc", 1m) };
 
     public The_Law_of_the_Normal()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
+    }
+
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (!base.IsPlayable || Owner?.Creature?.CombatState == null)
+                return false;
+            return AnyEnemyWithAttackIntent(Owner);
+        }
     }
 
     public override YgoCardPackTags PackTags =>
@@ -108,5 +119,17 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
         }
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
+    private static bool AnyEnemyWithAttackIntent(Player player)
+    {
+        Creature? pc = player.Creature;
+        if (pc?.CombatState is not CombatState cs)
+            return false;
+        return cs.HittableEnemies.Any(e => e.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) > 0);
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars["Mgc"].UpgradeValueBy(1m);
+        EnergyCost.UpgradeBy(-1);
+    }
 }

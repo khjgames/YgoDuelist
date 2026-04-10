@@ -21,7 +21,7 @@ public sealed class Mudora : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 15,
             baseDef: 18,
-            baseMgc: 0,
+            baseMgc: 2,
             duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
@@ -49,6 +49,11 @@ public sealed class Mudora : EffectMonsterCard
         int n = GraveyardRelic.GetGraveyardCards(Owner).Count(c =>
             c is BaseMonsterCard m && m.DuelMonsterRace == DuelMonsterRace.Fairy);
 
-        return (2 * n, 0);
+        return ((int)DynamicVars["Mgc"].BaseValue * n, 0);
+    }
+
+    protected override void OnUpgrade(){
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 3m;
     }
 }

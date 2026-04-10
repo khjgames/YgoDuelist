@@ -37,6 +37,12 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Fusion | YgoCardPackTags.Spell | YgoCardPackTags.Banish;
 
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 1.2f;
+
     public override Type[] RelatedCards => new[] { typeof(Fusion_Gate), typeof(Polymerization) };
 
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) => StatEffectTotal.None;

@@ -190,11 +190,12 @@ public static class RitualSummonSelection
     {
         var ctx = new BlockingPlayerChoiceContext();
 
-        List<RitualMonsterCard> targets = GetRitualTargetsInHand(player, spell);
-        if (targets.Count == 0)
+        List<CardModel> ritualTargetsStable =
+            TributeSummonGridSelect.StabilizeHandPileCandidates(GetRitualTargetsInHand(player, spell));
+        if (ritualTargetsStable.Count == 0)
             return false;
 
-        bool needRitualTargetGrid = spell.RequiresPlayerRitualTargetSelection || targets.Count > 1;
+        bool needRitualTargetGrid = spell.RequiresPlayerRitualTargetSelection || ritualTargetsStable.Count > 1;
 
         RitualMonsterCard ritualCard;
         if (needRitualTargetGrid)
@@ -204,7 +205,13 @@ public static class RitualSummonSelection
             IEnumerable<CardModel> targetPick;
             try
             {
-                targetPick = await CardSelectCmd.FromSimpleGrid(ctx, targets, player, targetPrefs);
+                targetPick = await TributeSummonGridSelect.FromSimpleGrid(
+                    ctx,
+                    ritualTargetsStable,
+                    player,
+                    targetPrefs,
+                    rebuildCanonicalForRemoteApply: () =>
+                        TributeSummonGridSelect.StabilizeHandPileCandidates(GetRitualTargetsInHand(player, spell)));
             }
             catch (OperationCanceledException)
             {
@@ -220,7 +227,9 @@ public static class RitualSummonSelection
         }
         else
         {
-            ritualCard = targets[0];
+            if (ritualTargetsStable[0] is not RitualMonsterCard single)
+                return false;
+            ritualCard = single;
         }
 
         List<BaseMonsterCard> materials = BuildMaterialCandidates(player, spell, ritualCard);
@@ -244,10 +253,19 @@ public static class RitualSummonSelection
             Cancelable = true
         };
 
+        List<CardModel> materialsStable = TributeSummonGridSelect.StabilizeHandPileCandidates(materials);
+
         IEnumerable<CardModel> matPick;
         try
         {
-            matPick = await CardSelectCmd.FromSimpleGrid(ctx, materials, player, matPrefs);
+            matPick = await TributeSummonGridSelect.FromSimpleGrid(
+                ctx,
+                materialsStable,
+                player,
+                matPrefs,
+                rebuildCanonicalForRemoteApply: () =>
+                    TributeSummonGridSelect.StabilizeHandPileCandidates(
+                        BuildMaterialCandidates(player, spell, ritualCard)));
         }
         catch (OperationCanceledException)
         {

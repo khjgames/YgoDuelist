@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -13,6 +13,8 @@ using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
@@ -33,7 +35,9 @@ public static class TributeSummonSelection
         if (!CombatManager.Instance.IsInProgress)
             return false;
 
-        CardModel? card = action.NetCombatCard.ToCardModel();
+        CardModel? card = action.NetCombatCard.ToCardModelOrNull();
+        if (card == null)
+            return false;
         return card is NormalMonsterCard nmc && nmc.CanSummonDuelMonster && nmc.TributeReleaseCount > 0
             && card.Pile?.Type == PileType.Hand;
     }
@@ -140,11 +144,13 @@ public static class TributeSummonSelection
         IEnumerable<CardModel> selected;
         try
         {
-            selected = await CardSelectCmd.FromSimpleGrid(
+            selected = await TributeSummonGridSelect.FromSimpleGrid(
                 new BlockingPlayerChoiceContext(),
                 candidates,
                 player,
-                prefs);
+                prefs,
+                rebuildCanonicalForRemoteApply: () =>
+                    BuildTributeSelectionCandidates(player, summonCard, need).Cast<CardModel>().ToList());
         }
         catch (OperationCanceledException)
         {
@@ -193,6 +199,7 @@ public static class TributeSummonSelection
             for (int i = 0; i < 3 && i < need; i++)
             {
                 var option = player.Creature.CombatState.CreateCard<Mausoleum_Lose_HP>(player);
+                option.MausoleumGridSlot = i;
                 if (summonCard is NormalMonsterCard normalSource)
                     option.InitializeSource(normalSource);
                 if (upgradedOptions)
@@ -201,7 +208,30 @@ public static class TributeSummonSelection
             }
         }
 
+        StabilizeFullTributeCandidateList(candidates);
         return candidates;
+    }
+
+    /// <summary>
+    /// Field monsters are already sorted; Mausoleum rows must have a fixed order on every peer for
+    /// <see cref="TributeSummonGridSelect"/> index sync.
+    /// </summary>
+    private static void StabilizeFullTributeCandidateList(List<CardModel> candidates)
+    {
+        var field = new List<CardModel>();
+        var hp = new List<Mausoleum_Lose_HP>();
+        foreach (CardModel c in candidates)
+        {
+            if (c is Mausoleum_Lose_HP m)
+                hp.Add(m);
+            else
+                field.Add(c);
+        }
+
+        hp.Sort((a, b) => a.MausoleumGridSlot.CompareTo(b.MausoleumGridSlot));
+        candidates.Clear();
+        candidates.AddRange(field);
+        candidates.AddRange(hp);
     }
 
     private static int MinFieldPetsNeededToPayTributeWithMausoleum(
@@ -308,7 +338,11 @@ public static class TributeSummonSelection
         return n;
     }
 
-    /// <summary>Source cards for each tributable field monster, in pet iteration order.</summary>
+    /// <summary>
+    /// Source cards for each tributable field monster. Sorted by <see cref="NetCombatCardDb.GetCardId"/> (then card id entry)
+    /// so the tribute grid order matches on host and observers. <see cref="Creature.CombatId"/> order can differ across peers
+    /// for the same pets; wire indexes must not depend on it.
+    /// </summary>
     public static List<BaseMonsterCard> BuildTributeCandidateCards(Player player)
     {
         var list = new List<BaseMonsterCard>();
@@ -322,6 +356,20 @@ public static class TributeSummonSelection
             BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
             if (c != null)
                 list.Add(c);
+        }
+
+        list.Sort((a, b) =>
+        {
+            uint idA = NetCombatCardDb.Instance.GetCardId(a);
+            uint idB = NetCombatCardDb.Instance.GetCardId(b);
+            int cmp = idA.CompareTo(idB);
+            return cmp != 0 ? cmp : string.CompareOrdinal(a.Id?.Entry ?? "", b.Id?.Entry ?? "");
+        });
+
+        if (TributeSummonGridSelect.VerboseHandGridMpLog && RunManager.Instance.NetService.Type != NetGameType.Singleplayer)
+        {
+            string order = string.Join(",", list.Select(c => $"{NetCombatCardDb.Instance.GetCardId(c)}:{c.Id?.Entry}"));
+            GD.Print($"[YgoDuelist][MP][TributeCandidates] owner={player.NetId} sorted=[{order}]");
         }
 
         return list;
@@ -363,11 +411,13 @@ public static class TributeSummonSelection
         IEnumerable<CardModel> selected;
         try
         {
-            selected = await CardSelectCmd.FromSimpleGrid(
+            selected = await TributeSummonGridSelect.FromSimpleGrid(
                 new BlockingPlayerChoiceContext(),
                 candidates,
                 player,
-                prefs);
+                prefs,
+                rebuildCanonicalForRemoteApply: () =>
+                    BuildTributeCandidateCards(player).Cast<CardModel>().ToList());
         }
         catch (OperationCanceledException)
         {

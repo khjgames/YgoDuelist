@@ -6,12 +6,14 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
@@ -88,12 +90,21 @@ public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
             Cancelable = false
         };
 
-        var selected = await CardSelectCmd.FromHand(
+        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(
+            Owner,
+            c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
+            null);
+
+        var selected = await TributeSummonGridSelect.FromSimpleGrid(
             choiceContext,
+            candidates,
             Owner,
             prefs,
-            c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
-            this);
+            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(
+                Owner,
+                c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
+                null),
+            PlayerChoiceOptions.CancelPlayCardActions);
 
         return selected.FirstOrDefault();
     }

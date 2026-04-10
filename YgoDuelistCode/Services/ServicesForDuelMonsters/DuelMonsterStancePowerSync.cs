@@ -70,9 +70,14 @@ public static class DuelMonsterStancePowerSync
     /// <see cref="RequestSyncIfSummoned"/> completing after the snapshot). Uses <see cref="PowerModel.RemoveInternal"/> /
     /// <see cref="PowerModel.ApplyInternal"/> like <see cref="MonsterCommandRegistry.ApplyDieForYouSyncForChecksum"/>.
     /// </summary>
+    /// <remarks>
+    /// Do not gate on <see cref="Creature.CanReceivePowers"/>: on another player&apos;s client, the summoner&apos;s duel pets
+    /// can be false while still participating in the shared checksum (e.g. after <see cref="Cards.Command.Command_Attack"/>),
+    /// which skipped stance here and caused host vs client hash mismatch on <see cref="Powers.AttackPositionPower"/>.
+    /// </remarks>
     public static void ApplyStanceFromSourceCardSyncForChecksum(Creature pet, AbstractMonsterCard card, Creature? applier)
     {
-        if (CombatManager.Instance?.IsEnding == true || !pet.CanReceivePowers)
+        if (CombatManager.Instance?.IsEnding == true)
             return;
 
         Creature? app = applier ?? card.Owner?.Creature;

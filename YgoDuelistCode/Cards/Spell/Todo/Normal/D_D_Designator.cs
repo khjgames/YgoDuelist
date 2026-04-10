@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -46,18 +47,25 @@ public sealed class D_D_Designator : BaseSpellCard
 
     private async Task<CardModel?> ChooseOtherHandCard(PlayerChoiceContext choiceContext)
     {
+        var hand = PileType.Hand.GetPile(Owner!);
+        if (hand == null)
+            return null;
+
+        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner!, null, this);
+
         var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = false
         };
 
-        var selected = await CardSelectCmd.FromHand(
+        var selected = await TributeSummonGridSelect.FromSimpleGrid(
             choiceContext,
+            candidates,
             Owner!,
             prefs,
-            c => !ReferenceEquals(c, this),
-            this);
+            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner!, null, this),
+            PlayerChoiceOptions.CancelPlayCardActions);
 
         return selected.FirstOrDefault();
     }

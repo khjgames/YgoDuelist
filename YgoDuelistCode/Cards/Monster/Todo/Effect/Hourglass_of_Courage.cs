@@ -1,6 +1,10 @@
 using System;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -66,5 +70,32 @@ public sealed class Hourglass_of_Courage : EffectMonsterCard
         }
 
         return false;
+    }
+
+    /// <summary>When a set Hourglass flips face-up, start the halved-ATK/DEF timer (same power as attack normal summon).</summary>
+    public static void ScheduleApplyHalvePowerAfterFlipFaceUp(Hourglass_of_Courage card)
+    {
+        if (card.Owner?.Creature == null)
+            return;
+        TaskHelper.RunSafely(ApplyHalvePowerAfterFlipFaceUpAsync(card));
+    }
+
+    private static async Task ApplyHalvePowerAfterFlipFaceUpAsync(Hourglass_of_Courage card)
+    {
+        Player? owner = card.Owner;
+        if (owner?.PlayerCombatState == null)
+            return;
+
+        foreach (Creature pet in owner.PlayerCombatState.Pets)
+        {
+            if (!pet.IsAlive)
+                continue;
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != card)
+                continue;
+            if (pet.HasPower<HourglassOfCourageHalvedPower>())
+                return;
+            await PowerCmd.Apply<HourglassOfCourageHalvedPower>(pet, 2m, owner.Creature, card);
+            return;
+        }
     }
 }

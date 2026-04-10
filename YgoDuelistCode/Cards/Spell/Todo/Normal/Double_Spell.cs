@@ -7,11 +7,13 @@ using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Relics;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -41,12 +43,27 @@ public sealed class Double_Spell : BaseSpellCard
             Cancelable = false
         };
 
-        var handPick = await CardSelectCmd.FromHand(
+        CardPile? handForPick = PileType.Hand.GetPile(Owner);
+        if (handForPick == null)
+            return;
+
+        List<CardModel> handCandidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(
+            Owner,
+            c => !ReferenceEquals(c, this) && c is BaseSpellCard,
+            null);
+        if (handCandidates.Count == 0)
+            return;
+
+        var handPick = await TributeSummonGridSelect.FromSimpleGrid(
             choiceContext,
+            handCandidates,
             Owner,
             prefsHand,
-            c => !ReferenceEquals(c, this) && c is BaseSpellCard,
-            this);
+            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(
+                Owner,
+                c => !ReferenceEquals(c, this) && c is BaseSpellCard,
+                null),
+            PlayerChoiceOptions.CancelPlayCardActions);
 
         if (handPick.FirstOrDefault() is not BaseSpellCard toDiscard)
             return;

@@ -9,7 +9,9 @@ using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using YgoChar = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
@@ -25,12 +27,17 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 
 /// <summary>
 /// Vanilla <see cref="NetFullCombatState.FromRun"/> feeds <see cref="ChecksumTracker.GenerateChecksum"/>, which hashes
-/// the raw packet bytes. List iteration order for creatures' powers, choice IDs, players, pile cards, etc. can differ
+/// the raw packet bytes. List iteration order for creatures' powers, players, pile cards, etc. can differ
 /// across peers even when game state matches. YGO also uses custom <see cref="CardPile"/>s that must be included for
 /// Duelist players. This postfix makes serialization order deterministic and appends all relevant YGO combat piles.
 /// <para>
 /// <see cref="MonsterCommandCard"/> in <see cref="YgoCardOptionPile"/> (duel monster menu) are host/local UI and are
 /// omitted from the checksum snapshot so peers agree.
+/// </para>
+/// <para>
+/// <see cref="NetFullCombatState.nextChoiceIds"/> (per-slot <see cref="MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceSynchronizer"/>
+/// counters) can differ between host and client without real gameplay divergence; they are omitted from the MP xxhash in
+/// <see cref="ChecksumTrackerMpStripEphemeralChoiceIdsPatch"/>.
 /// </para>
 /// </summary>
 [HarmonyPatch(typeof(NetFullCombatState), nameof(NetFullCombatState.FromRun))]
@@ -54,6 +61,18 @@ public static class NetFullCombatStateYgoChecksumPatch
     /// <see cref="DuelMonsterStancePowerSync.RequestSyncIfSummoned"/>; reconcile from field cards before snapshot so host/client
     /// match (divergence after e.g. <see cref="Command_Attack"/>).
     /// </para>
+    /// <para>
+    /// Face-down overlay keyword <c>10012</c> on monsters/spells/traps must match <see cref="AbstractMonsterCard.FaceDown"/> /
+    /// trap presentation flags before snapshot; otherwise one peer can still have the keyword in <see cref="CardModel.Keywords"/>
+    /// after a UI tick and diverge at &quot;After player turn start&quot; checksums.
+    /// Hand/play piles force-recompute <see cref="AbstractMonsterCard.FaceDown"/> (do not preserve stale <c>true</c>) so observers
+    /// cannot diverge after hover/set visuals on monsters still in hand.
+    /// </para>
+    /// <para>
+    /// <see cref="YgoDuelistPowerChecksumReconcile.ReconcileAll"/> aligns <see cref="YgoEquipSpellRegistry"/> and
+    /// <see cref="YgoSpellTrapEquipLinkRegistry"/> with zone + pet ids, strips orphan trap-linked powers (e.g. <see cref="SpellbindingCircleTargetPower"/>),
+    /// and invokes <see cref="YgoDuelistPower.ReconcileForMpChecksumSnapshot"/> on every <see cref="YgoDuelistPower"/> instance.
+    /// </para>
     /// </summary>
     [HarmonyPrefix]
     public static void Prefix(IRunState runState, GameAction? justFinishedAction)
@@ -63,8 +82,10 @@ public static class NetFullCombatStateYgoChecksumPatch
 
         try
         {
+            ReconcileFaceDownPresentationBeforeSnapshot(runState);
             ReconcileDuelPetDieForYouBeforeSnapshot(runState);
             ReconcileDuelPetStancePowersBeforeSnapshot(runState);
+            YgoDuelistPowerChecksumReconcile.ReconcileAll(runState, VerboseChecksumLog);
         }
         catch (Exception ex)
         {
@@ -72,20 +93,22 @@ public static class NetFullCombatStateYgoChecksumPatch
         }
     }
 
+    /// <summary>
+    /// <see cref="ChecksumTracker"/> always snapshots via <see cref="NetFullCombatState.FromRun"/> — including map moves,
+    /// events, shops (combat not in progress). Vanilla iterates <see cref="IRunState.Players"/> in collection order, which
+    /// can differ between host and client; we always sort and stabilize serialized lists so the packet hash matches.
+    /// YGO pile appends and face-down reconciles stay combat-only.
+    /// <para>
+    /// Do <b>not</b> sort <see cref="NetFullCombatState.nextChoiceIds"/> by numeric value: indices are player slot indices
+    /// (see <see cref="MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceSynchronizer"/>), and sorting would swap
+    /// counters between players.
+    /// </para>
+    /// </summary>
     public static void Postfix(IRunState runState, GameAction? justFinishedAction, ref NetFullCombatState __result)
     {
-        if (CombatManager.Instance?.IsInProgress != true)
-            return;
+        bool inCombat = CombatManager.Instance?.IsInProgress == true;
 
         List<NetFullCombatState.PlayerState> players = __result.Players;
-        for (int i = 0; i < players.Count; i++)
-        {
-            NetFullCombatState.PlayerState ps = players[i];
-            Player? pl = FindPlayer(runState, ps.playerId);
-            if (pl?.Character is YgoChar)
-                AppendYgoCustomCombatPiles(pl, ref ps);
-            players[i] = ps;
-        }
 
         // Same player ordering on every peer (runState.Players order is not guaranteed to match).
         players.Sort((a, b) => a.playerId.CompareTo(b.playerId));
@@ -93,9 +116,38 @@ public static class NetFullCombatStateYgoChecksumPatch
         for (int i = 0; i < players.Count; i++)
         {
             NetFullCombatState.PlayerState ps = players[i];
+            if (inCombat)
+            {
+                Player? pl = FindPlayer(runState, ps.playerId);
+                if (pl?.Character is YgoChar)
+                    AppendYgoCustomCombatPiles(pl, ref ps);
+            }
+
             StabilizePlayerStateForChecksum(ref ps);
+            StripEphemeralYgoPresentationKeywordsFromChecksumPiles(ref ps);
             players[i] = ps;
         }
+
+        StabilizeCreaturesForChecksum(__result);
+        if (VerboseChecksumLog && inCombat && __result.Creatures is { Count: > 0 })
+        {
+            var crea = __result.Creatures
+                .OrderBy(CreatureSortKeyForLog)
+                .Select(c =>
+                    $"{c.monsterId?.Entry ?? "?"}:{c.currentHp}/{c.maxHp}b{c.block}p{c.powers?.Count ?? 0}");
+            GD.Print($"[YgoDuelist][MP][Checksum][creatures] {string.Join(" | ", crea)}");
+        }
+
+        if (VerboseChecksumLog && !inCombat)
+        {
+            string ch = __result.nextChoiceIds is { Count: > 0 }
+                ? string.Join(",", __result.nextChoiceIds)
+                : "";
+            GD.Print($"[YgoDuelist][MP][Checksum][noncombat] choices=[{ch}] players={players.Count}");
+        }
+
+        if (!inCombat)
+            return;
 
         if (EnableChecksumFingerprintLog)
         {
@@ -108,14 +160,83 @@ public static class NetFullCombatStateYgoChecksumPatch
             }
         }
 
-        StabilizeCreaturesForChecksum(__result);
-        SortNextChoiceIds(__result);
-
         if (VerboseChecksumLog)
         {
             GD.Print(
                 $"[YgoDuelist][MP][Checksum] stabilized: players={__result.Players.Count} creatures={__result.Creatures.Count} choices={__result.nextChoiceIds?.Count ?? 0}");
         }
+    }
+
+    private static void ReconcileFaceDownPresentationBeforeSnapshot(IRunState runState)
+    {
+        int monsters = 0;
+        int traps = 0;
+
+        foreach (Player player in runState.Players)
+        {
+            if (player?.PlayerCombatState == null)
+                continue;
+
+            foreach (CardPile pile in player.PlayerCombatState.AllPiles)
+                ReconcileFaceDownKeywordsOnPileCards(pile, ref monsters, ref traps);
+
+            ReconcileFaceDownOnYgoCustomPiles(player, ref monsters, ref traps);
+        }
+
+        if (VerboseChecksumLog)
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][Checksum] FaceDown keyword reconcile: monsters={monsters} traps={traps}");
+        }
+    }
+
+    /// <summary>Trap face presentation keyword (see <see cref="BaseTrapCard"/>); must never appear on monsters — pooled UI can leave it in <see cref="CardModel.Keywords"/> and diverge checksums (e.g. vs <see cref="AbstractMonsterCard"/> face-down 10012).</summary>
+    private static readonly CardKeyword TrapPresentationKeyword = (CardKeyword)10011;
+
+    private static void ReconcileFaceDownKeywordsOnPileCards(CardPile pile, ref int monsters, ref int traps)
+    {
+        bool handOrPlay = pile.Type == PileType.Hand || pile.Type == PileType.Play;
+        foreach (CardModel card in pile.Cards)
+        {
+            if (card is AbstractMonsterCard amc)
+            {
+                amc.RemoveKeyword(TrapPresentationKeyword);
+                amc.NormalizeFaceDownStateForCurrentDisplayMode(
+                    requestStanceSyncAfterKeyword: false,
+                    preserveExplicitFaceDownWhenAlreadyTrue: !handOrPlay);
+                monsters++;
+            }
+            else if (card is BaseTrapCard btc)
+            {
+                btc.SyncFaceDownPresentationKeyword();
+                traps++;
+            }
+        }
+    }
+
+    private static void ReconcileFaceDownOnYgoCustomPiles(Player player, ref int monsters, ref int traps)
+    {
+        CardPile? opt = YgoCardOptionPile.CustomType.GetPile(player);
+        if (opt != null)
+            ReconcileFaceDownKeywordsOnPileCards(opt, ref monsters, ref traps);
+        CardPile? st = SpellTrapZonePile.CustomType.GetPile(player);
+        if (st != null)
+            ReconcileFaceDownKeywordsOnPileCards(st, ref monsters, ref traps);
+        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        if (gy != null)
+            ReconcileFaceDownKeywordsOnPileCards(gy, ref monsters, ref traps);
+        CardPile? mon = MonsterPile.CustomType.GetPile(player);
+        if (mon != null)
+            ReconcileFaceDownKeywordsOnPileCards(mon, ref monsters, ref traps);
+        CardPile? field = FieldPile.CustomType.GetPile(player);
+        if (field != null)
+            ReconcileFaceDownKeywordsOnPileCards(field, ref monsters, ref traps);
+        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
+        if (extra != null)
+            ReconcileFaceDownKeywordsOnPileCards(extra, ref monsters, ref traps);
+        CardPile? shadow = ShadowRealmPile.CustomType.GetPile(player);
+        if (shadow != null)
+            ReconcileFaceDownKeywordsOnPileCards(shadow, ref monsters, ref traps);
     }
 
     private static void ReconcileDuelPetDieForYouBeforeSnapshot(IRunState runState)
@@ -178,6 +299,7 @@ public static class NetFullCombatStateYgoChecksumPatch
                     continue;
 
                 DuelMonsterStancePowerSync.ApplyStanceFromSourceCardSyncForChecksum(pet, amc, player.Creature);
+                SevenWeaponsHunterState.ApplySyncForChecksumIfHunter(pet, player);
             }
         }
     }
@@ -456,6 +578,47 @@ public static class NetFullCombatStateYgoChecksumPatch
         return s.Replace("\u0001", "\\1").Replace("\u0002", "\\2").Replace("\u0003", "\\3");
     }
 
+    /// <summary>
+    /// Face-down overlay keyword on monsters/traps/spells (see <see cref="AbstractMonsterCard"/>). Snapshot copies
+    /// <see cref="CardModel.Keywords"/> into <see cref="NetFullCombatState.CardState.keywords"/>; observers or
+    /// immutable card instances can skip <see cref="AbstractMonsterCard.UpdateFaceDownKeywordFromBool"/>, leaving 10012
+    /// on one peer but not the other. Strip from checksum bytes only — gameplay uses <see cref="AbstractMonsterCard.FaceDown"/>.
+    /// </summary>
+    private static readonly CardKeyword FaceDownPresentationKeywordChecksum = (CardKeyword)10012;
+
+    private static void StripEphemeralYgoPresentationKeywordsFromChecksumPiles(ref NetFullCombatState.PlayerState ps)
+    {
+        List<NetFullCombatState.CombatPileState> piles = ps.piles;
+        for (int pi = 0; pi < piles.Count; pi++)
+        {
+            NetFullCombatState.CombatPileState pile = piles[pi];
+            List<NetFullCombatState.CardState> cards = pile.cards;
+            for (int ci = 0; ci < cards.Count; ci++)
+            {
+                NetFullCombatState.CardState cs = cards[ci];
+                if (cs.keywords is not { Count: > 0 })
+                    continue;
+
+                List<CardKeyword> filtered = cs.keywords.Where(k => k != FaceDownPresentationKeywordChecksum).ToList();
+                if (filtered.Count == cs.keywords.Count)
+                    continue;
+
+                cs.keywords = filtered.Count == 0 ? null : filtered;
+                cards[ci] = cs;
+            }
+
+            pile.cards = cards;
+            piles[pi] = pile;
+        }
+    }
+
+    private static string CreatureSortKeyForLog(NetFullCombatState.CreatureState c)
+    {
+        string id = c.monsterId?.Entry ?? "";
+        string pid = c.playerId?.ToString() ?? "";
+        return $"{id}\u001f{pid}";
+    }
+
     private static void StabilizeKeywordOrderInPiles(ref NetFullCombatState.PlayerState ps)
     {
         List<NetFullCombatState.CombatPileState> piles = ps.piles;
@@ -504,9 +667,88 @@ public static class NetFullCombatStateYgoChecksumPatch
             $"{c.monsterId?.Entry ?? ""}\u001f{c.playerId?.ToString() ?? ""}\u001f{c.currentHp}\u001f{c.maxHp}\u001f{c.block}\u001f{powers}";
     }
 
-    private static void SortNextChoiceIds(NetFullCombatState state)
+    /// <summary>
+    /// Host detected checksum != client for the same id — print YGO pile fingerprints from the host snapshot.
+    /// </summary>
+    internal static void LogYgoFingerprintsOnHostCompareMismatch(
+        IRunState? runState,
+        NetFullCombatState? hostSnapshot,
+        ulong remoteClientId,
+        uint checksumId,
+        uint hostHash,
+        uint clientHash,
+        string? context)
     {
-        if (state.nextChoiceIds is { Count: > 1 })
-            state.nextChoiceIds.Sort();
+        if (runState == null || hostSnapshot == null)
+            return;
+        if (RunManager.Instance?.NetService.Type != NetGameType.Host)
+            return;
+
+        GD.PrintErr(
+            $"[YgoDuelist][MP][Divergence][HOST] remoteClient={remoteClientId} checksumId={checksumId} hostHash={hostHash} clientHash={clientHash} context={context}");
+        PrintYgoDuelistFingerprintsFromSnapshot(runState, hostSnapshot, "[Divergence][HOST]");
+    }
+
+    /// <summary>
+    /// Client received <see cref="ChecksumTracker"/> divergence — print LOCAL vs packet REMOTE YGO fingerprints for the Duelist.
+    /// </summary>
+    internal static void LogYgoFingerprintsOnClientDivergenceMessage(
+        IRunState? runState,
+        NetFullCombatState? localSnapshot,
+        NetFullCombatState? remoteSnapshot,
+        ulong peerNetId,
+        uint checksumId,
+        uint localHash,
+        uint remoteHash,
+        string? context)
+    {
+        if (runState == null)
+            return;
+        if (RunManager.Instance?.NetService.Type != NetGameType.Client)
+            return;
+
+        GD.PrintErr(
+            $"[YgoDuelist][MP][Divergence][CLIENT] peer={peerNetId} checksumId={checksumId} localHash={localHash} remoteHash={remoteHash} context={context}");
+        GD.PrintErr("[YgoDuelist][MP][Divergence][CLIENT] --- LOCAL snapshot (this peer) YGO fp ---");
+        if (localSnapshot != null)
+            PrintYgoDuelistFingerprintsFromSnapshot(runState, localSnapshot, "[Divergence][CLIENT][local]");
+        GD.PrintErr("[YgoDuelist][MP][Divergence][CLIENT] --- REMOTE snapshot (packet) YGO fp ---");
+        if (remoteSnapshot != null)
+            PrintYgoDuelistFingerprintsFromSnapshot(runState, remoteSnapshot, "[Divergence][CLIENT][remote]");
+    }
+
+    private static void PrintYgoDuelistFingerprintsFromSnapshot(
+        IRunState runState,
+        NetFullCombatState snapshot,
+        string tag)
+    {
+        bool any = false;
+        foreach (Player player in runState.Players)
+        {
+            if (player?.Character is not YgoChar)
+                continue;
+            if (!TryFindPlayerState(snapshot, player.NetId, out NetFullCombatState.PlayerState ps))
+                continue;
+            any = true;
+            GD.PrintErr($"[YgoDuelist][MP]{tag} {BuildYgoPlayerPilesFingerprint(ps)}");
+        }
+
+        if (!any)
+            GD.PrintErr($"[YgoDuelist][MP]{tag} (no YgoDuelist in run — no YGO fp)");
+    }
+
+    private static bool TryFindPlayerState(NetFullCombatState snapshot, ulong netId, out NetFullCombatState.PlayerState ps)
+    {
+        foreach (NetFullCombatState.PlayerState p in snapshot.Players)
+        {
+            if (p.playerId == netId)
+            {
+                ps = p;
+                return true;
+            }
+        }
+
+        ps = default;
+        return false;
     }
 }

@@ -10,6 +10,9 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 /// <summary>Timer for Hourglass of Courage: while present, its source card uses halved ATK/DEF via <c>GetSelfStatMultiplier</c>.</summary>
 public sealed class HourglassOfCourageHalvedPower : YgoDuelistPower
 {
+    /// <summary>Power id does not map to this card’s portrait stem by rule; reuse Hourglass of Courage art.</summary>
+    protected override string? CardPortraitStemOverride => "hourglass_of_courage";
+
     public override PowerType Type => PowerType.Debuff;
 
     public override PowerStackType StackType => PowerStackType.Counter;

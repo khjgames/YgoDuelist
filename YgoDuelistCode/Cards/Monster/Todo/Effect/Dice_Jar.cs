@@ -76,7 +76,7 @@ public sealed class Dice_Jar : EffectMonsterCard
             int tribute = TributeReleaseCount;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePendingForCard(this, out var pending) || pending == null
+                if (!TributeSummonPlayPayload.TryTakePendingForManualPlay(choiceContext, this, out var pending) || pending == null
                     || !TributeSummonSelection.TributeSelectionMeetsCost(
                         this,
                         owner,

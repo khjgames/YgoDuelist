@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 using Godot;
 
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
@@ -16,9 +17,12 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 /// <see cref="NetCombatCard"/>. Vanilla iterates <c>players</c> in run list order; host vs client can use different orders,
 /// so the same uint index can refer to different card instances. <see cref="PlayCardAction"/> then resolves the wrong
 /// card or returns early when the pile is not Hand — a common source of MP desync and checksum mismatch.
-/// After vanilla runs, clear the maps and re-assign ids in a deterministic order: players by <see cref="Player.NetId"/>,
-/// then each pile in <see cref="PlayerCombatState.AllPiles"/> order, then each YGO custom combat pile in a fixed order
-/// (matches checksum snapshot), then each card in pile list order.
+/// After vanilla runs, clear the maps and re-assign ids in a deterministic order: players by run roster slot
+/// (<see cref="MegaCrit.Sts2.Core.Runs.IPlayerCollection.GetPlayerSlotIndex(MegaCrit.Sts2.Core.Entities.Players.Player)"/> —
+/// same order as the hosted run’s player list, not raw NetId order), then each pile in
+/// <see cref="PlayerCombatState.AllPiles"/> order, then each YGO custom combat pile in a fixed order
+/// (matches checksum snapshot), then each card in pile list order. Actual uint values use
+/// <see cref="YgoPerOwnerCombatCardIdAllocator"/> (per-owner bands); this postfix still ensures the same visitation order on every peer.
 /// <para>
 /// Do <b>not</b> clear and re-assign all ids again after combat has started (e.g. on every <c>IdCardIfNecessary</c>).
 /// <see cref="NetCombatCard"/> values are embedded in networked <c>PlayCardAction</c> and other messages; reshuffling
@@ -47,7 +51,11 @@ public static class NetCombatCardDbDeterministicIdsPatch
         cardToId.Clear();
         tr.Field<uint>("_nextId").Value = 0u;
 
-        foreach (Player player in players.OrderBy(p => p.NetId))
+        YgoPerOwnerCombatCardIdAllocator.ResetSequenceCountersOnly();
+
+        foreach (Player player in players
+                     .OrderBy(p => p.RunState.GetPlayerSlotIndex(p))
+                     .ThenBy(p => p.NetId))
         {
             if (player.PlayerCombatState == null)
                 continue;

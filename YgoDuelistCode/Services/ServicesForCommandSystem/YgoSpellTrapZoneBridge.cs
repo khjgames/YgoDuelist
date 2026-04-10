@@ -254,10 +254,14 @@ public static class YgoSpellTrapZoneBridge
             return;
 
         PileType equipFrom = card.Pile?.Type ?? PileType.None;
-        if (equipFrom == PileType.Hand || equipFrom == PileType.Play)
+        bool fromGraveyard = equipFrom == GraveyardPile.CustomType;
+        if (equipFrom == PileType.Hand || equipFrom == PileType.Play || fromGraveyard)
         {
             if (!HasSpaceForSetOrPlay(player, card))
                 return;
+
+            if (fromGraveyard)
+                card.PrepareFaceUpForZoneFromGraveyard();
 
             await CardPileCmd.Add(
                 new[] { card },

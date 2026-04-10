@@ -1,3 +1,4 @@
+using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -17,8 +18,18 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// must skip that early enqueue so the first queue sync matches the real play body (same as vanilla
 /// <see cref="PlayCardAction.ExecuteAction"/> line order).
 /// <para />
+/// MP: use <see cref="MegaCrit.Sts2.Core.Entities.Multiplayer.NetCombatCard.ToCardModelOrNull"/> only — never
+/// <see cref="MegaCrit.Sts2.Core.Entities.Multiplayer.NetCombatCard.ToCardModel"/>. Vanilla
+/// <c>NCardPlayQueue.OnActionEnqueued</c> already uses OrNull + <c>CardModelId</c> fallback; throwing here breaks
+/// observers when <see cref="YgoDuelist.YgoDuelistCode.GameActions.YgoMonsterMenuCommandGameAction"/> (OpenMonsterOptions) is queued ahead of a
+/// <see cref="PlayCardAction"/> whose <see cref="MegaCrit.Sts2.Core.GameActions.Multiplayer.NetCombatCard"/> ids are
+/// not registered until that menu action runs.
+/// <para />
 /// Keep this in sync with Harmony prefixes on <c>PlayCardAction.ExecuteAction</c> that return <c>false</c> and only
 /// call <c>UpdateCardBeforeExecution</c> inside their duplicated vanilla body after user confirmation.
+/// Spell/trap plays from the field also require matching bypass in <c>PlayCardFromSpellTrapZonePatch</c> (priority 900):
+/// implement <see cref="IYgoPrePlayCancelableGridSelection"/> for grid+before-spend flows, or add the card type there
+/// if it uses a dedicated patch (Riryoku, Emergency Provisions, etc.).
 /// Option pile: only the <see cref="Activate_Effect"/> + <see cref="IMonsterActivatedEffectPrePlaySelection"/> path defers
 /// queue (see <c>PlayCardFromOptionPilePatch</c>); do not defer for every option-pile card.
 /// </summary>
@@ -45,9 +56,13 @@ public static class YgoPlayCardQueueDeferral
         if (!CombatManager.Instance.IsInProgress)
             return false;
 
-        CardModel? card = action.NetCombatCard.ToCardModel();
+        CardModel? card = action.NetCombatCard.ToCardModelOrNull();
         if (card == null)
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][Queue][Defer] NetCombatCard index={action.NetCombatCard.CombatCardIndex} not in DB yet (menu/open ordering); defer checks skipped, vanilla OnActionEnqueued uses CardModelId fallback");
             return false;
+        }
 
         Player? player = action.Player;
         if (player != null)
@@ -74,7 +89,10 @@ public static class YgoPlayCardQueueDeferral
             return true;
         }
 
-        bool handOrSpellTrapZone = card.Pile?.Type == PileType.Hand || card.Pile?.Type == SpellTrapZonePile.CustomType;
+        // Second-hand option row uses YgoCardOptionPile — same defer rules as hand/zone for ritual/fusion/equip prep.
+        bool handOrSpellTrapZone = card.Pile?.Type == PileType.Hand
+            || card.Pile?.Type == SpellTrapZonePile.CustomType
+            || card.Pile?.Type == YgoCardOptionPile.CustomType;
         if (!handOrSpellTrapZone)
             return false;
 

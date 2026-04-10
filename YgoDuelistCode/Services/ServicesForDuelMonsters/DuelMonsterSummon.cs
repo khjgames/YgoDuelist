@@ -1,4 +1,3 @@
-using System.Linq;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -13,7 +12,6 @@ using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
-using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -92,7 +90,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         // Track this card as an active field monster for aura/stat calculations and menu commands.
         DuelMonsterFieldRegistry.RegisterSummon(player, card, petCreature);
 
-        if (card is Hourglass_of_Courage && !canAttackThisTurn)
+        // Halved ATK/DEF timer: normal summon in attack (face-up) only — not when set face-down; flip uses YgoMonsterFlipEffectRunner.
+        if (card is Hourglass_of_Courage hoc && !canAttackThisTurn && hoc.Type == CardType.Attack && !hoc.FaceDown)
             await PowerCmd.Apply<HourglassOfCourageHalvedPower>(petCreature, 2m, player.Creature, card);
 
         bool stumblingField = YgoStumblingField.IsActive(player);
@@ -113,12 +112,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
         await DuelMonsterStancePowerSync.SyncForPetAsync(petCreature, card, player.Creature, card);
 
-        if (card is The_Hunter_with_7_Weapons hunterCard)
-        {
-            GraveyardRelic? gy = player.Relics.OfType<GraveyardRelic>().FirstOrDefault();
-            gy?.OnHunterSummonedDuringSevenWeaponsBonus(hunterCard);
-            await GraveyardRelic.SyncSevenWeaponsCounterPetsAsync(player);
-        }
+        if (card is The_Hunter_with_7_Weapons)
+            await SevenWeaponsHunterState.SyncHunterPetsAsync(player);
 
         if (card is Cure_Mermaid cureMermaid)
         {

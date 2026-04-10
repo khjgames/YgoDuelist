@@ -8,10 +8,12 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -61,14 +63,21 @@ public sealed class Yado_Karu : EffectMonsterCard
         if (hand == null || hand.Cards.Count == 0)
             return;
 
-        int maxSelectable = hand.Cards.Count;
+        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, null);
+        int maxSelectable = candidates.Count;
         var prefs = new CardSelectorPrefs(HandToDeckBottomPrompt, 0, maxSelectable)
         {
             RequireManualConfirmation = true,
             Cancelable = true
         };
 
-        IEnumerable<CardModel> picked = await CardSelectCmd.FromHand(choiceContext, player, prefs, filter: null, source: this);
+        IEnumerable<CardModel> picked = await TributeSummonGridSelect.FromSimpleGrid(
+            choiceContext,
+            candidates,
+            player,
+            prefs,
+            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, null),
+            PlayerChoiceOptions.CancelPlayCardActions);
         List<CardModel> ordered = picked.ToList();
         if (ordered.Count == 0)
             return;

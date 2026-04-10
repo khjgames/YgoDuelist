@@ -81,6 +81,10 @@ public sealed class Command_Defend : MonsterCommandCard
         }
 
         await SourceMonster.ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync(choiceContext, player, attackPosition: false);
+
+        if (pet != null && SourceMonster is AbstractMonsterCard amcStance)
+            await DuelMonsterStancePowerSync.SyncForPetAsync(pet, amcStance, player.Creature, SourceMonster);
+
         await SourceMonster.CombatAction(choiceContext, cardPlay);
     }
 

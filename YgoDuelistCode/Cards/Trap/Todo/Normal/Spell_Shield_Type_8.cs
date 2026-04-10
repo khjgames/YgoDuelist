@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -14,6 +15,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
@@ -86,12 +88,21 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
             Cancelable = true,
         };
 
-        var selected = await CardSelectCmd.FromHand(
+        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(
+            player,
+            c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
+            null);
+
+        var selected = await TributeSummonGridSelect.FromSimpleGrid(
             choiceContext,
+            candidates,
             player,
             prefs,
-            c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
-            this);
+            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(
+                player,
+                c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
+                null),
+            PlayerChoiceOptions.CancelPlayCardActions);
 
         return selected.FirstOrDefault();
     }

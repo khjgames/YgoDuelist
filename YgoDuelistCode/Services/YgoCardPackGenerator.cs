@@ -421,7 +421,7 @@ public static class YgoCardPackGenerator
         Dictionary<ModelId, int> relatedBonus)
     {
         const int baseWeight = 20;
-        float w = baseWeight;
+        float w = baseWeight * GetPackWeightMultiplier(model);
         w -= 2 * trunkCounts.GetValueOrDefault(model.Id, 0);
         w = Math.Max(1f, w);
         w += relatedBonus.GetValueOrDefault(model.Id, 0);
@@ -432,6 +432,9 @@ public static class YgoCardPackGenerator
 
         return Math.Max(1f, w);
     }
+
+    private static float GetPackWeightMultiplier(CardModel model) =>
+        model is YgoDuelistCard y ? y.PackWeightMultiplier : 1f;
 
     private static Dictionary<ModelId, int> CountIds(IEnumerable<CardModel> cards)
     {

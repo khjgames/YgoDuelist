@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using BaseLib.Abstracts;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -223,11 +221,15 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     }
 
     /// <summary>
-    /// Helper identical in spirit to BaseSpellCard.SendThisSpellToGraveyard,
-    /// but routes this command card into the YgoCardOptionPile so BaseLib's
-    /// CustomPile hooks can control visibility/layout.
+    /// Routes this command card into <see cref="YgoCardOptionPile"/> (same logical result as vanilla
+    /// <see cref="CardPileCmd.Add"/> with <see cref="CardPilePosition.Top"/> for a card not yet in a pile).
     /// </summary>
-    public async Task SendThisCommandToYgoOptionPile()
+    /// <remarks>
+    /// MP: must be <b>synchronous</b>. <see cref="CardPileCmd.Add"/> awaits hooks and tweens; yielding lets the
+    /// lockstep queue apply the next action (e.g. <c>Command_Attack</c> play) before <see cref="MegaCrit.Sts2.Core.GameActions.Multiplayer.NetCombatCardDb"/>
+    /// registers these cards — clients then throw "Could not map ID … to any card!".
+    /// </remarks>
+    public void SendThisCommandToYgoOptionPile()
     {
         var player = Owner;
         if (player == null)
@@ -237,12 +239,11 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
         if (optionPile == null)
             return;
 
-        await CardPileCmd.Add(
-            new CardModel[] { this },
-            optionPile,
-            CardPilePosition.Top,
-            this,
-            false);
+        if (Pile != null)
+            RemoveFromCurrentPile();
+
+        // Top: same index as CardPileCmd.Add(..., CardPilePosition.Top) → AddInternal(..., 0).
+        optionPile.AddInternal(this, 0);
     }
 
     /// <summary>Core draw / hand / discard / exhaust only — not YGO option row, field, graveyard, etc.</summary>

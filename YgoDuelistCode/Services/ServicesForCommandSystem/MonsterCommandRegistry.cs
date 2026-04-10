@@ -129,7 +129,7 @@ public static class MonsterCommandRegistry
     /// </summary>
     public static void ApplyDieForYouSyncForChecksum(Creature pet, Creature applier, CardModel? sourceCard)
     {
-        if (CombatManager.Instance?.IsEnding == true || !pet.CanReceivePowers)
+        if (CombatManager.Instance?.IsEnding == true)
             return;
         if (pet.HasPower<DieForYouPower>())
             return;

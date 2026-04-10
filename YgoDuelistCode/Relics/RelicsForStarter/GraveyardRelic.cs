@@ -51,14 +51,8 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     private bool _sanctuaryHalveNextSpillToPlayer;
 
-    private int _sevenWeaponsCardsPlayed;
-
-    private bool _sevenWeaponsBonusActive;
-
     /// <summary>While true, nested <see cref="DamageCmd.Attack"/> from splinter chain must not start another splinter chain.</summary>
     private bool _splinterChainRunning;
-
-    private readonly List<BaseMonsterCard> _sevenWeaponsBonusCards = new();
 
     public override Task BeforeCombatStart()
     {
@@ -70,7 +64,6 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         UnsubscribeFromGraveyardPile();
         _sanctuaryHalveNextSpillToPlayer = false;
-        ResetSevenWeaponsCombatState();
         return Task.CompletedTask;
     }
 
@@ -317,24 +310,6 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     await CardPileCmd.Draw(ctx, 1, atkPlayer);
             }
         }
-    }
-
-    public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
-    {
-        if (Owner == null || cardPlay.Card.Owner != Owner)
-            return;
-
-        _sevenWeaponsCardsPlayed++;
-        if (_sevenWeaponsBonusActive)
-            StripSevenWeaponsBonus();
-
-        if (_sevenWeaponsCardsPlayed % 7 == 0)
-        {
-            ApplySevenWeaponsBonus();
-            _sevenWeaponsBonusActive = true;
-        }
-
-        await SyncSevenWeaponsCounterPetsAsync(Owner);
     }
 
     public override decimal ModifyHpLostAfterOsty(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
@@ -640,76 +615,6 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         GraveyardRelic? g = player?.Relics.OfType<GraveyardRelic>().FirstOrDefault();
         if (g != null)
             g._sanctuaryHalveNextSpillToPlayer = true;
-    }
-
-    public static async Task SyncSevenWeaponsCounterPetsAsync(Player? player)
-    {
-        if (player?.PlayerCombatState == null || player.Creature == null)
-            return;
-
-        GraveyardRelic? g = player.Relics.OfType<GraveyardRelic>().FirstOrDefault();
-        int display = g?.GetSevenWeaponsCounterDisplay() ?? 1;
-
-        foreach (Creature pet in player.PlayerCombatState.Pets)
-        {
-            if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
-                continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not The_Hunter_with_7_Weapons hw)
-                continue;
-
-            await PowerCmd.Remove<SevenWeaponsPower>(pet);
-            await PowerCmd.Apply<SevenWeaponsPower>(pet, display, player.Creature, hw);
-        }
-    }
-
-    /// <summary>If a Hunter is summoned while the 7th-step ATK bonus is active, it receives the same bonus.</summary>
-    public void OnHunterSummonedDuringSevenWeaponsBonus(The_Hunter_with_7_Weapons hunterCard)
-    {
-        if (!_sevenWeaponsBonusActive)
-            return;
-        int d = SevenWeaponsAtkDelta(hunterCard);
-        hunterCard.DynamicVars.Damage.BaseValue += d;
-        _sevenWeaponsBonusCards.Add(hunterCard);
-    }
-
-    private int GetSevenWeaponsCounterDisplay()
-    {
-        if (_sevenWeaponsCardsPlayed == 0)
-            return 1;
-        int m = _sevenWeaponsCardsPlayed % 7;
-        return m == 0 ? 7 : m;
-    }
-
-    private static int SevenWeaponsAtkDelta(The_Hunter_with_7_Weapons w) => w.IsUpgraded ? 12 : 10;
-
-    private void ApplySevenWeaponsBonus()
-    {
-        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.GetFieldMonsters(Owner))
-        {
-            if (m is not The_Hunter_with_7_Weapons w)
-                continue;
-            int d = SevenWeaponsAtkDelta(w);
-            w.DynamicVars.Damage.BaseValue += d;
-            _sevenWeaponsBonusCards.Add(w);
-        }
-    }
-
-    private void StripSevenWeaponsBonus()
-    {
-        foreach (BaseMonsterCard m in _sevenWeaponsBonusCards)
-        {
-            if (m is The_Hunter_with_7_Weapons w)
-                w.DynamicVars.Damage.BaseValue -= SevenWeaponsAtkDelta(w);
-        }
-
-        _sevenWeaponsBonusCards.Clear();
-        _sevenWeaponsBonusActive = false;
-    }
-
-    private void ResetSevenWeaponsCombatState()
-    {
-        StripSevenWeaponsBonus();
-        _sevenWeaponsCardsPlayed = 0;
     }
 
     public static void RegisterDragonMonsterDestroyed(Player? player)

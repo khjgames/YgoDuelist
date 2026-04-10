@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -15,6 +16,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Spell;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -64,12 +66,15 @@ public sealed class Graceful_Charity : BaseSpellCard
             Cancelable = false
         };
 
-        IEnumerable<CardModel> selected = await CardSelectCmd.FromHand(
+        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this);
+
+        IEnumerable<CardModel> selected = await TributeSummonGridSelect.FromSimpleGrid(
             choiceContext,
+            candidates,
             Owner,
             prefs,
-            c => !ReferenceEquals(c, this),
-            this);
+            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this),
+            PlayerChoiceOptions.CancelPlayCardActions);
 
         List<CardModel> cards = selected.ToList();
         if (cards.Count == 0)

@@ -43,7 +43,14 @@ public sealed class Terrorking_Archfiend : EffectMonsterCard
     public override int PermanentAtkDeltaOnEnemyExecute => IsUpgraded ? 3 : 2;
 
     public override int GetDuelMonsterPlayEnergyDiscount() =>
-        IsUpgraded && IsAttackBattlePosition ? 1 : 0;
+        (IsUpgraded && IsAttackBattlePosition ? 1 : 0) + GetCostDownHandPlayEnergyDiscount();
+
+    /// <summary>Upgrade reduces attack play energy; Command Attack must show that cost even when the monster is in DEF on field.</summary>
+    public override int GetDuelMonsterPlayEnergyDiscountForFieldCommandAttack() =>
+        IsUpgraded ? 1 : 0;
+
+    /// <summary>Attack-position upgrade does not apply to Command Defend.</summary>
+    public override int GetDuelMonsterPlayEnergyDiscountForFieldCommandDefend() => 0;
 
     protected override void OnUpgrade() => base.OnUpgrade();
 }

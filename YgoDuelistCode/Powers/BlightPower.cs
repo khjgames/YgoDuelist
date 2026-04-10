@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.ValueProps;
-using YgoDuelist.YgoDuelistCode.Extensions;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -19,11 +18,6 @@ public sealed class BlightPower : YgoDuelistPower
     public override LocString Title => new("powers", "YGODUELIST-BLIGHT_POWER.title");
 
     public override LocString Description => new("powers", "YGODUELIST-BLIGHT_POWER.description");
-
-    /// <summary>Reuse an existing mod power texture; <c>blight_power.png</c> is not shipped.</summary>
-    public override string CustomPackedIconPath => "stiff_power.png".PowerImagePath();
-
-    public override string CustomBigIconPath => "stiff_power.png".BigPowerImagePath();
 
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {

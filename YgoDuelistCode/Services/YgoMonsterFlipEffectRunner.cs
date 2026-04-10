@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -26,6 +27,8 @@ public static class YgoMonsterFlipEffectRunner
             return;
         if (!DuelMonsterFieldRegistry.GetFieldMonsters(bm.Owner).Contains(bm))
             return;
+        if (card is Hourglass_of_Courage hourglass)
+            Hourglass_of_Courage.ScheduleApplyHalvePowerAfterFlipFaceUp(hourglass);
         if (card is not IMonsterFlipEffect flip)
             return;
 

@@ -33,6 +33,7 @@ public static class YgoCombatEndClearPatch
 
         DuelMonsterFieldRegistry.ClearAll();
         YgoDuelistPassivePowerState.ClearAll();
+        SevenWeaponsHunterState.ClearAll();
         MonsterCommandRegistry.ClearAll();
         YgoDarkSpiritSilentState.ClearAll();
         NormalSummonTracker.ClearAll();

@@ -53,7 +53,7 @@ public sealed class YgoMonsterMenuCommandGameAction : GameAction
                     return;
                 }
 
-                DuelMonsterMonsterOptionsMenu.OpenMonsterOptions(pet);
+                await DuelMonsterMonsterOptionsMenu.OpenMonsterOptionsAsync(pet);
                 return;
             }
             case YgoMonsterMenuCommandKind.ExitMonsterOptions:

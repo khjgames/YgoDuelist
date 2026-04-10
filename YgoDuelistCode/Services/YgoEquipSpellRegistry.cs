@@ -1,6 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -94,6 +99,77 @@ public static class YgoEquipSpellRegistry
             ByMonster.Clear();
             EquipToMonster.Clear();
         }
+    }
+
+    /// <summary>
+    /// MP: before <see cref="MegaCrit.Sts2.Core.Entities.Multiplayer.NetFullCombatState"/> checksum snapshots, align this registry
+    /// with face-up equips in the spell/trap zone and live field monsters (<see cref="YgoDuelMonsterPetBinding"/>). Drops stale rows
+    /// when the card left the zone or the field pet is gone; re-attaches when the stored pet id points at a different mapping.
+    /// </summary>
+    public static (int Detached, int Rebound) ReconcileOrphansBeforeMpChecksum(IRunState runState)
+    {
+        int detached = 0;
+        int rebound = 0;
+
+        foreach (Player player in runState.Players)
+        {
+            if (player?.Creature == null)
+                continue;
+
+            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            if (zone == null)
+                continue;
+
+            foreach (CardModel c in zone.Cards.ToList())
+            {
+                if (c is not BaseEquipSpellCard eq || eq.FaceDown || eq.EquippedTargetPetCombatId == 0u)
+                    continue;
+                eq.TryResolveEquippedMonsterFromStoredPetId();
+            }
+        }
+
+        lock (Gate)
+        {
+            foreach (BaseEquipSpellCard equip in EquipToMonster.Keys.ToArray())
+            {
+                if (equip.Owner == null)
+                {
+                    DetachUnsafe(equip);
+                    detached++;
+                    continue;
+                }
+
+                if (equip.Pile?.Type != SpellTrapZonePile.CustomType || equip.FaceDown)
+                {
+                    DetachUnsafe(equip);
+                    detached++;
+                    continue;
+                }
+
+                if (equip.EquippedTargetPetCombatId == 0u)
+                {
+                    DetachUnsafe(equip);
+                    detached++;
+                    continue;
+                }
+
+                BaseMonsterCard? expected = YgoDuelMonsterPetBinding.TryGetFieldMonsterForPetCombatId(equip.Owner, equip.EquippedTargetPetCombatId);
+                if (expected == null)
+                {
+                    DetachUnsafe(equip);
+                    detached++;
+                    continue;
+                }
+
+                if (!EquipToMonster.TryGetValue(equip, out BaseMonsterCard? mapped) || !ReferenceEquals(mapped, expected))
+                {
+                    Attach(equip, expected);
+                    rebound++;
+                }
+            }
+        }
+
+        return (detached, rebound);
     }
 
     /// <summary>Detach every equip on this monster without moving piles (caller moves cards).</summary>

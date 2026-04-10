@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -9,6 +11,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
 
@@ -17,6 +20,58 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 /// <summary>Marks the enemy bound by face-up <see cref="Spellbinding_Circle"/>: each of your turn starts, apply Spellbinding temp STR and +1 Spellbound.</summary>
 public sealed class SpellbindingCircleTargetPower : YgoDuelistPower
 {
+    /// <summary>
+    /// MP checksum: if <see cref="Spellbinding_Circle"/> left the zone on a player, strip marker + spellbinding temp STR
+    /// from enemies so host/client agree (async <see cref="AfterPlayerTurnStart"/> timing can leave one peer stale).
+    /// </summary>
+    public static void ReconcileOrphansBeforeMpChecksum(IRunState runState)
+    {
+        foreach (Player player in runState.Players)
+        {
+            if (player?.Creature == null)
+                continue;
+
+            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            if (zone != null && zone.Cards.OfType<Spellbinding_Circle>().Any())
+                continue;
+
+            RemoveAllSpellbindingChainForApplierSyncForChecksum(player.Creature);
+        }
+    }
+
+    /// <summary>Removes <see cref="SpellbindingCircleTargetPower"/>, spellbinding temp STR, and <see cref="SpellboundPower"/> / <see cref="SpellboundPlusPower"/> applied by <paramref name="applier"/>.</summary>
+    internal static void RemoveAllSpellbindingChainForApplierSyncForChecksum(Creature applier)
+    {
+        CombatState? cs = applier.CombatState;
+        if (cs == null)
+            return;
+
+        foreach (Creature enemy in cs.HittableEnemies.ToList())
+            RemoveSpellbindingChainOnCreatureSyncForChecksum(enemy, applier);
+    }
+
+    private static void RemoveSpellbindingChainOnCreatureSyncForChecksum(Creature enemy, Creature applier)
+    {
+        foreach (PowerModel p in enemy.Powers.ToList())
+        {
+            switch (p)
+            {
+                case SpellbindingCircleTargetPower m when m.Applier == applier:
+                    m.RemoveInternal();
+                    break;
+                case SpellbindingTemporaryStrengthPower or SpellbindingTemporaryStrengthPowerPlus:
+                    if (p.Applier == applier)
+                        p.RemoveInternal();
+                    break;
+                case SpellboundPower:
+                case SpellboundPlusPower:
+                    if (p.Applier == applier)
+                        p.RemoveInternal();
+                    break;
+            }
+        }
+    }
+
     public static async Task RemoveAllForApplier(Creature applier)
     {
         var cs = applier.CombatState;

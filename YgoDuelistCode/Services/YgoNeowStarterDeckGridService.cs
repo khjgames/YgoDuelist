@@ -26,7 +26,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 public static class YgoNeowStarterDeckGridService
 {
     public const int GridSize = YgoStarterCardCatalog.GridSize;
-    public const int MinPick = 9;
+    public const int MinPick = 8;
     public const int MaxPick = YgoStarterCardCatalog.MaxGridSize;
 
     /// <summary>Neow instance for which the next <see cref="AncientEventModel.SetInitialEventState"/> call must not run the starter draft again (async-safe vs ThreadStatic).</summary>

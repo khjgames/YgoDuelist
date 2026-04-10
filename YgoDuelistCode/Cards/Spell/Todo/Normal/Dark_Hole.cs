@@ -17,7 +17,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 public sealed class Dark_Hole : BaseSpellCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[] { new DynamicVar("Mgc", 20m) };
+        new[] { new DynamicVar("Mgc", 18m) };
 
     public Dark_Hole()
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
@@ -61,5 +61,8 @@ public sealed class Dark_Hole : BaseSpellCard
         }
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(5m);
+    protected override void OnUpgrade() {
+        DynamicVars["Mgc"].UpgradeValueBy(7m);
+        EnergyCost.UpgradeBy(-1);
+    }
 }

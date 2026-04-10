@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -12,6 +15,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoSpellTrapEquipLinkRegistry
 {
+    private static bool IsSpellTrapZoneCardFaceDown(CardModel c) =>
+        c is BaseTrapCard t ? t.FaceDown : c is BaseSpellCard s && s.FaceDown;
+
     private static readonly Dictionary<BaseMonsterCard, List<CardModel>> ByMonster = new();
     private static readonly Dictionary<CardModel, BaseMonsterCard> TrapToMonster = new();
     private static readonly object Gate = new();
@@ -138,6 +144,82 @@ public static class YgoSpellTrapEquipLinkRegistry
             ByMonster.Clear();
             TrapToMonster.Clear();
         }
+    }
+
+    /// <summary>
+    /// MP: before <see cref="MegaCrit.Sts2.Core.Entities.Multiplayer.NetFullCombatState"/> checksum snapshots, align this registry
+    /// with face-up equip-link traps in the spell/trap zone and live field monsters. Drops stale rows when the trap left the zone
+    /// or the linked pet id no longer resolves; re-attaches when the mapping disagrees with <see cref="YgoDuelMonsterPetBinding"/>.
+    /// </summary>
+    public static (int Detached, int Rebound) ReconcileOrphansBeforeMpChecksum(IRunState runState)
+    {
+        int detached = 0;
+        int rebound = 0;
+
+        foreach (Player player in runState.Players)
+        {
+            if (player?.Creature == null)
+                continue;
+
+            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            if (zone == null)
+                continue;
+
+            foreach (CardModel c in zone.Cards.ToList())
+            {
+                if (c is not IYgoSpellTrapEquipLink link)
+                    continue;
+                if (IsSpellTrapZoneCardFaceDown(c) || link.EquipLinkedPetCombatId == 0u)
+                    continue;
+                TryRebindEquipLinkIfNeeded(c);
+            }
+        }
+
+        lock (Gate)
+        {
+            foreach (CardModel trap in TrapToMonster.Keys.ToArray())
+            {
+                if (trap is not IYgoSpellTrapEquipLink link)
+                    continue;
+
+                if (trap.Owner == null)
+                {
+                    DetachUnsafe(trap);
+                    detached++;
+                    continue;
+                }
+
+                if (trap.Pile?.Type != SpellTrapZonePile.CustomType || IsSpellTrapZoneCardFaceDown(trap))
+                {
+                    DetachUnsafe(trap);
+                    detached++;
+                    continue;
+                }
+
+                if (link.EquipLinkedPetCombatId == 0u)
+                {
+                    DetachUnsafe(trap);
+                    detached++;
+                    continue;
+                }
+
+                BaseMonsterCard? expected = YgoDuelMonsterPetBinding.TryGetFieldMonsterForPetCombatId(trap.Owner, link.EquipLinkedPetCombatId);
+                if (expected == null)
+                {
+                    DetachUnsafe(trap);
+                    detached++;
+                    continue;
+                }
+
+                if (!TrapToMonster.TryGetValue(trap, out BaseMonsterCard? mapped) || !ReferenceEquals(mapped, expected))
+                {
+                    Attach(trap, expected);
+                    rebound++;
+                }
+            }
+        }
+
+        return (detached, rebound);
     }
 
     /// <summary>Detach every equip-link trap for this monster without moving piles (caller moves cards).</summary>

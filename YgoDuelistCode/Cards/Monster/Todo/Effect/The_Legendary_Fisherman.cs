@@ -27,5 +27,6 @@ public sealed class The_Legendary_Fisherman : EffectMonsterCard
     }
 
     public override int GetDuelMonsterPlayEnergyDiscount() =>
-        !IsCanonical && Owner != null && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<Umi>(Owner) ? 1 : 0;
+        (!IsCanonical && Owner != null && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<Umi>(Owner) ? 1 : 0)
+        + GetCostDownHandPlayEnergyDiscount();
 }

@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -15,26 +18,31 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class DuelMonsterMonsterOptionsMenu
 {
-    public static void OpenMonsterOptions(Creature pet, bool deferOptionHandSync = false)
+    /// <summary>
+    /// Fills <see cref="YgoCardOptionPile"/> synchronously so every option card is registered in
+    /// <see cref="NetCombatCardDb"/> before the current <see cref="MegaCrit.Sts2.Core.GameActions.GameAction"/> returns.
+    /// Returns <see cref="Task.CompletedTask"/> only so callers may <c>await</c> without yielding the Godot main loop.
+    /// </summary>
+    public static Task OpenMonsterOptionsAsync(Creature pet, bool deferOptionHandSync = false)
     {
         var player = pet.PetOwner;
         if (player?.PlayerCombatState == null)
-            return;
+            return Task.CompletedTask;
 
         var sourceCard = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
         if (sourceCard is not NormalMonsterCard monsterCard)
-            return;
+            return Task.CompletedTask;
 
         CardPile optionPile = YgoCardOptionPile.CustomType.GetPile(player);
         if (optionPile == null)
-            return;
+            return Task.CompletedTask;
 
         YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.MonsterOptions);
         optionPile.Clear();
 
         var combatState = pet.CombatState;
         if (combatState == null)
-            return;
+            return Task.CompletedTask;
 
         var commands = new List<CardModel>();
 
@@ -80,12 +88,29 @@ public static class DuelMonsterMonsterOptionsMenu
         exit.InitializeSource(monsterCard, pet);
         commands.Add(exit);
 
-        foreach (var cmd in commands.OfType<MonsterCommandCard>())
-            TaskHelper.RunSafely(cmd.SendThisCommandToYgoOptionPile());
+        foreach (MonsterCommandCard cmd in commands.OfType<MonsterCommandCard>())
+            cmd.SendThisCommandToYgoOptionPile();
 
         if (deferOptionHandSync)
             YgoOptionHandBridge.RequestDeferredSyncFromOptionPile(player);
         else
             YgoOptionHandBridge.SyncFromOptionPile(player);
+
+        var db = NetCombatCardDb.Instance;
+        var parts = new List<string>(optionPile.Cards.Count);
+        foreach (CardModel c in optionPile.Cards)
+        {
+            string idStr = db.TryGetCardId(c, out uint id) ? id.ToString() : "?";
+            parts.Add($"{c.Id?.Entry ?? "?"}={idStr}");
+        }
+
+        GD.Print(
+            $"[YgoDuelist][MP][OptionPile] OpenMonsterOptions: player={player.NetId} count={optionPile.Cards.Count} ids=[{string.Join(", ", parts)}]");
+
+        return Task.CompletedTask;
     }
+
+    /// <summary>Right-click UI: same synchronous populate as MP (no TaskHelper — avoids interleaving).</summary>
+    public static void OpenMonsterOptions(Creature pet, bool deferOptionHandSync = false) =>
+        _ = OpenMonsterOptionsAsync(pet, deferOptionHandSync);
 }

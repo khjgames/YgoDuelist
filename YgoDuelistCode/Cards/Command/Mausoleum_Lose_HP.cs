@@ -27,5 +27,8 @@ public sealed class Mausoleum_Lose_HP : MonsterCommandCard
 
     public int TributeHpLoss => IsUpgraded ? UpgradedTributeHpLoss : BaseTributeHpLoss;
 
+    /// <summary>0..2 when created as a tribute-grid HP row; used for deterministic ordering across MP peers.</summary>
+    public int MausoleumGridSlot { get; internal set; }
+
     public override string PortraitPath => "mausoleum_of_the_emperor.png".CardImagePath();
 }

@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -88,7 +89,16 @@ public sealed class Talisman_of_Trap_Sealing : BaseContinuousSpellCard
             Cancelable = true
         };
 
-        var pick = await CardSelectCmd.FromHand(choiceContext, player, prefs, IsStatusOrCurse, this);
+        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null);
+
+        var pick = await TributeSummonGridSelect.FromSimpleGrid(
+            choiceContext,
+            candidates,
+            player,
+            prefs,
+            rebuildCanonicalForRemoteApply: () =>
+                TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null),
+            PlayerChoiceOptions.CancelPlayCardActions);
         foreach (CardModel c in pick.ToList())
             await CardCmd.Exhaust(choiceContext, c);
     }

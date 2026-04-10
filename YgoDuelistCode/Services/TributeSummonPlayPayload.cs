@@ -1,5 +1,9 @@
 using System.Collections.Generic;
+using Godot;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -53,6 +57,44 @@ public static class TributeSummonPlayPayload
     {
         resolution = null;
         return YgoPlayPayloadNetKey.TryGetKey(card, out ulong oid, out uint idx) && TryTakePending(oid, idx, out resolution);
+    }
+
+    /// <summary>
+    /// Manual <see cref="PlayCardAction"/> path: use the same <see cref="NetCombatCard.CombatCardIndex"/> as
+    /// <c>SetPending</c> in the tribute play patch — avoids deriving the key from <c>NetCombatCard.FromModel</c> at
+    /// <c>OnPlay</c> time (pile/state can make that fail on peers).
+    /// </summary>
+    public static bool TryTakePendingForManualPlay(PlayerChoiceContext? choiceContext, CardModel card, out TributeSummonPendingResolution? resolution)
+    {
+        resolution = null;
+        if (choiceContext is GameActionPlayerChoiceContext { Action: PlayCardAction pca })
+        {
+            bool ok = TryTakePending(pca.Player.NetId, pca.NetCombatCard.CombatCardIndex, out resolution);
+            if (!ok)
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][Tribute] TryTake miss (PlayCardAction key): owner={pca.Player.NetId} netIdx={pca.NetCombatCard.CombatCardIndex} card={card.Id?.Entry}");
+            }
+            else
+            {
+                GD.Print(
+                    $"[YgoDuelist][MP][Tribute] TryTake ok (PlayCardAction): owner={pca.Player.NetId} netIdx={pca.NetCombatCard.CombatCardIndex} pets={resolution?.Pets.Count ?? 0}");
+            }
+
+            return ok;
+        }
+
+        if (!TryTakePendingForCard(card, out resolution))
+        {
+            if (YgoPlayPayloadNetKey.TryGetKey(card, out ulong oid, out uint idx))
+                GD.PrintErr($"[YgoDuelist][MP][Tribute] TryTake miss (card key): ({oid},{idx}) card={card.Id?.Entry}");
+            else
+                GD.PrintErr($"[YgoDuelist][MP][Tribute] TryTake miss (no NetCombatCard key) card={card.Id?.Entry}");
+            return false;
+        }
+
+        GD.Print($"[YgoDuelist][MP][Tribute] TryTake ok (card key): card={card.Id?.Entry} pets={resolution?.Pets.Count ?? 0}");
+        return true;
     }
 
     public static void ClearForKey(ulong ownerNetId, uint combatCardIndex)

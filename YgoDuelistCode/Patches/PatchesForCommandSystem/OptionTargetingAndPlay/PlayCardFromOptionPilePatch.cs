@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -76,6 +78,14 @@ public static class PlayCardFromOptionPilePatch
     /// Must run after option-pile <see cref="CardModel.SpendResources"/> even when <see cref="CardModel.OnPlayWrapper"/> throws;
     /// otherwise holders / play visuals are never released and the row can desync (missing command slot).
     /// </summary>
+    /// <summary>
+    /// Ritual/fusion spells from the option row are executed by <see cref="PlayCardActionRitualSpellPatch"/> /
+    /// <see cref="PlayCardActionFusionSpellPatch"/> (they run before this patch). Call this after their
+    /// <c>OnPlayWrapper</c> so holders and second-hand UI match the option-pile path.
+    /// </summary>
+    internal static void SchedulePostPlayCleanup(Player? player, CardModel? cardPlayed) =>
+        ScheduleOptionPilePostPlayCleanup(player, cardPlayed);
+
     private static void ScheduleOptionPilePostPlayCleanup(Player? player, CardModel? cardPlayed)
     {
         var tree = NPlayerHand.Instance?.GetTree();
@@ -122,6 +132,36 @@ public static class PlayCardFromOptionPilePatch
     private static readonly PropertyInfo? PlayerChoiceContextProp =
         typeof(PlayCardAction).GetProperty("PlayerChoiceContext", BindingFlags.Public | BindingFlags.Instance);
 
+    /// <summary>
+    /// MP: <see cref="CardModel.Pile"/> on the instance returned from <see cref="NetCombatCard.ToCardModel"/> can be null
+    /// or not reference-equal to <see cref="YgoCardOptionPile"/> on observers even when the card is in that pile — vanilla
+    /// then skips this patch and combat never mirrors (checksum divergence after e.g. <see cref="Command_Attack"/>).
+    /// </summary>
+    private static CardModel? TryResolveCanonicalOptionPileCard(Player player, CardModel card)
+    {
+        CardPile? optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        if (optionPile == null)
+            return null;
+
+        if (optionPile.Cards.Contains(card))
+            return card;
+
+        uint id = NetCombatCardDb.Instance.GetCardId(card);
+        return optionPile.Cards.FirstOrDefault(c => NetCombatCardDb.Instance.GetCardId(c) == id);
+    }
+
+    private static bool IsOptionPilePlay(Player player, CardModel card)
+    {
+        CardPile? optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        if (optionPile == null)
+            return false;
+
+        if (card.Pile != null && ReferenceEquals(card.Pile, optionPile))
+            return true;
+
+        return TryResolveCanonicalOptionPileCard(player, card) != null;
+    }
+
     static bool Prefix(PlayCardAction __instance, ref Task __result)
     {
         var player = __instance.Player;
@@ -134,12 +174,7 @@ public static class PlayCardFromOptionPilePatch
         if (card is MonsterCommandCard mccPrefix)
             mccPrefix.TryResolveSourceMonsterFromStoredPetId();
 
-        var pile = card.Pile;
-        if (pile == null)
-            return true;
-
-        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
-        if (optionPile == null || optionPile != pile)
+        if (!IsOptionPilePlay(player, card))
             return true;
 
         __result = ExecutePlayFromOptionPileAsync(__instance);
@@ -164,16 +199,25 @@ public static class PlayCardFromOptionPilePatch
                 action.Cancel();
                 return;
             }
+
+            CardModel? canonical = TryResolveCanonicalOptionPileCard(action.Player, card);
+            if (canonical != null && !ReferenceEquals(canonical, card))
+            {
+                GD.Print(
+                    $"[YgoDuelist][MP][OptionPile] canonical pile instance (was null/mismatched Pile) netId={NetCombatCardDb.Instance.GetCardId(card)} entry={card.Id?.Entry} owner={action.Player?.NetId}");
+                card = canonical;
+            }
+
             GD.Print("[YgoDuelist] PlayCardFromOptionPile: card=", card.Id.Entry, " type=", card.GetType().Name, " TargetType=", card.TargetType);
 
             if (card is MonsterCommandCard mccPlay)
                 mccPlay.TryResolveSourceMonsterFromStoredPetId();
 
-            var pile = card.Pile;
             var optionPile = YgoCardOptionPile.CustomType.GetPile(action.Player);
-            if (pile == null || optionPile == null || pile != optionPile)
+            if (optionPile == null || !optionPile.Cards.Contains(card))
             {
-                GD.PrintErr("[YgoDuelist][MP][OptionPile] card left option pile before execute — Cancel");
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][OptionPile] card not in option pile before execute — Cancel (pileNull={optionPile == null} owner={action.Player?.NetId})");
                 action.Cancel();
                 return;
             }
@@ -223,7 +267,9 @@ public static class PlayCardFromOptionPilePatch
                 return;
             }
 
-            if (!card.CanPlay(out UnplayableReason unplayable, out AbstractModel? _) || !card.IsValidTarget(target))
+            bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+            if (!observingOtherPlayer
+                && (!card.CanPlay(out UnplayableReason unplayable, out AbstractModel? _) || !card.IsValidTarget(target)))
             {
                 GD.Print(
                     $"[YgoDuelist][MP][OptionPile] unplayable or invalid target card={card?.Id.Entry} unplayable={unplayable} targetCombat={target?.CombatId}");

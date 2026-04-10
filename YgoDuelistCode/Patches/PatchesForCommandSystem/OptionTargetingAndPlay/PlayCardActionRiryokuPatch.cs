@@ -47,7 +47,8 @@ public static class PlayCardActionRiryokuPatch
 
         bool fromHand = card.Pile?.Type == PileType.Hand;
         bool fromSpellTrapZone = card.Pile?.Type == SpellTrapZonePile.CustomType;
-        if (!fromHand && !fromSpellTrapZone)
+        bool fromOptionPile = card.Pile?.Type == YgoCardOptionPile.CustomType;
+        if (!fromHand && !fromSpellTrapZone && !fromOptionPile)
             return true;
 
         __result = ExecuteWithSelectionAsync(__instance, card);
@@ -116,7 +117,11 @@ public static class PlayCardActionRiryokuPatch
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
 
         CardPile? pile = card.Pile;
-        if (pile == null || (pile.Type != PileType.Hand && pile.Type != SpellTrapZonePile.CustomType))
+        bool pileOk = pile != null
+            && (pile.Type == PileType.Hand
+                || pile.Type == SpellTrapZonePile.CustomType
+                || pile.Type == YgoCardOptionPile.CustomType);
+        if (!pileOk)
         {
             NCardPlayQueue.Instance?.RemoveCardFromQueueForCancellation(action);
             return;

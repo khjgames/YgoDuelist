@@ -6,7 +6,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
 /// Shared rules for monster Command Attack/Defend energy and matching hand-summon additions:
-/// printed base, minus stacked per-source discounts (equips, linked traps, intrinsic via <see cref="BaseMonsterCard.GetDuelMonsterAttackPlayEnergyDiscount"/>),
+/// printed base, minus stacked per-source discounts (equips, linked traps, intrinsic via <see cref="BaseMonsterCard.GetDuelMonsterAttackPlayEnergyDiscountForFieldCommand"/>),
 /// plus stacked field-wide additions (e.g. +1 per face-up Narrow Pass).
 /// </summary>
 public static class YgoMonsterCommandEnergyModifiers
@@ -17,22 +17,22 @@ public static class YgoMonsterCommandEnergyModifiers
     public static int SumFieldWideMonsterCommandEnergyAdd(Player? player) =>
         YgoNarrowPassField.GetMonsterCommandEnergyAdd(player);
 
-    /// <summary>Command Attack row: same discount math as hand monster in attack stance, then field-wide adds.</summary>
+    /// <summary>Command Attack row: discounts for the attack command (not the monster&apos;s current field stance), then field-wide adds.</summary>
     public static int GetFieldCommandAttackEnergyCost(NormalMonsterCard source)
     {
         int baseCost = source.DuelMonsterAttackPlayEnergy;
-        int discount = source.GetDuelMonsterAttackPlayEnergyDiscount();
+        int discount = source.GetDuelMonsterAttackPlayEnergyDiscountForFieldCommand();
         int after = discount <= 0 ? baseCost : baseCost - discount;
         if (after < 0)
             after = 0;
         return after + SumFieldWideMonsterCommandEnergyAdd(source.Owner);
     }
 
-    /// <summary>Command Defend row: same discount math as hand monster in defense stance, then field-wide adds.</summary>
+    /// <summary>Command Defend row: discounts for the defend command (not the monster&apos;s current field stance), then field-wide adds.</summary>
     public static int GetFieldCommandDefendEnergyCost(NormalMonsterCard source)
     {
         int baseCost = source.DuelMonsterDefensePlayEnergy;
-        int discount = source.GetDuelMonsterDefensePlayEnergyDiscount();
+        int discount = source.GetDuelMonsterDefensePlayEnergyDiscountForFieldCommand();
         int after = discount <= 0 ? baseCost : baseCost - discount;
         if (after < 0)
             after = 0;

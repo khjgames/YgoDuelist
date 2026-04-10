@@ -19,7 +19,7 @@ public sealed class The_Hunter_with_7_Weapons : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 10,
             baseDef: 6,
-            baseMgc: 0,
+            baseMgc: 10,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
@@ -37,5 +37,11 @@ public sealed class The_Hunter_with_7_Weapons : EffectMonsterCard
     {
         typeof(The_Hunter_with_7_Weapons),
     };
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 14m;
+    }
 
 }

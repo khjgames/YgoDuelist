@@ -7,8 +7,10 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -43,7 +45,16 @@ public sealed class TalismanTrapSealingFieldPower : YgoDuelistPower
             Cancelable = true
         };
 
-        var pick = await CardSelectCmd.FromHand(choiceContext, player, prefs, IsStatusOrCurse, this);
+        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null);
+
+        var pick = await TributeSummonGridSelect.FromSimpleGrid(
+            choiceContext,
+            candidates,
+            player,
+            prefs,
+            rebuildCanonicalForRemoteApply: () =>
+                TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null),
+            PlayerChoiceOptions.None);
 
         foreach (CardModel c in pick.ToList())
             await CardCmd.Exhaust(choiceContext, c);

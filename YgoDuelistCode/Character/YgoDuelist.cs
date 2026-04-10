@@ -2,6 +2,7 @@ using BaseLib.Abstracts;
 using YgoDuelist.YgoDuelistCode.Extensions;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Characters;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
@@ -28,6 +29,15 @@ namespace YgoDuelist.YgoDuelistCode.Character;
 public class YgoDuelist : PlaceholderCharacterModel
 {
     public const string CharacterId = "YgoDuelist";
+
+    /// <summary>
+    /// Same basename as vanilla <see cref="CharacterModel"/> hand paths:
+    /// <c>ui/hands/multiplayer_hand_{id}_point.png</c>. <see cref="PlaceholderCharacterModel"/> otherwise uses
+    /// <c>ironclad_arm_point.png</c> etc., which are not present in the game pck the same way — your art lives under
+    /// <c>multiplayer_hand_ygoduelist-ygo_duelist_*.png</c>.
+    /// </summary>
+    private const string HandTextureBaseName = "ygoduelist-ygo_duelist";
+
     public const string energyColorName = "regent";
 
     public static readonly Color Color = new("ffffff");
@@ -190,5 +200,17 @@ public class YgoDuelist : PlaceholderCharacterModel
     public override string CustomCharacterSelectIconPath => "char_select_char_name.png".CharacterUiPath();
     public override string CustomCharacterSelectLockedIconPath => "char_select_char_name_locked.png".CharacterUiPath();
     public override string CustomMapMarkerPath => "map_marker_char_name.png".CharacterUiPath();
+
+    public override string? CustomArmPointingTexturePath =>
+        ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{HandTextureBaseName}_point.png");
+
+    public override string? CustomArmRockTexturePath =>
+        ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{HandTextureBaseName}_rock.png");
+
+    public override string? CustomArmPaperTexturePath =>
+        ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{HandTextureBaseName}_paper.png");
+
+    public override string? CustomArmScissorsTexturePath =>
+        ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{HandTextureBaseName}_scissors.png");
 
 }

@@ -20,13 +20,15 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 public sealed class Fusion_Sage : BaseSpellCard
 {
     public Fusion_Sage()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Fusion | YgoCardPackTags.Spell | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Fusion_Sage), typeof(Polymerization) };
+
+    public override Type[] BundledCards => new[] { typeof(Polymerization) };
 
     protected override bool IsPlayable =>
         base.IsPlayable && Owner != null && GetPolymersInDrawPile(Owner).Count > 0;
@@ -65,5 +67,6 @@ public sealed class Fusion_Sage : BaseSpellCard
 
     protected override void OnUpgrade()
     {
+        EnergyCost.UpgradeBy(-1);
     }
 }

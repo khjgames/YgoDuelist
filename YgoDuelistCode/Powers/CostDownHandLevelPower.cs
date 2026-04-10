@@ -4,13 +4,16 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>Monsters in your hand are treated as 2 Levels lower (this turn).</summary>
+/// <summary>Monsters in your hand are treated as 2 Levels lower and cost 1 less energy to play (this turn).</summary>
 public sealed class CostDownHandLevelPower : YgoDuelistPower
 {
     public const int LevelReduction = 2;
+
+    public const int HandEnergyDiscount = 1;
 
     public override PowerType Type => PowerType.Buff;
 
@@ -25,5 +28,6 @@ public sealed class CostDownHandLevelPower : YgoDuelistPower
         if (side != Owner.Side)
             return;
         await PowerCmd.Remove(this);
+        CardModelEnergyCache.InvalidateHandMonstersEnergy(Owner.Player);
     }
 }

@@ -133,6 +133,9 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
     protected sealed override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
+    /// <summary>Face-up activation in the Spell/Trap zone when not resolving a normal play from hand (e.g. moved from Graveyard).</summary>
+    internal void PrepareFaceUpForZoneFromGraveyard() => PrepareSpellForActiveFieldZone();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         Player? player = Owner;

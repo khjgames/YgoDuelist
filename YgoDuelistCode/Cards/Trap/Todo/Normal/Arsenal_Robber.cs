@@ -69,5 +69,6 @@ public sealed class Arsenal_Robber : BaseTrapCard
     protected override void OnUpgrade()
     {
         base.OnUpgrade();
+        EnergyCost.UpgradeBy(-1);
     }
 }

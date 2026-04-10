@@ -48,25 +48,75 @@ public static class NHealthBarBlockTrackingDisposeGuardPatch
         oldCreature.BlockChanged -= handler;
     }
 
+    /// <summary>
+    /// Vanilla calls <see cref="NHealthBar.RefreshValues"/> here. In MP, <see cref="MegaCrit.Sts2.Core.GameActions.PlayCardAction"/>
+    /// can yield while net messages rebuild the option row; <see cref="Control._ExitTree"/> may not have run yet, so
+    /// <see cref="NHealthBar.RefreshBlockUi"/> can touch freed <see cref="Godot.NinePatchRect"/> nodes. We mirror the one-line
+    /// body with tree/validity checks and swallow <see cref="ObjectDisposedException"/> only.
+    /// </summary>
     [HarmonyPrefix]
     [HarmonyPatch(typeof(NCreatureStateDisplay), "OnBlockTrackingCreatureBlockChanged")]
-    public static bool OnBlockTrackingCreatureBlockChanged_GuardDisposed(NCreatureStateDisplay __instance)
+    public static bool OnBlockTrackingCreatureBlockChanged_SafeRefresh(NCreatureStateDisplay __instance)
     {
-        if (!GodotObject.IsInstanceValid(__instance))
+        if (!GodotObject.IsInstanceValid(__instance) || !__instance.IsInsideTree())
             return false;
 
         var bar = FStateDisplayHealthBar.GetValue(__instance) as NHealthBar;
-        if (bar == null || !GodotObject.IsInstanceValid(bar))
+        if (bar == null || !GodotObject.IsInstanceValid(bar) || !bar.IsInsideTree())
             return false;
 
-        return NHealthBarNodesAlive(bar);
+        if (!NHealthBarNodesAlive(bar))
+            return false;
+
+        try
+        {
+            bar.RefreshValues();
+        }
+        catch (ObjectDisposedException)
+        {
+            // UI torn down while BlockChanged still fired (e.g. OpenMonsterOptions interleaved with mirrored play).
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Same race as <see cref="OnBlockTrackingCreatureBlockChanged_SafeRefresh"/>: <see cref="NCreatureStateDisplay.AnimateInBlock"/>
+    /// forwards to <see cref="NHealthBar.AnimateInBlock"/> which sets block container visibility.
+    /// </summary>
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(NCreatureStateDisplay), "AnimateInBlock")]
+    public static bool AnimateInBlock_Safe(NCreatureStateDisplay __instance, int oldBlock, int blockGain)
+    {
+        if (oldBlock != 0 || blockGain == 0)
+            return false;
+
+        if (!GodotObject.IsInstanceValid(__instance) || !__instance.IsInsideTree())
+            return false;
+
+        var bar = FStateDisplayHealthBar.GetValue(__instance) as NHealthBar;
+        if (bar == null || !GodotObject.IsInstanceValid(bar) || !bar.IsInsideTree())
+            return false;
+
+        if (!NHealthBarNodesAlive(bar))
+            return false;
+
+        try
+        {
+            bar.AnimateInBlock(oldBlock, blockGain);
+        }
+        catch (ObjectDisposedException)
+        {
+        }
+
+        return false;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(NHealthBar), "RefreshBlockUi")]
     public static bool RefreshBlockUi_GuardDisposed(NHealthBar __instance)
     {
-        if (!GodotObject.IsInstanceValid(__instance))
+        if (!GodotObject.IsInstanceValid(__instance) || !__instance.IsInsideTree())
             return false;
 
         return NHealthBarNodesAlive(__instance);
@@ -93,8 +143,7 @@ public static class NHealthBarBlockTrackingDisposeGuardPatch
                      FHealthBarBlockLabel
                  })
         {
-            var node = f.GetValue(bar) as GodotObject;
-            if (node == null || !GodotObject.IsInstanceValid(node))
+            if (f.GetValue(bar) is not Node node || !GodotObject.IsInstanceValid(node) || !node.IsInsideTree())
                 return false;
         }
 

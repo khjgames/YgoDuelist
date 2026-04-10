@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -24,6 +25,9 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// <summary>
 /// Equip spells: choose a valid field monster before spending resources.
 /// One legal target skips the grid; multiple targets use cancelable confirm (<see cref="YgoCancelableConfirmGridPrefs"/>).
+/// Must run on <b>every</b> MP peer: <see cref="EquipSpellGridSelect"/> syncs the multi-target grid like
+/// <see cref="TributeSummonGridSelect"/>; gating on <c>LocalContext.IsMe</c> left observers without
+/// <see cref="EquipSpellPlayPayload"/> and caused checksum divergence on equip resolution.
 /// </summary>
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
 [HarmonyPriority(800)]
@@ -38,16 +42,6 @@ public static class PlayCardActionEquipSpellPatch
     {
         if (!CombatManager.Instance.IsInProgress)
             return true;
-
-        try
-        {
-            if (!LocalContext.IsMe(__instance.Player))
-                return true;
-        }
-        catch
-        {
-            return true;
-        }
 
         var card = __instance.NetCombatCard.ToCardModel();
         if (card is not BaseEquipSpellCard equip || !IsEquipSpellPlayPile(equip, card.Pile))
@@ -95,15 +89,20 @@ public static class PlayCardActionEquipSpellPatch
                     action.Cancel();
                     return;
                 }
+
+                GD.Print(
+                    $"[YgoDuelist][MP][Equip] single candidate owner={player.NetId} equipIdx={action.NetCombatCard.CombatCardIndex} target={chosen.Id?.Entry}");
             }
             else
             {
                 LocString prompt = ResolveEquipSelectionPrompt(equip);
                 var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(prompt);
+                GD.Print(
+                    $"[YgoDuelist][MP][Equip] grid owner={player.NetId} equipIdx={action.NetCombatCard.CombatCardIndex} candidates={candidates.Count}");
                 IEnumerable<CardModel> selected;
                 try
                 {
-                    selected = await CardSelectCmd.FromSimpleGrid(
+                    selected = await EquipSpellGridSelect.FromSimpleGrid(
                         new BlockingPlayerChoiceContext(),
                         candidates,
                         player,
@@ -173,7 +172,8 @@ public static class PlayCardActionEquipSpellPatch
             Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
         }
 
-        if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+        bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+        if (!observingOtherPlayer && (!card.CanPlay(out _, out _) || !card.IsValidTarget(target)))
         {
             action.Cancel();
             return;

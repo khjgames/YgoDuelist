@@ -15,6 +15,13 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     CustomCardModel(cost, type, rarity, target)
 {
     public virtual YgoCardPackTags PackTags => YgoCardPackTags.None;
+
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public virtual float PackWeightMultiplier => 1f;
+
     public virtual Type[] BundledCards => Array.Empty<Type>();
     public virtual Type[] RelatedCards => Array.Empty<Type>(); // Every other card is weighted at 1, these are weighted at 2.
 

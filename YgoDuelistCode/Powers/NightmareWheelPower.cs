@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -22,6 +23,44 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 
 internal static class NightmareWheelPowerShared
 {
+    /// <summary>
+    /// MP checksum: if <see cref="Nightmare_Wheel"/> left the zone, strip debuff from enemies so host/client agree
+    /// (async <see cref="NightmareWheelPower.AfterPlayerTurnStart"/> timing can leave one peer stale).
+    /// </summary>
+    public static void ReconcileOrphansBeforeMpChecksum(IRunState runState)
+    {
+        foreach (Player player in runState.Players)
+        {
+            if (player?.Creature == null)
+                continue;
+
+            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            if (zone != null && zone.Cards.OfType<Nightmare_Wheel>().Any())
+                continue;
+
+            RemoveAllNightmareWheelForApplierSyncForChecksum(player.Creature);
+        }
+    }
+
+    private static void RemoveAllNightmareWheelForApplierSyncForChecksum(Creature applier)
+    {
+        CombatState? cs = applier.CombatState;
+        if (cs == null)
+            return;
+
+        foreach (Creature enemy in cs.HittableEnemies.ToList())
+        {
+            foreach (PowerModel p in enemy.Powers.ToList())
+            {
+                if (p is NightmareWheelPower or NightmareWheelPlusPower)
+                {
+                    if (p.Applier == applier)
+                        p.RemoveInternal();
+                }
+            }
+        }
+    }
+
     public static async Task RemoveAllForApplier(Creature applier)
     {
         CombatState? cs = applier.CombatState;

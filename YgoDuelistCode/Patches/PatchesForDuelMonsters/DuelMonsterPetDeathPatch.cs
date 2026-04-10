@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using Godot;
 using BaseLib.Patches.Content;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -13,7 +14,9 @@ using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
@@ -98,7 +101,24 @@ public static class DuelMonsterPetDeathPatch
             var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
             if (optionPile != null && optionPile.Cards.Count > 0)
             {
-                bool pileIsForThisMonster = optionPile.Cards.Any(c => c is MonsterCommandCard mcc && mcc.SourceMonster == card);
+                bool pileIsForThisMonster = optionPile.Cards.Any(c =>
+                    c is MonsterCommandCard mcc && MonsterCommandCardMatchesDeadFieldMonster(mcc, card, pet));
+                if (TributeSummonGridSelect.VerboseMpLog
+                    && RunManager.Instance.NetService.Type != NetGameType.Singleplayer)
+                {
+                    uint deadId = pet.CombatId ?? 0;
+                    GD.Print(
+                        $"[YgoDuelist][MP][OptionPileDeath] ownerNet={player.NetId} deadPetCombatId={deadId} deadCard={card.Id?.Entry} pileCount={optionPile.Cards.Count} pileForDeadMonster={pileIsForThisMonster}");
+                    foreach (CardModel opt in optionPile.Cards)
+                    {
+                        if (opt is MonsterCommandCard mcc)
+                        {
+                            GD.Print(
+                                $"[YgoDuelist][MP][OptionPileDeath]   mcc srcPetId={mcc.SourcePetCombatId} srcMonsterNull={mcc.SourceMonster == null} matches={MonsterCommandCardMatchesDeadFieldMonster(mcc, card, pet)}");
+                        }
+                    }
+                }
+
                 if (pileIsForThisMonster)
                 {
                     YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.MonsterOptions);
@@ -137,7 +157,8 @@ public static class DuelMonsterPetDeathPatch
             if (player.Creature?.HasPower<AccumulatedSpiritsPower>() == true)
                 YgoDuelistPassivePowerState.RegisterAccumulatedSpiritsFieldLoss(player);
 
-            TaskHelper.RunSafely(GuardianSpiritPower.OnPlayerDuelMonsterDestroyedAsync(
+            // MP: fire-and-forget async could finish after PlayCardAction / checksum; keep block+heal before pile moves.
+            RunRelocationBlocking(async () => await GuardianSpiritPower.OnPlayerDuelMonsterDestroyedAsync(
                 new BlockingPlayerChoiceContext(),
                 player,
                 pet));
@@ -209,6 +230,19 @@ public static class DuelMonsterPetDeathPatch
     /// Fire-and-forget <see cref="TaskHelper.RunSafely"/> let those run first; <see cref="CardPileCmd.Add"/> could then
     /// leave the source card in no pile (vanished from GY/hand/deck UI).
     /// </summary>
+    /// <summary>
+    /// MP: <see cref="MonsterCommandCard.SourceMonster"/> is not replicated; host may have a reference match while client does not.
+    /// Use <see cref="MonsterCommandCard.SourcePetCombatId"/> vs the dying pet's <see cref="Creature.CombatId"/>, and resolve source when possible.
+    /// </summary>
+    private static bool MonsterCommandCardMatchesDeadFieldMonster(MonsterCommandCard mcc, CardModel deadFieldCard, Creature pet)
+    {
+        _ = mcc.TryResolveSourceMonsterFromStoredPetId();
+        if (mcc.SourceMonster != null && ReferenceEquals(mcc.SourceMonster, deadFieldCard))
+            return true;
+        uint pid = pet.CombatId ?? 0;
+        return pid != 0 && mcc.SourcePetCombatId == pid;
+    }
+
     private static void RunRelocationBlocking(Func<Task> work)
     {
         try

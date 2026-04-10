@@ -12,7 +12,7 @@ public sealed class Five_Headed_Dragon : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 12,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,

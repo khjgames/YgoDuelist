@@ -8,7 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoPlayerMinimumDeck
 {
-    public const int StartingMinimum = 14;
+    public const int StartingMinimum = 13;
 
     private static readonly ConditionalWeakTable<Player, StrongBox<int>> Table = new();
 
