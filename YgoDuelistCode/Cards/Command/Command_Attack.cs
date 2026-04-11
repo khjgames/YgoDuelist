@@ -78,6 +78,10 @@ public sealed class Command_Attack : MonsterCommandCard
                     return false;
             }
 
+            if (SourceMonster is Ultimate_Obedient_Fiend uof && Owner != null
+                && !Ultimate_Obedient_Fiend.IsAttackPlayAllowed(Owner, uof))
+                return false;
+
             if (IsRegularDeckMonsterCommandWithLivePet(pet))
                 return true;
             return MonsterCommandRegistry.CanUseMonsterAttackCommand(pet, SourceMonster);

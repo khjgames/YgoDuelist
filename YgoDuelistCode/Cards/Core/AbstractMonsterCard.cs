@@ -326,6 +326,24 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     public virtual bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => false;
 
     /// <summary>
+    /// When true, <see cref="DuelMonsterSummon.TrySummonDuelMonster"/> treats this hand summon like a special summon
+    /// (Command Attack/Defend available the turn it hits the field). Default follows normal/tribute stiff/fatigue rules.
+    /// </summary>
+    public virtual bool SpecialSummonGrantsImmediateCommandsThisTurn => false;
+
+    /// <summary>
+    /// Tribute grid before a normal/tribute summon: remove illegal rows (e.g. Mausoleum placeholders for recipe-only summons).
+    /// </summary>
+    public virtual void FilterTributeSelectionGridCandidates(Player player, List<CardModel> candidates, int need)
+    {
+    }
+
+    /// <summary>
+    /// When false, <see cref="TributeSummonSelection"/> does not inject Mausoleum of the Emperor HP tribute rows for this summon.
+    /// </summary>
+    public virtual bool AllowsMausoleumHpTributeForThisTributeSummon => true;
+
+    /// <summary>
     /// Monsters released for a normal tribute summon: 0 unless level 5+ non-ritual non-fusion (1 for level 5–6, 2 for 7+).
     /// Uses current <see cref="DuelMonsterLevel"/> (updates when level changes).
     /// </summary>

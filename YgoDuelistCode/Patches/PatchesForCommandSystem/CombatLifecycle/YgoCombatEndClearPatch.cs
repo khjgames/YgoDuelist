@@ -28,6 +28,8 @@ public static class YgoCombatEndClearPatch
         {
             var ctx = new BlockingPlayerChoiceContext();
             foreach (Player p in combatState.Players)
+                await RaRebirthPower.ResolveCombatEndBeforeDoomedAsync(p);
+            foreach (Player p in combatState.Players)
                 await RaDoomedPower.ResolveCombatEndDamageAsync(ctx, p);
         }
 

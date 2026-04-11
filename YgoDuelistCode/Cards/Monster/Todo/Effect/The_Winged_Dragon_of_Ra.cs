@@ -24,6 +24,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivatedEffect
 {
     private static readonly CardKeyword DoomedKeyword = (CardKeyword)20048;
+    private static readonly CardKeyword RebirthKeyword = (CardKeyword)20052;
 
     public The_Winged_Dragon_of_Ra()
         : base(
@@ -47,6 +48,8 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
 
     public override Type[] RelatedCards => new[] { typeof(The_Winged_Dragon_of_Ra) };
 
+    public override int ShopPriceModifier => 40;
+
     public override bool NormalSummonSkipsStiffFatigueOnSummonTurn => true;
 
     protected override int? TributeReleaseCountOverride => 3;
@@ -64,7 +67,7 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
     }
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Append(DoomedKeyword);
+        base.CanonicalKeywords.Append(DoomedKeyword).Append(RebirthKeyword);
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
@@ -73,6 +76,7 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
             yield return HoverTipFactory.FromKeyword(DoomedKeyword);
+            yield return HoverTipFactory.FromKeyword(RebirthKeyword);
             yield return HoverTipFactory.FromPower<DoomPower>();
         }
     }

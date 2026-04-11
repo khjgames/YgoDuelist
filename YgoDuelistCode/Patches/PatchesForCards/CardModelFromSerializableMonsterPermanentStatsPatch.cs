@@ -2,6 +2,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -23,5 +24,9 @@ public static class CardModelFromSerializableMonsterPermanentStatsPatch
             bm.ApplySavedExecuteAtkBonusToPrintedDamage();
         if (__result is The_Last_Warrior_from_Another_Planet last)
             last.ApplySavedSummonAbsorbDefBonusToPrintedDefense();
+        if (__result is Obelisk_the_Tormentor obelisk)
+            obelisk.ApplySavedObeliskActivatedEffectDefBonusToPrintedDefense();
+        if (__result is Gate_Guardian gateGuardian)
+            gateGuardian.ApplySavedGateGuardianSummonDefBonusToPrintedDefense();
     }
 }

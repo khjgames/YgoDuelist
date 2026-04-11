@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -23,6 +24,10 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivatedEffect, IMonsterActivatedEffectPrePlaySelection
 {
+    /// <summary>Sum of printed DEF added by activated effect; reapplied after full save load (see <c>CardModelFromSerializableMonsterPermanentStatsPatch</c>).</summary>
+    [SavedProperty]
+    public int ObeliskActivatedEffectPrintedDefBonus { get; set; }
+
     private static readonly LocString TributePrompt = new("combat_messages", "TRIBUTE_SUMMON_SELECT");
 
     public Obelisk_the_Tormentor()
@@ -35,7 +40,7 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
             duelMonsterAttribute: DuelMonsterAttribute.Divine,
             baseAtk: 40,
             baseDef: 40,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.DivineBeast,
             duelMonsterAttackPlayEnergyOverride: 2,
             duelMonsterDefensePlayEnergyOverride: 2)
@@ -46,6 +51,8 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
         YgoCardPackTags.Starter | YgoCardPackTags.God | YgoCardPackTags.WinCon;
 
     public override Type[] RelatedCards => new[] { typeof(Obelisk_the_Tormentor) };
+
+    public override int ShopPriceModifier => 40;
 
     protected override int? TributeReleaseCountOverride => 3;
 
@@ -122,6 +129,16 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
         if (source is BaseMonsterCard bm && !field.Contains(bm))
             field.Add(bm);
 
+        if (source is Obelisk_the_Tormentor obelisk)
+        {
+            int flatBonus = (int)obelisk.DynamicVars["Mgc"].BaseValue;
+            if (flatBonus > 0)
+            {
+                obelisk.ApplyPermanentExecuteAtkDelta(flatBonus);
+                ApplyPermanentObeliskActivatedEffectDefDelta(obelisk, flatBonus);
+            }
+        }
+
         int blight = source.CalcDuelMonsterStats(field).Atk;
         CombatState cs = player.Creature.CombatState;
 
@@ -131,9 +148,57 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
     }
 
+    private static void ApplyPermanentObeliskActivatedEffectDefDelta(Obelisk_the_Tormentor card, int delta)
+    {
+        if (delta == 0)
+            return;
+        card.AssertMutable();
+        card.ObeliskActivatedEffectPrintedDefBonus += delta;
+        if (card.DynamicVars != null)
+        {
+            card.DynamicVars["Def"].BaseValue += delta;
+            if (card.DynamicVars.Block != null)
+                card.DynamicVars.Block.BaseValue += delta;
+        }
+
+        if (card.DeckVersion is Obelisk_the_Tormentor deck && !ReferenceEquals(deck, card))
+        {
+            deck.ObeliskActivatedEffectPrintedDefBonus += delta;
+            if (deck.DynamicVars != null)
+            {
+                deck.DynamicVars["Def"].BaseValue += delta;
+                if (deck.DynamicVars.Block != null)
+                    deck.DynamicVars.Block.BaseValue += delta;
+            }
+        }
+    }
+
+    internal void ApplySavedObeliskActivatedEffectDefBonusToPrintedDefense()
+    {
+        if (ObeliskActivatedEffectPrintedDefBonus == 0 || DynamicVars == null)
+            return;
+        CardModel template = ModelDb.GetById<CardModel>(Id).ToMutable();
+        for (int i = 0; i < CurrentUpgradeLevel; i++)
+        {
+            template.UpgradeInternal();
+            template.FinalizeUpgradeInternal();
+        }
+
+        decimal baselineDef = template.DynamicVars["Def"].BaseValue;
+        DynamicVars["Def"].BaseValue = baselineDef + ObeliskActivatedEffectPrintedDefBonus;
+        if (DynamicVars.Block != null && template.DynamicVars.Block != null)
+            DynamicVars.Block.BaseValue = template.DynamicVars.Block.BaseValue + ObeliskActivatedEffectPrintedDefBonus;
+    }
+
+    protected override void AfterDowngraded()
+    {
+        base.AfterDowngraded();
+        ApplySavedObeliskActivatedEffectDefBonusToPrintedDefense();
+    }
+
     protected override void OnUpgrade()
     {
-        const int d = 12;
+        const int d = 8;
         DynamicVars.Damage.UpgradeValueBy(d);
         DynamicVars["Def"].UpgradeValueBy(d);
         if (DynamicVars.Block != null)

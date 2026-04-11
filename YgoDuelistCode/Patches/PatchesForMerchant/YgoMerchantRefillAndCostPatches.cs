@@ -40,16 +40,17 @@ public static class YgoMerchantCalcCostPatch
         if (creation == null)
             return true;
 
-        if (creation.Card is not YgoDuelistCard)
+        if (creation.Card is not YgoDuelistCard ygo)
             return true;
 
-        int baseCost = creation.Card.Rarity switch
+        int baseCost = ygo.Rarity switch
         {
             CardRarity.Rare => 155,
             CardRarity.Uncommon => 88,
             _ => 52
         };
 
+        baseCost = Mathf.Max(1, baseCost + ygo.ShopPriceModifier);
         int cost = Mathf.RoundToInt(baseCost * player.PlayerRng.Shops.NextFloat(0.95f, 1.05f));
         if (Traverse.Create(__instance).Property<bool>("IsOnSale").Value)
             cost /= 2;

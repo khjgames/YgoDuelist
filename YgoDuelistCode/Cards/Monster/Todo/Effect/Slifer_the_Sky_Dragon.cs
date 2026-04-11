@@ -46,6 +46,8 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Slifer_the_Sky_Dragon) };
 
+    public override int ShopPriceModifier => 40;
+
     public override bool UseAlternateUpgradedDescription => true;
 
     protected override int? TributeReleaseCountOverride => 3;

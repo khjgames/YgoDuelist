@@ -398,12 +398,12 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         Player? atkPlayer = command.Attacker.Player;
         if (atkPlayer?.Creature != null && monster is The_Winged_Dragon_of_Ra ra)
         {
-            int heal = (int)ra.DynamicVars["Mgc2"].BaseValue;
+            decimal gain = ra.DynamicVars["Mgc2"].BaseValue;
             foreach (DamageResult r in command.Results)
             {
                 if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
                     continue;
-                await CreatureCmd.Heal(atkPlayer.Creature, heal);
+                await PowerCmd.Apply<RaRebirthPower>(atkPlayer.Creature, gain, atkPlayer.Creature, ra);
                 break;
             }
         }

@@ -17,6 +17,7 @@ using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -47,6 +48,9 @@ public static class TributeSummonSelection
     /// <summary>Whether the field can pay <see cref="BaseMonsterCard.TributeReleaseCount"/> for this summon (including double-tribute materials).</summary>
     public static bool CanMeetTributeCostForSummon(Player? player, BaseMonsterCard summon)
     {
+        if (summon is Gate_Guardian)
+            return Gate_Guardian.CanMeetNamedTributeRequirement(player);
+
         int need = summon.TributeReleaseCount;
         if (need <= 0)
             return true;
@@ -98,6 +102,13 @@ public static class TributeSummonSelection
         int mausoleumHpTributes,
         int mausoleumHpLossTotal)
     {
+        if (summon is Gate_Guardian)
+        {
+            if (mausoleumHpTributes != 0 || mausoleumHpLossTotal != 0)
+                return false;
+            return Gate_Guardian.TributeSelectionMeetsGateGuardianRecipe(pets);
+        }
+
         int need = summon.TributeReleaseCount;
         if (need <= 0)
             return true;
@@ -135,7 +146,8 @@ public static class TributeSummonSelection
         if (candidates.Count == 0)
             return null;
 
-        var prefs = new CardSelectorPrefs(TributePrompt, minCount: 1, maxCount: need)
+        int minPick = summonCard is Gate_Guardian ? need : 1;
+        var prefs = new CardSelectorPrefs(TributePrompt, minCount: minPick, maxCount: need)
         {
             RequireManualConfirmation = true,
             Cancelable = true
@@ -192,7 +204,8 @@ public static class TributeSummonSelection
     private static List<CardModel> BuildTributeSelectionCandidates(Player player, BaseMonsterCard summonCard, int need)
     {
         List<CardModel> candidates = BuildTributeCandidateCards(player).Cast<CardModel>().ToList();
-        if (YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<Mausoleum_of_the_Emperor>(player)
+        if (summonCard.AllowsMausoleumHpTributeForThisTributeSummon
+            && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<Mausoleum_of_the_Emperor>(player)
             && player.Creature?.CombatState != null)
         {
             bool upgradedOptions = HasUpgradedActiveMausoleum(player);
@@ -209,6 +222,7 @@ public static class TributeSummonSelection
         }
 
         StabilizeFullTributeCandidateList(candidates);
+        summonCard.FilterTributeSelectionGridCandidates(player, candidates, need);
         return candidates;
     }
 

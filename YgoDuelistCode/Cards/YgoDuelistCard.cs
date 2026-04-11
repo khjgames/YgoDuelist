@@ -17,6 +17,12 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual YgoCardPackTags PackTags => YgoCardPackTags.None;
 
     /// <summary>
+    /// Flat gold added to (or subtracted from) this card's YGO merchant price after rarity base cost, before shop jitter
+    /// (<see cref="Patches.PatchesForMerchant.YgoMerchantCalcCostPatch"/>). Vanilla non-YGO shops ignore this.
+    /// </summary>
+    public virtual int ShopPriceModifier => 0;
+
+    /// <summary>
     /// Multiplier for YGO pack reward weighted picks (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
     /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
     /// </summary>

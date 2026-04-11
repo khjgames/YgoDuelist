@@ -156,7 +156,9 @@
   "20050.description": "Lose [red]7[/red] Strength until end of turn; before your turn ends, enemies that would attack you for [red]0[/red] gain [purple]13[/purple] Blight.",
 
   "20051.title": "Activate Effect",
-  "20051.description": "Can be activated on the field via command."
+  "20051.description": "Can be activated on the field via command.",
 
+  "20052.title": "Rebirth",
+  "20052.description": "Ticks after combat end, before Doomed, removes equivalent Doom then falls off."
 
 }

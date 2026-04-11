@@ -253,7 +253,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 }
             }
 
-            await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);
+            OnBeforeDuelMonsterSummon(choiceContext, cardPlay);
+            await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext, SpecialSummonGrantsImmediateCommandsThisTurn);
         }
 
         if (Owner == null)
@@ -278,6 +279,11 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         Creature? pet = Owner.PlayerCombatState.Pets
             .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
         await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
+    }
+
+    /// <summary>After tribute releases resolve, before <see cref="DuelMonsterSummon.TrySummonDuelMonster"/> (e.g. Gate Guardian MGC bonus).</summary>
+    protected virtual void OnBeforeDuelMonsterSummon(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
     }
 
     /// <summary>Tribute fallback path: skip the post-summon combat action when true (e.g. Dark Zebra alone on field).</summary>
