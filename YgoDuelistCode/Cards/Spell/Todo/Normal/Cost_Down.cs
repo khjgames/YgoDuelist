@@ -64,7 +64,7 @@ public sealed class Cost_Down : BaseSpellCard
             Cancelable = false
         };
 
-        var selected = await TributeSummonGridSelect.FromSimpleGrid(
+        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             Owner!,

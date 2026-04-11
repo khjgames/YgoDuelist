@@ -59,7 +59,7 @@ public sealed class Dragged_Down_into_the_Grave : BaseSpellCard
             Cancelable = false
         };
 
-        var selected = await TributeSummonGridSelect.FromSimpleGrid(
+        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             Owner!,

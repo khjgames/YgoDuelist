@@ -54,7 +54,7 @@ public sealed class Double_Spell : BaseSpellCard
         if (handCandidates.Count == 0)
             return;
 
-        var handPick = await TributeSummonGridSelect.FromSimpleGrid(
+        var handPick = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             handCandidates,
             Owner,

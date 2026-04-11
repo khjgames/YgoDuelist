@@ -93,7 +93,7 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
             c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
             null);
 
-        var selected = await TributeSummonGridSelect.FromSimpleGrid(
+        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             player,

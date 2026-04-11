@@ -95,7 +95,7 @@ public sealed class Curse_of_Aging : BaseTrapCard
 
         List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, null);
 
-        var selected = await TributeSummonGridSelect.FromSimpleGrid(
+        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             Owner,

@@ -156,7 +156,7 @@ public static class TributeSummonSelection
         IEnumerable<CardModel> selected;
         try
         {
-            selected = await TributeSummonGridSelect.FromSimpleGrid(
+            selected = await TributeSummonGridSelect.FromSimpleGridIndexed(
                 new BlockingPlayerChoiceContext(),
                 candidates,
                 player,
@@ -228,7 +228,7 @@ public static class TributeSummonSelection
 
     /// <summary>
     /// Field monsters are already sorted; Mausoleum rows must have a fixed order on every peer for
-    /// <see cref="TributeSummonGridSelect"/> index sync.
+    /// <see cref="TributeSummonGridSelect.FromSimpleGridIndexed"/> MP sync.
     /// </summary>
     private static void StabilizeFullTributeCandidateList(List<CardModel> candidates)
     {
@@ -425,7 +425,7 @@ public static class TributeSummonSelection
         IEnumerable<CardModel> selected;
         try
         {
-            selected = await TributeSummonGridSelect.FromSimpleGrid(
+            selected = await TributeSummonGridSelect.FromSimpleGridIndexed(
                 new BlockingPlayerChoiceContext(),
                 candidates,
                 player,

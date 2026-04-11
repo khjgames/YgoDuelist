@@ -68,7 +68,7 @@ public sealed class Graceful_Charity : BaseSpellCard
 
         List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this);
 
-        IEnumerable<CardModel> selected = await TributeSummonGridSelect.FromSimpleGrid(
+        IEnumerable<CardModel> selected = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             Owner,

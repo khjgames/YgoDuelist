@@ -51,10 +51,9 @@ public sealed class Final_Destiny : BaseSpellCard
         if (Owner?.Creature?.CombatState is not CombatState cs)
             return;
 
-        // MP: index sync via TributeSummonGridSelect. Hand pile order can differ across peers — stabilize by NetCombatCardDb id
-        // and rebuild candidates when applying remote indexes (same pattern as tribute field rebuild).
+        // MP: combat-card wire (same as CardSelectCmd.FromHand); Index fallback uses rebuild when synchronizer delivers Index.
         List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this);
-        var picked = (await TributeSummonGridSelect.FromSimpleGrid(
+        var picked = (await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             Owner,
@@ -64,7 +63,7 @@ public sealed class Final_Destiny : BaseSpellCard
                 Cancelable = true
             },
             rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this),
-            choiceBegunOptions: PlayerChoiceOptions.CancelPlayCardActions)).ToList();
+            PlayerChoiceOptions.CancelPlayCardActions)).ToList();
 
         if (picked.Count < HandCardsToDestroy)
             return;

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Models;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
@@ -22,9 +23,8 @@ using MegaCrit.Sts2.Core.Runs;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Equip spell target grid: same MP contract as <see cref="TributeSummonGridSelect"/> — only the acting player runs UI;
-/// other peers block on <see cref="PlayerChoiceSynchronizer.WaitForRemoteChoice"/> so <see cref="EquipSpellPlayPayload"/>
-/// is set identically before <see cref="Cards.Core.BaseEquipSpellCard.OnPlay"/>.
+/// Equip spell target grid: same MP contract as <see cref="CardSelectCmd.FromHand"/> — <see cref="PlayerChoiceResult.FromMutableCombatCards"/>
+/// so peers resolve the same <see cref="NetCombatCard"/> targets (index-only sync breaks when pile order differs).
 /// </summary>
 public static class EquipSpellGridSelect
 {
@@ -45,54 +45,101 @@ public static class EquipSpellGridSelect
             return cards.ToList();
 
         uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
-        await context.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
+        bool localSelect = ShouldSelectLocalCard(player);
+        NetGameType net = RunManager.Instance.NetService.Type;
+        bool mpObserver = !localSelect && (net == NetGameType.Host || net == NetGameType.Client);
+        if (mpObserver)
+        {
+            GridCombatMpExpectation.Pending.Value = new GridCombatMpExpectation.Active
+            {
+                OwnerNetId = player.NetId,
+                MinSelect = prefs.MinSelect,
+                MaxSelect = prefs.MaxSelect
+            };
+        }
+
         try
         {
-            List<CardModel> result;
-            if (ShouldSelectLocalCard(player))
+            await context.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
+            try
             {
-                if (CardSelectCmd.Selector != null)
+                List<CardModel> result;
+                if (localSelect)
                 {
-                    try
+                    if (CardSelectCmd.Selector != null)
                     {
-                        result = (await CardSelectCmd.Selector.GetSelectedCards(cards, prefs.MinSelect, prefs.MaxSelect)).ToList();
+                        try
+                        {
+                            result = (await CardSelectCmd.Selector.GetSelectedCards(cards, prefs.MinSelect, prefs.MaxSelect)).ToList();
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            SyncCancelIfMp(player, choiceId);
+                            throw;
+                        }
                     }
-                    catch (OperationCanceledException)
+                    else
                     {
-                        SyncCancelIfMp(player, choiceId);
-                        throw;
+                        NPlayerHand.Instance?.CancelAllCardPlay();
+                        NSimpleCardSelectScreen screen = NSimpleCardSelectScreen.Create(cards, prefs);
+                        NOverlayStack.Instance.Push(screen);
+                        try
+                        {
+                            result = (await screen.CardsSelected()).ToList();
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            SyncCancelIfMp(player, choiceId);
+                            throw;
+                        }
                     }
+
+                    RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(
+                        player,
+                        choiceId,
+                        PlayerChoiceResult.FromMutableCombatCards(result));
                 }
                 else
                 {
-                    NPlayerHand.Instance?.CancelAllCardPlay();
-                    NSimpleCardSelectScreen screen = NSimpleCardSelectScreen.Create(cards, prefs);
-                    NOverlayStack.Instance.Push(screen);
-                    try
+                    PlayerChoiceResult remoteResult =
+                        await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(player, choiceId);
+                    if (remoteResult.ChoiceType == PlayerChoiceType.CombatCard)
                     {
-                        result = (await screen.CardsSelected()).ToList();
+                        result = remoteResult.AsCombatCards().ToList();
                     }
-                    catch (OperationCanceledException)
+                    else if (remoteResult.ChoiceType == PlayerChoiceType.Index)
                     {
-                        SyncCancelIfMp(player, choiceId);
-                        throw;
+                        List<int> remoteIndexes = remoteResult.AsIndexes().ToList();
+                        if (remoteIndexes.Count < prefs.MinSelect || remoteIndexes.Count > prefs.MaxSelect)
+                        {
+                            throw new InvalidOperationException(
+                                $"[YgoDuelist][MP][Equip] Remote Index count {remoteIndexes.Count} outside [{prefs.MinSelect},{prefs.MaxSelect}] choiceId={choiceId} ownerNet={player.NetId}.");
+                        }
+
+                        GD.PrintErr(
+                            $"[YgoDuelist][MP][Equip] Remote choice was Index choiceId={choiceId} ownerNet={player.NetId} indexes=[{string.Join(",", remoteIndexes)}] — applying into grid snapshot.");
+                        if (remoteIndexes.Any(i => i < 0 || i >= cards.Count))
+                            throw new InvalidOperationException("[YgoDuelist][MP][Equip] Remote indexes out of range.");
+                        result = remoteIndexes.Select(i => cards[i]).ToList();
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException(
+                            $"[YgoDuelist][MP][Equip] Unexpected PlayerChoiceType {remoteResult.ChoiceType} choiceId={choiceId}");
                     }
                 }
 
-                List<int> indexes = result.Select(c => cards.IndexOf(c)).ToList();
-                RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(player, choiceId, PlayerChoiceResult.FromIndexes(indexes));
+                return result;
             }
-            else
+            finally
             {
-                result = (from i in (await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(player, choiceId)).AsIndexes()
-                    select cards[i]).ToList();
+                await context.SignalPlayerChoiceEnded();
             }
-
-            return result;
         }
         finally
         {
-            await context.SignalPlayerChoiceEnded();
+            if (mpObserver)
+                GridCombatMpExpectation.Pending.Value = null;
         }
     }
 
@@ -103,10 +150,10 @@ public static class EquipSpellGridSelect
         if (RunManager.Instance.NetService.Type == NetGameType.Singleplayer)
             return;
 
-        GD.Print($"[YgoDuelist][MP][Equip] Grid cancel → SyncLocalChoice empty indexes choiceId={choiceId} ownerNet={player.NetId}");
+        GD.Print($"[YgoDuelist][MP][Equip] Grid cancel → empty combat cards choiceId={choiceId} ownerNet={player.NetId}");
         RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(
             player,
             choiceId,
-            PlayerChoiceResult.FromIndexes(new List<int>()));
+            PlayerChoiceResult.FromMutableCombatCards(new List<CardModel>()));
     }
 }

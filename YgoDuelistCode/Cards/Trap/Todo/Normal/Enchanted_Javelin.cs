@@ -69,7 +69,7 @@ public sealed class Enchanted_Javelin : BaseTrapCard
         await CreatureCmd.Heal(Owner.Creature, incoming / DynamicVars["Mgc"].BaseValue);
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(-1m);
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(-2m);
 
     private static bool AnyEnemyWithAttackIntent(Player player)
     {

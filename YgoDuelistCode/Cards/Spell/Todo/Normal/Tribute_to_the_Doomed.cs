@@ -75,7 +75,7 @@ public sealed class Tribute_to_the_Doomed : BaseSpellCard
             Cancelable = false
         };
 
-        var selected = await TributeSummonGridSelect.FromSimpleGrid(
+        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             Owner!,

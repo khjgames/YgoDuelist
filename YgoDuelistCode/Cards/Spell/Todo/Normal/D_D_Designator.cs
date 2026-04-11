@@ -59,7 +59,7 @@ public sealed class D_D_Designator : BaseSpellCard
             Cancelable = false
         };
 
-        var selected = await TributeSummonGridSelect.FromSimpleGrid(
+        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             Owner!,

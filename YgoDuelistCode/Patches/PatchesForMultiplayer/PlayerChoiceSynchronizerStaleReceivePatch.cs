@@ -1,11 +1,15 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Models;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 
@@ -43,6 +47,21 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
         uint next = GetNextChoiceId(__instance, player);
         if (VerboseReceiveLog)
             GD.Print($"[YgoDuelist][MP][PlayerChoice] recv prefix choiceId={choiceId} localNext={next} sender={player.NetId} result={result}");
+
+        GridCombatMpExpectation.Active? gridExp = GridCombatMpExpectation.Pending.Value;
+        if (gridExp.HasValue
+            && player.NetId == gridExp.Value.OwnerNetId
+            && result.type == PlayerChoiceType.Index
+            && result.indexes != null)
+        {
+            int idxCount = result.indexes.Count;
+            if (idxCount < gridExp.Value.MinSelect || idxCount > gridExp.Value.MaxSelect)
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (count={idxCount} expected [{gridExp.Value.MinSelect},{gridExp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
+                return false;
+            }
+        }
 
         // Valid waits use choiceId where choiceId < next after the matching Reserve (next == choiceId + 1).
         // If next is already > choiceId + 1, we have moved past that id; buffering would be stale.
@@ -92,5 +111,56 @@ public static class PlayerChoiceSynchronizerReserveLogPatch
             return;
         uint next = PlayerChoiceSynchronizerStaleReceivePatch.GetNextChoiceId(__instance, player);
         GD.Print($"[YgoDuelist][MP][PlayerChoice] ReserveChoiceId returned={__result} nextAfter={next} playerNet={player.NetId}");
+    }
+}
+
+/// <summary>
+/// Pre-buffered <see cref="PlayerChoiceType.Index"/> results are fulfilled immediately in
+/// <see cref="PlayerChoiceSynchronizer.WaitForRemoteChoice"/>; drop entries whose index count does not match the active
+/// YGO combat grid expectation (same window as <see cref="GridCombatMpExpectation"/>).
+/// </summary>
+[HarmonyPatch(typeof(PlayerChoiceSynchronizer), nameof(PlayerChoiceSynchronizer.WaitForRemoteChoice))]
+[HarmonyPriority(Priority.First)]
+public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
+{
+    [HarmonyPrefix]
+    public static void Prefix(PlayerChoiceSynchronizer __instance, Player player, uint choiceId)
+    {
+        GridCombatMpExpectation.Active? exp = GridCombatMpExpectation.Pending.Value;
+        if (!exp.HasValue || player.NetId != exp.Value.OwnerNetId)
+            return;
+
+        object? listObj = Traverse.Create(__instance).Field("_receivedChoices").GetValue();
+        if (listObj is not IList list)
+            return;
+
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            object item = list[i]!;
+            uint cId = Traverse.Create(item).Field<uint>("choiceId").Value;
+            ulong senderId = Traverse.Create(item).Field<ulong>("senderId").Value;
+            if (cId != choiceId || senderId != player.NetId)
+                continue;
+
+            object? tcsObj = Traverse.Create(item).Field("completionSource").GetValue();
+            if (tcsObj == null)
+                continue;
+
+            var taskProp = tcsObj.GetType().GetProperty("Task");
+            if (taskProp?.GetValue(tcsObj) is not Task<NetPlayerChoiceResult> task || !task.IsCompleted)
+                continue;
+
+            NetPlayerChoiceResult net = task.Result;
+            if (net.type != PlayerChoiceType.Index || net.indexes == null)
+                continue;
+
+            int count = net.indexes.Count;
+            if (count >= exp.Value.MinSelect && count <= exp.Value.MaxSelect)
+                continue;
+
+            list.RemoveAt(i);
+            GD.PrintErr(
+                $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (count={count} expected [{exp.Value.MinSelect},{exp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
+        }
     }
 }

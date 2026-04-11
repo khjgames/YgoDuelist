@@ -47,7 +47,7 @@ public sealed class TalismanTrapSealingFieldPower : YgoDuelistPower
 
         List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null);
 
-        var pick = await TributeSummonGridSelect.FromSimpleGrid(
+        var pick = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             player,

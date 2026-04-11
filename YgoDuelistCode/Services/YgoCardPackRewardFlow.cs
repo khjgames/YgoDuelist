@@ -450,7 +450,7 @@ public static class YgoCardPackRewardFlow
 
         return options.RarityOdds switch
         {
-            CardRarityOddsType.BossEncounter => 5,
+            CardRarityOddsType.BossEncounter => 6,
             CardRarityOddsType.EliteEncounter => 5,
             CardRarityOddsType.RegularEncounter => RegularEncounterPackSlots(reward.Player),
             _ => Math.Clamp(GetOptionCount(reward), 3, 6),

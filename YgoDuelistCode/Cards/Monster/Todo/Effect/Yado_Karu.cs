@@ -71,7 +71,7 @@ public sealed class Yado_Karu : EffectMonsterCard
             Cancelable = true
         };
 
-        IEnumerable<CardModel> picked = await TributeSummonGridSelect.FromSimpleGrid(
+        IEnumerable<CardModel> picked = await TributeSummonGridSelect.FromSimpleGridCombat(
             choiceContext,
             candidates,
             player,

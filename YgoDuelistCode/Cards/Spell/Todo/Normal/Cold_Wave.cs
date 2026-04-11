@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -13,7 +15,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Cold_Wave : BaseSpellCard
 {
-    private const decimal BlockPerX = 8m;
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 8m) };
 
     protected override int CanonicalEnergyCost => 0;
 
@@ -33,14 +36,12 @@ public sealed class Cold_Wave : BaseSpellCard
             return;
 
         int x = ResolveEnergyXValue();
-        decimal total = BlockPerX * x;
+        decimal total = DynamicVars["Mgc"].BaseValue * x;
         if (total > 0m)
             await CreatureCmd.GainBlock(Owner.Creature, total, default, cardPlay);
 
         await PowerCmd.Apply<ColdWaveSpellTrapLockPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(5m);
 }

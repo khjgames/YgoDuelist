@@ -65,7 +65,7 @@ public sealed class TypeZeroMagicCrusherFieldPower : YgoDuelistPower
             if (candidates.Count == 0)
                 continue;
 
-            var pick = await TributeSummonGridSelect.FromSimpleGrid(
+            var pick = await TributeSummonGridSelect.FromSimpleGridCombat(
                 choiceContext,
                 candidates,
                 player,

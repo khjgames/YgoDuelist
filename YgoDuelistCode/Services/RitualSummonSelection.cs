@@ -205,7 +205,7 @@ public static class RitualSummonSelection
             IEnumerable<CardModel> targetPick;
             try
             {
-                targetPick = await TributeSummonGridSelect.FromSimpleGrid(
+                targetPick = await TributeSummonGridSelect.FromSimpleGridCombat(
                     ctx,
                     ritualTargetsStable,
                     player,
@@ -258,7 +258,7 @@ public static class RitualSummonSelection
         IEnumerable<CardModel> matPick;
         try
         {
-            matPick = await TributeSummonGridSelect.FromSimpleGrid(
+            matPick = await TributeSummonGridSelect.FromSimpleGridCombat(
                 ctx,
                 materialsStable,
                 player,
