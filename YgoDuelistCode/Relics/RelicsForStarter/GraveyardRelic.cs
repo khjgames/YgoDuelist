@@ -172,8 +172,13 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (side == CombatSide.Player && Owner?.PlayerCombatState != null)
         {
             await MonsterCommandRegistry.ResolveKarateManEndOfTurnDestructionAsync(Owner);
+            await MonsterCommandRegistry.ResolveGuardianSlimeEndOfTurnDestructionAsync(Owner);
             MonsterCommandRegistry.ClearPerTurnExtrasForPlayer(Owner);
         }
+
+        if (side == CombatSide.Player && Owner?.Creature != null
+            && Owner.Creature.GetPower<AncientChantRaTributeBuffPower>() is { } ancientChantBuff)
+            await PowerCmd.Remove(ancientChantBuff);
     }
 
     /// <summary>Once-per-turn (annual) gate keyed by string; returns true the first call each player turn.</summary>

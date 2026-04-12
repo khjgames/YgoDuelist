@@ -26,6 +26,9 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
     private static readonly CardKeyword DoomedKeyword = (CardKeyword)20048;
     private static readonly CardKeyword RebirthKeyword = (CardKeyword)20052;
 
+    private int _ancientChantTributePrintedAtk;
+    private int _ancientChantTributePrintedDef;
+
     public The_Winged_Dragon_of_Ra()
         : base(
             cost: 1,
@@ -84,6 +87,48 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
     public CardType ActivatedEffectCardType => CardType.Skill;
     public TargetType ActivatedEffectTarget => TargetType.Self;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-THE_WINGED_DRAGON_OF_RA.activated_effect.description";
+
+    protected override async Task OnBeforeTributeMaterialsReleased(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay,
+        TributeSummonPendingResolution pending)
+    {
+        _ancientChantTributePrintedAtk = 0;
+        _ancientChantTributePrintedDef = 0;
+        if (Owner?.Creature == null || !Owner.Creature.HasPower<AncientChantRaTributeBuffPower>())
+            return;
+
+        int sumAtk = 0;
+        int sumDef = 0;
+        foreach (Creature pet in pending.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard m)
+            {
+                sumAtk += m.BaseAtk;
+                sumDef += m.BaseDef;
+            }
+        }
+
+        await PowerCmd.Remove<AncientChantRaTributeBuffPower>(Owner.Creature);
+        _ancientChantTributePrintedAtk = sumAtk;
+        _ancientChantTributePrintedDef = sumDef;
+    }
+
+    protected override void OnBeforeDuelMonsterSummon(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay,
+        TributeSummonPendingResolution? tributePending)
+    {
+        if (_ancientChantTributePrintedAtk == 0 && _ancientChantTributePrintedDef == 0)
+            return;
+        if (DynamicVars.Damage != null)
+            DynamicVars.Damage.BaseValue = _ancientChantTributePrintedAtk;
+        DynamicVars["Def"].BaseValue = _ancientChantTributePrintedDef;
+        if (DynamicVars.Block != null)
+            DynamicVars.Block.BaseValue = _ancientChantTributePrintedDef;
+        _ancientChantTributePrintedAtk = 0;
+        _ancientChantTributePrintedDef = 0;
+    }
 
     protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

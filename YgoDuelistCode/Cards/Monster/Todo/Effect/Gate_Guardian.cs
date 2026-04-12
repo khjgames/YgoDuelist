@@ -119,7 +119,10 @@ public sealed class Gate_Guardian : EffectMonsterCard
         }
     }
 
-    protected override void OnBeforeDuelMonsterSummon(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override void OnBeforeDuelMonsterSummon(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay,
+        TributeSummonPendingResolution? tributePending)
     {
         int flat = (int)DynamicVars["Mgc"].BaseValue;
         if (flat <= 0)

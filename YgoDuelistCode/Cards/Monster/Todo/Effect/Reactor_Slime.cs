@@ -1,16 +1,22 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect
+public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, IMonsterSecondActivatedEffect
 {
     public Reactor_Slime()
         : base(
@@ -27,13 +33,30 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
+    public override YgoCardPackTags PackTags => YgoCardPackTags.God | YgoCardPackTags.Ocean | YgoCardPackTags.Water;
+
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;
     public TargetType ActivatedEffectTarget => TargetType.Self;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-REACTOR_SLIME.activated_effect.description";
 
+    public int SecondActivatedEffectEnergyCost => 0;
+    public CardType SecondActivatedEffectCardType => CardType.Skill;
+    public TargetType SecondActivatedEffectTarget => TargetType.Self;
+    public string SecondActivatedEffectDescriptionLocKey => "YGODUELIST-REACTOR_SLIME.activated_effect_2.description";
+
     public bool IsActivatedEffectAvailable =>
-        Owner != null && YgoTokenSummon.MaxTokensThatFit(Owner) >= 2;
+        Owner != null
+        && YgoTokenSummon.MaxTokensThatFit(Owner) >= 2
+        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0);
+
+    public bool IsSecondActivatedEffectAvailable =>
+        Owner?.Creature?.CombatState != null
+        && HasMetalReflectInHandDeckOrGraveyard(Owner)
+        && SpellTrapZonePile.CustomType.GetPile(Owner) != null
+        && YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(
+            Owner,
+            Owner.Creature.CombatState.CreateCard<Metal_Reflect_Slime>(Owner));
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -51,6 +74,43 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect
             await YgoTokenSummon.TrySpecialSummonTokenAsync<Slime_Token>(Owner, choiceContext, defensePosition: false);
         }
 
+        ReactorSlimeSummonGate.MarkRestricted(Owner);
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
+    }
+
+    public async Task OnSecondActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
+    {
+        Player? player = source.Owner ?? cardPlay.Card?.Owner;
+        Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source, player);
+        if (player?.Creature == null || pet == null)
+            return;
+
+        MonsterCommandRegistry.SetHasUsedSecondActivatedEffectThisTurn(pet, true);
+
+        await CreatureCmd.Kill(pet, force: true);
+        CardPile? grave = GraveyardPile.CustomType.GetPile(player);
+        if (grave != null)
+            await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
+
+        await Metal_Reflect_Slime.TrySetFromHandDeckOrGraveyardActivatableThisTurnAsync(player, choiceContext);
+    }
+
+    private static bool HasMetalReflectInHandDeckOrGraveyard(Player player)
+    {
+        return EnumerateMetalReflect(player).Any();
+    }
+
+    private static IEnumerable<Metal_Reflect_Slime> EnumerateMetalReflect(Player player)
+    {
+        foreach (var pile in new[] { PileType.Hand.GetPile(player), PileType.Draw.GetPile(player), PileType.Discard.GetPile(player), GraveyardPile.CustomType.GetPile(player) })
+        {
+            if (pile == null)
+                continue;
+            foreach (CardModel c in pile.Cards)
+            {
+                if (c is Metal_Reflect_Slime m)
+                    yield return m;
+            }
+        }
     }
 }

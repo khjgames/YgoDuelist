@@ -1,10 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.TrapMonster;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
@@ -70,5 +78,92 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
         }
 
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Reactor Slime: Set from hand, Deck, or Graveyard; can be activated this turn.
+    /// </summary>
+    public static async Task<bool> TrySetFromHandDeckOrGraveyardActivatableThisTurnAsync(
+        Player player,
+        PlayerChoiceContext choiceContext)
+    {
+        if (player?.Creature?.CombatState == null)
+            return false;
+
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zone == null)
+            return false;
+
+        Metal_Reflect_Slime probe = player.Creature.CombatState.CreateCard<Metal_Reflect_Slime>(player);
+        if (!YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(player, probe))
+            return false;
+
+        List<Metal_Reflect_Slime> candidates = CollectInHandDeckDiscardGraveyard(player);
+        if (candidates.Count == 0)
+            return false;
+
+        Metal_Reflect_Slime? pick;
+        if (candidates.Count == 1)
+        {
+            pick = candidates[0];
+        }
+        else
+        {
+            var prefs = new CardSelectorPrefs(
+                new LocString("cards", "YGODUELIST-REACTOR_SLIME.metal_reflect_select"),
+                1,
+                1)
+            {
+                Cancelable = true,
+                RequireManualConfirmation = true,
+            };
+
+            IEnumerable<CardModel> sel;
+            try
+            {
+                sel = await CardSelectCmd.FromSimpleGrid(
+                    choiceContext,
+                    candidates.Cast<CardModel>().ToList(),
+                    player,
+                    prefs);
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+
+            pick = sel.OfType<Metal_Reflect_Slime>().FirstOrDefault();
+        }
+
+        if (pick == null)
+            return false;
+
+        pick.EnterSpellTrapZoneAsSetCard();
+        pick.SetThisTurn = false;
+        await CardPileCmd.Add(new[] { pick }, zone, CardPilePosition.Top, pick, false);
+        YgoSpellTrapZoneBridge.SyncFromZonePile(player);
+        YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandEnsureVisible(player);
+        return true;
+    }
+
+    private static List<Metal_Reflect_Slime> CollectInHandDeckDiscardGraveyard(Player player)
+    {
+        var list = new List<Metal_Reflect_Slime>();
+        Append(PileType.Hand.GetPile(player), list);
+        Append(PileType.Draw.GetPile(player), list);
+        Append(PileType.Discard.GetPile(player), list);
+        Append(GraveyardPile.CustomType.GetPile(player), list);
+        return list;
+    }
+
+    private static void Append(CardPile? pile, List<Metal_Reflect_Slime> list)
+    {
+        if (pile == null)
+            return;
+        foreach (CardModel c in pile.Cards)
+        {
+            if (c is Metal_Reflect_Slime m)
+                list.Add(m);
+        }
     }
 }

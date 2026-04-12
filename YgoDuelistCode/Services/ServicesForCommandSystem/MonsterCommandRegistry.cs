@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -38,6 +39,12 @@ public sealed class MonsterCommandState
 
     /// <summary>Karate Man: destroy this pet at end of the controlling player turn after burst.</summary>
     public bool KarateManDestroyAtEndOfOwnerTurn;
+
+    /// <summary>Guardian Slime activated effect: destroy at end of the controlling player turn.</summary>
+    public bool GuardianSlimeDestroyAtEndOfOwnerTurn;
+
+    /// <summary>Second Activate Effect option (e.g. Reactor Slime Metal Reflect).</summary>
+    public bool HasUsedSecondActivatedEffectThisTurn;
 
     /// <summary>Per-turn Command Attack slot when <see cref="BaseMonsterCard.AllowsSeparateAttackAndDefendCommandsPerTurn"/>.</summary>
     public bool HasUsedAttackCommandThisTurn;
@@ -75,6 +82,11 @@ public static class MonsterCommandRegistry
         GetOrCreate(pet).HasUsedActivatedEffectThisTurn = used;
     }
 
+    public static void SetHasUsedSecondActivatedEffectThisTurn(Creature pet, bool used)
+    {
+        GetOrCreate(pet).HasUsedSecondActivatedEffectThisTurn = used;
+    }
+
     public static async Task SetHasUsedCommandThisTurn(Creature pet, bool hasUsedCommandThisTurn, Creature? applier = null, CardModel? sourceCard = null)
     {
         var state = GetOrCreate(pet);
@@ -83,6 +95,7 @@ public static class MonsterCommandRegistry
         if (!hasUsedCommandThisTurn)
         {
             state.HasUsedActivatedEffectThisTurn = false;
+            state.HasUsedSecondActivatedEffectThisTurn = false;
             state.HasUsedAttackCommandThisTurn = false;
             state.HasUsedDefendCommandThisTurn = false;
         }
@@ -108,6 +121,7 @@ public static class MonsterCommandRegistry
         var state = GetOrCreate(pet);
         state.HasUsedCommandThisTurn = false;
         state.HasUsedActivatedEffectThisTurn = false;
+        state.HasUsedSecondActivatedEffectThisTurn = false;
         state.HasUsedAttackCommandThisTurn = false;
         state.HasUsedDefendCommandThisTurn = false;
 
@@ -270,6 +284,27 @@ public static class MonsterCommandRegistry
             await CreatureCmd.Kill(pet, force: true);
     }
 
+    /// <summary>End of controlling player turn: destroy Guardian Slime after its block effect.</summary>
+    public static async Task ResolveGuardianSlimeEndOfTurnDestructionAsync(Player? player)
+    {
+        if (player?.PlayerCombatState == null)
+            return;
+
+        var toKill = new List<Creature>();
+        foreach (Creature pet in player.PlayerCombatState.Pets)
+        {
+            if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
+                continue;
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not Guardian_Slime)
+                continue;
+            if (TryGet(pet, out MonsterCommandState s) && s.GuardianSlimeDestroyAtEndOfOwnerTurn)
+                toKill.Add(pet);
+        }
+
+        foreach (Creature pet in toKill)
+            await CreatureCmd.Kill(pet, force: true);
+    }
+
     /// <summary>End of player turn: Cyber Jar free commands and D.D. Warrior Lady attack-gated window.</summary>
     public static void ClearPerTurnExtrasForPlayer(Player? player)
     {
@@ -285,6 +320,8 @@ public static class MonsterCommandRegistry
             s.ExarionUniversePiercingStanceThisTurn = false;
             s.KarateManBurstAtkThisTurn = false;
             s.KarateManDestroyAtEndOfOwnerTurn = false;
+            s.GuardianSlimeDestroyAtEndOfOwnerTurn = false;
+            s.HasUsedSecondActivatedEffectThisTurn = false;
         }
 
         foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.GetFieldMonsters(player))

@@ -77,6 +77,13 @@ public static class DuelMonsterMonsterOptionsMenu
             commands.Add(activate);
         }
 
+        if (monsterCard is IMonsterSecondActivatedEffect)
+        {
+            Activate_Effect_2 activate2 = combatState.CreateCard<Activate_Effect_2>(player);
+            activate2.InitializeSource(monsterCard, pet);
+            commands.Add(activate2);
+        }
+
         if (Egyptian_God_Slime.PlayerHasSlimeInExtraDeck(player)
             && monsterCard is BaseMonsterCard bm
             && Egyptian_God_Slime.QualifiesAsSlimeTributeMaterial(bm))

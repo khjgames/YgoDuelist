@@ -48,6 +48,7 @@ public static class MonsterCommandTurnResetPatch
 
         NormalSummonTracker.ResetForPlayer(combatPlayer);
         LegionFiendJesterSpellcasterConduit.ResetForPlayer(combatPlayer);
+        ReactorSlimeSummonGate.ResetForPlayer(combatPlayer);
 
         BaseTrapCard.ClearSetThisTurnForFacedownSetTrapsInZone(combatPlayer);
 

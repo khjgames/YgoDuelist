@@ -40,6 +40,7 @@ public static class YgoCombatEndClearPatch
         YgoDarkSpiritSilentState.ClearAll();
         NormalSummonTracker.ClearAll();
         LegionFiendJesterSpellcasterConduit.ClearAll();
+        ReactorSlimeSummonGate.ClearAll();
         TributeSummonPlayPayload.ClearAll();
         EquipSpellPlayPayload.ClearAll();
         RitualSpellPlayPayload.ClearAll();

@@ -73,6 +73,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
             || (!card.CanSummonDuelMonster && !card.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
             return false;
 
+        if (!ReactorSlimeSummonGate.AllowsSummon(player, card))
+            return false;
+
         if (CountLiveDuelMonsters(player) >= MaxDuelMonstersPerPlayer)
             return false;
 

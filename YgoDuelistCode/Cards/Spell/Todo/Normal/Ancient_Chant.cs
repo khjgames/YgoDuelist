@@ -1,23 +1,100 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Relics;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Ancient_Chant : BaseSpellCard
 {
+    private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
+
     public Ancient_Chant()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
-    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        Task.CompletedTask;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.God | YgoCardPackTags.Spell;
 
-    protected override void OnUpgrade()
+    public override Type[] BundledCards => new[] { typeof(The_Winged_Dragon_of_Ra) };
+
+    public override Type[] RelatedCards => new[] { typeof(Ancient_Chant), typeof(The_Winged_Dragon_of_Ra) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromCard(YgoPackCardCatalog.CardFromType(typeof(The_Winged_Dragon_of_Ra)));
+        }
+    }
+
+    protected override bool IsPlayable =>
+        base.IsPlayable && Owner != null && FindRaCandidates(Owner).Count > 0;
+
+    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        Player? player = Owner;
+        if (player?.Creature == null)
+            return;
+
+        List<The_Winged_Dragon_of_Ra> ra = FindRaCandidates(player);
+        if (ra.Count == 0)
+            return;
+
+        The_Winged_Dragon_of_Ra toHand = ra[0];
+        CardPile? hand = PileType.Hand.GetPile(player);
+        if (hand == null)
+            return;
+
+        await CardPileCmd.Add(new CardModel[] { toHand }, hand, CardPilePosition.Top, toHand, false);
+        await PlayerCmd.GainStars(1, player);
+    }
+
+    protected override void AddExtraArgsToDescription(LocString description) =>
+        description.Add("conduitIcon", ConduitImgBbcode);
+
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
+    private static List<The_Winged_Dragon_of_Ra> FindRaCandidates(Player player)
+    {
+        var list = new List<The_Winged_Dragon_of_Ra>();
+        AppendRa(PileType.Draw.GetPile(player), list);
+        AppendRa(PileType.Discard.GetPile(player), list);
+        AppendRaFromGraveyard(player, list);
+        return list;
+    }
+
+    private static void AppendRa(CardPile? pile, List<The_Winged_Dragon_of_Ra> list)
+    {
+        if (pile == null)
+            return;
+        foreach (CardModel c in pile.Cards)
+        {
+            if (c is The_Winged_Dragon_of_Ra ra)
+                list.Add(ra);
+        }
+    }
+
+    private static void AppendRaFromGraveyard(Player player, List<The_Winged_Dragon_of_Ra> list)
+    {
+        foreach (CardModel c in GraveyardRelic.GetGraveyardCards(player))
+        {
+            if (c is The_Winged_Dragon_of_Ra ra)
+                list.Add(ra);
+        }
     }
 }

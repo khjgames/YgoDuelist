@@ -18,6 +18,18 @@ public static class ActivateEffectCardTextPatch
 {
     static void Postfix(CardModel __instance, ref string __result)
     {
+        if (__instance is Activate_Effect_2 { SourceMonster: NormalMonsterCard src2 })
+        {
+            if (src2 is not IMonsterSecondActivatedEffect impl2)
+                return;
+            var loc2 = new LocString("cards", impl2.SecondActivatedEffectDescriptionLocKey);
+            src2.DynamicVars.AddTo(loc2);
+            string text2 = loc2.GetFormattedText();
+            if (!string.IsNullOrEmpty(text2))
+                __result = text2;
+            return;
+        }
+
         if (__instance is not Activate_Effect { SourceMonster: NormalMonsterCard sourceMonster })
             return;
         if (sourceMonster is not IMonsterActivatedEffect impl)
@@ -36,6 +48,15 @@ public static class ActivateEffectTitlePatch
 {
     static void Postfix(CardModel __instance, ref string __result)
     {
+        if (__instance is Activate_Effect_2)
+        {
+            var loc2 = new LocString("cards", "YGODUELIST-ACTIVATE_EFFECT_2.title");
+            string t2 = loc2.GetFormattedText();
+            if (!string.IsNullOrEmpty(t2))
+                __result = t2;
+            return;
+        }
+
         if (__instance is not Activate_Effect)
             return;
 

@@ -134,6 +134,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             if (tribute > 0 && !TributeSummonSelection.CanMeetTributeCostForSummon(Owner, this))
                 return false;
 
+            if (ReactorSlimeSummonGate.BlocksNonDivineSummons(Owner) && DuelMonsterRace != DuelMonsterRace.DivineBeast)
+                return false;
+
             return true;
         }
     }
@@ -232,19 +235,20 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         if (Owner != null && CanSummonDuelMonster)
         {
             int tribute = TributeReleaseCount;
+            TributeSummonPendingResolution? tributePending = null;
             if (tribute > 0)
             {
-                if (!TributeSummonPlayPayload.TryTakePendingForManualPlay(choiceContext, this, out var pending) || pending == null
+                if (!TributeSummonPlayPayload.TryTakePendingForManualPlay(choiceContext, this, out tributePending) || tributePending == null
                     || !TributeSummonSelection.TributeSelectionMeetsCost(
                         this,
                         Owner,
-                        pending.Pets,
-                        pending.MausoleumHpTributes,
-                        pending.MausoleumHpLossTotal))
+                        tributePending.Pets,
+                        tributePending.MausoleumHpTributes,
+                        tributePending.MausoleumHpLossTotal))
                 {
                     if (YgoPlayPayloadNetKey.TryGetKey(this, out ulong kOid, out uint kIdx))
                         GD.PrintErr(
-                            $"[YgoDuelist][MP][Tribute] OnPlay fallback (no kill/summon): key=({kOid},{kIdx}) card={Id?.Entry} pendingNull={pending == null}");
+                            $"[YgoDuelist][MP][Tribute] OnPlay fallback (no kill/summon): key=({kOid},{kIdx}) card={Id?.Entry} pendingNull={tributePending == null}");
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
                     if (!ShouldSkipCombatActionAfterSummon(cardPlay))
                     {
@@ -254,10 +258,12 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                     return;
                 }
 
-                foreach (Creature pet in pending.Pets)
+                await OnBeforeTributeMaterialsReleased(choiceContext, cardPlay, tributePending);
+
+                foreach (Creature pet in tributePending.Pets)
                     await CreatureCmd.Kill(pet, force: true);
 
-                int hpLoss = pending.MausoleumHpLossTotal;
+                int hpLoss = tributePending.MausoleumHpLossTotal;
                 if (hpLoss > 0 && Owner.Creature != null)
                 {
                     int nextHp = Owner.Creature.CurrentHp - hpLoss;
@@ -267,7 +273,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 }
             }
 
-            OnBeforeDuelMonsterSummon(choiceContext, cardPlay);
+            OnBeforeDuelMonsterSummon(choiceContext, cardPlay, tributePending);
             await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext, SpecialSummonGrantsImmediateCommandsThisTurn);
         }
 
@@ -295,8 +301,20 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
     }
 
+    /// <summary>
+    /// After tribute selection is validated, before tribute monsters are destroyed (materials still on the field).
+    /// </summary>
+    protected virtual Task OnBeforeTributeMaterialsReleased(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay,
+        TributeSummonPendingResolution pending) =>
+        Task.CompletedTask;
+
     /// <summary>After tribute releases resolve, before <see cref="DuelMonsterSummon.TrySummonDuelMonster"/> (e.g. Gate Guardian MGC bonus).</summary>
-    protected virtual void OnBeforeDuelMonsterSummon(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected virtual void OnBeforeDuelMonsterSummon(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay,
+        TributeSummonPendingResolution? tributePending)
     {
     }
 
