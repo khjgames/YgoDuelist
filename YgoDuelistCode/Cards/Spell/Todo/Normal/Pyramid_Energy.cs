@@ -25,8 +25,8 @@ public sealed class Pyramid_Energy : BaseSpellCard, IYgoPrePlayCancelableGridSel
     private const int OptionAtk = 0;
     private const int OptionDef = 1;
 
-    private const decimal AtkBonus = 200m;
-    private const decimal DefBonus = 500m;
+    private const decimal AtkBonus = 2m;
+    private const decimal DefBonus = 5m;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", AtkBonus), new DynamicVar("Mgc2", DefBonus) };

@@ -5,11 +5,10 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
 
-/// <summary>+3 ATK/DEF in combat scale (YGO 300); curated flat equips from cards_database.json.</summary>
+/// <summary>+3 ATK/DEF base (YGO 300), +6/+6 when upgraded to 0 cost; curated flat equips from cards_database.json.</summary>
 public abstract class FlatRaceEquipSpell : BaseEquipSpellCard
 {
     private readonly DuelMonsterRace _requiredRace;
@@ -34,8 +33,10 @@ public abstract class FlatRaceEquipSpell : BaseEquipSpellCard
 
     protected override void OnUpgrade()
     {
-        _bonusAtk = _printedAtkBonus + YgoStatUpgradeScaling.GetSpellTrapStatBonusUpgradeDelta(_printedAtkBonus);
-        _bonusDef = _printedDefBonus + YgoStatUpgradeScaling.GetSpellTrapStatBonusUpgradeDelta(_printedDefBonus);
+        // +2 per line (4→6).
+        const int delta = 2;
+        _bonusAtk = _printedAtkBonus + delta;
+        _bonusDef = _printedDefBonus + delta;
         EnergyCost.UpgradeBy(-1);
         DynamicVars["Mgc"].BaseValue = _bonusAtk;
     }
@@ -74,75 +75,75 @@ public abstract class FlatRaceEquipSpell : BaseEquipSpellCard
 
 public sealed class Beast_Fangs : FlatRaceEquipSpell
 {
-    public Beast_Fangs() : base(CardRarity.Common, DuelMonsterRace.Beast, 3, 3) { }
+    public Beast_Fangs() : base(CardRarity.Common, DuelMonsterRace.Beast, 4, 4) { }
 }
 
 public sealed class Book_Of_Secret_Arts : FlatRaceEquipSpell
 {
-    public Book_Of_Secret_Arts() : base(CardRarity.Common, DuelMonsterRace.Spellcaster, 3, 3) { }
+    public Book_Of_Secret_Arts() : base(CardRarity.Common, DuelMonsterRace.Spellcaster, 4, 4) { }
 }
 
 public sealed class Dark_Energy : FlatRaceEquipSpell
 {
-    public Dark_Energy() : base(CardRarity.Common, DuelMonsterRace.Fiend, 3, 3) { }
+    public Dark_Energy() : base(CardRarity.Common, DuelMonsterRace.Fiend, 4, 4) { }
 }
 
 public sealed class Dragon_Treasure : FlatRaceEquipSpell
 {
-    public Dragon_Treasure() : base(CardRarity.Common, DuelMonsterRace.Dragon, 3, 3) { }
+    public Dragon_Treasure() : base(CardRarity.Common, DuelMonsterRace.Dragon, 4, 4) { }
 }
 
 public sealed class Electro_Whip : FlatRaceEquipSpell
 {
-    public Electro_Whip() : base(CardRarity.Common, DuelMonsterRace.Thunder, 3, 3) { }
+    public Electro_Whip() : base(CardRarity.Common, DuelMonsterRace.Thunder, 4, 4) { }
 }
 
 public sealed class Follow_Wind : FlatRaceEquipSpell
 {
-    public Follow_Wind() : base(CardRarity.Common, DuelMonsterRace.WingedBeast, 3, 3) { }
+    public Follow_Wind() : base(CardRarity.Common, DuelMonsterRace.WingedBeast, 4, 4) { }
 }
 
 public sealed class Laser_Cannon_Armor : FlatRaceEquipSpell
 {
-    public Laser_Cannon_Armor() : base(CardRarity.Common, DuelMonsterRace.Insect, 3, 3) { }
+    public Laser_Cannon_Armor() : base(CardRarity.Common, DuelMonsterRace.Insect, 4, 4) { }
 }
 
 public sealed class Legendary_Sword : FlatRaceEquipSpell
 {
-    public Legendary_Sword() : base(CardRarity.Common, DuelMonsterRace.Warrior, 3, 3) { }
+    public Legendary_Sword() : base(CardRarity.Common, DuelMonsterRace.Warrior, 4, 4) { }
 }
 
 public sealed class Machine_Conversion_Factory : FlatRaceEquipSpell
 {
-    public Machine_Conversion_Factory() : base(CardRarity.Common, DuelMonsterRace.Machine, 3, 3) { }
+    public Machine_Conversion_Factory() : base(CardRarity.Common, DuelMonsterRace.Machine, 4, 4) { }
 }
 
 public sealed class Mystical_Moon : FlatRaceEquipSpell
 {
-    public Mystical_Moon() : base(CardRarity.Common, DuelMonsterRace.BeastWarrior, 3, 3) { }
+    public Mystical_Moon() : base(CardRarity.Common, DuelMonsterRace.BeastWarrior, 4, 4) { }
 }
 
 public sealed class Power_Of_Kaishin : FlatRaceEquipSpell
 {
-    public Power_Of_Kaishin() : base(CardRarity.Common, DuelMonsterRace.Aqua, 3, 3) { }
+    public Power_Of_Kaishin() : base(CardRarity.Common, DuelMonsterRace.Aqua, 4, 4) { }
 }
 
 public sealed class Raise_Body_Heat : FlatRaceEquipSpell
 {
-    public Raise_Body_Heat() : base(CardRarity.Common, DuelMonsterRace.Dinosaur, 3, 3) { }
+    public Raise_Body_Heat() : base(CardRarity.Common, DuelMonsterRace.Dinosaur, 4, 4) { }
 }
 
 public sealed class Silver_Bow_And_Arrow : FlatRaceEquipSpell
 {
-    public Silver_Bow_And_Arrow() : base(CardRarity.Common, DuelMonsterRace.Fairy, 3, 3) { }
+    public Silver_Bow_And_Arrow() : base(CardRarity.Common, DuelMonsterRace.Fairy, 4, 4) { }
 }
 
 public sealed class Vile_Germs : FlatRaceEquipSpell
 {
-    public Vile_Germs() : base(CardRarity.Common, DuelMonsterRace.Plant, 3, 3) { }
+    public Vile_Germs() : base(CardRarity.Common, DuelMonsterRace.Plant, 4, 4) { }
 }
 
 public sealed class Violet_Crystal : FlatRaceEquipSpell
 {
-    public Violet_Crystal() : base(CardRarity.Common, DuelMonsterRace.Zombie, 3, 3) { }
+    public Violet_Crystal() : base(CardRarity.Common, DuelMonsterRace.Zombie, 4, 4) { }
 }

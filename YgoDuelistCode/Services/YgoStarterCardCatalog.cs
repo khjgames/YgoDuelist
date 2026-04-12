@@ -9,6 +9,9 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -35,6 +38,8 @@ public enum StarterCategory
 /// If the grid contains a <see cref="RitualSpellCard"/>, its ritual target monster is inserted immediately after that spell (not counted toward category quotas).
 /// Otherwise, if the grid contains a named <see cref="RitualMonsterCard"/> with a paired spell in <see cref="RitualArchetypeMeta"/>, that spell is inserted immediately after the monster.
 /// At most one such bonus row runs so the list stays at <see cref="MaxGridSize"/> when a bonus applies.
+/// After that, one random flat race equip (if any), one random terrain race field (if any), and one random flat attribute field (if any)
+/// may be retargeted to match the dominant monster races/attributes in the grid.
 /// </summary>
 public static class YgoStarterCardCatalog
 {
@@ -92,6 +97,59 @@ public static class YgoStarterCardCatalog
     private static Dictionary<(StarterCategory, CardRarity), List<Type>>? sStarterBuckets;
     private static Dictionary<(StarterCategory, CardRarity), int>? sAvailabilitySnapshot;
     private static MethodInfo? sModelDbCardNoArg;
+
+    /// <summary>Curated <see cref="FlatRaceEquipSpell"/> types keyed by required race (see <c>FlatRaceEquipSpells.cs</c>).</summary>
+    private static readonly IReadOnlyDictionary<DuelMonsterRace, Type> FlatRaceEquipTypeByRace =
+        new Dictionary<DuelMonsterRace, Type>
+        {
+            [DuelMonsterRace.Aqua] = typeof(Power_Of_Kaishin),
+            [DuelMonsterRace.Beast] = typeof(Beast_Fangs),
+            [DuelMonsterRace.BeastWarrior] = typeof(Mystical_Moon),
+            [DuelMonsterRace.Dinosaur] = typeof(Raise_Body_Heat),
+            [DuelMonsterRace.Dragon] = typeof(Dragon_Treasure),
+            [DuelMonsterRace.Fairy] = typeof(Silver_Bow_And_Arrow),
+            [DuelMonsterRace.Fiend] = typeof(Dark_Energy),
+            [DuelMonsterRace.Insect] = typeof(Laser_Cannon_Armor),
+            [DuelMonsterRace.Machine] = typeof(Machine_Conversion_Factory),
+            [DuelMonsterRace.Plant] = typeof(Vile_Germs),
+            [DuelMonsterRace.Spellcaster] = typeof(Book_Of_Secret_Arts),
+            [DuelMonsterRace.Thunder] = typeof(Electro_Whip),
+            [DuelMonsterRace.Warrior] = typeof(Legendary_Sword),
+            [DuelMonsterRace.WingedBeast] = typeof(Follow_Wind),
+            [DuelMonsterRace.Zombie] = typeof(Violet_Crystal),
+        };
+
+    /// <summary>Flat terrain fields in the Neow pool: positive <see cref="BaseFieldSpellCard.GetFieldStatEffect"/> races match in-game cards.</summary>
+    private static readonly (Type FieldType, Func<DuelMonsterRace, bool> IsBuffed)[] TerrainRaceFieldSpecs =
+    [
+        (typeof(Forest), static r => r is DuelMonsterRace.Insect or DuelMonsterRace.Beast or DuelMonsterRace.Plant or DuelMonsterRace.BeastWarrior),
+        (typeof(Mountain), static r => r is DuelMonsterRace.Dragon or DuelMonsterRace.WingedBeast or DuelMonsterRace.Thunder),
+        (typeof(Sogen), static r => r is DuelMonsterRace.Warrior or DuelMonsterRace.BeastWarrior),
+        (typeof(Wasteland), static r => r is DuelMonsterRace.Dinosaur or DuelMonsterRace.Zombie or DuelMonsterRace.Rock),
+        (typeof(Yami), static r => r is DuelMonsterRace.Fiend or DuelMonsterRace.Spellcaster),
+        (typeof(Umi), static r => r is DuelMonsterRace.Fish or DuelMonsterRace.SeaSerpent or DuelMonsterRace.Thunder or DuelMonsterRace.Aqua),
+    ];
+
+    private static readonly IReadOnlyDictionary<DuelMonsterAttribute, Type> FlatAttributeFieldTypeByAttribute =
+        new Dictionary<DuelMonsterAttribute, Type>
+        {
+            [DuelMonsterAttribute.Earth] = typeof(Gaia_Power),
+            [DuelMonsterAttribute.Light] = typeof(Luminous_Spark),
+            [DuelMonsterAttribute.Dark] = typeof(Mystic_Plasma_Zone),
+            [DuelMonsterAttribute.Fire] = typeof(Molten_Destruction),
+            [DuelMonsterAttribute.Wind] = typeof(Rising_Air_Current),
+            [DuelMonsterAttribute.Water] = typeof(Umiiruka),
+        };
+
+    private static readonly HashSet<Type> FlatAttributeFieldTypes = new()
+    {
+        typeof(Gaia_Power),
+        typeof(Luminous_Spark),
+        typeof(Mystic_Plasma_Zone),
+        typeof(Molten_Destruction),
+        typeof(Rising_Air_Current),
+        typeof(Umiiruka),
+    };
 
     static YgoStarterCardCatalog()
     {
@@ -153,6 +211,8 @@ public static class YgoStarterCardCatalog
         bool spellBundledMonster = TryInsertBundledRitualMonsterAfterFirstSpell(grid);
         bool monsterBundledSpell = !spellBundledMonster && TryInsertBundledRitualSpellAfterFirstMonster(grid);
         bool ritualBundled = spellBundledMonster || monsterBundledSpell;
+
+        ApplyNeowStarterGridSubstitutions(grid, rng);
 
         GD.Print(
             $"[YgoDuelist NeowDraft] CreateRandomGrid: structured fill categoryOrder=[{string.Join(",", categoryOrder)}] " +
@@ -245,6 +305,134 @@ public static class YgoStarterCardCatalog
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// After ritual bundle rows, optionally retargets one flat race equip, one terrain race field, and one flat attribute field
+    /// toward the most common monster races/attributes in the grid (ties broken at random).
+    /// </summary>
+    private static void ApplyNeowStarterGridSubstitutions(List<CardModel> grid, Rng rng)
+    {
+        var monsters = new List<BaseMonsterCard>();
+        foreach (CardModel c in grid)
+        {
+            if (c is BaseMonsterCard m)
+                monsters.Add(m);
+        }
+
+        if (monsters.Count == 0)
+            return;
+
+        TrySubstituteFlatRaceEquip(grid, rng, monsters);
+        TrySubstituteTerrainRaceField(grid, rng, monsters);
+        TrySubstituteFlatAttributeField(grid, rng, monsters);
+    }
+
+    private static void TrySubstituteFlatRaceEquip(List<CardModel> grid, Rng rng, List<BaseMonsterCard> monsters)
+    {
+        var equipIndices = new List<int>();
+        for (int i = 0; i < grid.Count; i++)
+        {
+            if (grid[i] is FlatRaceEquipSpell)
+                equipIndices.Add(i);
+        }
+
+        if (equipIndices.Count == 0)
+            return;
+
+        var raceCounts = new Dictionary<DuelMonsterRace, int>();
+        foreach (BaseMonsterCard m in monsters)
+        {
+            DuelMonsterRace r = m.DuelMonsterRace;
+            raceCounts[r] = raceCounts.GetValueOrDefault(r) + 1;
+        }
+
+        int max = raceCounts.Values.Max();
+        List<DuelMonsterRace> topRaces = raceCounts.Where(kv => kv.Value == max).Select(kv => kv.Key).ToList();
+        List<DuelMonsterRace> racesWithEquip = topRaces.Where(r => FlatRaceEquipTypeByRace.ContainsKey(r)).ToList();
+        if (racesWithEquip.Count == 0)
+            return;
+
+        DuelMonsterRace racePick = racesWithEquip[rng.NextInt(0, racesWithEquip.Count)];
+        Type equipType = FlatRaceEquipTypeByRace[racePick];
+
+        int slot = equipIndices[rng.NextInt(0, equipIndices.Count)];
+        ReplaceStarterGridSlot(grid, slot, equipType);
+    }
+
+    private static void TrySubstituteTerrainRaceField(List<CardModel> grid, Rng rng, List<BaseMonsterCard> monsters)
+    {
+        var terrainIndices = new List<int>();
+        for (int i = 0; i < grid.Count; i++)
+        {
+            Type t = grid[i].GetType();
+            foreach ((Type fieldType, _) in TerrainRaceFieldSpecs)
+            {
+                if (fieldType == t)
+                {
+                    terrainIndices.Add(i);
+                    break;
+                }
+            }
+        }
+
+        if (terrainIndices.Count == 0)
+            return;
+
+        var scores = new List<(Type FieldType, int Count)>();
+        foreach ((Type fieldType, Func<DuelMonsterRace, bool> isBuffed) in TerrainRaceFieldSpecs)
+        {
+            int n = monsters.Count(m => isBuffed(m.DuelMonsterRace));
+            scores.Add((fieldType, n));
+        }
+
+        int max = scores.Max(s => s.Count);
+        List<Type> best = scores.Where(s => s.Count == max).Select(s => s.FieldType).ToList();
+        Type fieldPick = best[rng.NextInt(0, best.Count)];
+
+        int slot = terrainIndices[rng.NextInt(0, terrainIndices.Count)];
+        ReplaceStarterGridSlot(grid, slot, fieldPick);
+    }
+
+    private static void TrySubstituteFlatAttributeField(List<CardModel> grid, Rng rng, List<BaseMonsterCard> monsters)
+    {
+        var attrIndices = new List<int>();
+        for (int i = 0; i < grid.Count; i++)
+        {
+            Type t = grid[i].GetType();
+            if (FlatAttributeFieldTypes.Contains(t))
+                attrIndices.Add(i);
+        }
+
+        if (attrIndices.Count == 0)
+            return;
+
+        var attrCounts = new Dictionary<DuelMonsterAttribute, int>();
+        foreach (BaseMonsterCard m in monsters)
+        {
+            DuelMonsterAttribute a = m.DuelMonsterAttribute;
+            attrCounts[a] = attrCounts.GetValueOrDefault(a) + 1;
+        }
+
+        int max = attrCounts.Values.Max();
+        List<DuelMonsterAttribute> topAttrs = attrCounts.Where(kv => kv.Value == max).Select(kv => kv.Key).ToList();
+        List<DuelMonsterAttribute> mappable = topAttrs.Where(a => FlatAttributeFieldTypeByAttribute.ContainsKey(a)).ToList();
+        if (mappable.Count == 0)
+            return;
+
+        DuelMonsterAttribute attrPick = mappable[rng.NextInt(0, mappable.Count)];
+        Type fieldType = FlatAttributeFieldTypeByAttribute[attrPick];
+
+        int slot = attrIndices[rng.NextInt(0, attrIndices.Count)];
+        ReplaceStarterGridSlot(grid, slot, fieldType);
+    }
+
+    private static void ReplaceStarterGridSlot(List<CardModel> grid, int index, Type cardType)
+    {
+        CardModel canonical = CardFromType(cardType);
+        CardModel mutable = canonical.ToMutable();
+        mutable.FloorAddedToDeck = 1;
+        grid[index] = mutable;
     }
 
     private static CardModel GetNextUniqueCardOfRarity(

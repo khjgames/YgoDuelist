@@ -19,12 +19,15 @@ public sealed class YgoCardLibrarySidebarFilterState
 
     public YgoCardLibraryStatRangeFilterState Def { get; } = new();
 
-    /// <summary>Last-used ATK/DEF sort header; drives the extra compendium grid reorder pass.</summary>
+    public YgoCardLibraryPackWeightRangeFilterState PackWeight { get; } = new();
+
+    /// <summary>Last-used pack weight / ATK / DEF sort header; drives the extra compendium grid reorder pass.</summary>
     public YgoCardLibraryMonsterStatSortAxis PrimaryMonsterStatSort { get; set; }
 
     public bool Matches(CardModel card) =>
         PackTags.Matches(card) && YgoCardTypes.Matches(card) && Level.Matches(card) && Attribute.Matches(card)
         && Race.Matches(card)
+        && PackWeight.Matches(card)
         && Atk.Matches(card, bm => bm.BaseAtk)
         && Def.Matches(card, bm => bm.BaseDef);
 
@@ -36,6 +39,7 @@ public sealed class YgoCardLibrarySidebarFilterState
         Level.ResetToDefaults();
         Attribute.ResetToDefaults();
         Race.ResetToDefaults();
+        PackWeight.ResetToDefaults();
         Atk.ResetToDefaults();
         Def.ResetToDefaults();
     }

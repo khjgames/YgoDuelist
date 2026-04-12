@@ -95,6 +95,7 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
         var filterState = new YgoCardLibrarySidebarFilterState();
         AppendYgoCardTypeCategory(inner, __instance, filterState);
         AppendLevelCategory(inner, __instance, filterState);
+        AppendPackWeightCategory(inner, __instance, filterState);
         AppendAtkCategory(inner, __instance, filterState);
         AppendDefCategory(inner, __instance, filterState);
         AppendAttributeCategory(inner, __instance, filterState);
@@ -133,6 +134,34 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
             filterState.Atk.SortButton.IsDescending = true;
         if (filterState.Def.SortButton != null)
             filterState.Def.SortButton.IsDescending = true;
+        if (filterState.PackWeight.SortButton != null)
+            filterState.PackWeight.SortButton.IsDescending = true;
+    }
+
+    static void AppendPackWeightCategory(
+        VBoxContainer inner,
+        NCardLibrary library,
+        YgoCardLibrarySidebarFilterState root)
+    {
+        YgoCardLibraryPackWeightRangeFilterState state = root.PackWeight;
+        var cat = new CardLibraryFilterStatRangeSortingRuleCategoryGUI { Name = "YgoPackWeightModule" };
+        cat.Setup(
+            "PackWeight",
+            new LocString("static_hover_tips", "STAT_FILTER_PACK_WEIGHT_MIN"),
+            new LocString("static_hover_tips", "STAT_FILTER_PACK_WEIGHT_MAX"),
+            () =>
+            {
+                root.PrimaryMonsterStatSort = YgoCardLibraryMonsterStatSortAxis.PackWeight;
+                YgoCardLibraryNCardLibraryInvoker.RequestDisplayCards(library);
+            });
+        state.SortButton = cat.SortButton;
+        state.MinEdit = cat.MinEdit;
+        state.MaxEdit = cat.MaxEdit;
+        inner.AddChild(cat);
+
+        void Dirty() => YgoCardLibraryNCardLibraryInvoker.RequestUpdateFilter(library);
+        cat.MinEdit.TextChanged += _ => Dirty();
+        cat.MaxEdit.TextChanged += _ => Dirty();
     }
 
     static void AppendRaceCategory(
@@ -433,5 +462,7 @@ public static class YgoCardLibraryCustomFilterSubmenuOpenedPatch
             state.Atk.SortButton.IsDescending = true;
         if (state.Def.SortButton != null)
             state.Def.SortButton.IsDescending = true;
+        if (state.PackWeight.SortButton != null)
+            state.PackWeight.SortButton.IsDescending = true;
     }
 }

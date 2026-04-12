@@ -44,13 +44,35 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public int BaseDef { get; }
     public int BaseMgc { get; }
 
+    /// <summary>
+    /// Pack weight before +0.1 when this card type is a named fusion material and final [0.4, 2] clamp.
+    /// <see cref="NormalMonsterCard"/> supplies tier for true normals; other monsters default to <c>1</c>.
+    /// </summary>
+    protected virtual float GetPackWeightMultiplierBase() => 1f;
+
+    /// <inheritdoc />
+    public override float PackWeightMultiplier
+    {
+        get
+        {
+            float w = GetPackWeightMultiplierBase();
+            if (FusionMaterialArchetypeIndex.IsNamedFusionMaterial(GetType()))
+                w += 0.1f;
+            if (w < 0.4f)
+                return 0.4f;
+            if (w > 2f)
+                return 2f;
+            return w;
+        }
+    }
+
     private bool DuelMonsterPlayEnergyUpgradedOrPreview =>
         IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
 
-    /// <summary>Energy to play from hand / summon in attack stance (Z = BaseAtk). High ATK low-level band may be 2 until upgraded.</summary>
+    /// <summary>Energy to play from hand / summon in attack stance (Z = printed ATK from <see cref="GetDynamicPrintedAtkDef"/>).</summary>
     public int DuelMonsterAttackPlayEnergy => GetDuelMonsterAttackPlayEnergy(DuelMonsterPlayEnergyUpgradedOrPreview);
 
-    /// <summary>Energy to play from hand / summon in defense stance (Z = BaseDef). High DEF low-level band may be 2 until upgraded.</summary>
+    /// <summary>Energy to play from hand / summon in defense stance (Z = printed DEF from <see cref="GetDynamicPrintedAtkDef"/>).</summary>
     public int DuelMonsterDefensePlayEnergy => GetDuelMonsterDefensePlayEnergy(DuelMonsterPlayEnergyUpgradedOrPreview);
 
     /// <summary>Attack-stance play energy for a given upgraded/preview state (e.g. compendium without preview).</summary>
@@ -58,13 +80,15 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     {
         if (_duelMonsterAttackPlayEnergyOverride.HasValue)
             return _duelMonsterAttackPlayEnergyOverride.Value;
+        GetDynamicPrintedAtkDef(out int printedAtk, out _);
         int energy = MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
             _duelMonsterLevel,
             YgoCardType,
-            BaseAtk,
+            printedAtk,
             isAttackStat: true,
             upgradedOrPreview,
-            DuelMonsterStatsAreUnknown);
+            DuelMonsterStatsAreUnknown,
+            BaseAtk);
         if (upgradedOrPreview && ZeroAttackPlayEnergyWhenUpgradedForLowAtkBlight)
             return 0;
         return energy;
@@ -75,13 +99,15 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     {
         if (_duelMonsterDefensePlayEnergyOverride.HasValue)
             return _duelMonsterDefensePlayEnergyOverride.Value;
+        GetDynamicPrintedAtkDef(out _, out int printedDef);
         return MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
             _duelMonsterLevel,
             YgoCardType,
-            BaseDef,
+            printedDef,
             isAttackStat: false,
             upgradedOrPreview,
-            DuelMonsterStatsAreUnknown);
+            DuelMonsterStatsAreUnknown,
+            BaseDef);
     }
 
     /// <summary>Cost Down and similar: −1 energy for monsters in hand while <see cref="CostDownHandLevelPower"/> is active.</summary>

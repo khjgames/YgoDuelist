@@ -15,7 +15,7 @@ case 0: return 0.7;
 case 1: return 0.85;
 case 2: return 1;
 case 3: return 1.25;
-case 4: return 0.5;
+case 4: return 1.1;
 case 5: return 0.6;
 case 6: return 0.8;
 case 7: return 0.95;
@@ -39,8 +39,8 @@ switch (Card.DEF){
 case 0: return 0.6;
 case 1: return 0.75;
 case 2: return 0.9;
-case 3: return 1.25;
-case 4: return 0.4;
+case 3: return 1.2;
+case 4: return 1.2;
 case 5: return 0.5;
 case 6: return 0.9;
 case 7: return 1.15;
@@ -215,7 +215,7 @@ ScoredATKEfficiency = HighLevelATKEfficiency(Card);
 ScoredDEFEfficiency = HighLevelDEFEfficiency(Card);
 
 PrimaryEfficiency = math.max(ScoredATKEfficiency, ScoredDEFEfficiency) * 0.8
-SecondaryEfficiency = math.max(ScoredATKEfficiency, ScoredDEFEfficiency) * 0.2
+SecondaryEfficiency = math.min(ScoredATKEfficiency, ScoredDEFEfficiency) * 0.2
 CombinedEfficiency = PrimaryEfficiency + SecondaryEfficiency 
 
 CombinedTier = math.clamp(CombinedEfficiency, 0.4, 2)

@@ -22,6 +22,21 @@ internal static class CardModelUpgradePreviewEnergyCachePatch
 }
 
 /// <summary>
+/// Card library grid preview clones a card and calls <see cref="CardModel.UpgradeInternal"/> without setting <see cref="CardModel.UpgradePreviewType"/>.
+/// The cloned <see cref="CardModel.EnergyCost"/> keeps a stale canonical snapshot until cleared; monster <see cref="AbstractMonsterCard.OnUpgrade"/> changes stats
+/// that feed <see cref="AbstractMonsterCard.CanonicalEnergyCost"/>. Inspect screen sets <see cref="CardModel.UpgradePreviewType"/> first (handled by the setter patch).
+/// </summary>
+[HarmonyPatch(typeof(CardModel), nameof(CardModel.UpgradeInternal))]
+internal static class CardModelUpgradeInternalMonsterEnergyCachePatch
+{
+    private static void Postfix(CardModel __instance)
+    {
+        if (__instance is AbstractMonsterCard)
+            CardModelEnergyCache.Invalidate(__instance);
+    }
+}
+
+/// <summary>
 /// After a real upgrade (not preview-only), drop the energy snapshot so <see cref="AbstractMonsterCard.CanonicalEnergyCost"/> is re-read.
 /// Do not run for spell/trap cards that apply cost via <c>EnergyCost.UpgradeBy</c> — their canonical property stays the base ctor cost.
 /// </summary>

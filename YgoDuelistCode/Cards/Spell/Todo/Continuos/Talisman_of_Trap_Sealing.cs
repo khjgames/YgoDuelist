@@ -29,10 +29,7 @@ public sealed class Talisman_of_Trap_Sealing : BaseContinuousSpellCard
         : base(0, CardRarity.Uncommon, TargetType.Self)
     {
     }
-
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Trap;
-
+        
     public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 
     protected override bool IsPlayable

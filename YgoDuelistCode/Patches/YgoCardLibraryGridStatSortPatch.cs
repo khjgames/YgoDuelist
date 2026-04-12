@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Nodes.CardLibrary;
 
@@ -48,12 +49,16 @@ public static class YgoCardLibraryGridStatSortPatch
 
         bool descending = state.PrimaryMonsterStatSort switch
         {
+            YgoCardLibraryMonsterStatSortAxis.PackWeight => state.PackWeight.SortButton?.IsDescending ?? true,
             YgoCardLibraryMonsterStatSortAxis.Atk => state.Atk.SortButton?.IsDescending ?? true,
             YgoCardLibraryMonsterStatSortAxis.Def => state.Def.SortButton?.IsDescending ?? true,
             _ => true
         };
 
         bool useAtk = state.PrimaryMonsterStatSort == YgoCardLibraryMonsterStatSortAxis.Atk;
+
+        float PackWeightKey(CardModel c) =>
+            c is YgoDuelistCard y ? y.PackWeightMultiplier : 1f;
 
         int StatKey(CardModel c)
         {
@@ -69,9 +74,13 @@ public static class YgoCardLibraryGridStatSortPatch
         }
 
         List<(CardModel c, int i)> indexed = cards.Select((c, i) => (c, i)).ToList();
-        IEnumerable<CardModel> ordered = descending
-            ? indexed.OrderBy(x => LockedBucket(x.c)).ThenByDescending(x => StatKey(x.c)).ThenBy(x => x.i).Select(x => x.c)
-            : indexed.OrderBy(x => LockedBucket(x.c)).ThenBy(x => StatKey(x.c)).ThenBy(x => x.i).Select(x => x.c);
+        IEnumerable<CardModel> ordered = state.PrimaryMonsterStatSort == YgoCardLibraryMonsterStatSortAxis.PackWeight
+            ? (descending
+                ? indexed.OrderBy(x => LockedBucket(x.c)).ThenByDescending(x => PackWeightKey(x.c)).ThenBy(x => x.i).Select(x => x.c)
+                : indexed.OrderBy(x => LockedBucket(x.c)).ThenBy(x => PackWeightKey(x.c)).ThenBy(x => x.i).Select(x => x.c))
+            : (descending
+                ? indexed.OrderBy(x => LockedBucket(x.c)).ThenByDescending(x => StatKey(x.c)).ThenBy(x => x.i).Select(x => x.c)
+                : indexed.OrderBy(x => LockedBucket(x.c)).ThenBy(x => StatKey(x.c)).ThenBy(x => x.i).Select(x => x.c));
 
         cards.Clear();
         cards.AddRange(ordered);

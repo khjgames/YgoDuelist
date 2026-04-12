@@ -3,6 +3,8 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
@@ -25,15 +27,14 @@ public sealed class Sealmaster_Meisei : NormalMonsterCard
 
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
-        YgoCardPackTags.Spellcaster |
-        YgoCardPackTags.Normal;
+        YgoCardPackTags.Spellcaster | YgoCardPackTags.Normal | YgoCardPackTags.Spell | YgoCardPackTags.Trap;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
-    //public override Type[] BundledCards => new[]
-    //{
-    //    typeof(This_Card),
-    //    typeof(Another_Bundled_Card)
-    //};
+    public override Type[] BundledCards => new[]
+    {
+        typeof(Talisman_of_Spell_Sealing),
+        typeof(Talisman_of_Trap_Sealing),
+    };
 
 
     // You will see these related cards more often with this card in your deck or side deck.

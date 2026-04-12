@@ -20,6 +20,7 @@ Each of ATK, DEF, and MGC upgrades **separately**. The **first upgrade** maps **
 
 | Unupgraded cost | Unupgraded ATK | → | Upgraded cost | Upgraded ATK |
 |-----------------|------------------|---|---------------|--------------|
+| 1 | 4 | → | 0 | 7 |
 | 1 | 7 | → | 1 | 9 |
 | 1 | 8 | → | 1 | 10 |
 | 2 | 9 | → | 1 | 14 |
@@ -134,6 +135,7 @@ Same mapping as ATK with **DEF 1 lower** than the ATK row for each band (see sou
 
 | Unupgraded cost | Unupgraded DEF | → | Upgraded cost | Upgraded DEF |
 |-----------------|------------------|---|---------------|--------------|
+| 1 | 4 | → | 0 | 7 |
 | 1 | 7 | → | 1 | 9 |
 | 2 | 8 | → | 1 | 13 |
 | 2 | 9–11 | → | 1 | 12 |
@@ -160,7 +162,8 @@ If ATK or DEF is **unknown** (e.g. `?`) or **invalid**, treat that stance’s en
 **Normal and Effect monsters (not Ritual, not Fusion), level 1–4**
 
 - Z ≤ 3 → 0 energy  
-- Z 4–7 → 1 energy  
+- Z 4 → 1 energy (onUpgrade: becomes 0 energy)  
+- Z 5–7 → 1 energy  
 - Z 8 → 1 energy (attack stance), 2 energy (defense stance) (onUpgrade: becomes 1 energy)  
 - Z 9–12 → 2 energy (onUpgrade: becomes 1 energy)
 - Z 13–20 → 2 energy  

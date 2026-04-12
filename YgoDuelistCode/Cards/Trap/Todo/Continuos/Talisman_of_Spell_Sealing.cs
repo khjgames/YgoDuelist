@@ -22,10 +22,7 @@ public sealed class Talisman_of_Spell_Sealing : BaseContinuousTrapCard
         : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
-
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Trap | YgoCardPackTags.Spell;
-
+    
     protected override bool IsPlayable =>
         base.IsPlayable
         && YgoSealmasterMeiseiGate.HasFaceUpSealmaster(Owner);

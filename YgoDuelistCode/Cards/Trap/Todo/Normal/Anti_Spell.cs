@@ -32,7 +32,7 @@ public sealed class Anti_Spell : BaseTrapCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Trap | YgoCardPackTags.Spell;
+        YgoCardPackTags.Trap | YgoCardPackTags.Spell;
 
     protected override bool IsPlayable =>
         base.IsPlayable

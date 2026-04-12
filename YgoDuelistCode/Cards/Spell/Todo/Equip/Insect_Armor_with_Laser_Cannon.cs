@@ -26,5 +26,5 @@ public sealed class Insect_Armor_with_Laser_Cannon : BaseEquipSpellCard
 
     protected override bool CardShowsSplinterKeywordHint => true;
 
-    protected override void OnUpgrade() { }
+    protected override void OnUpgrade() { EnergyCost.UpgradeBy(-1); }
 }

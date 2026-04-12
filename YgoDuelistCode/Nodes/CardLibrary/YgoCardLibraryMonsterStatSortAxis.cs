@@ -4,6 +4,7 @@ namespace YgoDuelist.YgoDuelistCode.Nodes.CardLibrary;
 public enum YgoCardLibraryMonsterStatSortAxis
 {
     None,
+    PackWeight,
     Atk,
     Def
 }

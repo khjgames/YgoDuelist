@@ -51,15 +51,13 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
             YgoCardType,
             MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
                 DuelMonsterLevel, YgoCardType, BaseAtk, true, false, DuelMonsterStatsAreUnknown),
-            BaseAtk,
-            isDefenseLine: false);
+            BaseAtk);
         int defBonus = YgoStatUpgradeScaling.GetMonsterPrintedLineUpgradeDelta(
             DuelMonsterLevel,
             YgoCardType,
             MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
                 DuelMonsterLevel, YgoCardType, BaseDef, false, false, DuelMonsterStatsAreUnknown),
-            BaseDef,
-            isDefenseLine: true);
+            BaseDef);
         DynamicVars.Damage.UpgradeValueBy(atkBonus);
         DynamicVars["Def"].UpgradeValueBy(defBonus);
         if (DynamicVars.Block != null)

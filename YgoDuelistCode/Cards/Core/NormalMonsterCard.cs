@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Localization.DynamicVars;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -50,6 +51,19 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     }
 
     public override int GetIntrinsicRecklessCombatSelfDamage() => GetEffectiveDuelMonsterLevel() >= 3 ? 1 : 0;
+
+    /// <inheritdoc cref="BaseMonsterCard.GetPackWeightMultiplierBase" />
+    /// <remarks>
+    /// Tier scoring applies only to true normal monsters (<see cref="YgoCardType.Monster"/>).
+    /// <see cref="EffectMonsterCard"/> and other subclasses use <see cref="YgoCardType"/> other than Monster and stay at <c>1</c> before fusion-material bonus.
+    /// </remarks>
+    protected override float GetPackWeightMultiplierBase()
+    {
+        if (YgoCardType != YgoCardType.Monster)
+            return 1f;
+        GetDynamicPrintedAtkDef(out int atk, out int def);
+        return YgoNormalMonsterPackTier.ComputeCombinedTier(DuelMonsterLevel, atk, def);
+    }
 
     protected override IEnumerable<DynamicVar> CanonicalVars
     {
@@ -299,15 +313,13 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             YgoCardType,
             MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
                 DuelMonsterLevel, YgoCardType, BaseAtk, true, false, DuelMonsterStatsAreUnknown),
-            BaseAtk,
-            isDefenseLine: false);
+            BaseAtk);
         int defBonus = YgoStatUpgradeScaling.GetMonsterPrintedLineUpgradeDelta(
             DuelMonsterLevel,
             YgoCardType,
             MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
                 DuelMonsterLevel, YgoCardType, BaseDef, false, false, DuelMonsterStatsAreUnknown),
-            BaseDef,
-            isDefenseLine: true);
+            BaseDef);
         int mgcBonus = YgoStatUpgradeScaling.GetMonsterMgcUpgradeDelta(
             DuelMonsterLevel, YgoCardType, BaseMgc, DuelMonsterStatsAreUnknown);
         DynamicVars.Damage.UpgradeValueBy(atkBonus);

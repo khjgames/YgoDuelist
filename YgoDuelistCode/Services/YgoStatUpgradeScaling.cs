@@ -9,6 +9,192 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 public static class YgoStatUpgradeScaling
 {
     /// <summary>
+    /// Smith <b>Upgraded cost</b> for this stance, keyed only by <b>unupgraded</b> constructor printed stat — not by post-upgrade Z
+    /// (see <c>Monster_Stat_Scaling_Balanced.md</c> smith tables). Effect L≤4 returns false (legacy Z “annotation” path).
+    /// </summary>
+    public static bool TryGetSmithUpgradedPlayEnergy(
+        int level,
+        YgoCardType ygoType,
+        bool isDefenseLine,
+        int constructorBaseStatLine,
+        bool statsUnknown,
+        out int designatedPlayEnergy)
+    {
+        designatedPlayEnergy = 0;
+        if (statsUnknown || constructorBaseStatLine < 0)
+            return false;
+        if (ygoType == YgoCardType.EffectMonster && level <= 4)
+            return false;
+
+        bool isAttackStat = !isDefenseLine;
+        int unupgradedE = MonsterEnergyCostCalculator.GetUnupgradedPlayEnergyFromZBand(
+            level, ygoType, constructorBaseStatLine, isAttackStat, statsUnknown);
+
+        int costCol = unupgradedE <= 1 ? 1 : 2;
+        int matchStat = isDefenseLine ? constructorBaseStatLine + 1 : constructorBaseStatLine;
+        if (ygoType == YgoCardType.Monster && level <= 4 && isDefenseLine && constructorBaseStatLine == 4)
+            matchStat = 4;
+
+        int? cost = LookupSmithUpgradedPlayEnergyCost(level, ygoType, costCol, matchStat);
+        if (!cost.HasValue)
+            return false;
+        designatedPlayEnergy = cost.Value;
+        return true;
+    }
+
+    private static int? LookupSmithUpgradedPlayEnergyCost(int level, YgoCardType ygoType, int costCol, int matchStat)
+    {
+        bool normalOrEffect = ygoType == YgoCardType.Monster || ygoType == YgoCardType.EffectMonster;
+        bool ritual = ygoType == YgoCardType.RitualMonster;
+        bool fusion = ygoType == YgoCardType.FusionMonster;
+
+        if (level <= 4)
+        {
+            if (ygoType == YgoCardType.Monster)
+                return UpgradedCostNormalLow4(costCol, matchStat);
+            if (ygoType == YgoCardType.EffectMonster)
+                return null;
+            if (ritual || fusion)
+                return UpgradedCostRitualFusionLow4(costCol, matchStat);
+        }
+
+        if (level <= 6)
+        {
+            if (normalOrEffect)
+                return UpgradedCostNormalEffect56(costCol, matchStat);
+            if (ritual || fusion)
+                return UpgradedCostRitualFusion56(costCol, matchStat);
+        }
+
+        if (level <= 8)
+        {
+            if (fusion)
+                return UpgradedCostFusion78(costCol, matchStat);
+            if (normalOrEffect || ritual)
+                return UpgradedCostNormalRitualEffect78(costCol, matchStat);
+        }
+
+        if (level <= 10)
+            return UpgradedCostAll910(costCol, matchStat);
+
+        return UpgradedCostAll11Plus(costCol, matchStat);
+    }
+
+    private static int? UpgradedCostNormalLow4(int costCol, int s)
+    {
+        if (costCol == 1 && s == 3) return 0;
+        if (costCol == 1 && s == 4) return 0;
+        if (costCol == 1 && s == 7) return 1;
+        if (costCol == 1 && s == 8) return 1;
+        if (costCol == 2 && s == 9) return 1;
+        if (costCol == 2 && s >= 10 && s <= 12) return 1;
+        if (costCol == 2 && s >= 13 && s <= 14) return 2;
+        if (costCol == 2 && s >= 15 && s <= 16) return 2;
+        if (costCol == 2 && s == 17) return 2;
+        if (costCol == 2 && s >= 18 && s <= 21) return 2;
+        if (costCol == 2 && s >= 22) return 2;
+        return null;
+    }
+
+    private static int? UpgradedCostRitualFusionLow4(int costCol, int s)
+    {
+        if (costCol == 1 && s == 11) return 1;
+        if (costCol == 1 && s == 12) return 1;
+        if (costCol == 2 && s == 13) return 1;
+        if (costCol == 2 && s >= 14 && s <= 16) return 1;
+        if (costCol == 2 && s >= 17 && s <= 18) return 2;
+        if (costCol == 2 && s >= 19 && s <= 20) return 2;
+        if (costCol == 2 && s == 21) return 2;
+        if (costCol == 2 && s >= 22 && s <= 25) return 2;
+        if (costCol == 2 && s >= 26) return 2;
+        return null;
+    }
+
+    private static int? UpgradedCostNormalEffect56(int costCol, int s)
+    {
+        if (costCol == 1 && s == 12) return 1;
+        if (costCol == 1 && s == 13) return 1;
+        if (costCol == 2 && s == 14) return 1;
+        if (costCol == 2 && s >= 15 && s <= 17) return 1;
+        if (costCol == 2 && s >= 18 && s <= 19) return 2;
+        if (costCol == 2 && s >= 20 && s <= 21) return 2;
+        if (costCol == 2 && s == 22) return 2;
+        if (costCol == 2 && s >= 23 && s <= 26) return 2;
+        if (costCol == 2 && s >= 27) return 2;
+        return null;
+    }
+
+    private static int? UpgradedCostRitualFusion56(int costCol, int s)
+    {
+        if (costCol == 1 && s == 13) return 1;
+        if (costCol == 1 && s == 14) return 1;
+        if (costCol == 2 && s == 15) return 1;
+        if (costCol == 2 && s >= 16 && s <= 18) return 1;
+        if (costCol == 2 && s >= 19 && s <= 20) return 2;
+        if (costCol == 2 && s >= 21 && s <= 22) return 2;
+        if (costCol == 2 && s == 23) return 2;
+        if (costCol == 2 && s >= 24 && s <= 27) return 2;
+        if (costCol == 2 && s >= 28) return 2;
+        return null;
+    }
+
+    private static int? UpgradedCostNormalRitualEffect78(int costCol, int s)
+    {
+        if (costCol == 1 && s == 16) return 1;
+        if (costCol == 1 && s == 17) return 1;
+        if (costCol == 2 && s == 18) return 1;
+        if (costCol == 2 && s >= 19 && s <= 21) return 1;
+        if (costCol == 2 && s >= 22 && s <= 23) return 2;
+        if (costCol == 2 && s >= 24 && s <= 25) return 2;
+        if (costCol == 2 && s == 26) return 2;
+        if (costCol == 2 && s >= 27 && s <= 30) return 2;
+        if (costCol == 2 && s >= 31) return 2;
+        return null;
+    }
+
+    private static int? UpgradedCostFusion78(int costCol, int s)
+    {
+        if (costCol == 1 && s == 18) return 1;
+        if (costCol == 1 && s == 19) return 1;
+        if (costCol == 2 && s == 20) return 1;
+        if (costCol == 2 && s >= 21 && s <= 23) return 1;
+        if (costCol == 2 && s >= 24 && s <= 25) return 2;
+        if (costCol == 2 && s >= 26 && s <= 27) return 2;
+        if (costCol == 2 && s == 28) return 2;
+        if (costCol == 2 && s >= 29 && s <= 32) return 2;
+        if (costCol == 2 && s >= 33) return 2;
+        return null;
+    }
+
+    private static int? UpgradedCostAll910(int costCol, int s)
+    {
+        if (costCol == 1 && s == 25) return 1;
+        if (costCol == 1 && s == 26) return 1;
+        if (costCol == 2 && s == 27) return 1;
+        if (costCol == 2 && s >= 28 && s <= 30) return 1;
+        if (costCol == 2 && s >= 31 && s <= 32) return 2;
+        if (costCol == 2 && s >= 33 && s <= 34) return 2;
+        if (costCol == 2 && s == 35) return 2;
+        if (costCol == 2 && s >= 36 && s <= 39) return 2;
+        if (costCol == 2 && s >= 40) return 2;
+        return null;
+    }
+
+    private static int? UpgradedCostAll11Plus(int costCol, int s)
+    {
+        if (costCol == 1 && s == 29) return 1;
+        if (costCol == 1 && s == 30) return 1;
+        if (costCol == 2 && s == 31) return 1;
+        if (costCol == 2 && s >= 32 && s <= 34) return 1;
+        if (costCol == 2 && s >= 35 && s <= 36) return 2;
+        if (costCol == 2 && s >= 37 && s <= 38) return 2;
+        if (costCol == 2 && s == 39) return 2;
+        if (costCol == 2 && s >= 40 && s <= 43) return 2;
+        if (costCol == 2 && s >= 44) return 2;
+        return null;
+    }
+
+    /// <summary>
     /// Legacy smith deltas for effect monsters level ≤4 only (unchanged breakpoints 15/22/29).
     /// </summary>
     public static int GetLegacyMonsterSmithDelta(int baseStat)
@@ -26,21 +212,21 @@ public static class YgoStatUpgradeScaling
     public static int GetMonsterPrintedStatUpgradeBonus(int baseStat) => GetLegacyMonsterSmithDelta(baseStat);
 
     /// <summary>
-    /// First smith upgrade on a printed ATK, DEF, or MGC line. <paramref name="baseStatLine"/> is the unupgraded value;
-    /// for DEF, pass printed DEF (virtual ATK = DEF+1 for table matching is applied internally).
+    /// First smith upgrade on a printed ATK, DEF, or MGC line. <paramref name="baseStatLine"/> is the unupgraded printed value on that line.
+    /// Uses the same smith stat row for ATK and DEF at the same number (e.g. 3/3 → +2/+2). The DEF−1 band shift applies to
+    /// play-energy / cost lookups (<see cref="TryGetSmithUpgradedPlayEnergy"/>), not to this stat delta.
     /// </summary>
     public static int GetMonsterPrintedLineUpgradeDelta(
         int level,
         YgoCardType ygoType,
         int unupgradedPlayEnergyForLine,
-        int baseStatLine,
-        bool isDefenseLine)
+        int baseStatLine)
     {
         if (ygoType == YgoCardType.EffectMonster && level <= 4)
             return GetLegacyMonsterSmithDelta(baseStatLine);
 
         int costCol = unupgradedPlayEnergyForLine <= 1 ? 1 : 2;
-        int matchStat = isDefenseLine ? baseStatLine + 1 : baseStatLine;
+        int matchStat = baseStatLine;
 
         bool fusion = ygoType == YgoCardType.FusionMonster;
         bool ritual = ygoType == YgoCardType.RitualMonster;
@@ -79,12 +265,13 @@ public static class YgoStatUpgradeScaling
     /// <summary>MGC uses the same smith mapping as ATK for the same level and card type.</summary>
     public static int GetMonsterMgcUpgradeDelta(int level, YgoCardType ygoType, int baseMgc, bool statsUnknown)
     {
-        int e = MonsterEnergyCostCalculator.GetMonsterPlayEnergy(level, ygoType, baseMgc, true, false, statsUnknown);
-        return GetMonsterPrintedLineUpgradeDelta(level, ygoType, e, baseMgc, isDefenseLine: false);
+        int e = MonsterEnergyCostCalculator.GetUnupgradedPlayEnergyFromZBand(level, ygoType, baseMgc, true, statsUnknown);
+        return GetMonsterPrintedLineUpgradeDelta(level, ygoType, e, baseMgc);
     }
 
     private static int SmithNormalLow4(int costCol, int s)
     {
+        if (costCol == 1 && s == 4) return 3;
         if (costCol == 1 && s == 7) return 2;
         if (costCol == 1 && s == 8) return 2;
         if (costCol == 2 && s == 9) return 5;

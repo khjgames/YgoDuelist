@@ -49,6 +49,8 @@
   "LEVEL_FILTER_10": "Level 10\n\nOR filter: include monsters with level (stars) 10.",
   "LEVEL_FILTER_11": "Level 11\n\nOR filter: include monsters with level (stars) 11.",
   "LEVEL_FILTER_12": "Level 12\n\nOR filter: include monsters with level (stars) 12.",
+  "STAT_FILTER_PACK_WEIGHT_MIN": "Minimum PackWeight\n\nOnly show cards whose PackWeightMultiplier is at least this value (YgoDuelist cards; others count as 1). Leave empty for no lower bound.",
+  "STAT_FILTER_PACK_WEIGHT_MAX": "Maximum PackWeight\n\nOnly show cards whose PackWeightMultiplier is at most this value (YgoDuelist cards; others count as 1). Leave empty for no upper bound.",
   "STAT_FILTER_ATK_MIN": "Minimum ATK\n\nOnly show YgoDuelist monsters whose printed ATK is at least this value. Leave empty for no lower bound. Spells, traps, and non-monster cards are not affected.",
   "STAT_FILTER_ATK_MAX": "Maximum ATK\n\nOnly show YgoDuelist monsters whose printed ATK is at most this value. Leave empty for no upper bound. Spells, traps, and non-monster cards are not affected.",
   "STAT_FILTER_DEF_MIN": "Minimum DEF\n\nOnly show YgoDuelist monsters whose printed DEF is at least this value. Leave empty for no lower bound. Spells, traps, and non-monster cards are not affected.",
