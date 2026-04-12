@@ -49,6 +49,12 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         DuelMonsterRace = duelMonsterRace;
     }
 
+    protected BaseTrapCard(int cost, CardType cardType, CardRarity rarity, TargetType target, DuelMonsterRace duelMonsterRace)
+        : base(cost, cardType, rarity, target)
+    {
+        DuelMonsterRace = duelMonsterRace;
+    }
+
     private bool ShouldShowRaceKeyword => DuelMonsterRace != DuelMonsterRace.TrapNormal;
 
     protected abstract Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay);

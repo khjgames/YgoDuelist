@@ -20,7 +20,7 @@ public sealed class Dark_Hole : BaseSpellCard
         new[] { new DynamicVar("Mgc", 18m) };
 
     public Dark_Hole()
-        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
     // Dictates the card pack tags this card will be included in.

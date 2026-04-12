@@ -24,7 +24,7 @@ public sealed class Bottomless_Trap_Hole : BaseTrapCard
         };
 
     public Bottomless_Trap_Hole()
-        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Uncommon, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
     // Dictates the card pack tags this card will be included in.

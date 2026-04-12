@@ -21,7 +21,7 @@ public sealed class Burst_Breath : BaseTrapCard
     public override bool UseAlternateUpgradedDescription => true;
 
     public Burst_Breath()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 

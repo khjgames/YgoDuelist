@@ -9,8 +9,10 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -38,7 +40,8 @@ public enum StarterCategory
 /// If the grid contains a <see cref="RitualSpellCard"/>, its ritual target monster is inserted immediately after that spell (not counted toward category quotas).
 /// Otherwise, if the grid contains a named <see cref="RitualMonsterCard"/> with a paired spell in <see cref="RitualArchetypeMeta"/>, that spell is inserted immediately after the monster.
 /// At most one such bonus row runs so the list stays at <see cref="MaxGridSize"/> when a bonus applies.
-/// After that, one random flat race equip (if any), one random terrain race field (if any), and one random flat attribute field (if any)
+/// After that, signature spells may replace a level 5–6 monster with <see cref="Dark_Magician"/> or <see cref="Blue_Eyes_White_Dragon"/> (see <see cref="ApplyNeowSignatureMonsterSubstitutions"/>).
+/// Then one random flat race equip (if any), one random terrain race field (if any), and one random flat attribute field (if any)
 /// may be retargeted to match the dominant monster races/attributes in the grid.
 /// </summary>
 public static class YgoStarterCardCatalog
@@ -212,6 +215,7 @@ public static class YgoStarterCardCatalog
         bool monsterBundledSpell = !spellBundledMonster && TryInsertBundledRitualSpellAfterFirstMonster(grid);
         bool ritualBundled = spellBundledMonster || monsterBundledSpell;
 
+        ApplyNeowSignatureMonsterSubstitutions(grid, rng);
         ApplyNeowStarterGridSubstitutions(grid, rng);
 
         GD.Print(
@@ -305,6 +309,64 @@ public static class YgoStarterCardCatalog
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// If the grid includes Dark Magic support spells or Burst Stream, swaps the lowest-rarity level 5–6 monster for
+    /// <see cref="Dark_Magician"/> or <see cref="Blue_Eyes_White_Dragon"/> respectively (Burst Stream runs after Dark Magic).
+    /// Skips if the replacement is already present or no level 5–6 monster exists.
+    /// </summary>
+    private static void ApplyNeowSignatureMonsterSubstitutions(List<CardModel> grid, Rng rng)
+    {
+        bool hasDarkMagicSpell = grid.Any(c => c is Dark_Magic_Attack or Diffusion_Wave_Motion);
+        if (hasDarkMagicSpell)
+            TryReplaceLowestRarityLevel56MonsterWith(grid, rng, typeof(Dark_Magician));
+
+        bool hasBurstStream = grid.Any(c => c is Burst_Stream_of_Destruction);
+        if (hasBurstStream)
+            TryReplaceLowestRarityLevel56MonsterWith(grid, rng, typeof(Blue_Eyes_White_Dragon));
+    }
+
+    private static void TryReplaceLowestRarityLevel56MonsterWith(List<CardModel> grid, Rng rng, Type replacementMonsterType)
+    {
+        if (StarterGridContainsCardType(grid, replacementMonsterType))
+            return;
+
+        var candidateIndices = new List<int>();
+        for (int i = 0; i < grid.Count; i++)
+        {
+            if (grid[i] is not BaseMonsterCard m)
+                continue;
+            int lv = m.DuelMonsterLevel;
+            if (lv is not (5 or 6))
+                continue;
+            candidateIndices.Add(i);
+        }
+
+        if (candidateIndices.Count == 0)
+            return;
+
+        int minRank = candidateIndices.Min(i => StarterRarityRank(grid[i]));
+        List<int> tied = candidateIndices.Where(i => StarterRarityRank(grid[i]) == minRank).ToList();
+        int pick = tied[rng.NextInt(0, tied.Count)];
+        ReplaceStarterGridSlot(grid, pick, replacementMonsterType);
+    }
+
+    private static bool StarterGridContainsCardType(List<CardModel> grid, Type cardType)
+    {
+        string entry = CardFromType(cardType).Id.Entry;
+        return grid.Any(c => c.Id.Entry == entry);
+    }
+
+    private static int StarterRarityRank(CardModel model)
+    {
+        return NormalizeStarterRarity(model.Rarity) switch
+        {
+            CardRarity.Common => 0,
+            CardRarity.Uncommon => 1,
+            CardRarity.Rare => 2,
+            _ => 99
+        };
     }
 
     /// <summary>

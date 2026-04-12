@@ -18,7 +18,7 @@ public sealed class Hinotama : BaseSpellCard
         new[] { new DynamicVar("Mgc", 6m) };
 
     public Hinotama()
-        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.AllEnemies, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Uncommon, target: TargetType.AllEnemies, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 

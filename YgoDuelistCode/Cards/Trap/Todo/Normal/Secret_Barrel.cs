@@ -26,7 +26,7 @@ public sealed class Secret_Barrel : BaseTrapCard
         };
 
     public Secret_Barrel()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
     // Dictates the card pack tags this card will be included in.

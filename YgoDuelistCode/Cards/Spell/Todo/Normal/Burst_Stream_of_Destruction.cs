@@ -15,6 +15,8 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
 
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
+
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Burst_Stream_of_Destruction : BaseSpellCard
@@ -25,12 +27,14 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
     public override bool UseAlternateUpgradedDescription => true;
 
     public Burst_Stream_of_Destruction()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light | YgoCardPackTags.Dragon;
+
+    public override Type[] BundledCards => new[] { typeof(Blue_Eyes_White_Dragon) };
 
     protected override bool IsPlayable =>
         base.IsPlayable
