@@ -310,6 +310,7 @@ public static class YgoStarterCardCatalog
     /// <summary>
     /// After ritual bundle rows, optionally retargets one flat race equip, one terrain race field, and one flat attribute field
     /// toward the most common monster races/attributes in the grid (ties broken at random).
+    /// Chooses a replacement that is not already elsewhere in the grid; if the best match would duplicate, uses the next tier down.
     /// </summary>
     private static void ApplyNeowStarterGridSubstitutions(List<CardModel> grid, Rng rng)
     {
@@ -347,17 +348,27 @@ public static class YgoStarterCardCatalog
             raceCounts[r] = raceCounts.GetValueOrDefault(r) + 1;
         }
 
-        int max = raceCounts.Values.Max();
-        List<DuelMonsterRace> topRaces = raceCounts.Where(kv => kv.Value == max).Select(kv => kv.Key).ToList();
-        List<DuelMonsterRace> racesWithEquip = topRaces.Where(r => FlatRaceEquipTypeByRace.ContainsKey(r)).ToList();
-        if (racesWithEquip.Count == 0)
-            return;
-
-        DuelMonsterRace racePick = racesWithEquip[rng.NextInt(0, racesWithEquip.Count)];
-        Type equipType = FlatRaceEquipTypeByRace[racePick];
-
         int slot = equipIndices[rng.NextInt(0, equipIndices.Count)];
-        ReplaceStarterGridSlot(grid, slot, equipType);
+
+        var tiers = raceCounts
+            .Where(kv => FlatRaceEquipTypeByRace.ContainsKey(kv.Key))
+            .GroupBy(kv => kv.Value)
+            .OrderByDescending(g => g.Key);
+
+        foreach (var tier in tiers)
+        {
+            List<DuelMonsterRace> racesInTier = tier.Select(kv => kv.Key).ToList();
+            racesInTier.UnstableShuffle(rng);
+            foreach (DuelMonsterRace race in racesInTier)
+            {
+                Type equipType = FlatRaceEquipTypeByRace[race];
+                if (!IsCardEntryPresentElsewhere(grid, equipType, slot))
+                {
+                    ReplaceStarterGridSlot(grid, slot, equipType);
+                    return;
+                }
+            }
+        }
     }
 
     private static void TrySubstituteTerrainRaceField(List<CardModel> grid, Rng rng, List<BaseMonsterCard> monsters)
@@ -386,12 +397,21 @@ public static class YgoStarterCardCatalog
             scores.Add((fieldType, n));
         }
 
-        int max = scores.Max(s => s.Count);
-        List<Type> best = scores.Where(s => s.Count == max).Select(s => s.FieldType).ToList();
-        Type fieldPick = best[rng.NextInt(0, best.Count)];
-
         int slot = terrainIndices[rng.NextInt(0, terrainIndices.Count)];
-        ReplaceStarterGridSlot(grid, slot, fieldPick);
+
+        foreach (IGrouping<int, (Type FieldType, int Count)> tier in scores.GroupBy(s => s.Count).OrderByDescending(g => g.Key))
+        {
+            List<Type> fieldsInTier = tier.Select(s => s.FieldType).ToList();
+            fieldsInTier.UnstableShuffle(rng);
+            foreach (Type fieldType in fieldsInTier)
+            {
+                if (!IsCardEntryPresentElsewhere(grid, fieldType, slot))
+                {
+                    ReplaceStarterGridSlot(grid, slot, fieldType);
+                    return;
+                }
+            }
+        }
     }
 
     private static void TrySubstituteFlatAttributeField(List<CardModel> grid, Rng rng, List<BaseMonsterCard> monsters)
@@ -414,17 +434,45 @@ public static class YgoStarterCardCatalog
             attrCounts[a] = attrCounts.GetValueOrDefault(a) + 1;
         }
 
-        int max = attrCounts.Values.Max();
-        List<DuelMonsterAttribute> topAttrs = attrCounts.Where(kv => kv.Value == max).Select(kv => kv.Key).ToList();
-        List<DuelMonsterAttribute> mappable = topAttrs.Where(a => FlatAttributeFieldTypeByAttribute.ContainsKey(a)).ToList();
-        if (mappable.Count == 0)
-            return;
-
-        DuelMonsterAttribute attrPick = mappable[rng.NextInt(0, mappable.Count)];
-        Type fieldType = FlatAttributeFieldTypeByAttribute[attrPick];
-
         int slot = attrIndices[rng.NextInt(0, attrIndices.Count)];
-        ReplaceStarterGridSlot(grid, slot, fieldType);
+
+        foreach (IGrouping<int, KeyValuePair<DuelMonsterAttribute, int>> tier in attrCounts
+                     .GroupBy(kv => kv.Value)
+                     .OrderByDescending(g => g.Key))
+        {
+            List<DuelMonsterAttribute> attrsInTier = tier
+                .Select(kv => kv.Key)
+                .Where(a => FlatAttributeFieldTypeByAttribute.ContainsKey(a))
+                .ToList();
+            if (attrsInTier.Count == 0)
+                continue;
+
+            attrsInTier.UnstableShuffle(rng);
+            foreach (DuelMonsterAttribute attr in attrsInTier)
+            {
+                Type fieldType = FlatAttributeFieldTypeByAttribute[attr];
+                if (!IsCardEntryPresentElsewhere(grid, fieldType, slot))
+                {
+                    ReplaceStarterGridSlot(grid, slot, fieldType);
+                    return;
+                }
+            }
+        }
+    }
+
+    /// <returns>True if <paramref name="cardType"/>'s id appears on any grid card other than <paramref name="ignoreIndex"/>.</returns>
+    private static bool IsCardEntryPresentElsewhere(List<CardModel> grid, Type cardType, int ignoreIndex)
+    {
+        string entry = CardFromType(cardType).Id.Entry;
+        for (int i = 0; i < grid.Count; i++)
+        {
+            if (i == ignoreIndex)
+                continue;
+            if (grid[i].Id.Entry == entry)
+                return true;
+        }
+
+        return false;
     }
 
     private static void ReplaceStarterGridSlot(List<CardModel> grid, int index, Type cardType)
