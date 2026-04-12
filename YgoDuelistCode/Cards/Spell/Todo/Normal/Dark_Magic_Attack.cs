@@ -24,12 +24,14 @@ public sealed class Dark_Magic_Attack : BaseSpellCard
         };
 
     public Dark_Magic_Attack()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
+
+    public override Type[] BundledCards => new[] { typeof(Dark_Magician) };
 
     protected override bool IsPlayable =>
         base.IsPlayable

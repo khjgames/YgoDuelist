@@ -9,8 +9,11 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -38,7 +41,8 @@ public enum StarterCategory
 /// If the grid contains a <see cref="RitualSpellCard"/>, its ritual target monster is inserted immediately after that spell (not counted toward category quotas).
 /// Otherwise, if the grid contains a named <see cref="RitualMonsterCard"/> with a paired spell in <see cref="RitualArchetypeMeta"/>, that spell is inserted immediately after the monster.
 /// At most one such bonus row runs so the list stays at <see cref="MaxGridSize"/> when a bonus applies.
-/// After that, one random flat race equip (if any), one random terrain race field (if any), and one random flat attribute field (if any)
+/// After that, signature spells may replace a level 5–6 monster with <see cref="Dark_Magician"/> or <see cref="Blue_Eyes_White_Dragon"/>, then <see cref="Necrovalley"/> may add <see cref="Gravekeeper_s_Curse"/> and <see cref="Gravekeeper_s_Spear_Soldier"/> (see <see cref="ApplyNeowSignatureMonsterSubstitutions"/>).
+/// Then one random flat race equip (if any), one random terrain race field (if any), and one random flat attribute field (if any)
 /// may be retargeted to match the dominant monster races/attributes in the grid.
 /// </summary>
 public static class YgoStarterCardCatalog
@@ -212,6 +216,7 @@ public static class YgoStarterCardCatalog
         bool monsterBundledSpell = !spellBundledMonster && TryInsertBundledRitualSpellAfterFirstMonster(grid);
         bool ritualBundled = spellBundledMonster || monsterBundledSpell;
 
+        ApplyNeowSignatureMonsterSubstitutions(grid, rng);
         ApplyNeowStarterGridSubstitutions(grid, rng);
 
         GD.Print(
@@ -305,6 +310,136 @@ public static class YgoStarterCardCatalog
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// If the grid includes Dark Magic support spells or Burst Stream, swaps the lowest-rarity level 5–6 monster for
+    /// <see cref="Dark_Magician"/> or <see cref="Blue_Eyes_White_Dragon"/> respectively (Burst Stream runs after Dark Magic).
+    /// Skips if the replacement is already present or no level 5–6 monster exists.
+    /// After Burst Stream, <see cref="Necrovalley"/> may replace up to two lowest-rarity level 3–4 monsters with
+    /// <see cref="Gravekeeper_s_Curse"/> and <see cref="Gravekeeper_s_Spear_Soldier"/> for any that are not already in the grid.
+    /// </summary>
+    private static void ApplyNeowSignatureMonsterSubstitutions(List<CardModel> grid, Rng rng)
+    {
+        bool hasDarkMagicSpell = grid.Any(c => c is Dark_Magic_Attack or Diffusion_Wave_Motion);
+        if (hasDarkMagicSpell)
+            TryReplaceLowestRarityLevel56MonsterWith(grid, rng, typeof(Dark_Magician));
+
+        bool hasBurstStream = grid.Any(c => c is Burst_Stream_of_Destruction);
+        if (hasBurstStream)
+            TryReplaceLowestRarityLevel56MonsterWith(grid, rng, typeof(Blue_Eyes_White_Dragon));
+
+        TryNecrovalleyGravekeeperSubstitutions(grid, rng);
+    }
+
+    private static void TryNecrovalleyGravekeeperSubstitutions(List<CardModel> grid, Rng rng)
+    {
+        if (!grid.Any(c => c is Necrovalley))
+            return;
+
+        Type curseType = typeof(Gravekeeper_s_Curse);
+        Type spearType = typeof(Gravekeeper_s_Spear_Soldier);
+
+        bool needCurse = !StarterGridContainsCardType(grid, curseType);
+        bool needSpear = !StarterGridContainsCardType(grid, spearType);
+
+        if (!needCurse && !needSpear)
+            return;
+
+        var replacements = new List<Type>();
+        if (needCurse)
+            replacements.Add(curseType);
+        if (needSpear)
+            replacements.Add(spearType);
+
+        var candidateIndices = new List<int>();
+        for (int i = 0; i < grid.Count; i++)
+        {
+            if (grid[i] is not BaseMonsterCard m)
+                continue;
+            if (m.DuelMonsterLevel is not (3 or 4))
+                continue;
+            candidateIndices.Add(i);
+        }
+
+        if (candidateIndices.Count == 0)
+            return;
+
+        List<int> slots = PickLowestRarityDistinctMonsterSlots(grid, candidateIndices, rng, replacements.Count);
+        if (slots.Count < replacements.Count)
+            return;
+
+        for (int i = 0; i < replacements.Count; i++)
+            ReplaceStarterGridSlot(grid, slots[i], replacements[i]);
+    }
+
+    /// <summary>
+    /// Picks <paramref name="count"/> distinct indices from <paramref name="candidateIndices"/> by repeatedly choosing
+    /// a random slot among those with the lowest <see cref="StarterRarityRank"/> in the remaining pool.
+    /// </summary>
+    private static List<int> PickLowestRarityDistinctMonsterSlots(
+        List<CardModel> grid,
+        List<int> candidateIndices,
+        Rng rng,
+        int count)
+    {
+        var pool = new List<int>(candidateIndices);
+        var result = new List<int>(count);
+        for (int n = 0; n < count; n++)
+        {
+            if (pool.Count == 0)
+                break;
+
+            int minRank = pool.Min(i => StarterRarityRank(grid[i]));
+            List<int> tied = pool.Where(i => StarterRarityRank(grid[i]) == minRank).ToList();
+            int pick = tied[rng.NextInt(0, tied.Count)];
+            result.Add(pick);
+            pool.Remove(pick);
+        }
+
+        return result;
+    }
+
+    private static void TryReplaceLowestRarityLevel56MonsterWith(List<CardModel> grid, Rng rng, Type replacementMonsterType)
+    {
+        if (StarterGridContainsCardType(grid, replacementMonsterType))
+            return;
+
+        var candidateIndices = new List<int>();
+        for (int i = 0; i < grid.Count; i++)
+        {
+            if (grid[i] is not BaseMonsterCard m)
+                continue;
+            int lv = m.DuelMonsterLevel;
+            if (lv is not (5 or 6))
+                continue;
+            candidateIndices.Add(i);
+        }
+
+        if (candidateIndices.Count == 0)
+            return;
+
+        int minRank = candidateIndices.Min(i => StarterRarityRank(grid[i]));
+        List<int> tied = candidateIndices.Where(i => StarterRarityRank(grid[i]) == minRank).ToList();
+        int pick = tied[rng.NextInt(0, tied.Count)];
+        ReplaceStarterGridSlot(grid, pick, replacementMonsterType);
+    }
+
+    private static bool StarterGridContainsCardType(List<CardModel> grid, Type cardType)
+    {
+        string entry = CardFromType(cardType).Id.Entry;
+        return grid.Any(c => c.Id.Entry == entry);
+    }
+
+    private static int StarterRarityRank(CardModel model)
+    {
+        return NormalizeStarterRarity(model.Rarity) switch
+        {
+            CardRarity.Common => 0,
+            CardRarity.Uncommon => 1,
+            CardRarity.Rare => 2,
+            _ => 99
+        };
     }
 
     /// <summary>

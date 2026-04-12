@@ -25,7 +25,7 @@ public sealed class Tribute_to_the_Doomed : BaseSpellCard
         new[] { new DynamicVar("Mgc", 25m) };
 
     public Tribute_to_the_Doomed()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 

@@ -19,7 +19,7 @@ public sealed class Raigeki : BaseSpellCard
         new[] { new DynamicVar("Mgc", 13m) };
 
     public Raigeki()
-        : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.AllEnemies, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Rare, target: TargetType.AllEnemies, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
     // Dictates the card pack tags this card will be included in.

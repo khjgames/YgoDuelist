@@ -25,7 +25,7 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard
     public override bool UseAlternateUpgradedDescription => true;
 
     public Diffusion_Wave_Motion()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
