@@ -1,15 +1,12 @@
-using YgoDuelist.YgoDuelistCode.Cards;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -19,27 +16,14 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
 public sealed class Draining_Shield : BaseTrapCard
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[] { new DynamicVar("Mgc", 1m) };
-
     public Draining_Shield()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
-    // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Heal | YgoCardPackTags.Trap;
-    // You will always see bundled cards when RNG rolls this card, but not the other way around.
-    //public override Type[] BundledCards => new[]
-    //{
-    //    typeof(This_Card),
-    //    typeof(Another_Bundled_Card)
-    //};
 
-    // You will see these related cards more often with this card in your deck or side deck.
-    public override Type[] RelatedCards => new[]
-    {
-        typeof(Draining_Shield),
-    };
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Heal | YgoCardPackTags.Trap;
+
+    public override Type[] RelatedCards => new[] { typeof(Draining_Shield) };
 
     protected override bool IsPlayable
     {
@@ -53,25 +37,21 @@ public sealed class Draining_Shield : BaseTrapCard
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner?.Creature?.CombatState == null)
+        if (Owner?.Creature == null)
             return;
 
-        decimal healPer = DynamicVars["Mgc"].BaseValue;
-        decimal healTotal = 0m;
-        foreach (var enemy in Owner.Creature.CombatState.HittableEnemies)
-        {
-            if (!enemy.IsAlive)
-                continue;
-            int d = YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, Owner.Creature);
-            if (d > 0)
-                healTotal += healPer;
-        }
+        Creature? target = cardPlay.Target;
+        if (target == null || !target.IsAlive || target.Side != CombatSide.Enemy)
+            return;
 
-        if (healTotal > 0m)
-            await CreatureCmd.Heal(Owner.Creature, healTotal);
+        int atk = YgoIntentAttackDamage.GetTotalAttackIntentDamage(target, Owner.Creature);
+        if (atk <= 0)
+            return;
+
+        await CreatureCmd.Heal(Owner.Creature, atk);
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 
     private static bool AnyEnemyWithAttackIntent(Player player)
     {

@@ -23,4 +23,22 @@ public readonly struct FusionMaterialRequirements
             FilterMask = FusionMaterialRequirementFilterMask.Race,
             Races = DuelMonsterRaceMask.Of(DuelMonsterRace.Dragon)
         };
+
+    /// <summary>Aqua race only (e.g. Egyptian God Slime).</summary>
+    public static FusionMaterialRequirements AquaRaceOnly() =>
+        new()
+        {
+            FilterMask = FusionMaterialRequirementFilterMask.Race,
+            Races = DuelMonsterRaceMask.Of(DuelMonsterRace.Aqua)
+        };
+
+    /// <summary>Level 10 WATER attribute (e.g. Egyptian God Slime).</summary>
+    public static FusionMaterialRequirements Level10WaterOnly() =>
+        new()
+        {
+            FilterMask = FusionMaterialRequirementFilterMask.Level | FusionMaterialRequirementFilterMask.Attribute,
+            LevelMin = 10,
+            LevelMax = 10,
+            Attributes = DuelMonsterAttribute.Water.ToMask()
+        };
 }

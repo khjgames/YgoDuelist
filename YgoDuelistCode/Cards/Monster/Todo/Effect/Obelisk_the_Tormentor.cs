@@ -47,8 +47,7 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.God | YgoCardPackTags.WinCon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.God;
 
     public override Type[] RelatedCards => new[] { typeof(Obelisk_the_Tormentor) };
 

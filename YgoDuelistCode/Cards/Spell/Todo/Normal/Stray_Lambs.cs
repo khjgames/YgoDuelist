@@ -3,7 +3,10 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
+using DuelMonsterSummon = YgoDuelist.YgoDuelistCode.Services.DuelMonsterSummon;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -16,20 +19,21 @@ public sealed class Stray_Lambs : BaseSpellCard
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ExecuteSpellEffectPlaceholder(choiceContext, cardPlay);
-        return Task.CompletedTask;
+        if (Owner?.Creature?.CombatState == null)
+            return Task.CompletedTask;
+
+        return SummonTwoLambsAsync(choiceContext);
     }
 
-    protected override void OnUpgrade()
+    private async Task SummonTwoLambsAsync(PlayerChoiceContext choiceContext)
     {
-        ExecuteSpellUpgradePlaceholder();
+        for (int i = 0; i < 2; i++)
+        {
+            if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner!, 0))
+                break;
+            await YgoTokenSummon.TrySpecialSummonTokenAsync<Lamb_Token>(Owner!, choiceContext, defensePosition: true);
+        }
     }
 
-    private void ExecuteSpellEffectPlaceholder(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-    }
-
-    private void ExecuteSpellUpgradePlaceholder()
-    {
-    }
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

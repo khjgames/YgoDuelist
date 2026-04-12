@@ -43,8 +43,7 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.God | YgoCardPackTags.Dragon | YgoCardPackTags.WinCon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.God;
 
     public override Type[] RelatedCards => new[] { typeof(The_Winged_Dragon_of_Ra) };
 

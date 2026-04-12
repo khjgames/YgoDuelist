@@ -5,7 +5,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
@@ -22,11 +24,18 @@ public sealed class Ojama_Trio : BaseTrapCard
     {
     }
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        Task.CompletedTask;
-
-    protected override void OnUpgrade()
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        DynamicVars["Mgc"].UpgradeValueBy(1m);
+        if (Owner?.Creature?.CombatState == null)
+            return;
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
+                break;
+            await YgoTokenSummon.TrySpecialSummonTokenAsync<Ojama_Token>(Owner, choiceContext, defensePosition: true);
+        }
     }
+
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
 }

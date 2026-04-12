@@ -41,8 +41,7 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.God | YgoCardPackTags.Dragon | YgoCardPackTags.WinCon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.God;
 
     public override Type[] RelatedCards => new[] { typeof(Slifer_the_Sky_Dragon) };
 

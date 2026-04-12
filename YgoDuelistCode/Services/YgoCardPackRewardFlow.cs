@@ -184,6 +184,9 @@ public static class YgoCardPackRewardFlow
             "choose_pack_phase_end",
             $"chosenBundleIndex={chosenBundleIndex} | chosenSize={chosenPack.Count} | {SummarizeRarities(chosenPack)}");
 
+        if (chosenBundleIndex >= 0 && chosenBundleIndex < packTagMasks.Count)
+            YgoCardPackGenerator.ApplyChosenPackFatigueRelief(player, packTagMasks[chosenBundleIndex]);
+
         YgoPlayerMinimumDeck.IncreaseAfterPackRewardConfirmed(player);
 
         // Deck assignment: no back button — player must finish splitting into deck vs remainder (side/trunk next).

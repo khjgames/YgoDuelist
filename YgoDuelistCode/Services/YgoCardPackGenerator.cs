@@ -24,6 +24,30 @@ public static class YgoCardPackGenerator
 {
     public const int MaxCardsPerPack = 10;
 
+    private const int Single_Tag_Fatigue = 5;
+    private const int Double_Tag_Fatigue = 4;
+    private const int Triple_Tag_Fatigue = 3;
+    
+    private const int Chosen_Triple_Tag_Fatigue_Relief = 1;
+    private const int Chosen_Double_Tag_Fatigue_Relief = 1;
+    private const int Chosen_Single_Tag_Fatigue_Relief = 2;
+
+    /// <summary>After the player locks in a sealed pack, reduce fatigue on that pack’s tags (then Tetris).</summary>
+    public static void ApplyChosenPackFatigueRelief(Player player, YgoCardPackTags tagMask)
+    {
+        int n = YgoPackTagBits.PopCount(tagMask);
+        if (n <= 0)
+            return;
+
+        int relief = n == 1
+            ? Chosen_Single_Tag_Fatigue_Relief
+            : n == 2
+                ? Chosen_Double_Tag_Fatigue_Relief
+                : Chosen_Triple_Tag_Fatigue_Relief;
+
+        YgoPackRewardProgress.For(player).ApplyPackTagChosenReliefAndTetris(tagMask, relief);
+    }
+
     public static List<PackTemplateRoll> GenerateThreePackTemplates(
         Player player,
         Rng rng,
@@ -113,7 +137,7 @@ public static class YgoCardPackGenerator
     {
         int r = rng.NextInt(100);
         int tagCount = r < 48 ? 1 : r < 85 ? 2 : 3;
-        int bump = tagCount == 1 ? 4 : tagCount == 2 ? 3 : 2;
+        int bump = tagCount == 1 ? Single_Tag_Fatigue : tagCount == 2 ? Double_Tag_Fatigue : Triple_Tag_Fatigue;
         YgoCardPackTags mask = YgoCardPackTags.None;
 
         if (workingMain.Count == 0)

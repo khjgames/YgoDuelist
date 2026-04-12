@@ -1,11 +1,15 @@
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Cobra_Jar : EffectMonsterCard
+public sealed class Cobra_Jar : EffectMonsterCard, IMonsterFlipEffect
 {
     public Cobra_Jar()
         : base(
@@ -22,4 +26,10 @@ public sealed class Cobra_Jar : EffectMonsterCard
     {
     }
 
+    public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
+    {
+        if (Owner == null || self is not Cobra_Jar)
+            return;
+        await YgoTokenSummon.TrySpecialSummonTokenAsync<Poisonous_Snake_Token>(Owner, choiceContext, defensePosition: false);
+    }
 }

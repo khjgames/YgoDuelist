@@ -134,6 +134,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
         await YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(player);
         await YgoBlindDestructionContinuous.TryResolvePlayerTurnStart(choiceContext, player);
+        await YgoJamBreedingMachineContinuous.TryResolvePlayerTurnStart(choiceContext, player);
         await YgoCardTraderContinuous.TryResolvePlayerTurnStart(choiceContext, player);
         await SliferSkyDragonService.ApplySliferPressureToAllEnemiesAsync(choiceContext, player);
     }
@@ -143,6 +144,8 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         if (player == Owner)
             await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
+        await YgoMirageTokenEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
+        await YgoInsectQueenEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
         await SliferSkyDragonService.BeforePlayerTurnEndFlushAsync(choiceContext, player);
     }
 

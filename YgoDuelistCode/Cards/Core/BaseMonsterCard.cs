@@ -213,6 +213,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public virtual bool NormalSummonSkipsStiffFatigueOnSummonTurn => false;
 
     /// <summary>
+    /// When true, Command Attack is omitted from the duel monster options menu (e.g. trap monsters that cannot attack).
+    /// </summary>
+    public virtual bool DuelMonsterExcludesCommandAttack => false;
+
+    /// <summary>
     /// ATK change per qualifying execute kill; applied via <see cref="ApplyPermanentExecuteAtkDelta"/> and persisted in <see cref="PermanentAtkBonusFromExecutes"/>.
     /// Exposed as <c>Increase</c> in <see cref="NormalMonsterCard.CanonicalVars"/> for <c>{Increase:diff()}</c> text (cf. <c>TheScythe</c>).
     /// </summary>

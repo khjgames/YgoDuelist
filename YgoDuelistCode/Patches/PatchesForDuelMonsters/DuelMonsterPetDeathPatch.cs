@@ -19,6 +19,7 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
@@ -153,6 +154,11 @@ public static class DuelMonsterPetDeathPatch
                 && MonsterCommandRegistry.TryGet(pet, out var cmdRigorous)
                 && cmdRigorous.DestroyedByEnemyBattleDamage)
                 TaskHelper.RunSafely(Rigorous_Reaver.ApplyWhenDestroyedByBattleAsync(player, rigorous));
+
+            if (card is Poisonous_Snake_Token
+                && MonsterCommandRegistry.TryGet(pet, out var cmdSnake)
+                && cmdSnake.DestroyedByEnemyBattleDamage)
+                TaskHelper.RunSafely(Poisonous_Snake_Token.ApplyWhenDestroyedByBattleAsync(player, cmdSnake.BattleDamageKillerEnemy));
 
             if (player.Creature?.HasPower<AccumulatedSpiritsPower>() == true)
                 YgoDuelistPassivePowerState.RegisterAccumulatedSpiritsFieldLoss(player);

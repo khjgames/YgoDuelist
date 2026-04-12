@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -50,9 +51,12 @@ public static class DuelMonsterMonsterOptionsMenu
         cmdDefend.InitializeSource(monsterCard, pet);
         commands.Add(cmdDefend);
 
-        Command_Attack cmdAttack = combatState.CreateCard<Command_Attack>(player);
-        cmdAttack.InitializeSource(monsterCard, pet);
-        commands.Add(cmdAttack);
+        if (!monsterCard.DuelMonsterExcludesCommandAttack)
+        {
+            Command_Attack cmdAttack = combatState.CreateCard<Command_Attack>(player);
+            cmdAttack.InitializeSource(monsterCard, pet);
+            commands.Add(cmdAttack);
+        }
 
         Command_Change_Battle_Position changePos = combatState.CreateCard<Command_Change_Battle_Position>(player);
         changePos.InitializeSource(monsterCard, pet);
@@ -71,6 +75,15 @@ public static class DuelMonsterMonsterOptionsMenu
             Activate_Effect activate = combatState.CreateCard<Activate_Effect>(player);
             activate.InitializeSource(monsterCard, pet);
             commands.Add(activate);
+        }
+
+        if (Egyptian_God_Slime.PlayerHasSlimeInExtraDeck(player)
+            && monsterCard is BaseMonsterCard bm
+            && Egyptian_God_Slime.QualifiesAsSlimeTributeMaterial(bm))
+        {
+            Special_Summon_Egyptian_God_Slime slimeCmd = combatState.CreateCard<Special_Summon_Egyptian_God_Slime>(player);
+            slimeCmd.InitializeSource(monsterCard, pet);
+            commands.Add(slimeCmd);
         }
 
         if (monsterCard is IMonsterOptionCommandProvider provider)

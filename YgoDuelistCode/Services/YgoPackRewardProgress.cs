@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -30,6 +31,23 @@ public sealed class YgoPackRewardProgressState
         ApplyPackTagTetris();
     }
 
+    /// <summary>Subtract relief from each tag on the chosen pack’s mask, then Tetris (intermediate totals may be negative).</summary>
+    public void ApplyPackTagChosenReliefAndTetris(YgoCardPackTags mask, int reliefPerTag)
+    {
+        if (reliefPerTag <= 0)
+            return;
+
+        foreach (YgoCardPackTags singleBit in YgoPackTagBits.EnumerateSingleBitsOrdered(mask))
+        {
+            long k = (long)singleBit;
+            int next = PackTagAccumByFlag.GetValueOrDefault(k, 0) - reliefPerTag;
+            PackTagAccumByFlag[k] = next;
+        }
+
+        ApplyPackTagTetris();
+    }
+
+    /// <summary>Subtract global min among participating tags (missing = 0); negative min shifts everyone up by |min|.</summary>
     public void ApplyPackTagTetris()
     {
         int min = int.MaxValue;
@@ -46,6 +64,7 @@ public sealed class YgoPackRewardProgressState
         foreach (long bit in YgoPackParticipatingTags.AllFlagValues)
         {
             int v = PackTagAccumByFlag.GetValueOrDefault(bit, 0) - min;
+            v = Math.Clamp(v, 0, MaxTagAccumPerTag);
             if (v <= 0)
                 PackTagAccumByFlag.Remove(bit);
             else
