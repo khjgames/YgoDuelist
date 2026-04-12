@@ -39,8 +39,6 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     private readonly int? _duelMonsterAttackPlayEnergyOverride;
     private readonly int? _duelMonsterDefensePlayEnergyOverride;
-    private readonly int _rawDuelMonsterAttackPlayEnergy;
-    private readonly int _rawDuelMonsterDefensePlayEnergy;
 
     public int BaseAtk { get; }
     public int BaseDef { get; }
@@ -60,11 +58,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     {
         if (_duelMonsterAttackPlayEnergyOverride.HasValue)
             return _duelMonsterAttackPlayEnergyOverride.Value;
-        int energy = MonsterEnergyCostCalculator.ApplyHighStatEfficiencyTax(
+        int energy = MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
             _duelMonsterLevel,
+            YgoCardType,
             BaseAtk,
             isAttackStat: true,
-            _rawDuelMonsterAttackPlayEnergy,
             upgradedOrPreview,
             DuelMonsterStatsAreUnknown);
         if (upgradedOrPreview && ZeroAttackPlayEnergyWhenUpgradedForLowAtkBlight)
@@ -77,30 +75,14 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     {
         if (_duelMonsterDefensePlayEnergyOverride.HasValue)
             return _duelMonsterDefensePlayEnergyOverride.Value;
-        return MonsterEnergyCostCalculator.ApplyHighStatEfficiencyTax(
+        return MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
             _duelMonsterLevel,
+            YgoCardType,
             BaseDef,
             isAttackStat: false,
-            _rawDuelMonsterDefensePlayEnergy,
             upgradedOrPreview,
             DuelMonsterStatsAreUnknown);
     }
-
-    /// <summary>
-    /// When true, printed ATK must not gain <see cref="YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus"/> on upgrade — unupgraded attack stance is 2 energy from tax, upgraded is 1.
-    /// </summary>
-    protected bool SuppressPrintedAttackUpgradeForEfficiencyTax =>
-        !_duelMonsterAttackPlayEnergyOverride.HasValue
-        && MonsterEnergyCostCalculator.EfficiencyTaxRaisesPlayEnergyUnupgraded(
-            _duelMonsterLevel, YgoCardType, BaseAtk, isAttackStat: true, DuelMonsterStatsAreUnknown);
-
-    /// <summary>
-    /// When true, printed DEF must not gain the normal upgrade bonus — unupgraded defense stance is 2 energy from tax, upgraded is 1.
-    /// </summary>
-    protected bool SuppressPrintedDefenseUpgradeForEfficiencyTax =>
-        !_duelMonsterDefensePlayEnergyOverride.HasValue
-        && MonsterEnergyCostCalculator.EfficiencyTaxRaisesPlayEnergyUnupgraded(
-            _duelMonsterLevel, YgoCardType, BaseDef, isAttackStat: false, DuelMonsterStatsAreUnknown);
 
     /// <summary>Cost Down and similar: −1 energy for monsters in hand while <see cref="CostDownHandLevelPower"/> is active.</summary>
     protected int GetCostDownHandPlayEnergyDiscount() =>
@@ -321,10 +303,6 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
         _duelMonsterAttackPlayEnergyOverride = duelMonsterAttackPlayEnergyOverride;
         _duelMonsterDefensePlayEnergyOverride = duelMonsterDefensePlayEnergyOverride;
-        _rawDuelMonsterAttackPlayEnergy = MonsterEnergyCostCalculator.Compute(
-            duelMonsterLevel, YgoCardType, baseAtk, DuelMonsterStatsAreUnknown);
-        _rawDuelMonsterDefensePlayEnergy = MonsterEnergyCostCalculator.Compute(
-            duelMonsterLevel, YgoCardType, baseDef, DuelMonsterStatsAreUnknown);
 
         // Start in defense position (Skill card) when DEF > ATK.
         // Equal stats keep the existing Attack default.

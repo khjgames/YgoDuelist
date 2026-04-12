@@ -51,8 +51,8 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         int? duelMonsterAttackPlayEnergyOverride = null,
         int? duelMonsterDefensePlayEnergyOverride = null)
         : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace,
-            ResolveFusionAttackStancePlayEnergy(baseAtk, duelMonsterAttackPlayEnergyOverride),
-            ResolveFusionDefenseStancePlayEnergy(baseDef, duelMonsterDefensePlayEnergyOverride))
+            duelMonsterAttackPlayEnergyOverride,
+            duelMonsterDefensePlayEnergyOverride)
     {
         ArgumentNullException.ThrowIfNull(fusionMaterialSlots);
         _fusionMaterialSlots = (FusionMaterialSlot[])fusionMaterialSlots.Clone();
@@ -95,22 +95,6 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         : this(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace,
             fusionMaterialSlots, null, null)
     {
-    }
-
-    /// <summary>Low printed ATK fusions: attack stance / Command Attack costs 0 unless an explicit override is set.</summary>
-    private static int? ResolveFusionAttackStancePlayEnergy(int baseAtk, int? explicitOverride)
-    {
-        if (explicitOverride.HasValue)
-            return explicitOverride.Value;
-        return baseAtk <= 9 ? 0 : null;
-    }
-
-    /// <summary>Low printed DEF fusions: defense stance costs 0 unless an explicit override is set.</summary>
-    private static int? ResolveFusionDefenseStancePlayEnergy(int baseDef, int? explicitOverride)
-    {
-        if (explicitOverride.HasValue)
-            return explicitOverride.Value;
-        return baseDef <= 8 ? 0 : null;
     }
 
     private static FusionMaterialSlot[] MapNamedTypesToSlots(Type[] fusionMaterialTypes)

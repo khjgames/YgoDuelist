@@ -294,13 +294,22 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
     protected override void OnUpgrade()
     {
-        int atkBonus = SuppressPrintedAttackUpgradeForEfficiencyTax
-            ? 0
-            : YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseAtk);
-        int defBonus = SuppressPrintedDefenseUpgradeForEfficiencyTax
-            ? 0
-            : YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseDef);
-        int mgcBonus = YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseMgc);
+        int atkBonus = YgoStatUpgradeScaling.GetMonsterPrintedLineUpgradeDelta(
+            DuelMonsterLevel,
+            YgoCardType,
+            MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
+                DuelMonsterLevel, YgoCardType, BaseAtk, true, false, DuelMonsterStatsAreUnknown),
+            BaseAtk,
+            isDefenseLine: false);
+        int defBonus = YgoStatUpgradeScaling.GetMonsterPrintedLineUpgradeDelta(
+            DuelMonsterLevel,
+            YgoCardType,
+            MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
+                DuelMonsterLevel, YgoCardType, BaseDef, false, false, DuelMonsterStatsAreUnknown),
+            BaseDef,
+            isDefenseLine: true);
+        int mgcBonus = YgoStatUpgradeScaling.GetMonsterMgcUpgradeDelta(
+            DuelMonsterLevel, YgoCardType, BaseMgc, DuelMonsterStatsAreUnknown);
         DynamicVars.Damage.UpgradeValueBy(atkBonus);
         DynamicVars["Def"].UpgradeValueBy(defBonus);
         if (DynamicVars.Block != null)

@@ -37,7 +37,8 @@ public sealed class Lord_of_D : EffectMonsterCard
     protected override void OnUpgrade()
     {
         base.OnUpgrade();
-        int fromMonsterScaling = BaseMgc + YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseMgc);
+        int fromMonsterScaling = BaseMgc + YgoStatUpgradeScaling.GetMonsterMgcUpgradeDelta(
+            DuelMonsterLevel, YgoCardType, BaseMgc, DuelMonsterStatsAreUnknown);
         DynamicVars["Mgc"].UpgradeValueBy(DragonAuraMgcUpgraded - fromMonsterScaling);
     }
 }

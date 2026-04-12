@@ -43,15 +43,23 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(The_Last_Warrior_from_Another_Planet) };
 
-    /// <summary>MGC uses +1 on upgrade instead of default monster scaling (+2 for base 1).</summary>
+    /// <summary>MGC uses +1 on upgrade instead of table-driven MGC smith.</summary>
     protected override void OnUpgrade()
     {
-        int atkBonus = SuppressPrintedAttackUpgradeForEfficiencyTax
-            ? 0
-            : YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseAtk);
-        int defBonus = SuppressPrintedDefenseUpgradeForEfficiencyTax
-            ? 0
-            : YgoStatUpgradeScaling.GetMonsterPrintedStatUpgradeBonus(BaseDef);
+        int atkBonus = YgoStatUpgradeScaling.GetMonsterPrintedLineUpgradeDelta(
+            DuelMonsterLevel,
+            YgoCardType,
+            MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
+                DuelMonsterLevel, YgoCardType, BaseAtk, true, false, DuelMonsterStatsAreUnknown),
+            BaseAtk,
+            isDefenseLine: false);
+        int defBonus = YgoStatUpgradeScaling.GetMonsterPrintedLineUpgradeDelta(
+            DuelMonsterLevel,
+            YgoCardType,
+            MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
+                DuelMonsterLevel, YgoCardType, BaseDef, false, false, DuelMonsterStatsAreUnknown),
+            BaseDef,
+            isDefenseLine: true);
         DynamicVars.Damage.UpgradeValueBy(atkBonus);
         DynamicVars["Def"].UpgradeValueBy(defBonus);
         if (DynamicVars.Block != null)
