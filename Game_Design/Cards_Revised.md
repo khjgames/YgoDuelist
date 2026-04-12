@@ -101,7 +101,7 @@ Pitch-Dark Dragon -> Dark Blade
 Lord of D. -> Dragon monsters gain 200 atk & def.
 Zombyra the Dark -> 1 cost, if this card executes a monster it permanently loses 2(1) attack.
 
-Generic Upgrade Scacling you should implement for bonuses to ATK & DEF for stat changing spells, traps & monsters. 
+Generic Upgrade Scaling you should implement for bonuses to ATK & DEF for stat changing spells, traps & monsters. 
 Upgrades make the atk or def increase by this number depending on how high the base numbers were (so if a monster had less than 15 def they would only gain +2 to def on upgrade, but if they had say 17 atk they would gain +3 to atk on upgrade) 
 -> +2, +3 if 15+, +4 if 22+, +5 if 29+
 
