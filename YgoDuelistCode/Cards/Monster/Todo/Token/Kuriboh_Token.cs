@@ -20,4 +20,6 @@ public sealed class Kuriboh_Token : YgoTokenNormalMonster
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
+
+    public override int TokenAlternatePortraitCount => 3;
 }

@@ -16,9 +16,11 @@ public sealed class Embodiment_of_Apophis : BaseContinuousTrapCard, IYgoSpellTra
     private BaseMonsterCard? _pendingLinkAfterZone;
 
     public Embodiment_of_Apophis()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Trap;
 
     public BaseMonsterCard? EquipLinkedMonster
     {

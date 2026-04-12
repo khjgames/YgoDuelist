@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -24,6 +25,8 @@ public sealed class Multiplication_of_Ants : BaseSpellCard, IYgoPrePlayCancelabl
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Insect | YgoCardPackTags.Spell;
 
     protected override bool IsPlayable =>
         base.IsPlayable

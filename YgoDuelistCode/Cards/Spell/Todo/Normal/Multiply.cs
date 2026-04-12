@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
@@ -25,6 +26,10 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
     {
     }
+    public override Type[] BundledCards => new[] { typeof(Kuriboh) };
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Spell;
 
     protected override bool IsPlayable =>
         base.IsPlayable

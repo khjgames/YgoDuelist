@@ -27,7 +27,7 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
@@ -37,6 +37,9 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
             duelMonsterRace: DuelMonsterRace.Plant)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Banish;
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;

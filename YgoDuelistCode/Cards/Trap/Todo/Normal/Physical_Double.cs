@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -15,9 +16,11 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 public sealed class Physical_Double : BaseTrapCard
 {
     public Physical_Double()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Trap;
 
     protected override bool IsPlayable =>
         base.IsPlayable

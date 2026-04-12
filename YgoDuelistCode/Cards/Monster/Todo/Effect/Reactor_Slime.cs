@@ -33,7 +33,7 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, 
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.God | YgoCardPackTags.Ocean | YgoCardPackTags.Water;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.God;
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;

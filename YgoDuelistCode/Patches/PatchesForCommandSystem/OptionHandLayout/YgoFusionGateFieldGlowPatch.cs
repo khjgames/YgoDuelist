@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -19,6 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// shown cyan (not red/gold). Face-down set Field Spells in the zone use that path when <see cref="CardModel.CanPlay"/>.
 /// Face-up on the field is not <c>CanPlay</c> in vanilla (no cyan there); we still show purple when a zone fusion is legal
 /// so the right-click prompt stays visible.
+/// <para><see cref="Special_Summon_Egyptian_God_Slime"/> in the monster-options row uses the same purple when playable.</para>
 /// </summary>
 [HarmonyPatch(typeof(NHandCardHolder), "UpdateCard")]
 public static class YgoFusionGateFieldGlowPatch
@@ -44,36 +46,68 @@ public static class YgoFusionGateFieldGlowPatch
             return;
 
         CardModel? model = __instance.CardNode?.Model;
-        if (model is not Fusion_Gate gate)
-            return;
-
-        PileType pileType = gate.Pile?.Type ?? PileType.None;
-        if (pileType != SpellTrapZonePile.CustomType && pileType != PileType.Hand)
-            return;
-
-        Player? owner = gate.Owner;
-        if (owner == null)
-            return;
-
-        try
+        if (model is Fusion_Gate gate)
         {
-            if (!LocalContext.IsMe(owner))
+            PileType pileType = gate.Pile?.Type ?? PileType.None;
+            if (pileType != SpellTrapZonePile.CustomType && pileType != PileType.Hand)
                 return;
+
+            Player? owner = gate.Owner;
+            if (owner == null)
+                return;
+
+            try
+            {
+                if (!LocalContext.IsMe(owner))
+                    return;
+            }
+            catch
+            {
+                return;
+            }
+
+            if (!FusionSummonSelection.HasFeasibleFusionPlay(owner, gate))
+                return;
+
+            bool cyanPlayable = WouldVanillaUsePlayableCyanHighlight(__instance, gate);
+            bool faceUpInZone = pileType == SpellTrapZonePile.CustomType && !gate.FaceDown;
+            if (!cyanPlayable && !faceUpInZone)
+                return;
+
+            ApplyPurpleHighlight(__instance);
+            return;
         }
-        catch
+
+        if (model is Special_Summon_Egyptian_God_Slime slimeCmd)
         {
-            return;
+            PileType pileType = slimeCmd.Pile?.Type ?? PileType.None;
+            if (pileType != YgoCardOptionPile.CustomType)
+                return;
+
+            Player? owner = slimeCmd.Owner;
+            if (owner == null)
+                return;
+
+            try
+            {
+                if (!LocalContext.IsMe(owner))
+                    return;
+            }
+            catch
+            {
+                return;
+            }
+
+            if (!WouldVanillaUsePlayableCyanHighlight(__instance, slimeCmd))
+                return;
+
+            ApplyPurpleHighlight(__instance);
         }
+    }
 
-        if (!FusionSummonSelection.HasFeasibleFusionPlay(owner, gate))
-            return;
-
-        bool cyanPlayable = WouldVanillaUsePlayableCyanHighlight(__instance, gate);
-        bool faceUpInZone = pileType == SpellTrapZonePile.CustomType && !gate.FaceDown;
-        if (!cyanPlayable && !faceUpInZone)
-            return;
-
-        NCard? node = __instance.CardNode;
+    private static void ApplyPurpleHighlight(NHandCardHolder holder)
+    {
+        NCard? node = holder.CardNode;
         if (node == null)
             return;
 

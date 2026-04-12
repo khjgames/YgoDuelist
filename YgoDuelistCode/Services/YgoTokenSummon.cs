@@ -26,6 +26,7 @@ public static class YgoTokenSummon
 
         var token = (TToken)player.Creature.CombatState.CreateCard<TToken>(player);
         configure?.Invoke(token);
+        YgoTokenAlternatePortrait.AssignForSummon(token, player);
         if (defensePosition && token.RegisteredCardType == CardType.Attack)
             token.ToggleAttackSkill(allowCanonicalUiPreview: false);
 

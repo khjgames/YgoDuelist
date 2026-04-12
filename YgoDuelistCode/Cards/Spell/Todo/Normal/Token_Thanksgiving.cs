@@ -22,9 +22,11 @@ public sealed class Token_Thanksgiving : BaseSpellCard
         new[] { new DynamicVar("Mgc", 2m) };
 
     public Token_Thanksgiving()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Heal | YgoCardPackTags.Spell;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -49,7 +51,6 @@ public sealed class Token_Thanksgiving : BaseSpellCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Mgc"].UpgradeValueBy(1m);
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].UpgradeValueBy(2m);
     }
 }

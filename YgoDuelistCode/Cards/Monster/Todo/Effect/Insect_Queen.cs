@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -21,7 +22,7 @@ public sealed class Insect_Queen : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
@@ -31,6 +32,8 @@ public sealed class Insect_Queen : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Insect;
 
     protected override Task OnAfterMonsterAttackHitAsync(
         PlayerChoiceContext choiceContext,

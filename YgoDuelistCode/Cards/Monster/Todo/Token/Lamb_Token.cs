@@ -20,4 +20,6 @@ public sealed class Lamb_Token : YgoTokenNormalMonster
             duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
+
+    public override int TokenAlternatePortraitCount => 2;
 }

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -15,7 +16,7 @@ public sealed class Cobra_Jar : EffectMonsterCard, IMonsterFlipEffect
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
@@ -25,6 +26,8 @@ public sealed class Cobra_Jar : EffectMonsterCard, IMonsterFlipEffect
             duelMonsterRace: DuelMonsterRace.Reptile)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Burn;
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {

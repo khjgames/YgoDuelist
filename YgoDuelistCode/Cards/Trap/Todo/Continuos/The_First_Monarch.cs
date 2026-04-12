@@ -16,9 +16,11 @@ public sealed class The_First_Monarch : BaseContinuousTrapCard, IYgoSpellTrapEqu
     private BaseMonsterCard? _pendingLinkAfterZone;
 
     public The_First_Monarch()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.Self)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Trap;
 
     public BaseMonsterCard? EquipLinkedMonster
     {
