@@ -32,7 +32,7 @@ public sealed class Insect_Queen : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Insect;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Insect;
 
     public override Type[] RelatedCards => new[] { typeof(Insect_Queen), typeof(Insect_Monster_Token) };
 

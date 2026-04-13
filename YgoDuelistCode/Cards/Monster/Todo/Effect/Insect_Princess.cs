@@ -29,7 +29,7 @@ public sealed class Insect_Princess : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Insect_Princess), typeof(Insect_Queen) };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Wind | YgoCardPackTags.Insect;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
 
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
     {

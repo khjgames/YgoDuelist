@@ -44,6 +44,8 @@ public enum StarterCategory
 /// After that, signature spells may replace a level 5–6 monster with <see cref="Dark_Magician"/> or <see cref="Blue_Eyes_White_Dragon"/>, then <see cref="Necrovalley"/> may add <see cref="A_Cat_of_Ill_Omen"/> (level 1–2), <see cref="Gravekeeper_s_Curse"/>, and <see cref="Gravekeeper_s_Spear_Soldier"/> (see <see cref="ApplyNeowSignatureMonsterSubstitutions"/>).
 /// Then one random flat race equip (if any), one random terrain race field (if any), and one random flat attribute field (if any)
 /// may be retargeted to match the dominant monster races/attributes in the grid.
+/// Finally, if the unique most common monster race is <see cref="DuelMonsterRace.Insect"/> or <see cref="DuelMonsterRace.Machine"/>,
+/// the lowest-StS-rarity level 5–6 monster (if any) becomes <see cref="Insect_Queen"/> or <see cref="Machine_King"/> respectively when that card is not already in the grid.
 /// </summary>
 public static class YgoStarterCardCatalog
 {
@@ -218,6 +220,7 @@ public static class YgoStarterCardCatalog
 
         ApplyNeowSignatureMonsterSubstitutions(grid, rng);
         ApplyNeowStarterGridSubstitutions(grid, rng);
+        TryReplaceLowestRarityLevel56MonsterForDominantRace(grid, rng);
 
         GD.Print(
             $"[YgoDuelist NeowDraft] CreateRandomGrid: structured fill categoryOrder=[{string.Join(",", categoryOrder)}] " +
@@ -425,6 +428,53 @@ public static class YgoStarterCardCatalog
         List<int> tied = candidateIndices.Where(i => StarterRarityRank(grid[i]) == minRank).ToList();
         int pick = tied[rng.NextInt(0, tied.Count)];
         ReplaceStarterGridSlot(grid, pick, replacementMonsterType);
+    }
+
+    /// <summary>
+    /// After signature and field/equip retargeting: if one monster race is strictly the mode (no tie for first place) and it is Insect or Machine,
+    /// swaps the lowest-StS-rarity level 5–6 monster for <see cref="Insect_Queen"/> or <see cref="Machine_King"/> (same slot selection as Dark Magician / BEWD).
+    /// </summary>
+    private static void TryReplaceLowestRarityLevel56MonsterForDominantRace(List<CardModel> grid, Rng rng)
+    {
+        if (!TryGetUniqueModalMonsterRace(grid, out DuelMonsterRace race))
+            return;
+
+        Type? replacement = race switch
+        {
+            DuelMonsterRace.Insect => typeof(Insect_Queen),
+            DuelMonsterRace.Machine => typeof(Machine_King),
+            _ => null
+        };
+
+        if (replacement == null)
+            return;
+
+        TryReplaceLowestRarityLevel56MonsterWith(grid, rng, replacement);
+    }
+
+    /// <summary>Returns true when exactly one <see cref="DuelMonsterRace"/> has the maximum count among <see cref="BaseMonsterCard"/> in <paramref name="grid"/>.</summary>
+    private static bool TryGetUniqueModalMonsterRace(List<CardModel> grid, out DuelMonsterRace race)
+    {
+        race = default;
+        var raceCounts = new Dictionary<DuelMonsterRace, int>();
+        foreach (CardModel c in grid)
+        {
+            if (c is not BaseMonsterCard m)
+                continue;
+            DuelMonsterRace r = m.DuelMonsterRace;
+            raceCounts[r] = raceCounts.GetValueOrDefault(r) + 1;
+        }
+
+        if (raceCounts.Count == 0)
+            return false;
+
+        int max = raceCounts.Values.Max();
+        List<DuelMonsterRace> leaders = raceCounts.Where(kv => kv.Value == max).Select(kv => kv.Key).ToList();
+        if (leaders.Count != 1)
+            return false;
+
+        race = leaders[0];
+        return true;
     }
 
     private static void TryReplaceLowestRarityLevel12MonsterWith(List<CardModel> grid, Rng rng, Type replacementMonsterType)

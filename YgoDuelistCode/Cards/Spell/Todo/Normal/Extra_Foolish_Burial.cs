@@ -24,12 +24,12 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 public sealed class Extra_Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
     public Extra_Foolish_Burial()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Spell | YgoCardPackTags.Burn;
+        YgoCardPackTags.Draw | YgoCardPackTags.Spell | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Extra_Foolish_Burial) };
 

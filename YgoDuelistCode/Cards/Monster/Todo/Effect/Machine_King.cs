@@ -17,7 +17,7 @@ public sealed class Machine_King : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
