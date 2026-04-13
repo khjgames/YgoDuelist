@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -106,7 +107,6 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
                 }
             }
 
-            await DestroyOtherDuelMonstersThenApplySummonBonus();
             await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext);
         }
 
@@ -117,13 +117,13 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
         await OnAfterMonsterPlayResolved(choiceContext, cardPlay);
     }
 
-    private async Task DestroyOtherDuelMonstersThenApplySummonBonus()
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
     {
-        if (Owner?.PlayerCombatState == null)
+        if (player?.PlayerCombatState == null)
             return;
 
         var petsToKill = new List<Creature>();
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
         {
             if (pet == null || !pet.IsAlive)
                 continue;

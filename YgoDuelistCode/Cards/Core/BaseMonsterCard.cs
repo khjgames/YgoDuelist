@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -211,6 +214,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// When true, normal/tribute summon does not apply stiff/fatigue for that turn (same timing as special summon).
     /// </summary>
     public virtual bool NormalSummonSkipsStiffFatigueOnSummonTurn => false;
+
+    /// <summary>
+    /// Called from <see cref="DuelMonsterSummon.TrySummonDuelMonster"/> right after the duel monster pet is created and
+    /// <see cref="DuelMonsterFieldRegistry.RegisterSummon"/> runs. Override for summon-triggered effects.
+    /// </summary>
+    protected internal virtual Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        Task.CompletedTask;
 
     /// <summary>
     /// When true, Command Attack is omitted from the duel monster options menu (e.g. trap monsters that cannot attack).

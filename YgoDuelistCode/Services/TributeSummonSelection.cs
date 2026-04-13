@@ -153,16 +153,34 @@ public static class TributeSummonSelection
             Cancelable = true
         };
 
+        Func<List<CardModel>> rebuildCanonical =
+            () => BuildTributeSelectionCandidates(player, summonCard, need).Cast<CardModel>().ToList();
+
+        // Field-only tribute grids: same combat-card wire as fusion/ritual (GridCombatMpExpectation, FromMutableCombatCards).
+        // Mausoleum synthetic rows are not stable on the combat-card net path — keep Index wire + rebuild for those.
+        bool useCombatWire = candidates.TrueForAll(c => c is not Mausoleum_Lose_HP);
+        if (RunManager.Instance.NetService.Type != NetGameType.Singleplayer)
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][Tribute] TrySelectVariableTribute owner={player.NetId} summon={summonCard.Id?.Entry} need={need} combatWire={useCombatWire} candidates={candidates.Count}");
+        }
+
         IEnumerable<CardModel> selected;
         try
         {
-            selected = await TributeSummonGridSelect.FromSimpleGridIndexed(
-                new BlockingPlayerChoiceContext(),
-                candidates,
-                player,
-                prefs,
-                rebuildCanonicalForRemoteApply: () =>
-                    BuildTributeSelectionCandidates(player, summonCard, need).Cast<CardModel>().ToList());
+            selected = useCombatWire
+                ? await TributeSummonGridSelect.FromSimpleGridCombat(
+                    new BlockingPlayerChoiceContext(),
+                    candidates,
+                    player,
+                    prefs,
+                    rebuildCanonicalForRemoteApply: rebuildCanonical)
+                : await TributeSummonGridSelect.FromSimpleGridIndexed(
+                    new BlockingPlayerChoiceContext(),
+                    candidates,
+                    player,
+                    prefs,
+                    rebuildCanonicalForRemoteApply: rebuildCanonical);
         }
         catch (OperationCanceledException)
         {

@@ -93,6 +93,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         // Track this card as an active field monster for aura/stat calculations and menu commands.
         DuelMonsterFieldRegistry.RegisterSummon(player, card, petCreature);
 
+        await card.OnSummoned(player, _, petCreature);
+
         // Halved ATK/DEF timer: normal summon in attack (face-up) only — not when set face-down; flip uses YgoMonsterFlipEffectRunner.
         if (card is Hourglass_of_Courage hoc && !canAttackThisTurn && hoc.Type == CardType.Attack && !hoc.FaceDown)
             await PowerCmd.Apply<HourglassOfCourageHalvedPower>(petCreature, 2m, player.Creature, card);

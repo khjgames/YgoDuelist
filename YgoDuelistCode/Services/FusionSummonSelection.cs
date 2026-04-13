@@ -4,16 +4,20 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -75,7 +79,8 @@ public static class FusionSummonSelection
             return list;
 
         Type filter = spell.FusionTargetMonsterType;
-        foreach (CardModel c in extra.Cards)
+        // MP: pile iteration order is not guaranteed to match across peers; stabilize before feasibility checks.
+        foreach (CardModel c in extra.Cards.OrderBy(x => NetCombatCardDb.Instance.GetCardId(x)))
         {
             if (ReferenceEquals(c, spellCard))
                 continue;
@@ -201,6 +206,16 @@ public static class FusionSummonSelection
             return false;
 
         bool needTargetGrid = spell.RequiresPlayerFusionTargetSelection || targets.Count > 1;
+        NetGameType net = RunManager.Instance?.NetService.Type ?? NetGameType.None;
+        bool mp = net is NetGameType.Host or NetGameType.Client;
+        if (mp)
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][Fusion] TrySelect start spell={spellCard.Id?.Entry} ownerNet={player.NetId} feasibleFusionTargets={targets.Count} needTargetGrid={needTargetGrid} net={net}");
+        }
+
+        List<CardModel> feasibleStable =
+            TributeSummonGridSelect.StabilizeHandPileCandidates(targets.Cast<CardModel>());
 
         FusionMonsterCard fusionCard;
         if (needTargetGrid)
@@ -209,7 +224,42 @@ public static class FusionSummonSelection
             IEnumerable<CardModel> targetPick;
             try
             {
-                targetPick = await CardSelectCmd.FromSimpleGrid(ctx, targets, player, targetPrefs);
+                targetPick = await TributeSummonGridSelect.FromSimpleGridCombat(
+                    ctx,
+                    feasibleStable,
+                    player,
+                    targetPrefs,
+                    rebuildCanonicalForRemoteApply: () =>
+                        TributeSummonGridSelect.StabilizeHandPileCandidates(
+                            GetFeasibleFusionTargetsInExtraDeck(player, spell).Cast<CardModel>()));
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+
+            FusionMonsterCard? picked = targetPick.OfType<FusionMonsterCard>().FirstOrDefault();
+            if (picked == null || !spell.FusionTargetMonsterType.IsInstanceOfType(picked))
+                return false;
+            fusionCard = picked;
+        }
+        else if (mp && feasibleStable.Count == 1)
+        {
+            // MP lockstep: always take the fusion-target step through PlayerChoiceSynchronizer + combat wire, even when
+            // only one legal fusion exists. Otherwise peers that skip this ReserveChoiceId (while the caster shows a
+            // multi-target grid) assign different choice ids to the material grid and apply wrong buffered results.
+            var targetPrefs = new CardSelectorPrefs(PickTargetPrompt, 1, 1) { Cancelable = true };
+            IEnumerable<CardModel> targetPick;
+            try
+            {
+                targetPick = await TributeSummonGridSelect.FromSimpleGridCombat(
+                    ctx,
+                    feasibleStable,
+                    player,
+                    targetPrefs,
+                    rebuildCanonicalForRemoteApply: () =>
+                        TributeSummonGridSelect.StabilizeHandPileCandidates(
+                            GetFeasibleFusionTargetsInExtraDeck(player, spell).Cast<CardModel>()));
             }
             catch (OperationCanceledException)
             {
@@ -223,7 +273,9 @@ public static class FusionSummonSelection
         }
         else
         {
-            fusionCard = targets[0];
+            if (feasibleStable[0] is not FusionMonsterCard single)
+                return false;
+            fusionCard = single;
         }
 
         IReadOnlyList<FusionMaterialSlot> slots = fusionCard.FusionMaterialSlots;
@@ -243,10 +295,20 @@ public static class FusionSummonSelection
             Cancelable = true
         };
 
+        List<CardModel> materialsStable =
+            TributeSummonGridSelect.StabilizeHandPileCandidates(materials.Cast<CardModel>());
+
         IEnumerable<CardModel> matPick;
         try
         {
-            matPick = await CardSelectCmd.FromSimpleGrid(ctx, materials, player, matPrefs);
+            matPick = await TributeSummonGridSelect.FromSimpleGridCombat(
+                ctx,
+                materialsStable,
+                player,
+                matPrefs,
+                rebuildCanonicalForRemoteApply: () =>
+                    TributeSummonGridSelect.StabilizeHandPileCandidates(
+                        BuildValidMaterialCandidatesForGrid(player, spell, fusionCard).Cast<CardModel>()));
         }
         catch (OperationCanceledException)
         {
