@@ -25,7 +25,4 @@ public sealed class Incandescent_Ordeal : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
 
     public override Type[] BundledCards => new[] { typeof(Incandescent_Ordeal), typeof(Legendary_Flame_Lord) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Incandescent_Ordeal), typeof(Legendary_Flame_Lord));
 }

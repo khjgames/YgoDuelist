@@ -29,7 +29,4 @@ public sealed class Black_Luster_Soldier : RitualMonsterCard
         YgoCardPackTags.Starter | YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
 
     public override Type[] BundledCards => new[] { typeof(Black_Luster_Ritual), typeof(Black_Luster_Soldier) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Black_Luster_Ritual), typeof(Black_Luster_Soldier));
 }

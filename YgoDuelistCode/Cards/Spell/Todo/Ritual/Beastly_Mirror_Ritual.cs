@@ -25,7 +25,4 @@ public sealed class Beastly_Mirror_Ritual : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Ritual;
 
     public override Type[] BundledCards => new[] { typeof(Beastly_Mirror_Ritual), typeof(Fiend_S_Mirror) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Beastly_Mirror_Ritual), typeof(Fiend_S_Mirror));
 }

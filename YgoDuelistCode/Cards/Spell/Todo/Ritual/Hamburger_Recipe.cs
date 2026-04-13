@@ -25,7 +25,4 @@ public sealed class Hamburger_Recipe : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Ritual;
 
     public override Type[] BundledCards => new[] { typeof(Hamburger_Recipe), typeof(Hungry_Burger) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Hamburger_Recipe), typeof(Hungry_Burger));
 }

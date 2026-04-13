@@ -26,7 +26,4 @@ public sealed class Black_Magic_Ritual : RitualSpellCard
 
     public override Type[] BundledCards => new[] { typeof(Black_Magic_Ritual), typeof(Magician_of_Black_Chaos) };
 
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Black_Magic_Ritual), typeof(Magician_of_Black_Chaos));
-
 }

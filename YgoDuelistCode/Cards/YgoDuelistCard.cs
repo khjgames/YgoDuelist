@@ -39,6 +39,15 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     /// </summary>
     public virtual Type[] RelatedCards => Array.Empty<Type>(); // Every other card is weighted at 1, these are weighted at 2.
 
+    /// <summary>Optional named archetype groups for <see cref="GetRelatedCards"/> (merged with implicit archetypes from <see cref="YgoCardArchetypeRegistry"/>).</summary>
+    public virtual YgoCardArchetype CardArchetypes => YgoCardArchetype.None;
+
+    /// <summary>
+    /// Pack-weighting related pool: merges <paramref name="explicitAdditional"/>, archetype members, fusion/ritual/double-tribute links.
+    /// </summary>
+    protected Type[] GetRelatedCards(params Type[]? explicitAdditional) =>
+        YgoRelatedCardsComposer.Compose(this, fusionSeed: null, explicitAdditional);
+
     /// <summary>
     /// Full set of referenced card types shown as hover previews. Default: localization quotes only
     /// (<see cref="YgoPreviewReferencedCardTypes.FromLocalizationQuotes"/>). Override with

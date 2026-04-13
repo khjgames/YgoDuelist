@@ -49,6 +49,55 @@ public enum YgoCardPackTags : long // up to 64 flags
     Starter = 1L << 28
 }
 
+/// <summary>
+/// Pack-related groupings for <see cref="YgoDuelistCard.GetRelatedCards"/> and shared related-card pools.
+/// Combine with <c>|</c> when a card belongs to multiple groups.
+/// </summary>
+[Flags]
+public enum YgoCardArchetype : ulong
+{
+    None = 0,
+    /// <summary>Zombie boost package (field/equip synergy).</summary>
+    ZombieBoost = 1UL << 0,
+    /// <summary>Blue-Eyes White Dragon family and closely tied support.</summary>
+    BlueEyesWhiteDragon = 1UL << 1,
+    /// <summary>Dark Magician family and closely tied support.</summary>
+    DarkMagician = 1UL << 2,
+    /// <summary>Monsters that count as two tributes for eligible normal summons.</summary>
+    GenericDoubleSummoner = 1UL << 3,
+
+    /// <summary>Earth attribute boost (Gaia Power, Milus Radiant, Forest).</summary>
+    EarthBoost = 1UL << 4,
+    /// <summary>Water attribute boost (Umiiruka, Star Boy, Umi, A Legendary Ocean).</summary>
+    WaterBoost = 1UL << 5,
+    /// <summary>Attribute field + elemental ally (Wind).</summary>
+    WindBoost = 1UL << 6,
+    /// <summary>Attribute field + elemental ally (Fire).</summary>
+    FireBoost = 1UL << 7,
+    /// <summary>Attribute field + elemental ally (Dark).</summary>
+    DarkBoost = 1UL << 8,
+    /// <summary>Attribute field + elemental ally (Light).</summary>
+    LightBoost = 1UL << 9,
+
+    /// <summary>Flat race equip + matching terrain (aligned with starter flat race equips and terrain fields).</summary>
+    AquaBoost = 1UL << 10,
+    BeastBoost = 1UL << 11,
+    BeastWarriorBoost = 1UL << 12,
+    DinosaurBoost = 1UL << 13,
+    DragonBoost = 1UL << 14,
+    FairyBoost = 1UL << 15,
+    FiendBoost = 1UL << 16,
+    InsectBoost = 1UL << 17,
+    MachineBoost = 1UL << 18,
+    PlantBoost = 1UL << 19,
+    SpellcasterBoost = 1UL << 20,
+    ThunderBoost = 1UL << 21,
+    WarriorBoost = 1UL << 22,
+    WingedBeastBoost = 1UL << 23,
+    /// <summary>Wasteland terrain (no flat Rock equip in pool).</summary>
+    RockBoost = 1UL << 24,
+}
+
 /// <summary>How a single fusion material slot accepts materials: exact named card, requirement filter only, or either.</summary>
 public enum FusionMaterialSlotMode : byte
 {

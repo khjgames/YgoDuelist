@@ -26,7 +26,4 @@ public sealed class Black_Illusion_Ritual : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
 
     public override Type[] BundledCards => new[] { typeof(Black_Illusion_Ritual), typeof(Relinquished) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Black_Illusion_Ritual), typeof(Relinquished));
 }

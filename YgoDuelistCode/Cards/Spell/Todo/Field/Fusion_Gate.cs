@@ -43,7 +43,7 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource
     /// </summary>
     public override float PackWeightMultiplier => 1.2f;
 
-    public override Type[] RelatedCards => new[] { typeof(Fusion_Gate), typeof(Polymerization) };
+    public override Type[] RelatedCards => GetRelatedCards(typeof(Polymerization));
 
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 

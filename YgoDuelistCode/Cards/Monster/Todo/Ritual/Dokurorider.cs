@@ -29,7 +29,4 @@ public sealed class Dokurorider : RitualMonsterCard
         YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
 
     public override Type[] BundledCards => new[] { typeof(Revival_of_Dokurorider), typeof(Dokurorider) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Revival_of_Dokurorider), typeof(Dokurorider));
 }

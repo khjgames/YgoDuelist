@@ -25,7 +25,4 @@ public sealed class Commencement_Dance : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
 
     public override Type[] BundledCards => new[] { typeof(Commencement_Dance), typeof(Performance_of_Sword) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Commencement_Dance), typeof(Performance_of_Sword));
 }

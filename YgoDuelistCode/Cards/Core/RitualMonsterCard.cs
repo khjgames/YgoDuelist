@@ -34,6 +34,8 @@ public abstract class RitualMonsterCard : EffectMonsterCard
 
     public override YgoCardType YgoCardType => YgoCardType.RitualMonster;
 
+    public override Type[] RelatedCards => YgoRelatedCardsComposer.Compose(this, fusionSeed: null);
+
     protected override IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
     {
         Type? paired = RitualArchetypeMeta.PairedRitualSpellType(GetType());

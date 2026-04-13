@@ -29,7 +29,4 @@ public sealed class Super_War_Lion : RitualMonsterCard
         YgoCardPackTags.Ritual | YgoCardPackTags.Earth;
 
     public override Type[] BundledCards => new[] { typeof(War_Lion_Ritual), typeof(Super_War_Lion) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(War_Lion_Ritual), typeof(Super_War_Lion));
 }

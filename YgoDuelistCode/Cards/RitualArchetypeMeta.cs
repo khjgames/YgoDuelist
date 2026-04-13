@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
@@ -45,11 +44,6 @@ public static class RitualArchetypeMeta
         (typeof(White_Dragon_Ritual), typeof(Paladin_of_White_Dragon)),
         (typeof(Zera_Ritual), typeof(Zera_the_Mant)),
     };
-
-    public static Type[] RelatedCardsForPairedRitual(Type ritualSpell, Type ritualMonster)
-    {
-        return new[] { ritualSpell, ritualMonster }.Concat(NonRitualCardsReferencingRitualInLocalization).ToArray();
-    }
 
     /// <summary>
     /// Ritual spell type that summons this specific ritual monster, if any.

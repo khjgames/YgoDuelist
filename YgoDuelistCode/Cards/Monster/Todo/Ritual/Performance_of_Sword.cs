@@ -29,7 +29,4 @@ public sealed class Performance_of_Sword : RitualMonsterCard
         YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
 
     public override Type[] BundledCards => new[] { typeof(Commencement_Dance), typeof(Performance_of_Sword) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Commencement_Dance), typeof(Performance_of_Sword));
 }

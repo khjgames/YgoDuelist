@@ -1,4 +1,3 @@
-using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -24,6 +23,4 @@ public sealed class Contract_with_the_Abyss : RitualSpellCard
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
-
-    public override Type[] RelatedCards => RitualArchetypeMeta.NonRitualCardsReferencingRitualInLocalization;
 }

@@ -29,7 +29,4 @@ public sealed class Magician_of_Black_Chaos : RitualMonsterCard
         YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
 
     public override Type[] BundledCards => new[] { typeof(Black_Magic_Ritual), typeof(Magician_of_Black_Chaos) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Black_Magic_Ritual), typeof(Magician_of_Black_Chaos));
 }

@@ -134,4 +134,6 @@ public abstract class RitualSpellCard : BaseSpellCard
         CardModel template = YgoPackCardCatalog.CardFromType(targetType);
         return HoverTipFactory.FromCard(template);
     }
+
+    public override Type[] RelatedCards => YgoRelatedCardsComposer.Compose(this, fusionSeed: null);
 }

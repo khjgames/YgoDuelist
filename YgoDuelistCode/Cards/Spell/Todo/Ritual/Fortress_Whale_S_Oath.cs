@@ -26,7 +26,4 @@ public sealed class Fortress_Whale_S_Oath : RitualSpellCard
 
     public override Type[] BundledCards => new[] { typeof(Fortress_Whale_S_Oath), typeof(Fortress_Whale) };
 
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Fortress_Whale_S_Oath), typeof(Fortress_Whale));
-
 }

@@ -3,9 +3,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
@@ -40,13 +37,5 @@ public sealed class Dark_Magician : NormalMonsterCard
     //};
 
 
-    // You will see these related cards more often with this card in your deck or side deck.
-    public override Type[] RelatedCards => new[]
-    {
-        typeof(Double_Summon),
-        typeof(Mausoleum_of_the_Emperor),
-        typeof(Cost_Down),
-        typeof(Dark_Effigy),
-        typeof(Double_Coston),
-    };
+    public override Type[] RelatedCards => GetRelatedCards();
 }

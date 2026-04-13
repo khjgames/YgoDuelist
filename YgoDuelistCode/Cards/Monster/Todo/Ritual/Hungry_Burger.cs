@@ -29,7 +29,4 @@ public sealed class Hungry_Burger : RitualMonsterCard
         YgoCardPackTags.Starter | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
 
     public override Type[] BundledCards => new[] { typeof(Hamburger_Recipe), typeof(Hungry_Burger) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Hamburger_Recipe), typeof(Hungry_Burger));
 }

@@ -29,7 +29,4 @@ public sealed class Fortress_Whale : RitualMonsterCard
         YgoCardPackTags.Ritual | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
 
     public override Type[] BundledCards => new[] { typeof(Fortress_Whale_S_Oath), typeof(Fortress_Whale) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Fortress_Whale_S_Oath), typeof(Fortress_Whale));
 }

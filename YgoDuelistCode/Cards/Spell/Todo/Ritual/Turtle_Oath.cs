@@ -25,7 +25,4 @@ public sealed class Turtle_Oath : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
 
     public override Type[] BundledCards => new[] { typeof(Turtle_Oath), typeof(Crab_Turtle) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Turtle_Oath), typeof(Crab_Turtle));
 }

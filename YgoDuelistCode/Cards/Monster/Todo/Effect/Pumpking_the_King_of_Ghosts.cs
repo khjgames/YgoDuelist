@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
@@ -30,6 +31,10 @@ public sealed class Pumpking_the_King_of_Ghosts : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+
+    public override YgoCardArchetype CardArchetypes => YgoCardArchetype.ZombieBoost;
+
+    public override Type[] RelatedCards => GetRelatedCards();
 
     protected override (int atk, int def) GetSecondaryStats()
     {

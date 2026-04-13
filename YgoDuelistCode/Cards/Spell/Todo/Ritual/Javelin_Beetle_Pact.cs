@@ -26,7 +26,4 @@ public sealed class Javelin_Beetle_Pact : RitualSpellCard
 
     public override Type[] BundledCards => new[] { typeof(Javelin_Beetle_Pact), typeof(Javelin_Beetle) };
 
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Javelin_Beetle_Pact), typeof(Javelin_Beetle));
-
 }

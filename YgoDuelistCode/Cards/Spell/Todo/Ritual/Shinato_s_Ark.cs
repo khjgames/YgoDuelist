@@ -26,7 +26,4 @@ public sealed class Shinato_S_Ark : RitualSpellCard
 
     public override Type[] BundledCards => new[] { typeof(Shinato_S_Ark), typeof(Shinato_King_of_a_Higher_Plane) };
 
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Shinato_S_Ark), typeof(Shinato_King_of_a_Higher_Plane));
-
 }

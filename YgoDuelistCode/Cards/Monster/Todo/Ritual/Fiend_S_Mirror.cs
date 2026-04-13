@@ -29,7 +29,4 @@ public sealed class Fiend_S_Mirror : RitualMonsterCard
         YgoCardPackTags.Starter | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override Type[] BundledCards => new[] { typeof(Beastly_Mirror_Ritual), typeof(Fiend_S_Mirror) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Beastly_Mirror_Ritual), typeof(Fiend_S_Mirror));
 }

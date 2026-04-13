@@ -26,7 +26,4 @@ public sealed class Revival_of_Dokurorider : RitualSpellCard
 
     public override Type[] BundledCards => new[] { typeof(Revival_of_Dokurorider), typeof(Dokurorider) };
 
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Revival_of_Dokurorider), typeof(Dokurorider));
-
 }

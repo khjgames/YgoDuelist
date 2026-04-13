@@ -25,13 +25,20 @@ internal static class YgoRelatedCardWeighting
             }
         }
 
+        var seen = new HashSet<Type>();
         foreach (Type t in ygo.RelatedCards)
+        {
+            seen.Add(t);
             AddType(t);
+        }
 
         if (ygo is AbstractMonsterCard)
         {
             foreach (Type t in FusionMaterialArchetypeIndex.GetFusionProductsUsingMaterial(ygo.GetType()))
-                AddType(t);
+            {
+                if (seen.Add(t))
+                    AddType(t);
+            }
         }
     }
 }

@@ -49,7 +49,7 @@ public static class DoubleTributeMaterialCatalog
         }
     }
 
-    private static BaseMonsterCard? TryPrototype(Type cardType)
+    internal static BaseMonsterCard? TryPrototype(Type cardType)
     {
         lock (Gate)
         {
@@ -68,6 +68,20 @@ public static class DoubleTributeMaterialCatalog
 
             PrototypeCache[cardType] = model;
             return model;
+        }
+    }
+
+    /// <summary>
+    /// Double-tribute material monsters whose <see cref="IDoubleTributeMaterial.DoubleTributeTargetSpec"/> matches
+    /// <paramref name="summon"/> (level 7+ normal/effect tribute targets).
+    /// </summary>
+    public static IEnumerable<Type> EnumerateMaterialTypesMatchingSummonTarget(BaseMonsterCard summon)
+    {
+        foreach (Type t in DoubleTributeMaterialCardTypes)
+        {
+            BaseMonsterCard? proto = TryPrototype(t);
+            if (proto is IDoubleTributeMaterial m && m.DoubleTributeTargetSpec.Matches(summon))
+                yield return t;
         }
     }
 

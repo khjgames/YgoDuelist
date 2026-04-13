@@ -25,7 +25,4 @@ public sealed class Black_Luster_Ritual : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
 
     public override Type[] BundledCards => new[] { typeof(Black_Luster_Ritual), typeof(Black_Luster_Soldier) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Black_Luster_Ritual), typeof(Black_Luster_Soldier));
 }

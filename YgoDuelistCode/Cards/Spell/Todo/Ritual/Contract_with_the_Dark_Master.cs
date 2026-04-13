@@ -25,7 +25,4 @@ public sealed class Contract_with_the_Dark_Master : RitualSpellCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
 
     public override Type[] BundledCards => new[] { typeof(Contract_with_the_Dark_Master), typeof(Dark_Master_Zorc) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Contract_with_the_Dark_Master), typeof(Dark_Master_Zorc));
 }

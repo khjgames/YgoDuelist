@@ -32,7 +32,4 @@ public sealed class The_Masked_Beast : RitualMonsterCard
 
     /// <summary>Ritual spell bundled with the monster when sold in the YGO merchant (see <see cref="YgoDuelistCard.BundledCards"/>).</summary>
     public override Type[] BundledCards => new[] { typeof(Curse_of_the_Masked_Beast) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Curse_of_the_Masked_Beast), typeof(The_Masked_Beast));
 }

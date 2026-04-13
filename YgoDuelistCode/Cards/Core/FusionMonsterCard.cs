@@ -115,9 +115,10 @@ public abstract class FusionMonsterCard : EffectMonsterCard
     }
 
     /// <summary>
-    /// Pack / deck affinity: this fusion plus each distinct named material (same notion as fusion preview tips).
+    /// Pack / deck affinity: this fusion plus each distinct named material (same notion as fusion preview tips),
+    /// merged with archetypes and fusion-product links.
     /// </summary>
-    public override Type[] RelatedCards => _fusionRelatedCards;
+    public override Type[] RelatedCards => YgoRelatedCardsComposer.Compose(this, fusionSeed: _fusionRelatedCards);
 
     private static Type[] BuildDefaultFusionRelatedCards(Type fusionCardType, FusionMaterialSlot[] slots)
     {

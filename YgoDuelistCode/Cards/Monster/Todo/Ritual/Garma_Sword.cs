@@ -29,7 +29,4 @@ public sealed class Garma_Sword : RitualMonsterCard
         YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
 
     public override Type[] BundledCards => new[] { typeof(Garma_Sword_Oath), typeof(Garma_Sword) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Garma_Sword_Oath), typeof(Garma_Sword));
 }

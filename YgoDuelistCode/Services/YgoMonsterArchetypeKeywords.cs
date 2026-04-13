@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -21,54 +19,46 @@ public static class YgoMonsterArchetypeKeywords
     /// <summary>Hover title: <c>Blue-Eyes White Dragon</c>.</summary>
     public static readonly CardKeyword BlueEyesWhiteDragonArchetypeKeyword = (CardKeyword)20055;
 
-    private static readonly Type[] s_darkMagicianTypes =
-    [
-        typeof(Dark_Magician),
-        typeof(Dark_Magician_Girl),
-        typeof(Skilled_Dark_Magician),
-        typeof(Dark_Magician_of_Chaos),
-        typeof(Toon_Dark_Magician_Girl),
-        typeof(Magician_of_Black_Chaos),
-        typeof(Dark_Paladin),
-        typeof(Dark_Flare_Knight),
-        typeof(Dark_Sage),
-    ];
-
-    private static readonly Type[] s_blueEyesTypes =
-    [
-        typeof(Blue_Eyes_White_Dragon),
-        typeof(Blue_Eyes_Ultimate_Dragon),
-        typeof(Blue_Eyes_Toon_Dragon),
-        typeof(Paladin_of_White_Dragon),
-        typeof(Dragon_Master_Knight),
-    ];
-
     /// <summary>Types that receive <see cref="DarkMagicianArchetypeKeyword"/> (spell previews, tooling).</summary>
-    public static IReadOnlyList<Type> DarkMagicianArchetypeMonsterTypes => s_darkMagicianTypes;
+    public static IReadOnlyList<Type> DarkMagicianArchetypeMonsterTypes =>
+        FilterMonsterTypes(YgoCardArchetypeRegistry.GetTypes(YgoCardArchetype.DarkMagician));
 
     /// <summary>Types that receive <see cref="BlueEyesWhiteDragonArchetypeKeyword"/>.</summary>
-    public static IReadOnlyList<Type> BlueEyesWhiteDragonArchetypeMonsterTypes => s_blueEyesTypes;
+    public static IReadOnlyList<Type> BlueEyesWhiteDragonArchetypeMonsterTypes =>
+        FilterMonsterTypes(YgoCardArchetypeRegistry.GetTypes(YgoCardArchetype.BlueEyesWhiteDragon));
 
     /// <summary>Keywords applied to this monster type for UI and <see cref="CardModel.Keywords"/> checks.</summary>
     public static IEnumerable<CardKeyword> KeywordsForMonsterType(Type monsterType)
     {
-        foreach (Type t in s_darkMagicianTypes)
+        foreach (Type t in YgoCardArchetypeRegistry.GetTypes(YgoCardArchetype.DarkMagician))
         {
-            if (t == monsterType)
+            if (t == monsterType && typeof(BaseMonsterCard).IsAssignableFrom(t))
             {
                 yield return DarkMagicianArchetypeKeyword;
                 yield break;
             }
         }
 
-        foreach (Type t in s_blueEyesTypes)
+        foreach (Type t in YgoCardArchetypeRegistry.GetTypes(YgoCardArchetype.BlueEyesWhiteDragon))
         {
-            if (t == monsterType)
+            if (t == monsterType && typeof(BaseMonsterCard).IsAssignableFrom(t))
             {
                 yield return BlueEyesWhiteDragonArchetypeKeyword;
                 yield break;
             }
         }
+    }
+
+    private static Type[] FilterMonsterTypes(IReadOnlyList<Type> types)
+    {
+        var list = new List<Type>();
+        foreach (Type t in types)
+        {
+            if (typeof(BaseMonsterCard).IsAssignableFrom(t))
+                list.Add(t);
+        }
+
+        return list.ToArray();
     }
 
     public static bool HasKeyword(BaseMonsterCard? m, CardKeyword archetypeKeyword)

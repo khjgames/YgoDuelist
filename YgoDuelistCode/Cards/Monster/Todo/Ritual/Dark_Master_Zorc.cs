@@ -29,7 +29,4 @@ public sealed class Dark_Master_Zorc : RitualMonsterCard
         YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override Type[] BundledCards => new[] { typeof(Contract_with_the_Dark_Master), typeof(Dark_Master_Zorc) };
-
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Contract_with_the_Dark_Master), typeof(Dark_Master_Zorc));
 }

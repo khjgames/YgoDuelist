@@ -48,12 +48,6 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
 
     public override Type[] BundledCards => new[] { typeof(White_Dragon_Ritual), typeof(Paladin_of_White_Dragon) };
 
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta
-            .RelatedCardsForPairedRitual(typeof(White_Dragon_Ritual), typeof(Paladin_of_White_Dragon))
-            .Concat(new[] { typeof(Blue_Eyes_White_Dragon) })
-            .ToArray();
-
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;
     public TargetType ActivatedEffectTarget => TargetType.Self;

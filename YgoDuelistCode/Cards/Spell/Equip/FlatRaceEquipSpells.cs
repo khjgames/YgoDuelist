@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -71,6 +72,8 @@ public abstract class FlatRaceEquipSpell : BaseEquipSpellCard
             DuelMonsterRace.Rock => YgoCardPackTags.Earth,
             _ => YgoCardPackTags.None
         };
+
+    public override Type[] RelatedCards => GetRelatedCards();
 }
 
 public sealed class Beast_Fangs : FlatRaceEquipSpell
@@ -146,4 +149,6 @@ public sealed class Vile_Germs : FlatRaceEquipSpell
 public sealed class Violet_Crystal : FlatRaceEquipSpell
 {
     public Violet_Crystal() : base(CardRarity.Common, DuelMonsterRace.Zombie, 4, 4) { }
+
+    public override YgoCardArchetype CardArchetypes => YgoCardArchetype.ZombieBoost;
 }

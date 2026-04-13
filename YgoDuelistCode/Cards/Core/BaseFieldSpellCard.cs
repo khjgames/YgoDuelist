@@ -1,9 +1,11 @@
+using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -23,6 +25,8 @@ public abstract class BaseFieldSpellCard : BaseSpellCard
         : base(cost, rarity, target, DuelMonsterRace.SpellField)
     {
     }
+
+    public override Type[] RelatedCards => GetRelatedCards();
 
     /// <summary>ATK/DEF/level modifiers this field applies to a duel monster (yours).</summary>
     public abstract StatEffectTotal GetFieldStatEffect(BaseMonsterCard target);

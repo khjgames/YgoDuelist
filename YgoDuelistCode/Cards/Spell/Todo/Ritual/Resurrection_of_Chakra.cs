@@ -26,7 +26,4 @@ public sealed class Resurrection_of_Chakra : RitualSpellCard
 
     public override Type[] BundledCards => new[] { typeof(Resurrection_of_Chakra), typeof(Chakra) };
 
-    public override Type[] RelatedCards =>
-        RitualArchetypeMeta.RelatedCardsForPairedRitual(typeof(Resurrection_of_Chakra), typeof(Chakra));
-
 }
