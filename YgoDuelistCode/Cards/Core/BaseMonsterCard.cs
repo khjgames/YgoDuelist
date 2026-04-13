@@ -386,13 +386,6 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (rush != null)
             atk += (int)rush.Amount;
 
-        PyramidEnergyAtkBonusPower? pyramidAtk = GetSourcePetPyramidEnergyAtkBonusPower();
-        if (pyramidAtk != null)
-            atk += (int)pyramidAtk.Amount;
-        PyramidEnergyDefBonusPower? pyramidDef = GetSourcePetPyramidEnergyDefBonusPower();
-        if (pyramidDef != null)
-            def += (int)pyramidDef.Amount;
-
         RiryokuAtkShiftDonorPower? riryokuDonor = GetSourcePetRiryokuAtkShiftDonorPower();
         if (riryokuDonor != null)
             atk -= (int)riryokuDonor.Amount;
@@ -412,6 +405,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         {
             if (Owner.Creature != null)
             {
+                PyramidEnergyAtkBonusPower? pyramidAtk = Owner.Creature.GetPower<PyramidEnergyAtkBonusPower>();
+                if (pyramidAtk != null)
+                    atk += (int)pyramidAtk.Amount;
+                PyramidEnergyDefBonusPower? pyramidDef = Owner.Creature.GetPower<PyramidEnergyDefBonusPower>();
+                if (pyramidDef != null)
+                    def += (int)pyramidDef.Amount;
+
                 ReinforcementsPower? reinforcements = Owner.Creature.GetPower<ReinforcementsPower>();
                 if (reinforcements != null)
                     atk += (int)reinforcements.Amount;
@@ -600,36 +600,6 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
             return pet.GetPower<RushRecklesslyPower>();
-        }
-
-        return null;
-    }
-
-    private PyramidEnergyAtkBonusPower? GetSourcePetPyramidEnergyAtkBonusPower()
-    {
-        if (IsCanonical || Owner?.PlayerCombatState == null)
-            return null;
-
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
-        {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
-                continue;
-            return pet.GetPower<PyramidEnergyAtkBonusPower>();
-        }
-
-        return null;
-    }
-
-    private PyramidEnergyDefBonusPower? GetSourcePetPyramidEnergyDefBonusPower()
-    {
-        if (IsCanonical || Owner?.PlayerCombatState == null)
-            return null;
-
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
-        {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
-                continue;
-            return pet.GetPower<PyramidEnergyDefBonusPower>();
         }
 
         return null;

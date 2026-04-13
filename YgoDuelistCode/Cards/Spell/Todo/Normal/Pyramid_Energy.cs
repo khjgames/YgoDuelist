@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -94,16 +93,11 @@ public sealed class Pyramid_Energy : BaseSpellCard, IYgoPrePlayCancelableGridSel
         if (!YgoPrePlayOptionIdPayload.TryTakePending(this, out int optionId))
             return;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.ToList())
-        {
-            if (pet == null || !pet.IsAlive || pet.Monster is not DuelMonsterModel)
-                continue;
-
-            if (optionId == OptionAtk)
-                await PowerCmd.Apply<PyramidEnergyAtkBonusPower>(pet, AtkBonus, Owner.Creature, this);
-            else
-                await PowerCmd.Apply<PyramidEnergyDefBonusPower>(pet, DefBonus, Owner.Creature, this);
-        }
+        // Buff lives on the player so duel monsters still in hand (summoned later this turn) get the bonus.
+        if (optionId == OptionAtk)
+            await PowerCmd.Apply<PyramidEnergyAtkBonusPower>(Owner.Creature, AtkBonus, Owner.Creature, this);
+        else
+            await PowerCmd.Apply<PyramidEnergyDefBonusPower>(Owner.Creature, DefBonus, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

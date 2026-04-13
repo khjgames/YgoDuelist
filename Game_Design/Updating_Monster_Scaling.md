@@ -58,10 +58,10 @@ Normal / Effect -> ATK Scaling -> Level 5 and 6 ->
 Cards with 1 cost 12 ATK go to 1 cost 15 ATK
 Cards with 1 cost 13 ATK go to 1 cost 16 ATK
 ----------------------------------------
-Cards with 2 cost 14 ATK go to 1 cost 20 ATK
-Cards with 2 cost 15 ATK go to 1 cost 19 ATK
-Cards with 2 cost 16 ATK go to 1 cost 19 ATK
-Cards with 2 cost 17 ATK go to 1 cost 19 ATK
+Cards with 2 cost 14 ATK go to 1 cost 18 ATK
+Cards with 2 cost 15 ATK go to 1 cost 17 ATK
+Cards with 2 cost 16 ATK go to 1 cost 17 ATK
+Cards with 2 cost 17 ATK go to 1 cost 17 ATK
 ----------------------------------------
 Cards with 2 cost 18 ATK go to 2 cost 22 ATK
 Cards with 2 cost 19 ATK go to 2 cost 22 ATK

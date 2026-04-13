@@ -7,6 +7,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
@@ -25,6 +26,7 @@ public sealed class Fake_Trap : BaseTrapCard
             return;
 
         await PowerCmd.Apply<FakeTrapNextTrapDiscountPower>(Owner.Creature, 1m, Owner.Creature, this);
+        YgoSpellTrapDiscountEnergyRefresh.ForPlayer(Owner);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
