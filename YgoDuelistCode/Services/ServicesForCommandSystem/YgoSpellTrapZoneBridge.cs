@@ -187,6 +187,7 @@ public static class YgoSpellTrapZoneBridge
             card,
             false);
 
+        ColdWaveSpellTrapLockGate.MarkPlayerUsedSpellTrapThisTurn(player);
         SyncFromZonePile(player);
         if (card is BaseFieldSpellCard)
             YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);

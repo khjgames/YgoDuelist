@@ -980,7 +980,7 @@
   "YGODUELIST-COCOON_OF_EVOLUTION.title": "Cocoon of Evolution",
   "YGODUELIST-COFFIN_SELLER.description": "TODO: implement card effect.",
   "YGODUELIST-COFFIN_SELLER.title": "Coffin Seller",
-  "YGODUELIST-COLD_WAVE.description": "[gold]X[/gold]: Gain [blue]{Mgc}[/blue] Block per [gold]X[/gold]. For the rest of this turn, you cannot play or Set other Spell or Trap cards.",
+  "YGODUELIST-COLD_WAVE.description": "You cannot play or Set other Spell or Trap cards the turn you plat this card. Gain [blue]{Mgc}[/blue] Block per [gold]X[/gold].",
   "YGODUELIST-COLD_WAVE.title": "Cold Wave",
   "YGODUELIST-COMMAND_ATTACK.description": "Deal [blue]?[/blue] damage.\nATK [blue]?[/blue] / DEF [blue]?[/blue]",
   "YGODUELIST-COMMAND_ATTACK.title": "Command Attack",

@@ -100,6 +100,7 @@ public sealed class The_Kick_Man : EffectMonsterCard
         if (DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.OfType<BaseMonsterCard>().Contains(this) != true)
             return;
 
+        ColdWaveSpellTrapLockGate.MarkPlayerUsedSpellTrapThisTurn(equip.Owner);
         await YgoSpellTrapZoneBridge.ActivateEquipSpellAsync(equip, this);
         await YgoCurseOfDarknessSpellHook.AfterSpellResolved(choiceContext, equip);
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(Owner);

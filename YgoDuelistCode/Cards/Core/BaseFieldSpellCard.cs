@@ -36,6 +36,7 @@ public abstract class BaseFieldSpellCard : BaseSpellCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        ColdWaveSpellTrapLockGate.MarkPlayerUsedSpellTrapThisTurn(Owner);
         Player? player = Owner;
         if (player == null || player.Creature == null)
             return;

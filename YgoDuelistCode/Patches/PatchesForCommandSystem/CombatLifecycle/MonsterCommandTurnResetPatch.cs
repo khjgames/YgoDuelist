@@ -47,6 +47,7 @@ public static class MonsterCommandTurnResetPatch
         }
 
         NormalSummonTracker.ResetForPlayer(combatPlayer);
+        ColdWaveSpellTrapLockGate.ResetSpellTrapUsageForPlayerTurnStart(combatPlayer);
         LegionFiendJesterSpellcasterConduit.ResetForPlayer(combatPlayer);
         ReactorSlimeSummonGate.ResetForPlayer(combatPlayer);
 

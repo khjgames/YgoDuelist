@@ -10,6 +10,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -25,6 +26,16 @@ public sealed class Cold_Wave : BaseSpellCard
     public Cold_Wave()
         : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
+    }
+
+    protected override bool IsPlayable
+    {
+        get
+        {
+            if (Owner != null && ColdWaveSpellTrapLockGate.HasPlayerUsedSpellTrapThisTurn(Owner))
+                return false;
+            return base.IsPlayable;
+        }
     }
 
     public override YgoCardPackTags PackTags =>

@@ -54,6 +54,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        ColdWaveSpellTrapLockGate.MarkPlayerUsedSpellTrapThisTurn(Owner);
         PrepareSpellForActiveFieldZone();
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
 

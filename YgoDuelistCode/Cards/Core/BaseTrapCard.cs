@@ -67,6 +67,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        ColdWaveSpellTrapLockGate.MarkPlayerUsedSpellTrapThisTurn(Owner);
         SetThisTurn = false;
         WasSetIntoSpellTrapZone = false;
         FaceDown = false;
