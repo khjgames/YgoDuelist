@@ -1552,7 +1552,7 @@
   "YGODUELIST-DRAGON_MASTER_KNIGHT.description_skill": "Gain [blue]{Block}[/blue] block.\n\"Black Luster Soldier\" + \"Blue-Eyes Ultimate Dragon\"\nMust be Fusion Summoned. This card gains 5 ATK for each Dragon monster you control, except this card.\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-DRAGON_MASTER_KNIGHT.description_skill_combat": "Gain [blue]{CalculatedDEF}[/blue] block.\n\"Black Luster Soldier\" + \"Blue-Eyes Ultimate Dragon\"\nMust be Fusion Summoned. This card gains 5 ATK for each Dragon monster you control, except this card.\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
   "YGODUELIST-DRAGON_MASTER_KNIGHT.title": "Dragon Master Knight",
-  "YGODUELIST-DRAGON_NAILS.description": "Equip to a monster. While equipped to a Dragon, its attacks deal [gold]Splinter[/gold] damage.",
+  "YGODUELIST-DRAGON_NAILS.description": "A Dragon-Type monster equipped with this card deals [gold]Splinter[/gold] damage when attacking.",
   "YGODUELIST-DRAGON_NAILS.title": "Dragon Nails",
   "YGODUELIST-DRAGON_SEEKER.description": "Deal [blue]{Damage}[/blue] damage.\\nWhen this card is Normal Summoned or Flip Summoned, destroy 1 face-up Dragon-Type monster on the field.\\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-DRAGON_SEEKER.description_combat": "Deal [blue]{CalculatedATK}[/blue] damage.\\nWhen this card is Normal Summoned or Flip Summoned, destroy 1 face-up Dragon-Type monster on the field.\\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",

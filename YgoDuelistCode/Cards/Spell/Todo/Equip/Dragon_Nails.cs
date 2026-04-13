@@ -37,5 +37,5 @@ public sealed class Dragon_Nails : BaseEquipSpellCard
 
     protected override bool CardShowsSplinterKeywordHint => true;
 
-    protected override void OnUpgrade() { }
+    protected override void OnUpgrade() { EnergyCost.UpgradeBy(-1); }
 }
