@@ -65,7 +65,7 @@ public sealed class D_D_Warrior_Lady : EffectMonsterCard, IMonsterActivatedEffec
         MonsterCommandRegistry.GetOrCreate(pet).WarriorLadyBanishWindowActive = false;
 
         await CreatureCmd.Kill(pet, force: true);
-        await YgoShadowRealmService.BanishCard(player, source);
+        await YgoBanishedService.BanishCard(player, source);
 
         decimal vuln = source.IsUpgraded ? 3m : 2m;
         await PowerCmd.Apply<VulnerablePower>(target, vuln, player.Creature, source);

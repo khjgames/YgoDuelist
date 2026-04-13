@@ -218,7 +218,7 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
             var tips = new List<IHoverTip>(4);
             foreach (var kw in CanonicalKeywords)
                 tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (IHoverTip tip in YgoReferencedCardPreviewMap.EnumerateCardPreviewHoverTips(GetType()))
+            foreach (IHoverTip tip in YgoPreviewReferencedCardTypes.EnumerateHoverTips(GetType()))
                 tips.Add(tip);
 
             return tips;

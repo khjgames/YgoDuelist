@@ -3,12 +3,12 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 public enum ZoneRelicViewPage
 {
     Graveyard = 0,
-    ShadowRealm = 1,
+    Banished = 1,
     ExtraDeck = 2
 }
 
 /// <summary>
-/// Active zone viewer page and pending navigation between Graveyard / Shadow Realm / Extra Deck (same pattern as <see cref="TrunkSideDeckEditorSession"/>).
+/// Active zone viewer page and pending navigation between Graveyard / Banished / Extra Deck (same pattern as <see cref="TrunkSideDeckEditorSession"/>).
 /// </summary>
 public static class ZoneRelicViewSession
 {

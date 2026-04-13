@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -21,6 +23,9 @@ public sealed class The_First_Monarch : BaseContinuousTrapCard, IYgoSpellTrapEqu
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Trap;
+
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(The_First_Monarch_Trap_Monster));
 
     public BaseMonsterCard? EquipLinkedMonster
     {

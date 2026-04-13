@@ -234,9 +234,9 @@ public static class NetFullCombatStateYgoChecksumPatch
         CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
         if (extra != null)
             ReconcileFaceDownKeywordsOnPileCards(extra, ref monsters, ref traps);
-        CardPile? shadow = ShadowRealmPile.CustomType.GetPile(player);
-        if (shadow != null)
-            ReconcileFaceDownKeywordsOnPileCards(shadow, ref monsters, ref traps);
+        CardPile? banished = BanishedPile.CustomType.GetPile(player);
+        if (banished != null)
+            ReconcileFaceDownKeywordsOnPileCards(banished, ref monsters, ref traps);
     }
 
     private static void ReconcileDuelPetDieForYouBeforeSnapshot(IRunState runState)
@@ -324,22 +324,22 @@ public static class NetFullCombatStateYgoChecksumPatch
         CardPile? mon = MonsterPile.CustomType.GetPile(player);
         CardPile? field = FieldPile.CustomType.GetPile(player);
         CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        CardPile? shadow = ShadowRealmPile.CustomType.GetPile(player);
+        CardPile? banished = BanishedPile.CustomType.GetPile(player);
         TryAppendYgoOptionPileForChecksum(ref ps, opt);
         TryAppendPile(ref ps, st);
         TryAppendPile(ref ps, gy);
         TryAppendPile(ref ps, mon);
         TryAppendPile(ref ps, field);
         TryAppendPile(ref ps, extra);
-        TryAppendPile(ref ps, shadow);
+        TryAppendPile(ref ps, banished);
         if (VerboseChecksumLog)
         {
             int added = ps.piles.Count - before;
             GD.Print(
                 $"[YgoDuelist][MP][Checksum] YGO zones serialized +{added} pile row(s) netId={player.NetId} " +
-                $"(nulls: opt={opt == null} st={st == null} gy={gy == null} mon={mon == null} field={field == null} extra={extra == null} shadow={shadow == null}; " +
+                $"(nulls: opt={opt == null} st={st == null} gy={gy == null} mon={mon == null} field={field == null} extra={extra == null} banished={banished == null}; " +
                 $"counts: opt={opt?.Cards.Count ?? -1} (menu commands excluded from checksum) st={st?.Cards.Count ?? -1} gy={gy?.Cards.Count ?? -1} mon={mon?.Cards.Count ?? -1} " +
-                $"field={field?.Cards.Count ?? -1} extra={extra?.Cards.Count ?? -1} shadow={shadow?.Cards.Count ?? -1})");
+                $"field={field?.Cards.Count ?? -1} extra={extra?.Cards.Count ?? -1} banished={banished?.Cards.Count ?? -1})");
         }
     }
 

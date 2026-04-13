@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,6 +30,9 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.God;
+
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Metal_Reflect_Slime_Trap_Monster));
 
     public BaseMonsterCard? EquipLinkedMonster
     {

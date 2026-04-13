@@ -4,10 +4,10 @@
   "YGODUELIST-GRAVEYARD_RELIC.flavor": "Cards laid to rest await their return.",
   "YGODUELIST-GRAVEYARD_RELIC.selectionScreenPrompt": "Cards in the Graveyard",
 
-  "YGODUELIST-SHADOW_REALM_RELIC.title": "Shadow Realm",
-  "YGODUELIST-SHADOW_REALM_RELIC.description": "A combat-only zone for banished cards; it is cleared when combat ends. Click to view Shadow Realm cards when at least one is in it.",
-  "YGODUELIST-SHADOW_REALM_RELIC.flavor": "What is banished is not gone—only elsewhere.",
-  "YGODUELIST-SHADOW_REALM_RELIC.selectionScreenPrompt": "Cards in the Shadow Realm",
+  "YGODUELIST-BANISHED_RELIC.title": "Banished",
+  "YGODUELIST-BANISHED_RELIC.description": "A combat-only zone for banished cards; it is cleared when combat ends. Click to view Banished cards when at least one is in it.",
+  "YGODUELIST-BANISHED_RELIC.flavor": "What is banished is not gone—only elsewhere.",
+  "YGODUELIST-BANISHED_RELIC.selectionScreenPrompt": "Cards in the Banished",
 
   "YGODUELIST-EXTRA_DECK_RELIC.title": "Extra Deck",
   "YGODUELIST-EXTRA_DECK_RELIC.description": "Fusion monsters never stay in your main deck: they move here on the map and in combat. Click to view your Extra Deck when it has at least one card.",

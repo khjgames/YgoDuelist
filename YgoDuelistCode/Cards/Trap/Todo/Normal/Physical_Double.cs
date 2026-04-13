@@ -25,6 +25,9 @@ public sealed class Physical_Double : BaseTrapCard
 
     public override Type[] RelatedCards => new[] { typeof(Physical_Double), typeof(Mirage_Token) };
 
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Mirage_Token));
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner?.Creature?.CombatState != null

@@ -33,4 +33,6 @@ public sealed class Metal_Reflect_Slime_Trap_Monster : EffectMonsterCard
     public override bool DuelMonsterExcludesCommandAttack => true;
 
     public override string PortraitPath => ModelDb.Card<Metal_Reflect_Slime>().PortraitPath;
+
+    public override string CustomPortraitPath => ModelDb.Card<Metal_Reflect_Slime>().CustomPortraitPath;
 }

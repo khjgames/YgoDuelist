@@ -31,4 +31,6 @@ public sealed class The_First_Monarch_Trap_Monster : EffectMonsterCard
     public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => true;
 
     public override string PortraitPath => ModelDb.Card<The_First_Monarch>().PortraitPath;
+
+    public override string CustomPortraitPath => ModelDb.Card<The_First_Monarch>().CustomPortraitPath;
 }

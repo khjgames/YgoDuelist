@@ -32,7 +32,7 @@ Burst Stream Of Destruction  -> 0 cost, target blue-eyes, all enemies take damag
 Cat's Ear Tribe  -> 0 cost, attacked target temp strength -1
 Cestus of Dagla -> 1 cost, restore 1 health when equipped monster attacks
 Chaos Command Magician -> Gain 2 artifact
-Chaos End -> uncommon, 1 cost, 5 damage per card in shadow realm
+Chaos End -> uncommon, 1 cost, 5 damage per card in Banished
 Compulsary Evacuation Device  -> Target temp strength -5
 Convulsion of Nature  -> Allways reveal the top card of your draw pile
 Crass Clown  -> When changed from defense to attack, target one enemy, apply 1 weak and deal 6 damage.
@@ -197,7 +197,7 @@ Ordered **as in the JSON**. This batch is **all spells, ritual spells, and traps
 
 | Class | Notes |
 |--------|--------|
-| Chaos_End | {Mgc} damage per Shadow Realm card; upgrade +1 multiplier. |
+| Chaos_End | {Mgc} damage per Banished card; upgrade +1 multiplier. |
 | Dark_Hole | {Mgc} AoE damage; upgrade +5. |
 | Dark_Magic_Attack | {Mgc} Weak, {Mgc2} Vulnerable; upgrade +1 each. |
 | Diffusion_Wave_Motion | Alternate upgraded description; 1.5× ATK damage when upgraded (Burst Stream pattern). |

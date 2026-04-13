@@ -1,4 +1,5 @@
 using BaseLib.Extensions;
+using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -49,13 +50,25 @@ public abstract class YgoTokenEffectMonster : EffectMonsterCard, IYgoTokenMonste
     {
         get
         {
+            if (_tokenPortraitPathOverride != null)
+            {
+                string bigFromOverride = _tokenPortraitPathOverride.Replace("/card_portraits/", "/card_portraits/big/", StringComparison.Ordinal);
+                if (ResourceLoader.Exists(bigFromOverride))
+                    return bigFromOverride;
+                return _tokenPortraitPathOverride;
+            }
+
             string stem = Id.Entry.RemovePrefix().ToLowerInvariant();
             string file = _tokenPortraitVariantIndex switch
             {
                 null or 1 => $"{stem}.png",
                 int n => $"{stem}_{n}.png"
             };
-            return $"token_portraits/{file}".BigCardImagePath();
+            string rel = $"token_portraits/{file}";
+            string bigPath = rel.BigCardImagePath();
+            if (ResourceLoader.Exists(bigPath))
+                return bigPath;
+            return rel.CardImagePath();
         }
     }
 }

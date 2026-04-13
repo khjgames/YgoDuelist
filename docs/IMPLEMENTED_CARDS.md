@@ -211,7 +211,7 @@ python tools/generate_card_inventory_md.py
 | `Card_Trader` | `YgoDuelistCode/Cards/Spell/Todo/Continuos/Card_Trader.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 | `Card_of_Safe_Return` | `YgoDuelistCode/Cards/Spell/Todo/Continuos/Card_of_Safe_Return.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 | `Change_of_Heart` | `YgoDuelistCode/Cards/Spell/Todo/Normal/Change_of_Heart.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
-| `Chaos_End` | `YgoDuelistCode/Cards/Spell/Todo/Normal/Chaos_End.cs` | uncommon, 1 cost, 5 damage per card in shadow realm |
+| `Chaos_End` | `YgoDuelistCode/Cards/Spell/Todo/Normal/Chaos_End.cs` | uncommon, 1 cost, 5 damage per card in Banished |
 | `Chosen_One` | `YgoDuelistCode/Cards/Spell/Todo/Normal/Chosen_One.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 | `Cold_Wave` | `YgoDuelistCode/Cards/Spell/Todo/Normal/Cold_Wave.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 | `Contract_with_Exodia` | `YgoDuelistCode/Cards/Spell/Todo/Normal/Contract_with_Exodia.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |

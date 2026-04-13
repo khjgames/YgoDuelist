@@ -10,12 +10,12 @@ namespace YgoDuelist.YgoDuelistCode.Piles;
 /// <summary>
 /// Banished / removed-from-play zone. Not discard, not exhaust, not the YGO Graveyard pile.
 /// </summary>
-public sealed class ShadowRealmPile : CustomPile
+public sealed class BanishedPile : CustomPile
 {
     [CustomEnum]
     public static PileType CustomType;
 
-    public ShadowRealmPile() : base(CustomType)
+    public BanishedPile() : base(CustomType)
     {
     }
 

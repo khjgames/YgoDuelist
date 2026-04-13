@@ -23,6 +23,9 @@ public sealed class Scapegoat : BaseSpellCard
 
     public override Type[] RelatedCards => new[] { typeof(Scapegoat), typeof(Sheep_Token) };
 
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Sheep_Token));
+
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)

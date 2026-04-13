@@ -1,4 +1,4 @@
-"""Generate YgoReferencedCardPreviewMap.cs from cards.json + card classes."""
+"""Generate YgoPreviewReferencedCardTypes.cs from cards.json + card classes."""
 import json
 import os
 import re
@@ -7,7 +7,7 @@ from collections import defaultdict
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 JSON_PATH = os.path.join(ROOT, "YgoDuelist", "localization", "eng", "cards.json")
 CARDS_CS = os.path.join(ROOT, "YgoDuelistCode", "Cards")
-OUT_PATH = os.path.join(ROOT, "YgoDuelistCode", "Services", "YgoReferencedCardPreviewMap.cs")
+OUT_PATH = os.path.join(ROOT, "YgoDuelistCode", "Services", "YgoPreviewReferencedCardTypes.cs")
 
 # Quoted text in descriptions -> C# class name, or None = archetype / not a specific card (no preview).
 QUOTE_TO_CLASS: dict[str, str | None] = {
@@ -142,8 +142,8 @@ lines: list[str] = [
     "",
     "namespace YgoDuelist.YgoDuelistCode.Services",
     "{",
-    "/// <summary>Maps card CLR types to quoted-card preview targets from localization.</summary>",
-    "public static class YgoReferencedCardPreviewMap",
+    "/// <summary>Registry of preview card types from quoted names in localization (merged on cards via PreviewReferencedCardTypes).</summary>",
+    "public static class YgoPreviewReferencedCardTypes",
     "{",
     "    private static readonly Dictionary<Type, Type[]> Map = new()",
     "    {",
@@ -188,7 +188,8 @@ lines.extend(
     [
         "    };",
         "",
-        "    public static Type[] GetReferencedTypes(Type hostCardType)",
+        "    /// <summary>Preview targets derived from quoted card names in <c>cards.json</c>.</summary>",
+        "    public static Type[] FromLocalizationQuotes(Type hostCardType)",
         "    {",
         "        if (!Map.TryGetValue(hostCardType, out Type[]? arr) || arr == null || arr.Length == 0)",
         "            return Array.Empty<Type>();",
@@ -212,9 +213,30 @@ lines.extend(
         "        return filtered;",
         "    }",
         "",
-        "    public static IEnumerable<IHoverTip> EnumerateCardPreviewHoverTips(Type hostCardType)",
+        "    /// <summary>Merges localization-derived previews with explicit extras (deduped; never includes <paramref name=\"hostCardType\"/>).</summary>",
+        "    public static Type[] Merged(Type hostCardType, params Type[]? extras)",
         "    {",
-        "        foreach (Type t in GetReferencedTypes(hostCardType))",
+        "        Type[] fromQuotes = FromLocalizationQuotes(hostCardType);",
+        "        if (extras == null || extras.Length == 0)",
+        "            return fromQuotes;",
+        "        var seen = new HashSet<Type>();",
+        "        var list = new List<Type>();",
+        "        foreach (Type? t in fromQuotes)",
+        "        {",
+        "            if (t != null && t != hostCardType && seen.Add(t))",
+        "                list.Add(t);",
+        "        }",
+        "        foreach (Type? t in extras)",
+        "        {",
+        "            if (t != null && t != hostCardType && seen.Add(t))",
+        "                list.Add(t);",
+        "        }",
+        "        return list.ToArray();",
+        "    }",
+        "",
+        "    public static IEnumerable<IHoverTip> EnumerateHoverTips(Type hostCardType)",
+        "    {",
+        "        foreach (Type t in FromLocalizationQuotes(hostCardType))",
         "        {",
         "            if (t == null)",
         "                continue;",

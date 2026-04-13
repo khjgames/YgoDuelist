@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b1qfb0qqe7pw0"
-path="res://.godot/imported/shadow_realm.png-bd4ebe503dede5cd90c78c64f852071e.ctex"
+uid="uid://dj4m8wban1shs"
+path="res://.godot/imported/banished.png-9f791585c501920efdf3b11f2d917c27.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://YgoDuelist/images/relics/big/shadow_realm.png"
-dest_files=["res://.godot/imported/shadow_realm.png-bd4ebe503dede5cd90c78c64f852071e.ctex"]
+source_file="res://YgoDuelist/images/relics/banished.png"
+dest_files=["res://.godot/imported/banished.png-9f791585c501920efdf3b11f2d917c27.ctex"]
 
 [params]
 

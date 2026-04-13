@@ -7,6 +7,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
@@ -21,6 +22,9 @@ public sealed class Jam_Breeding_Machine : BaseContinuousSpellCard
         YgoCardPackTags.Spell | YgoCardPackTags.Ocean;
 
     public override Type[] RelatedCards => new[] { typeof(Jam_Breeding_Machine), typeof(Slime_Token) };
+
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Slime_Token));
 
     public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 

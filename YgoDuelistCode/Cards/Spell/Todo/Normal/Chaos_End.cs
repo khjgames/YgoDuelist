@@ -17,7 +17,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 /// <summary>
-/// Damage uses the same <see cref="CalculatedDamageVar"/> pattern as <c>SoulStorm</c> (base + ExtraDamage × count): 0 + ExtraDamage × Shadow Realm cards.
+/// Damage uses the same <see cref="CalculatedDamageVar"/> pattern as <c>SoulStorm</c> (base + ExtraDamage × count): 0 + ExtraDamage × Banished cards.
 /// </summary>
 public sealed class Chaos_End : BaseSpellCard
 {
@@ -28,7 +28,7 @@ public sealed class Chaos_End : BaseSpellCard
         {
             new CalculationBaseVar(0m),
             new ExtraDamageVar(5m),
-            new CalculatedDamageVar(ValueProp.Unpowered).WithMultiplier(ShadowRealmMultiplier)
+            new CalculatedDamageVar(ValueProp.Unpowered).WithMultiplier(BanishedMultiplier)
         };
 
     public Chaos_End()
@@ -40,22 +40,22 @@ public sealed class Chaos_End : BaseSpellCard
         YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Dark | YgoCardPackTags.Banish;
 
     /// <summary>Same structure as vanilla stack multipliers (e.g. SoulStorm × Souls): 0 outside combat hand preview path.</summary>
-    private static decimal ShadowRealmMultiplier(CardModel card, Creature? _)
+    private static decimal BanishedMultiplier(CardModel card, Creature? _)
     {
         if (CombatManager.Instance?.IsInProgress != true || card.Owner?.PlayerCombatState == null)
             return 0m;
-        var pile = YgoShadowRealmService.GetPile(card.Owner);
+        var pile = YgoBanishedService.GetPile(card.Owner);
         return pile?.Cards.Count ?? 0;
     }
 
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && ShadowRealmHasAtLeastOne(Owner);
+        && BanishedHasAtLeastOne(Owner);
 
-    private static bool ShadowRealmHasAtLeastOne(Player player)
+    private static bool BanishedHasAtLeastOne(Player player)
     {
-        var pile = YgoShadowRealmService.GetPile(player);
+        var pile = YgoBanishedService.GetPile(player);
         return pile != null && pile.Cards.Count > 0;
     }
 
@@ -64,7 +64,7 @@ public sealed class Chaos_End : BaseSpellCard
         if (Owner?.Creature?.CombatState == null)
             return;
 
-        var pile = YgoShadowRealmService.GetPile(Owner);
+        var pile = YgoBanishedService.GetPile(Owner);
         int n = pile?.Cards.Count ?? 0;
         decimal dmg = DynamicVars.ExtraDamage.BaseValue * n;
         if (dmg <= 0m)

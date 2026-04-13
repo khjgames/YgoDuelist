@@ -11,83 +11,83 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Relics;
 
-public sealed class ShadowRealmRelic : YgoDuelistRelic
+public sealed class BanishedRelic : YgoDuelistRelic
 {
-    public override string PackedIconPath => "relics/shadow_realm.png".ImagePath();
+    public override string PackedIconPath => "relics/banished.png".ImagePath();
     protected override string PackedIconOutlinePath => "relics/relic_outline.png".ImagePath();
-    protected override string BigIconPath => "relics/big/shadow_realm.png".ImagePath();
+    protected override string BigIconPath => "relics/big/banished.png".ImagePath();
 
     public override RelicRarity Rarity => RelicRarity.Starter;
 
     public override bool ShowCounter => true;
 
-    public override int DisplayAmount => GetShadowRealmCountForOwner();
+    public override int DisplayAmount => GetBanishedCountForOwner();
 
     private CardPile? _subscribedPile;
 
     public override Task BeforeCombatStart()
     {
-        SubscribeToShadowRealmPile();
+        SubscribeToBanishedPile();
         return Task.CompletedTask;
     }
 
     public override Task AfterCombatEnd(CombatRoom _)
     {
-        UnsubscribeFromShadowRealmPile();
+        UnsubscribeFromBanishedPile();
         return Task.CompletedTask;
     }
 
-    public static CardPile? GetShadowRealmPile(Player? player) => YgoShadowRealmService.GetPile(player);
+    public static CardPile? GetBanishedPile(Player? player) => YgoBanishedService.GetPile(player);
 
-    private int GetShadowRealmCountForOwner()
+    private int GetBanishedCountForOwner()
     {
         Player? player = Owner;
         if (player == null)
             return 0;
 
-        CardPile? pile = GetShadowRealmPile(player);
+        CardPile? pile = GetBanishedPile(player);
         return pile?.Cards.Count ?? 0;
     }
 
-    private void SubscribeToShadowRealmPile()
+    private void SubscribeToBanishedPile()
     {
         Player? player = Owner;
         if (player == null)
             return;
 
-        CardPile? pile = GetShadowRealmPile(player);
+        CardPile? pile = GetBanishedPile(player);
         if (pile == null)
             return;
 
         if (_subscribedPile != null)
-            UnsubscribeFromShadowRealmPile();
+            UnsubscribeFromBanishedPile();
 
         _subscribedPile = pile;
-        _subscribedPile.ContentsChanged += OnShadowRealmContentsChanged;
+        _subscribedPile.ContentsChanged += OnBanishedContentsChanged;
         InvokeDisplayAmountChanged();
     }
 
-    private void UnsubscribeFromShadowRealmPile()
+    private void UnsubscribeFromBanishedPile()
     {
         if (_subscribedPile == null)
             return;
 
-        _subscribedPile.ContentsChanged -= OnShadowRealmContentsChanged;
+        _subscribedPile.ContentsChanged -= OnBanishedContentsChanged;
         _subscribedPile = null;
         InvokeDisplayAmountChanged();
     }
 
-    private void OnShadowRealmContentsChanged() => InvokeDisplayAmountChanged();
+    private void OnBanishedContentsChanged() => InvokeDisplayAmountChanged();
 
-    public static IReadOnlyList<CardModel> GetShadowRealmCards(Player? player)
+    public static IReadOnlyList<CardModel> GetBanishedCards(Player? player)
     {
-        CardPile? pile = GetShadowRealmPile(player);
+        CardPile? pile = GetBanishedPile(player);
         if (pile == null)
             return [];
         return pile.Cards.ToList();
     }
 
-    public static bool IsShadowRealmRelic(RelicModel? model) => model is ShadowRealmRelic;
+    public static bool IsBanishedRelic(RelicModel? model) => model is BanishedRelic;
 
-    public static ShadowRealmRelic? AsShadowRealm(RelicModel? model) => model as ShadowRealmRelic;
+    public static BanishedRelic? AsBanished(RelicModel? model) => model as BanishedRelic;
 }

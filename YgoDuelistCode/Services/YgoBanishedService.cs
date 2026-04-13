@@ -11,13 +11,13 @@ using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-public static class YgoShadowRealmService
+public static class YgoBanishedService
 {
     public static CardPile? GetPile(Player? player)
     {
         if (player?.PlayerCombatState == null)
             return null;
-        return ShadowRealmPile.CustomType.GetPile(player);
+        return BanishedPile.CustomType.GetPile(player);
     }
 
     public static async Task BanishCard(Player player, CardModel card)

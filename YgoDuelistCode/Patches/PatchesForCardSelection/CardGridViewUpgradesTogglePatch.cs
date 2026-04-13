@@ -6,7 +6,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForCardSelection;
 
 /// <summary>
-/// Adds the same "View Upgrades" toggle as the deck view to Neow starter grid, zone relic grids (GY / Shadow / Extra Deck),
+/// Adds the same "View Upgrades" toggle as the deck view to Neow starter grid, zone relic grids (GY / Banished / Extra Deck),
 /// and <see cref="NDeckCardSelectScreen"/> flows including trunk / side / split editor.
 /// </summary>
 internal static class CardGridViewUpgradesTogglePatch

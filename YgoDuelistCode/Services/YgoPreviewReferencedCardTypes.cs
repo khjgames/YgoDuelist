@@ -6,12 +6,13 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services
 {
-/// <summary>Maps card CLR types to quoted-card preview targets from localization.</summary>
-public static class YgoReferencedCardPreviewMap
+/// <summary>Registry of preview card types from quoted names in localization (merged on cards via PreviewReferencedCardTypes).</summary>
+public static class YgoPreviewReferencedCardTypes
 {
     private static readonly Dictionary<Type, Type[]> Map = new()
     {
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.A_Cat_of_Ill_Omen)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field.Necrovalley) },
+        [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal.A_Deal_with_Dark_Ruler)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Berserk_Dragon) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field.A_Legendary_Ocean)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field.Umi) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Alligator_S_Sword_Dragon)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Alligator_S_Sword), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Baby_Dragon) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Amphibious_Bugroth)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ground_Attacker_Bugroth), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Sentinel_of_the_Seas) },
@@ -22,6 +23,7 @@ public static class YgoReferencedCardPreviewMap
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Barox)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Frenzied_Panda), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ryu_Kishin) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Beastly_Mirror_Ritual)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Fiend_S_Mirror) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Berfomet)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Gazelle_the_King_of_Mythical_Beasts) },
+        [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Berserk_Dragon)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal.A_Deal_with_Dark_Ruler) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Bickuribox)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Crass_Clown), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Dream_Clown) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Birdface)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Harpie_Lady) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Black_Illusion_Ritual)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Relinquished) },
@@ -47,6 +49,7 @@ public static class YgoReferencedCardPreviewMap
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Dark_Balter_the_Terrible)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Frontier_Wiseman), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Possessed_Dark_Soul) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Dark_Blade_the_Dragon_Knight)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dark_Blade), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Pitch_Dark_Dragon) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Dark_Flare_Knight)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dark_Magician), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Flame_Swordsman), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Mirage_Knight) },
+        [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal.Dark_Magic_Attack)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dark_Magician) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Dark_Magician_Girl)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dark_Magician), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Magician_of_Black_Chaos) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Dark_Master_Zorc)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Contract_with_the_Dark_Master) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Dark_Paladin)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Buster_Blader), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dark_Magician) },
@@ -87,6 +90,8 @@ public static class YgoReferencedCardPreviewMap
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Humanoid_Worm_Drake)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Humanoid_Slime), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Worm_Drake) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Hungry_Burger)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Hamburger_Recipe) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Incandescent_Ordeal)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Legendary_Flame_Lord) },
+        [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Insect_Queen)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token.Insect_Monster_Token) },
+        [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos.Jam_Breeding_Machine)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token.Slime_Token) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Javelin_Beetle)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Javelin_Beetle_Pact) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Javelin_Beetle_Pact)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Javelin_Beetle) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Kaiser_Dragon)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Fairy_Dragon), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Winged_Dragon_Guardian_of_the_Fortress_1) },
@@ -112,15 +117,16 @@ public static class YgoReferencedCardPreviewMap
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Meteor_Black_Dragon)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Meteor_Dragon), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Red_Eyes_Black_Dragon) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Mokey_Mokey_King)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mokey_Mokey) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Monster_Eye)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal.Polymerization) },
+        [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal.Multiply)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Kuriboh) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Musician_King)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Lady_of_Faith), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Witch_of_the_Black_Forest) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Mystical_Sand)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ancient_Elf), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Giant_Soldier_of_Stone) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Novox_S_Prayer)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Skull_Guardian) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Ojama_King)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Black), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Green), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Yellow) },
-        [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal.Ojama_Trio)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token.Ojama_Token) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Orca_Mega_Fortress_of_Darkness)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Torpedo_Fish) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Paladin_of_White_Dragon)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.White_Dragon_Ritual) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Pandemonium_Watchbear)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field.Pandemonium) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual.Performance_of_Sword)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual.Commencement_Dance) },
+        [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal.Physical_Double)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token.Mirage_Token) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Pragtical)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Flame_Viper), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Trakodon) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Pumpking_the_King_of_Ghosts)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Castle_of_Dark_Illusions) },
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Punished_Eagle)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Blue_Winged_Crown), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Niwatori) },
@@ -175,7 +181,8 @@ public static class YgoReferencedCardPreviewMap
         [typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Zombie_Warrior)] = new[] { typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Battle_Warrior), typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Servant) },
     };
 
-    public static Type[] GetReferencedTypes(Type hostCardType)
+    /// <summary>Preview targets derived from quoted card names in <c>cards.json</c>.</summary>
+    public static Type[] FromLocalizationQuotes(Type hostCardType)
     {
         if (!Map.TryGetValue(hostCardType, out Type[]? arr) || arr == null || arr.Length == 0)
             return Array.Empty<Type>();
@@ -199,9 +206,30 @@ public static class YgoReferencedCardPreviewMap
         return filtered;
     }
 
-    public static IEnumerable<IHoverTip> EnumerateCardPreviewHoverTips(Type hostCardType)
+    /// <summary>Merges localization-derived previews with explicit extras (deduped; never includes <paramref name="hostCardType"/>).</summary>
+    public static Type[] Merged(Type hostCardType, params Type[]? extras)
     {
-        foreach (Type t in GetReferencedTypes(hostCardType))
+        Type[] fromQuotes = FromLocalizationQuotes(hostCardType);
+        if (extras == null || extras.Length == 0)
+            return fromQuotes;
+        var seen = new HashSet<Type>();
+        var list = new List<Type>();
+        foreach (Type? t in fromQuotes)
+        {
+            if (t != null && t != hostCardType && seen.Add(t))
+                list.Add(t);
+        }
+        foreach (Type? t in extras)
+        {
+            if (t != null && t != hostCardType && seen.Add(t))
+                list.Add(t);
+        }
+        return list.ToArray();
+    }
+
+    public static IEnumerable<IHoverTip> EnumerateHoverTips(Type hostCardType)
+    {
+        foreach (Type t in FromLocalizationQuotes(hostCardType))
         {
             if (t == null)
                 continue;

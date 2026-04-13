@@ -24,8 +24,8 @@ public static class GraveyardRelicClickPatch
         if (GraveyardRelic.IsGraveyardRelic(model))
             return !TryZoneRelicPageClick(ZoneRelicViewPage.Graveyard, GraveyardRelic.GetGraveyardCards);
 
-        if (ShadowRealmRelic.IsShadowRealmRelic(model))
-            return !TryZoneRelicPageClick(ZoneRelicViewPage.ShadowRealm, ShadowRealmRelic.GetShadowRealmCards);
+        if (BanishedRelic.IsBanishedRelic(model))
+            return !TryZoneRelicPageClick(ZoneRelicViewPage.Banished, BanishedRelic.GetBanishedCards);
 
         if (ExtraDeckRelic.IsExtraDeckRelic(model))
             return !TryZoneRelicPageClick(ZoneRelicViewPage.ExtraDeck, ExtraDeckRelic.GetExtraDeckCards);

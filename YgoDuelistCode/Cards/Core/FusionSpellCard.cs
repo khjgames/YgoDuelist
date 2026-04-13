@@ -23,7 +23,7 @@ public abstract class FusionSpellCard : BaseSpellCard, IFusionSpellSource
     public bool RequiresPlayerFusionTargetSelection { get; }
 
     /// <summary>
-    /// Polymerization sends materials to the Graveyard; Fusion Gate banishes them (Shadow Realm) instead.
+    /// Polymerization sends materials to the Graveyard; Fusion Gate banishes them (Banished) instead.
     /// </summary>
     public virtual bool BanishesFusionMaterials => false;
 

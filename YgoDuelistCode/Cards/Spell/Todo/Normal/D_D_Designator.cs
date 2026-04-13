@@ -39,7 +39,7 @@ public sealed class D_D_Designator : BaseSpellCard
         if (toBanish == null)
             return;
 
-        await YgoShadowRealmService.BanishCard(Owner, toBanish);
+        await YgoBanishedService.BanishCard(Owner, toBanish);
         await PowerCmd.Apply<DdDesignatorBonusDrawPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 

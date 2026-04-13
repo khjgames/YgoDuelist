@@ -2,11 +2,17 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Dark_Flare_Knight : FusionMonsterCard
 {
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Mirage_Knight));
+
     public Dark_Flare_Knight()
         : base(
             cost: 1,
@@ -19,8 +25,10 @@ public sealed class Dark_Flare_Knight : FusionMonsterCard
             baseDef: 8,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dark_Magician),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Flame_Swordsman))
+            typeof(Dark_Magician),
+            typeof(Flame_Swordsman))
     {
     }
+
+    public override Type[] BundledCards => new[] { typeof(Mirage_Knight)};
 }

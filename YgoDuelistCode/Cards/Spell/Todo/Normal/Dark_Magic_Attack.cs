@@ -39,10 +39,7 @@ public sealed class Dark_Magic_Attack : BaseSpellCard
         && Owner != null
         && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpDarkMagicianArchetype);
 
-    protected override IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
-    {
-        yield return typeof(Dark_Magician);
-    }
+    protected override Type[] PreviewReferencedCardTypes => new[] { typeof(Dark_Magician) };
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

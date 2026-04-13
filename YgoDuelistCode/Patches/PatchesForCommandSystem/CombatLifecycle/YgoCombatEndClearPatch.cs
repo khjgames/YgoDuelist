@@ -61,7 +61,7 @@ public static class YgoCombatEndClearPatch
         if (combatState != null)
         {
             foreach (var p in combatState.Players)
-                await YgoShadowRealmService.RemoveAllFromCombat(p);
+                await YgoBanishedService.RemoveAllFromCombat(p);
         }
 
         await Task.CompletedTask;

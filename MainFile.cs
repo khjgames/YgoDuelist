@@ -60,7 +60,7 @@ public partial class MainFile : Node
             prefix: new HarmonyMethod(typeof(StaticImageCreateVisualsPatch), nameof(StaticImageCreateVisualsPatch.Prefix)));
 
         ModHelper.AddModelToPool<YgoDuelistRelicPool, GraveyardRelic>();
-        ModHelper.AddModelToPool<YgoDuelistRelicPool, ShadowRealmRelic>();
+        ModHelper.AddModelToPool<YgoDuelistRelicPool, BanishedRelic>();
         ModHelper.AddModelToPool<YgoDuelistRelicPool, ExtraDeckRelic>();
         ModHelper.AddModelToPool<YgoDuelistRelicPool, CardOptionsRelic>();
 

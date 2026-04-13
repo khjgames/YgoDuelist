@@ -40,7 +40,7 @@ public static class YgoRelicInventoryRightClickPatch
     private static bool IsYgoZoneInteractionRelic(RelicModel model) =>
         SpellTrapZoneRelic.IsSpellTrapZoneRelic(model)
         || GraveyardRelic.IsGraveyardRelic(model)
-        || ShadowRealmRelic.IsShadowRealmRelic(model)
+        || BanishedRelic.IsBanishedRelic(model)
         || ExtraDeckRelic.IsExtraDeckRelic(model)
         || TrunkSideDeckRelic.IsTrunkSideDeckRelic(model);
 }

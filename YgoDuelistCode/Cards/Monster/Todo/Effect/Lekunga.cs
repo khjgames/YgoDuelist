@@ -85,7 +85,7 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
             return;
 
         foreach (BaseMonsterCard m in toBanish)
-            await YgoShadowRealmService.BanishCard(player, m);
+            await YgoBanishedService.BanishCard(player, m);
 
         Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source, player);
         if (pet == null)

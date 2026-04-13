@@ -23,6 +23,9 @@ public sealed class Stray_Lambs : BaseSpellCard
 
     public override Type[] RelatedCards => new[] { typeof(Stray_Lambs), typeof(Lamb_Token) };
 
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Lamb_Token));
+
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)

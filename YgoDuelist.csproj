@@ -36,7 +36,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <BaseLibPinnedVersion>0.2.0</BaseLibPinnedVersion>
+        <BaseLibPinnedVersion>3.0.2</BaseLibPinnedVersion>
         <BaseLibPackageRoot>packages\alchyr.sts2.baselib\$(BaseLibPinnedVersion)</BaseLibPackageRoot>
     </PropertyGroup>
 

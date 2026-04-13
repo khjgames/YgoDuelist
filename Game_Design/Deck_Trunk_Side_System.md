@@ -6,7 +6,7 @@ So everyone starts with 10 cards,
 
 The silent starts with 12 cards because of pacing (more draw turn 1, and lots of draw / discard cards & cycling in their deck).
 
-Our class has effectively everything exhaust (graveyard or shadow realm) and is pacing equivalent to silent due to field persistence.
+Our class has effectively everything exhaust (graveyard or Banished) and is pacing equivalent to silent due to field persistence.
 
 
 Our class has a Trunk & Side Deck. They share one relic: click opens the **same** cancelable card grid the rest of the game uses (no extra window).

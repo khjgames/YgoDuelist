@@ -40,10 +40,7 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
         && Owner != null
         && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype);
 
-    protected override IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
-    {
-        yield return typeof(Blue_Eyes_White_Dragon);
-    }
+    protected override Type[] PreviewReferencedCardTypes => new[] { typeof(Blue_Eyes_White_Dragon) };
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

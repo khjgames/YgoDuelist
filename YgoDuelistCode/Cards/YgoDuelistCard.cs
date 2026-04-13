@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+using System;
 using BaseLib.Abstracts;
 using BaseLib.Extensions;
 using BaseLib.Utils;
+using Godot;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Extensions;
 using MegaCrit.Sts2.Core.Combat;
@@ -32,7 +33,19 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual float PackWeightMultiplier => 1f;
 
     public virtual Type[] BundledCards => Array.Empty<Type>();
+
+    /// <summary>
+    /// Pack-weighting only: other card types that get increased weight when this card is kept. Not used for UI previews.
+    /// </summary>
     public virtual Type[] RelatedCards => Array.Empty<Type>(); // Every other card is weighted at 1, these are weighted at 2.
+
+    /// <summary>
+    /// Full set of referenced card types shown as hover previews. Default: localization quotes only
+    /// (<see cref="YgoPreviewReferencedCardTypes.FromLocalizationQuotes"/>). Override with
+    /// <see cref="YgoPreviewReferencedCardTypes.Merged"/> to add tokens/materials, or a fixed array to replace quotes entirely.
+    /// </summary>
+    protected virtual Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.FromLocalizationQuotes(GetType());
 
     /// <summary>
     /// When true, <see cref="BundledCards"/> may list this card's own type for one extra copy (merchant grant, pack mate, shop stack preview).
@@ -94,7 +107,18 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     //Image size:
     //Normal art: 1000x760 (Using 500x380 should also work, it will simply be scaled.)
     //Full art: 606x852
-    public override string CustomPortraitPath => $"{Id.Entry.RemovePrefix().ToLowerInvariant()}.png".BigCardImagePath();
+    /// <summary>Large card art: prefer <c>card_portraits/big/</c>; if missing, use same filename under <c>card_portraits/</c> (BaseLib loads this for <see cref="CardModel.Portrait"/>).</summary>
+    public override string CustomPortraitPath
+    {
+        get
+        {
+            string fileName = $"{Id.Entry.RemovePrefix().ToLowerInvariant()}.png";
+            string bigPath = fileName.BigCardImagePath();
+            if (ResourceLoader.Exists(bigPath))
+                return bigPath;
+            return fileName.CardImagePath();
+        }
+    }
 
     //Smaller variants of card images for efficiency:
     //Smaller variant of fullart: 250x350
@@ -104,12 +128,13 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public override string PortraitPath => $"{Id.Entry.RemovePrefix().ToLowerInvariant()}.png".CardImagePath();
     public override string BetaPortraitPath => $"beta/{Id.Entry.ToLowerInvariant()}.png".CardImagePath();
 
-    /// <summary>CLR types for cards named in quotes in localization; fusion/ritual subclasses filter duplicates.</summary>
+    /// <summary>Yields <see cref="PreviewReferencedCardTypes"/> (excluding this card’s type). Subclasses may override to filter.</summary>
     protected virtual IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
     {
-        foreach (Type t in YgoReferencedCardPreviewMap.GetReferencedTypes(GetType()))
+        Type host = GetType();
+        foreach (Type t in PreviewReferencedCardTypes)
         {
-            if (t != null)
+            if (t != null && t != host)
                 yield return t;
         }
     }

@@ -31,4 +31,6 @@ public sealed class Embodiment_of_Apophis_Trap_Monster : NormalMonsterCard
     public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => true;
 
     public override string PortraitPath => ModelDb.Card<Embodiment_of_Apophis>().PortraitPath;
+
+    public override string CustomPortraitPath => ModelDb.Card<Embodiment_of_Apophis>().CustomPortraitPath;
 }

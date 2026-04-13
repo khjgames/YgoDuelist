@@ -11,6 +11,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -38,6 +39,9 @@ public sealed class Insect_Queen : EffectMonsterCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Insect;
 
     public override Type[] RelatedCards => new[] { typeof(Insect_Queen), typeof(Insect_Monster_Token) };
+
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Insect_Monster_Token));
 
     protected override Task OnAfterMonsterAttackHitAsync(
         PlayerChoiceContext choiceContext,

@@ -33,6 +33,9 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 
     public override Type[] RelatedCards => new[] { typeof(Multiply), typeof(Kuriboh_Token) };
 
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Kuriboh), typeof(Kuriboh_Token));
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null

@@ -88,7 +88,7 @@ public static class NetCombatCardDbDeterministicIdsPatch
         TryIdCardPile(db, MonsterPile.CustomType.GetPile(player));
         TryIdCardPile(db, FieldPile.CustomType.GetPile(player));
         TryIdCardPile(db, ExtraDeckPile.CustomType.GetPile(player));
-        TryIdCardPile(db, ShadowRealmPile.CustomType.GetPile(player));
+        TryIdCardPile(db, BanishedPile.CustomType.GetPile(player));
     }
 
     private static void TryIdCardPile(NetCombatCardDb db, CardPile? pile)

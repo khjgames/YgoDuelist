@@ -352,7 +352,7 @@ public static class FusionSummonSelection
             {
                 await CreatureCmd.Kill(pet, force: true);
                 if (banish)
-                    await YgoShadowRealmService.BanishCard(player, m);
+                    await YgoBanishedService.BanishCard(player, m);
                 continue;
             }
 
@@ -360,7 +360,7 @@ public static class FusionSummonSelection
             {
                 if (banish)
                 {
-                    await YgoShadowRealmService.BanishCard(player, m);
+                    await YgoBanishedService.BanishCard(player, m);
                 }
                 else
                 {

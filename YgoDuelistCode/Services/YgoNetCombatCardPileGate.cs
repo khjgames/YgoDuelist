@@ -17,7 +17,7 @@ public static class YgoNetCombatCardPileGate
 {
     public static bool ShouldIdMutableCardOnPileAdd(CardPile pile) =>
         pile.IsCombatPile || pile is MonsterPile or YgoCardOptionPile or SpellTrapZonePile or GraveyardPile or FieldPile
-            or ExtraDeckPile or ShadowRealmPile;
+            or ExtraDeckPile or BanishedPile;
 
     /// <summary>
     /// Call before any <see cref="NetCombatCardDb.GetCardId"/> sort/compare on live <see cref="CardModel"/> instances

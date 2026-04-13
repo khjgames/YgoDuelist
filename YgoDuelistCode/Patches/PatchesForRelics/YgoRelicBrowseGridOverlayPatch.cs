@@ -15,7 +15,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Tracks exactly one zone-relic browse session (Graveyard / Shadow Realm / Extra Deck in one flow) and the trunk/side deck editor.
+/// Tracks exactly one zone-relic browse session (Graveyard / Banished / Extra Deck in one flow) and the trunk/side deck editor.
 /// Only overlays opened immediately after <see cref="SetPendingKind"/> are bound — vanilla card/potion/power grids never set pending, so they are never touched.
 /// </summary>
 public static class YgoRelicBrowseGridOverlayPatch
@@ -124,7 +124,7 @@ public static class YgoRelicBrowseGridOverlayPatch
         string key = page switch
         {
             ZoneRelicViewPage.Graveyard => "YGODUELIST-GRAVEYARD_RELIC.selectionScreenPrompt",
-            ZoneRelicViewPage.ShadowRealm => "YGODUELIST-SHADOW_REALM_RELIC.selectionScreenPrompt",
+            ZoneRelicViewPage.Banished => "YGODUELIST-BANISHED_RELIC.selectionScreenPrompt",
             ZoneRelicViewPage.ExtraDeck => "YGODUELIST-EXTRA_DECK_RELIC.selectionScreenPrompt",
             _ => ""
         };

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -21,6 +23,9 @@ public sealed class Embodiment_of_Apophis : BaseContinuousTrapCard, IYgoSpellTra
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Trap;
+
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Embodiment_of_Apophis_Trap_Monster));
 
     public BaseMonsterCard? EquipLinkedMonster
     {

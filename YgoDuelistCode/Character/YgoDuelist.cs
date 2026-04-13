@@ -182,7 +182,7 @@ public class YgoDuelist : PlaceholderCharacterModel
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
         ModelDb.Relic<GraveyardRelic>(),
-        ModelDb.Relic<ShadowRealmRelic>(),
+        ModelDb.Relic<BanishedRelic>(),
         ModelDb.Relic<ExtraDeckRelic>(),
         ModelDb.Relic<TrunkSideDeckRelic>(),
         ModelDb.Relic<SpellTrapZoneRelic>()

@@ -16,7 +16,7 @@ using YgoDuelist.YgoDuelistCode.Relics;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Single browse session for Graveyard / Shadow Realm / Extra Deck relic grids; navigation matches <see cref="TrunkSideDeckGuiService"/> (loop + dismiss + consume navigate).
+/// Single browse session for Graveyard / Banished / Extra Deck relic grids; navigation matches <see cref="TrunkSideDeckGuiService"/> (loop + dismiss + consume navigate).
 /// </summary>
 public static class ZoneRelicViewGuiService
 {
@@ -102,7 +102,7 @@ public static class ZoneRelicViewGuiService
         ZoneRelicViewSession.ActivePage switch
         {
             ZoneRelicViewPage.Graveyard => GraveyardRelic.GetGraveyardCards(player),
-            ZoneRelicViewPage.ShadowRealm => ShadowRealmRelic.GetShadowRealmCards(player),
+            ZoneRelicViewPage.Banished => BanishedRelic.GetBanishedCards(player),
             ZoneRelicViewPage.ExtraDeck => ExtraDeckRelic.GetExtraDeckCards(player),
             _ => Array.Empty<CardModel>()
         };
@@ -111,7 +111,7 @@ public static class ZoneRelicViewGuiService
         page switch
         {
             ZoneRelicViewPage.Graveyard => player.Relics.OfType<GraveyardRelic>().FirstOrDefault(),
-            ZoneRelicViewPage.ShadowRealm => player.Relics.OfType<ShadowRealmRelic>().FirstOrDefault(),
+            ZoneRelicViewPage.Banished => player.Relics.OfType<BanishedRelic>().FirstOrDefault(),
             ZoneRelicViewPage.ExtraDeck => player.Relics.OfType<ExtraDeckRelic>().FirstOrDefault(),
             _ => null
         };
