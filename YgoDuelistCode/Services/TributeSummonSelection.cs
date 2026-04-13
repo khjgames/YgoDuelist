@@ -390,6 +390,8 @@ public static class TributeSummonSelection
                 list.Add(c);
         }
 
+        YgoNetCombatCardPileGate.EnsureMutableCombatCardsHaveNetIds(list);
+
         list.Sort((a, b) =>
         {
             uint idA = NetCombatCardDb.Instance.GetCardId(a);

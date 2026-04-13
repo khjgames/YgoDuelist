@@ -80,6 +80,7 @@ public static class FusionSummonSelection
 
         Type filter = spell.FusionTargetMonsterType;
         // MP: pile iteration order is not guaranteed to match across peers; stabilize before feasibility checks.
+        YgoNetCombatCardPileGate.EnsureMutableCombatCardsHaveNetIds(extra.Cards);
         foreach (CardModel c in extra.Cards.OrderBy(x => NetCombatCardDb.Instance.GetCardId(x)))
         {
             if (ReferenceEquals(c, spellCard))

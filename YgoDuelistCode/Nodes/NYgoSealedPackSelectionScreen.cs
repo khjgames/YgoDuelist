@@ -193,15 +193,23 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
         try
         {
             int r = await _completion.Task;
-            NOverlayStack.Instance?.Remove(this);
+            // Defer Remove: calling from the confirm button stack runs inside NOverlayStack.Remove's signal path;
+            // vanilla ScreenStateTracker then Connect(Completed, ...) twice → "Signal 'Completed' is already connected".
+            Callable.From(RemoveSelfFromOverlayStackIfValid).CallDeferred();
             return r;
         }
         catch (OperationCanceledException)
         {
-            if (GodotObject.IsInstanceValid(this))
-                NOverlayStack.Instance?.Remove(this);
+            Callable.From(RemoveSelfFromOverlayStackIfValid).CallDeferred();
             throw;
         }
+    }
+
+    private void RemoveSelfFromOverlayStackIfValid()
+    {
+        if (!GodotObject.IsInstanceValid(this))
+            return;
+        NOverlayStack.Instance?.Remove(this);
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
@@ -59,6 +60,14 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
             {
                 GD.PrintErr(
                     $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (count={idxCount} expected [{gridExp.Value.MinSelect},{gridExp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
+                return false;
+            }
+
+            int rows = gridExp.Value.CandidateRowCount;
+            if (rows > 0 && result.indexes.Any(ix => ix < 0 || ix >= rows))
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (out of bounds for rows={rows}) choiceId={choiceId} sender={player.NetId} indexes={string.Join(",", result.indexes)}");
                 return false;
             }
         }
@@ -155,12 +164,23 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
                 continue;
 
             int count = net.indexes.Count;
-            if (count >= exp.Value.MinSelect && count <= exp.Value.MaxSelect)
+            bool badCount = count < exp.Value.MinSelect || count > exp.Value.MaxSelect;
+            int rows = exp.Value.CandidateRowCount;
+            bool badRow = rows > 0 && net.indexes.Any(ix => ix < 0 || ix >= rows);
+            if (!badCount && !badRow)
                 continue;
 
             list.RemoveAt(i);
-            GD.PrintErr(
-                $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (count={count} expected [{exp.Value.MinSelect},{exp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
+            if (badCount)
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (count={count} expected [{exp.Value.MinSelect},{exp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
+            }
+            else
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (out of bounds for rows={rows}) choiceId={choiceId} sender={player.NetId} indexes={string.Join(",", net.indexes)}");
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ public static class YgoMpNetCardAssignLog
     {
         if (!Verbose || pile == null || card == null || !card.IsMutable)
             return;
-        if (!pile.IsCombatPile)
+        if (!YgoNetCombatCardPileGate.ShouldIdMutableCardOnPileAdd(pile))
             return;
 
         ulong owner = card.Owner?.NetId ?? 0;

@@ -146,6 +146,9 @@ public static class PlayCardFromOptionPilePatch
         if (optionPile.Cards.Contains(card))
             return card;
 
+        YgoNetCombatCardPileGate.EnsureMutableCombatCardsHaveNetIds(new[] { card });
+        YgoNetCombatCardPileGate.EnsureMutableCombatCardsHaveNetIds(optionPile.Cards);
+
         uint id = NetCombatCardDb.Instance.GetCardId(card);
         return optionPile.Cards.FirstOrDefault(c => NetCombatCardDb.Instance.GetCardId(c) == id);
     }

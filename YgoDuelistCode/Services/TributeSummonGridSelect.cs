@@ -51,8 +51,12 @@ public static class TributeSummonGridSelect
     /// <see cref="CardPile.Cards"/> order is not guaranteed to match across MP peers (layout / iteration). Sort by
     /// <see cref="NetCombatCardDb"/> ids so grid indexes refer to the same cards on host and observers.
     /// </summary>
-    public static List<CardModel> StabilizeHandPileCandidates(IEnumerable<CardModel> cards) =>
-        cards.OrderBy(c => NetCombatCardDb.Instance.GetCardId(c)).ToList();
+    public static List<CardModel> StabilizeHandPileCandidates(IEnumerable<CardModel> cards)
+    {
+        List<CardModel> list = cards.ToList();
+        YgoNetCombatCardPileGate.EnsureMutableCombatCardsHaveNetIds(list);
+        return list.OrderBy(c => NetCombatCardDb.Instance.GetCardId(c)).ToList();
+    }
 
     /// <summary>
     /// Hand cards for <see cref="FromSimpleGridCombat"/>: optional filter, optional exclusion (e.g. the card being played), then stabilize.
@@ -120,7 +124,8 @@ public static class TributeSummonGridSelect
             {
                 OwnerNetId = player.NetId,
                 MinSelect = prefs.MinSelect,
-                MaxSelect = prefs.MaxSelect
+                MaxSelect = prefs.MaxSelect,
+                CandidateRowCount = cards.Count
             };
         }
 
