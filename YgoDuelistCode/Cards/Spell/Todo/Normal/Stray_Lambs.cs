@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -19,6 +20,8 @@ public sealed class Stray_Lambs : BaseSpellCard
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+
+    public override Type[] RelatedCards => new[] { typeof(Stray_Lambs), typeof(Lamb_Token) };
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

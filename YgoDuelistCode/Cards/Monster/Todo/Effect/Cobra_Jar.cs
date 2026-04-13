@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -28,6 +29,8 @@ public sealed class Cobra_Jar : EffectMonsterCard, IMonsterFlipEffect
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+
+    public override Type[] RelatedCards => new[] { typeof(Cobra_Jar), typeof(Poisonous_Snake_Token) };
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {

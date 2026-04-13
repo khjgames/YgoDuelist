@@ -31,6 +31,8 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Spell;
 
+    public override Type[] RelatedCards => new[] { typeof(Multiply), typeof(Kuriboh_Token) };
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null

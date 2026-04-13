@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,6 +35,8 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, 
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.God;
+
+    public override Type[] RelatedCards => new[] { typeof(Reactor_Slime), typeof(Slime_Token) };
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;

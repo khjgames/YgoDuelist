@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -26,6 +27,8 @@ public sealed class Ojama_Trio : BaseTrapCard
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Trap;
+
+    public override Type[] RelatedCards => new[] { typeof(Ojama_Trio), typeof(Ojama_Token) };
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

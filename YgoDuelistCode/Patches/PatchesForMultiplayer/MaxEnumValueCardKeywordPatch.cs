@@ -18,7 +18,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 [HarmonyPatch]
 public static class MaxEnumValueCardKeywordPatch
 {
-    /// <summary>Must be &gt;= largest <c>(CardKeyword)</c> literal used in YgoDuelist (currently 20051).</summary>
+    /// <summary>Must be &gt;= largest <c>(CardKeyword)</c> literal used in YgoDuelist (currently 20053).</summary>
     public const int YgoMaxCardKeywordValue = 21000;
 
     private static bool _logged;

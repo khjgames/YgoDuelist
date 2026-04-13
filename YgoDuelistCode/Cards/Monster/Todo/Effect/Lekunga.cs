@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,6 +41,8 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Banish;
+
+    public override Type[] RelatedCards => new[] { typeof(Lekunga), typeof(Lekunga_Token) };
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;

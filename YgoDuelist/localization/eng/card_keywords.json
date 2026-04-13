@@ -159,6 +159,9 @@
   "20051.description": "Can be activated on the field via command.",
 
   "20052.title": "Rebirth",
-  "20052.description": "Ticks after combat end, before Doomed, removes equivalent Doom then falls off."
+  "20052.description": "Ticks after combat end, before Doomed, removes equivalent Doom then falls off.",
+
+  "20053.title": "Activate Effect II",
+  "20053.description": "Can be activated on the field via command."
 
 }

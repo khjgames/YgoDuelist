@@ -54,6 +54,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword CycleMonsterKeyword => (CardKeyword)20039;
     private static CardKeyword FlipEffectKeyword => (CardKeyword)20041;
     private static CardKeyword ActivateEffectKeyword => (CardKeyword)20051;
+    private static CardKeyword ActivateEffect2Keyword => (CardKeyword)20053;
     private static CardKeyword RecklessBlockerKeyword => (CardKeyword)20042;
     private static CardKeyword RecklessKeyword => (CardKeyword)20043;
     private static CardKeyword SplinterKeyword => (CardKeyword)20044;
@@ -435,6 +436,8 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     {
         if (this is IMonsterActivatedEffect)
             yield return ActivateEffectKeyword;
+        if (this is IMonsterSecondActivatedEffect)
+            yield return ActivateEffect2Keyword;
     }
 
     protected virtual bool HasRecklessBlockerKeyword => false;
@@ -554,6 +557,18 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                     : UpgradeDisplay.Normal;
                 activateDesc.Add(new IfUpgradedVar(ifUpgradedDisplay));
                 tips.Add(new HoverTip(activateTitle, activateDesc));
+            }
+
+            if (this is IMonsterSecondActivatedEffect ia2)
+            {
+                var activate2Title = new LocString("card_keywords", "20053.title");
+                var activate2Desc = new LocString("cards", ia2.SecondActivatedEffectDescriptionLocKey);
+                DynamicVars.AddTo(activate2Desc);
+                UpgradeDisplay ifUpgradedDisplay2 = IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
+                    ? UpgradeDisplay.Upgraded
+                    : UpgradeDisplay.Normal;
+                activate2Desc.Add(new IfUpgradedVar(ifUpgradedDisplay2));
+                tips.Add(new HoverTip(activate2Title, activate2Desc));
             }
 
             foreach (CardKeyword kw in GetRecklessBlockerKeywords())

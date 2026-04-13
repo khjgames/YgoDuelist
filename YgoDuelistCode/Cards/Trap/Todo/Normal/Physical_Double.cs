@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
@@ -21,6 +22,8 @@ public sealed class Physical_Double : BaseTrapCard
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Trap;
+
+    public override Type[] RelatedCards => new[] { typeof(Physical_Double), typeof(Mirage_Token) };
 
     protected override bool IsPlayable =>
         base.IsPlayable
