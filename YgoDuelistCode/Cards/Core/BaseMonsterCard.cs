@@ -218,6 +218,11 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public virtual bool DuelMonsterExcludesCommandAttack => false;
 
     /// <summary>
+    /// When true, <see cref="NormalMonsterCard.CombatAction"/> deals attack damage to every living enemy (same ATK per hit).
+    /// </summary>
+    public virtual bool DuelMonsterAttackHitsAllEnemies => false;
+
+    /// <summary>
     /// ATK change per qualifying execute kill; applied via <see cref="ApplyPermanentExecuteAtkDelta"/> and persisted in <see cref="PermanentAtkBonusFromExecutes"/>.
     /// Exposed as <c>Increase</c> in <see cref="NormalMonsterCard.CanonicalVars"/> for <c>{Increase:diff()}</c> text (cf. <c>TheScythe</c>).
     /// </summary>
@@ -509,8 +514,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             atk = (int)DynamicVars.Damage.BaseValue;
         if (DynamicVars.ContainsKey("Def"))
             def = (int)DynamicVars["Def"].BaseValue;
-        else if (DynamicVars.Block != null)
-            def = (int)DynamicVars.Block.BaseValue;
+        else if (DynamicVars.ContainsKey("Block"))
+            def = (int)DynamicVars["Block"].BaseValue;
     }
 
     /// <summary>

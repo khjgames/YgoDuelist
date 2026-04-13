@@ -12,10 +12,9 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
-
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -39,9 +38,12 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner)
-            .OfType<Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon>()
-            .Any();
+        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype);
+
+    protected override IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
+    {
+        yield return typeof(Blue_Eyes_White_Dragon);
+    }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -52,11 +54,12 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
         if (targetCreature == null || !targetCreature.IsAlive)
             return;
 
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(targetCreature) is not Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon blueEyesCard)
+        if (DuelMonsterFieldRegistry.GetSourceCardForPet(targetCreature) is not BaseMonsterCard sourceMonster
+            || !YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype(sourceMonster))
             return;
 
         var fieldCards = DuelMonsterFieldRegistry.GetFieldMonsters(Owner).ToList();
-        decimal dmg = blueEyesCard.CalcDuelMonsterStats(fieldCards).Atk;
+        decimal dmg = sourceMonster.CalcDuelMonsterStats(fieldCards).Atk;
         if (IsUpgraded)
             dmg *= 1.5m;
 
@@ -71,7 +74,8 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
 
         List<Creature> blueEyesPets = player.PlayerCombatState.Pets
             .Where(p => p.IsAlive
-                && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is Cards.Monster.Todo.Normal.Blue_Eyes_White_Dragon)
+                && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard bm
+                && YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype(bm))
             .ToList();
 
         if (blueEyesPets.Count == 0)

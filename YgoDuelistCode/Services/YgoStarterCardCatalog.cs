@@ -41,7 +41,7 @@ public enum StarterCategory
 /// If the grid contains a <see cref="RitualSpellCard"/>, its ritual target monster is inserted immediately after that spell (not counted toward category quotas).
 /// Otherwise, if the grid contains a named <see cref="RitualMonsterCard"/> with a paired spell in <see cref="RitualArchetypeMeta"/>, that spell is inserted immediately after the monster.
 /// At most one such bonus row runs so the list stays at <see cref="MaxGridSize"/> when a bonus applies.
-/// After that, signature spells may replace a level 5–6 monster with <see cref="Dark_Magician"/> or <see cref="Blue_Eyes_White_Dragon"/>, then <see cref="Necrovalley"/> may add <see cref="Gravekeeper_s_Curse"/> and <see cref="Gravekeeper_s_Spear_Soldier"/> (see <see cref="ApplyNeowSignatureMonsterSubstitutions"/>).
+/// After that, signature spells may replace a level 5–6 monster with <see cref="Dark_Magician"/> or <see cref="Blue_Eyes_White_Dragon"/>, then <see cref="Necrovalley"/> may add <see cref="A_Cat_of_Ill_Omen"/> (level 1–2), <see cref="Gravekeeper_s_Curse"/>, and <see cref="Gravekeeper_s_Spear_Soldier"/> (see <see cref="ApplyNeowSignatureMonsterSubstitutions"/>).
 /// Then one random flat race equip (if any), one random terrain race field (if any), and one random flat attribute field (if any)
 /// may be retargeted to match the dominant monster races/attributes in the grid.
 /// </summary>
@@ -316,8 +316,8 @@ public static class YgoStarterCardCatalog
     /// If the grid includes Dark Magic support spells or Burst Stream, swaps the lowest-rarity level 5–6 monster for
     /// <see cref="Dark_Magician"/> or <see cref="Blue_Eyes_White_Dragon"/> respectively (Burst Stream runs after Dark Magic).
     /// Skips if the replacement is already present or no level 5–6 monster exists.
-    /// After Burst Stream, <see cref="Necrovalley"/> may replace up to two lowest-rarity level 3–4 monsters with
-    /// <see cref="Gravekeeper_s_Curse"/> and <see cref="Gravekeeper_s_Spear_Soldier"/> for any that are not already in the grid.
+    /// After Burst Stream, <see cref="Necrovalley"/> may replace the lowest-rarity level 1–2 monster with <see cref="A_Cat_of_Ill_Omen"/> if absent,
+    /// then up to two lowest-rarity level 3–4 monsters with <see cref="Gravekeeper_s_Curse"/> and <see cref="Gravekeeper_s_Spear_Soldier"/> for any that are not already in the grid.
     /// </summary>
     private static void ApplyNeowSignatureMonsterSubstitutions(List<CardModel> grid, Rng rng)
     {
@@ -336,6 +336,8 @@ public static class YgoStarterCardCatalog
     {
         if (!grid.Any(c => c is Necrovalley))
             return;
+
+        TryReplaceLowestRarityLevel12MonsterWith(grid, rng, typeof(A_Cat_of_Ill_Omen));
 
         Type curseType = typeof(Gravekeeper_s_Curse);
         Type spearType = typeof(Gravekeeper_s_Spear_Soldier);
@@ -412,6 +414,30 @@ public static class YgoStarterCardCatalog
                 continue;
             int lv = m.DuelMonsterLevel;
             if (lv is not (5 or 6))
+                continue;
+            candidateIndices.Add(i);
+        }
+
+        if (candidateIndices.Count == 0)
+            return;
+
+        int minRank = candidateIndices.Min(i => StarterRarityRank(grid[i]));
+        List<int> tied = candidateIndices.Where(i => StarterRarityRank(grid[i]) == minRank).ToList();
+        int pick = tied[rng.NextInt(0, tied.Count)];
+        ReplaceStarterGridSlot(grid, pick, replacementMonsterType);
+    }
+
+    private static void TryReplaceLowestRarityLevel12MonsterWith(List<CardModel> grid, Rng rng, Type replacementMonsterType)
+    {
+        if (StarterGridContainsCardType(grid, replacementMonsterType))
+            return;
+
+        var candidateIndices = new List<int>();
+        for (int i = 0; i < grid.Count; i++)
+        {
+            if (grid[i] is not BaseMonsterCard m)
+                continue;
+            if (m.DuelMonsterLevel is not (1 or 2))
                 continue;
             candidateIndices.Add(i);
         }

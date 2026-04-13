@@ -141,6 +141,22 @@ public abstract class FusionMonsterCard : EffectMonsterCard
     /// </summary>
     public IReadOnlyList<FusionMaterialSlot> FusionMaterialSlots => _fusionMaterialSlots;
 
+    protected override IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
+    {
+        var materialTypes = new HashSet<Type>();
+        foreach (FusionMaterialSlot slot in _fusionMaterialSlots)
+        {
+            if (slot.NamedType != null)
+                materialTypes.Add(slot.NamedType);
+        }
+
+        foreach (Type t in base.EnumerateReferencedCardPreviewTypes())
+        {
+            if (!materialTypes.Contains(t))
+                yield return t;
+        }
+    }
+
     protected override int MonsterConduitStarCost => 0;
 
     public override YgoCardType YgoCardType => YgoCardType.FusionMonster;

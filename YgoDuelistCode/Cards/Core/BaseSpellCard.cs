@@ -178,6 +178,8 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetSplinterBlightKeywords())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
+                tips.Add(tip);
             return tips;
         }
     }

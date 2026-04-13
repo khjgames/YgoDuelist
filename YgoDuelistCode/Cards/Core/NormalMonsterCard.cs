@@ -81,6 +81,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     {
         yield return new StarsVar(MonsterConduitStarCost);
         yield return new DamageVar((decimal)BaseAtk, ValueProp.Move);
+        // Always register BlockVar: engine code (e.g. OnUpgrade) uses DynamicVars.Block; omitting it throws KeyNotFoundException.
+        // Attack vs defense presentation is CardType; hiding the Block line in attack mode needs UI work, not omitting this var.
         yield return new BlockVar((decimal)BaseDef, ValueProp.Move);
         yield return new DynamicVar("Def", (decimal)BaseDef);
         yield return new DynamicVar("Mgc", (decimal)BaseMgc);
@@ -183,17 +185,30 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         if (Type == CardType.Attack && cardPlay.Target != null)
         {
+            List<Creature> attackTargets;
+            if (DuelMonsterAttackHitsAllEnemies && Owner?.Creature?.CombatState != null)
+            {
+                attackTargets = Owner.Creature.CombatState.Enemies.Where(e => e.IsAlive).ToList();
+            }
+            else
+            {
+                attackTargets = new List<Creature> { cardPlay.Target };
+            }
+
             await BeforeAttackCombatActionAsync(choiceContext, cardPlay);
             WillSet = false;
             for (int i = 0; i < resolutionCount; i++)
             {
                 await ApplyRecklessSelfDamageIfAnyAsync();
-                AttackCommand attackCommand = await DamageCmd.Attack((decimal)atk)
-                    .FromCard(this)
-                    .Targeting(cardPlay.Target)
-                    .WithHitFx("vfx/vfx_attack_slash")
-                    .Execute(choiceContext);
-                await OnAfterMonsterAttackHitAsync(choiceContext, cardPlay, attackCommand);
+                foreach (Creature t in attackTargets)
+                {
+                    AttackCommand attackCommand = await DamageCmd.Attack((decimal)atk)
+                        .FromCard(this)
+                        .Targeting(t)
+                        .WithHitFx("vfx/vfx_attack_slash")
+                        .Execute(choiceContext);
+                    await OnAfterMonsterAttackHitAsync(choiceContext, cardPlay, attackCommand);
+                }
             }
         }
         else if (Type == CardType.Skill)
@@ -342,8 +357,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             DuelMonsterLevel, YgoCardType, BaseMgc, DuelMonsterStatsAreUnknown);
         DynamicVars.Damage.UpgradeValueBy(atkBonus);
         DynamicVars["Def"].UpgradeValueBy(defBonus);
-        if (DynamicVars.Block != null)
-            DynamicVars.Block.UpgradeValueBy(defBonus);
+        // Use ContainsKey: get_Block throws KeyNotFoundException if BlockVar was omitted from canonical vars.
+        if (DynamicVars.ContainsKey("Block"))
+            DynamicVars["Block"].UpgradeValueBy(defBonus);
         DynamicVars["Mgc"].UpgradeValueBy(mgcBonus);
         SyncPermanentExecuteIncreaseVar();
     }

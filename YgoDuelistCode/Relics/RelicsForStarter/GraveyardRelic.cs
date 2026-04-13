@@ -76,6 +76,9 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
+        YgoDealWithDarkRulerState.OnPlayerTurnStart(player);
+        await YgoDealWithDarkRulerState.ApplyBerserkDragonStandbyAtkLossAsync(player);
+
         if (player == Owner)
         {
             _annualKeysConsumedThisTurn.Clear();

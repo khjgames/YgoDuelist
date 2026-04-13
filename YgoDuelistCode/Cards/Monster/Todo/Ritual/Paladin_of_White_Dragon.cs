@@ -10,7 +10,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -54,18 +53,6 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
             .RelatedCardsForPairedRitual(typeof(White_Dragon_Ritual), typeof(Paladin_of_White_Dragon))
             .Concat(new[] { typeof(Blue_Eyes_White_Dragon) })
             .ToArray();
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips
-    {
-        get
-        {
-            foreach (IHoverTip tip in base.ExtraHoverTips)
-                yield return tip;
-
-            CardModel bewdPreview = YgoPackCardCatalog.CardFromType(typeof(Blue_Eyes_White_Dragon));
-            yield return HoverTipFactory.FromCard(bewdPreview);
-        }
-    }
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;

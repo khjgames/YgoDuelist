@@ -34,6 +34,17 @@ public abstract class RitualMonsterCard : EffectMonsterCard
 
     public override YgoCardType YgoCardType => YgoCardType.RitualMonster;
 
+    protected override IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
+    {
+        Type? paired = RitualArchetypeMeta.PairedRitualSpellType(GetType());
+        foreach (Type t in base.EnumerateReferencedCardPreviewTypes())
+        {
+            if (paired != null && t == paired)
+                continue;
+            yield return t;
+        }
+    }
+
     /// <summary>Ritual monsters are only summoned via ritual spells, not played from the hand.</summary>
     protected override bool IsPlayable
     {

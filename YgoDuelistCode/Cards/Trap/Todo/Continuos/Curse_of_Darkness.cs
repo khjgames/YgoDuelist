@@ -39,5 +39,9 @@ public sealed class Curse_of_Darkness : BaseContinuousTrapCard
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(3m);
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].UpgradeValueBy(3m);
+    }
 }

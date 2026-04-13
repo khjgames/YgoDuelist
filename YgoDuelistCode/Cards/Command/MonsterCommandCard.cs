@@ -199,6 +199,9 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
                 }
             }
 
+            foreach (CardKeyword ak in YgoMonsterArchetypeKeywords.KeywordsForMonsterType(source.GetType()))
+                result.Add(ak);
+
             return result;
         }
     }
@@ -215,6 +218,8 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
             var tips = new List<IHoverTip>(4);
             foreach (var kw in CanonicalKeywords)
                 tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (IHoverTip tip in YgoReferencedCardPreviewMap.EnumerateCardPreviewHoverTips(GetType()))
+                tips.Add(tip);
 
             return tips;
         }

@@ -53,8 +53,6 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword HandEffectMonsterKeyword => (CardKeyword)20038;
     private static CardKeyword CycleMonsterKeyword => (CardKeyword)20039;
     private static CardKeyword FlipEffectKeyword => (CardKeyword)20041;
-    private static CardKeyword ActivateEffectKeyword => (CardKeyword)20051;
-    private static CardKeyword ActivateEffect2Keyword => (CardKeyword)20053;
     private static CardKeyword RecklessBlockerKeyword => (CardKeyword)20042;
     private static CardKeyword RecklessKeyword => (CardKeyword)20043;
     private static CardKeyword SplinterKeyword => (CardKeyword)20044;
@@ -432,14 +430,6 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return FlipEffectKeyword;
     }
 
-    private IEnumerable<CardKeyword> GetActivateEffectKeywords()
-    {
-        if (this is IMonsterActivatedEffect)
-            yield return ActivateEffectKeyword;
-        if (this is IMonsterSecondActivatedEffect)
-            yield return ActivateEffect2Keyword;
-    }
-
     protected virtual bool HasRecklessBlockerKeyword => false;
 
     /// <summary>Level 3+ normal-line monsters: <see cref="NormalMonsterCard"/>; drives Reckless keyword and CombatAction self-damage.</summary>
@@ -505,6 +495,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return BlightKeyword;
     }
 
+    private IEnumerable<CardKeyword> GetYgoArchetypeKeywords() =>
+        YgoMonsterArchetypeKeywords.KeywordsForMonsterType(GetType());
+
     public override IEnumerable<CardKeyword> CanonicalKeywords
     {
         get
@@ -516,13 +509,13 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             keywords.AddRange(GetHandEffectMonsterKeywords());
             keywords.AddRange(GetCycleMonsterKeywordWhenEligible());
             keywords.AddRange(GetFlipEffectKeywords());
-            keywords.AddRange(GetActivateEffectKeywords());
             keywords.AddRange(GetRecklessBlockerKeywords());
             keywords.AddRange(GetRecklessKeywords());
             keywords.AddRange(GetFaceDownKeywordsFromBool());
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
             keywords.AddRange(GetSplinterBlightKeywordsFromMonster());
+            keywords.AddRange(GetYgoArchetypeKeywords());
             return keywords;
         }
     }
@@ -581,6 +574,10 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetSplinterBlightKeywordsFromMonster())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (CardKeyword kw in GetYgoArchetypeKeywords())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
+                tips.Add(tip);
             return tips;
         }
     }

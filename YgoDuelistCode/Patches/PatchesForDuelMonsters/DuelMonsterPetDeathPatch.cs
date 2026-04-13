@@ -88,6 +88,9 @@ public static class DuelMonsterPetDeathPatch
             if (card is BaseMonsterCard bmc && bmc.DuelMonsterRace == DuelMonsterRace.Dragon)
                 GraveyardRelic.RegisterDragonMonsterDestroyed(player);
 
+            if (card is BaseMonsterCard level8Plus && level8Plus.DuelMonsterLevel >= 8 && level8Plus is not Berserk_Dragon)
+                YgoDealWithDarkRulerState.RegisterLevel8PlusMonsterSentToGraveyard(player);
+
             if (card is BaseMonsterCard fairySrc
                 && fairySrc.DuelMonsterRace == DuelMonsterRace.Fairy
                 && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<The_Sanctuary_in_the_Sky>(player))
