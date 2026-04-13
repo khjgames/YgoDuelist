@@ -7,6 +7,8 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 
@@ -24,6 +26,8 @@ public sealed class Wasteland : BaseFieldSpellCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+
+    public override Type[] RelatedCards => new[] { typeof(Pumpking_the_King_of_Ghosts), typeof(Castle_of_Dark_Illusions), typeof(Violet_Crystal)};
 
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target)
     {
