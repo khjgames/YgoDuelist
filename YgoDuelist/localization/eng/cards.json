@@ -1575,7 +1575,7 @@
   "YGODUELIST-DRAGON_ZOMBIE.description_skill": "Gain [blue]{Block}[/blue] block.\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-DRAGON_ZOMBIE.description_skill_combat": "Gain [blue]{CalculatedDEF}[/blue] block.\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
   "YGODUELIST-DRAGON_ZOMBIE.title": "Dragon Zombie",
-  "YGODUELIST-DRAINING_SHIELD.description": "Target an enemy that intends to attack you. Heal HP equal to that enemy's current attack damage.",
+  "YGODUELIST-DRAINING_SHIELD.description": "Heal [blue]{Mgc}[/blue] HP for each enemy that currently intends to attack you with damage.",
   "YGODUELIST-DRAINING_SHIELD.title": "Draining Shield",
   "YGODUELIST-DREAM_CLOWN.description": "Deal [blue]{Damage}[/blue] damage.\\nWhen switched from attack to defense, inflict 1 Vulnerable and deal 6 to an enemy.\\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-DREAM_CLOWN.description_combat": "Deal [blue]{CalculatedATK}[/blue] damage.\\nWhen switched from attack to defense, inflict 1 Vulnerable and deal 6 to an enemy.\\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
