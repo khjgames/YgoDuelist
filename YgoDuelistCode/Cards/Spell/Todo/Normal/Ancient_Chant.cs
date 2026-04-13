@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -31,16 +30,6 @@ public sealed class Ancient_Chant : BaseSpellCard
     public override Type[] BundledCards => new[] { typeof(The_Winged_Dragon_of_Ra) };
 
     public override Type[] RelatedCards => new[] { typeof(Ancient_Chant), typeof(The_Winged_Dragon_of_Ra) };
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips
-    {
-        get
-        {
-            foreach (IHoverTip t in base.ExtraHoverTips)
-                yield return t;
-            yield return HoverTipFactory.FromCard(YgoPackCardCatalog.CardFromType(typeof(The_Winged_Dragon_of_Ra)));
-        }
-    }
 
     protected override bool IsPlayable =>
         base.IsPlayable && Owner != null && FindRaCandidates(Owner).Count > 0;

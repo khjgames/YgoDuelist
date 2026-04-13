@@ -62,6 +62,16 @@ public abstract class RitualSpellCard : BaseSpellCard
         ExactMaterialCardCount = exactMaterialCardCount;
     }
 
+    protected override IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
+    {
+        foreach (Type t in base.EnumerateReferencedCardPreviewTypes())
+        {
+            if (t == RitualTargetMonsterType)
+                continue;
+            yield return t;
+        }
+    }
+
     protected override bool IsPlayable
     {
         get

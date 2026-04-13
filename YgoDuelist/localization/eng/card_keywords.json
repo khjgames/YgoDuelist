@@ -162,6 +162,12 @@
   "20052.description": "Ticks after combat end, before Doomed, removes equivalent Doom then falls off.",
 
   "20053.title": "Activate Effect II",
-  "20053.description": "Can be activated on the field via command."
+  "20053.description": "Can be activated on the field via command.",
+
+  "20054.title": "Dark Magician",
+  "20054.description": "Part of the Dark Magician archetype.",
+
+  "20055.title": "Blue-Eyes White Dragon",
+  "20055.description": "Part of the Blue-Eyes White Dragon archetype."
 
 }

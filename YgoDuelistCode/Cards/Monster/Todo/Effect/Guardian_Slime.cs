@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -39,16 +38,6 @@ public sealed class Guardian_Slime : EffectMonsterCard, IMonsterActivatedEffect
     public override Type[] BundledCards => new[] { typeof(Ancient_Chant) };
 
     public override Type[] RelatedCards => new[] { typeof(Guardian_Slime), typeof(Ancient_Chant) };
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips
-    {
-        get
-        {
-            foreach (IHoverTip tip in base.ExtraHoverTips)
-                yield return tip;
-            yield return HoverTipFactory.FromCard(YgoPackCardCatalog.CardFromType(typeof(Ancient_Chant)));
-        }
-    }
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;

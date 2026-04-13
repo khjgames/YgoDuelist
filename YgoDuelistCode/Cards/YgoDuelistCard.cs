@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BaseLib.Abstracts;
 using BaseLib.Extensions;
 using BaseLib.Utils;
@@ -5,8 +6,10 @@ using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Extensions;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards;
 
@@ -100,4 +103,20 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     //Uses card_portraits/card_name.png as image path. These should be smaller images.
     public override string PortraitPath => $"{Id.Entry.RemovePrefix().ToLowerInvariant()}.png".CardImagePath();
     public override string BetaPortraitPath => $"beta/{Id.Entry.ToLowerInvariant()}.png".CardImagePath();
+
+    /// <summary>CLR types for cards named in quotes in localization; fusion/ritual subclasses filter duplicates.</summary>
+    protected virtual IEnumerable<Type> EnumerateReferencedCardPreviewTypes()
+    {
+        foreach (Type t in YgoReferencedCardPreviewMap.GetReferencedTypes(GetType()))
+        {
+            if (t != null)
+                yield return t;
+        }
+    }
+
+    protected IEnumerable<IHoverTip> EnumerateReferencedCardPreviewHoverTips()
+    {
+        foreach (Type t in EnumerateReferencedCardPreviewTypes())
+            yield return HoverTipFactory.FromCard(YgoPackCardCatalog.CardFromType(t));
+    }
 }

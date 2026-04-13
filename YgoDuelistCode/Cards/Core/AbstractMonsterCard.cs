@@ -505,6 +505,9 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return BlightKeyword;
     }
 
+    private IEnumerable<CardKeyword> GetYgoArchetypeKeywords() =>
+        YgoMonsterArchetypeKeywords.KeywordsForMonsterType(GetType());
+
     public override IEnumerable<CardKeyword> CanonicalKeywords
     {
         get
@@ -523,6 +526,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
             keywords.AddRange(GetSplinterBlightKeywordsFromMonster());
+            keywords.AddRange(GetYgoArchetypeKeywords());
             return keywords;
         }
     }
@@ -581,6 +585,10 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (CardKeyword kw in GetSplinterBlightKeywordsFromMonster())
                 tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (CardKeyword kw in GetYgoArchetypeKeywords())
+                tips.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
+                tips.Add(tip);
             return tips;
         }
     }

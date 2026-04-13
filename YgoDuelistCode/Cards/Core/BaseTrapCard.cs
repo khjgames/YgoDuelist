@@ -285,6 +285,8 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                     tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
                 foreach (CardKeyword kw in GetSplinterBlightKeywords())
                     tips.Add(HoverTipFactory.FromKeyword(kw));
+                foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
+                    tips.Add(tip);
                 return tips;
             }
 
@@ -297,6 +299,8 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 fallback.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
             foreach (CardKeyword kw in GetSplinterBlightKeywords())
                 fallback.Add(HoverTipFactory.FromKeyword(kw));
+            foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
+                fallback.Add(tip);
             return fallback;
         }
     }
