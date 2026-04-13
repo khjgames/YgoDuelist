@@ -148,7 +148,6 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (player == Owner)
             await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
         await YgoMirageTokenEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
-        await YgoInsectQueenEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
         await SliferSkyDragonService.BeforePlayerTurnEndFlushAsync(choiceContext, player);
     }
 
@@ -364,6 +363,24 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                 if (!monster.AppliesPermanentAtkDeltaOnEnemyKill(r.Receiver))
                     continue;
                 monster.ApplyPermanentExecuteAtkDelta(killBonus);
+            }
+        }
+
+        if (monster is Insect_Princess princess
+            && princess.Owner?.Creature != null
+            && princess.Owner.PlayerCombatState != null)
+        {
+            foreach (DamageResult r in command.Results)
+            {
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                    continue;
+                Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(princess);
+                if (pet == null || !pet.IsAlive)
+                    continue;
+                decimal stacks = princess.DynamicVars["Mgc2"].BaseValue;
+                if (stacks <= 0m)
+                    continue;
+                await PowerCmd.Apply<InsectPrincessExecuteAtkPower>(pet, stacks, princess.Owner.Creature, princess);
             }
         }
 

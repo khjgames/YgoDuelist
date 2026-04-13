@@ -406,6 +406,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         WingedMinionTributeAtkPower? wingedTribute = GetSourcePetWingedMinionTributeAtkPower();
         if (wingedTribute != null)
             atk += (int)wingedTribute.Amount;
+        InsectPrincessExecuteAtkPower? insectPrincessExecute = GetSourcePetInsectPrincessExecuteAtkPower();
+        if (insectPrincessExecute != null)
+            atk += (int)insectPrincessExecute.Amount;
         atk += GetSourcePetSevenWeaponsAtkBonus();
         if (SourcePetHasPower<ReliableDefenderPower>())
             def += ReliableDefenderPower.DefBonus;
@@ -655,6 +658,21 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
             return pet.GetPower<WingedMinionTributeAtkPower>();
+        }
+
+        return null;
+    }
+
+    private InsectPrincessExecuteAtkPower? GetSourcePetInsectPrincessExecuteAtkPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<InsectPrincessExecuteAtkPower>();
         }
 
         return null;
