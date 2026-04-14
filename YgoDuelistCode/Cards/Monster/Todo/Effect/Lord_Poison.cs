@@ -1,3 +1,4 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -10,16 +11,20 @@ public sealed class Lord_Poison : EffectMonsterCard
     public Lord_Poison()
         : base(
             cost: 1,
-            type: CardType.Attack,
-            rarity: CardRarity.Uncommon,
-            target: TargetType.AnyEnemy,
+            type: global::MegaCrit.Sts2.Core.Entities.Cards.CardType.Attack,
+            rarity: global::MegaCrit.Sts2.Core.Entities.Cards.CardRarity.Uncommon,
+            target: global::MegaCrit.Sts2.Core.Entities.Cards.TargetType.AnyEnemy,
             duelMonsterLevel: 4,
-            duelMonsterAttribute: DuelMonsterAttribute.Water,
+            duelMonsterAttribute: global::YgoDuelist.YgoDuelistCode.Models.DuelMonsterAttribute.Water,
             baseAtk: 15,
             baseDef: 10,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Plant)
+            duelMonsterRace: global::YgoDuelist.YgoDuelistCode.Models.DuelMonsterRace.Plant)
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Burn;
+
+    public override Type[] RelatedCards => new[] { typeof(Lord_Poison) };
 }

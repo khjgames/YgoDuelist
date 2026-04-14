@@ -1,10 +1,13 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>Corpse-Blight on execute kill — same rule as Shinato (see GraveyardRelic AfterAttack).</summary>
 public sealed class Des_Volstgalph : EffectMonsterCard
 {
     public Des_Volstgalph()
@@ -21,4 +24,9 @@ public sealed class Des_Volstgalph : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Dragon)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
+
+    public override Type[] RelatedCards => new[] { typeof(Des_Volstgalph) };
 }

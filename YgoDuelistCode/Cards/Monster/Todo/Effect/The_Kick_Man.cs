@@ -57,7 +57,7 @@ public sealed class The_Kick_Man : EffectMonsterCard
 
         List<BaseEquipSpellCard> candidates = gy.Cards
             .OfType<BaseEquipSpellCard>()
-            .Where(e => !e.FaceDown && !FairyOfSpringReturnedEquipLock.IsLocked(e) && e.CanEquipTo(this))
+            .Where(e => !e.FaceDown && !FairyOfSpringReturnedEquipLock.IsLocked(e) && YgoEquipSpellTargetRules.IsLegalEquipTarget(e, this))
             .ToList();
 
         if (candidates.Count == 0)
@@ -91,7 +91,7 @@ public sealed class The_Kick_Man : EffectMonsterCard
 
         if (equip.Pile?.Type != GraveyardPile.CustomType || !gy.Cards.Contains(equip))
             return;
-        if (!equip.CanEquipTo(this))
+        if (!YgoEquipSpellTargetRules.IsLegalEquipTarget(equip, this))
             return;
         if (FairyOfSpringReturnedEquipLock.IsLocked(equip))
             return;

@@ -1,10 +1,19 @@
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.ValueProps;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>Whenever this card attacks from the field, you take printed <c>Mgc</c> blockable damage.</summary>
 public sealed class Dark_Elf : EffectMonsterCard
 {
     public Dark_Elf()
@@ -18,10 +27,39 @@ public sealed class Dark_Elf : EffectMonsterCard
             baseAtk: 20,
             baseDef: 8,
             baseMgc: 10,
-            duelMonsterRace: DuelMonsterRace.Spellcaster,
-            duelMonsterAttackPlayEnergyOverride: 0
-            )
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
+
+    protected override async Task BeforeAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner?.Creature == null)
+            return;
+
+        Creature? pet = Owner.PlayerCombatState?.Pets
+            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+        if (pet == null || !pet.IsAlive)
+            return;
+
+        decimal dmg = DynamicVars["Mgc"].BaseValue;
+        if (dmg <= 0m)
+            return;
+
+        await CreatureCmd.Damage(
+            choiceContext,
+            Owner.Creature,
+            dmg,
+            ValueProp.Move,
+            dealer: null,
+            cardSource: this);
+    }
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 7m;
+    }
 }

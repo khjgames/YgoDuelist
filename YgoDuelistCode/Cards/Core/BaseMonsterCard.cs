@@ -200,7 +200,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         AttackDealsBlightedDamage && BaseAtk <= 6;
 
     /// <inheritdoc cref="YgoDuelistCard.CardShowsSplinterKeyword" />
-    public override bool CardShowsSplinterKeyword => AttackDealsSplinterDamage;
+    public override bool CardShowsSplinterKeyword =>
+        AttackDealsSplinterDamage || EnragedBattleOxService.MonsterCardShowsSplinterFromOx(this);
 
     /// <inheritdoc cref="YgoDuelistCard.CardShowsBlightKeyword" />
     public override bool CardShowsBlightKeyword => AttackDealsBlightedDamage;
@@ -412,6 +413,25 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         LegendaryFiendAtkPower? legendaryFiend = GetSourcePetLegendaryFiendAtkPower();
         if (legendaryFiend != null)
             atk += (int)legendaryFiend.Amount;
+        BazooSoulEaterTempAtkPower? bazooTemp = GetSourcePetBazooSoulEaterTempAtkPower();
+        if (bazooTemp != null)
+            atk += (int)bazooTemp.Amount;
+        SpiritRyuTempAtkDefPower? spiritRyuTemp = GetSourcePetSpiritRyuTempAtkDefPower();
+        if (spiritRyuTemp != null)
+        {
+            int b = (int)spiritRyuTemp.Amount;
+            atk += b;
+            def += b;
+        }
+
+        GearfriedIronKnightPower? gearfriedPow = GetSourcePetGearfriedIronKnightPower();
+        if (gearfriedPow != null)
+        {
+            int g = (int)gearfriedPow.Amount;
+            atk += g;
+            def += g;
+        }
+
         atk += GetSourcePetSevenWeaponsAtkBonus();
         if (SourcePetHasPower<ReliableDefenderPower>())
             def += ReliableDefenderPower.DefBonus;
@@ -691,6 +711,51 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
             return pet.GetPower<LegendaryFiendAtkPower>();
+        }
+
+        return null;
+    }
+
+    private BazooSoulEaterTempAtkPower? GetSourcePetBazooSoulEaterTempAtkPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<BazooSoulEaterTempAtkPower>();
+        }
+
+        return null;
+    }
+
+    private SpiritRyuTempAtkDefPower? GetSourcePetSpiritRyuTempAtkDefPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<SpiritRyuTempAtkDefPower>();
+        }
+
+        return null;
+    }
+
+    private GearfriedIronKnightPower? GetSourcePetGearfriedIronKnightPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<GearfriedIronKnightPower>();
         }
 
         return null;

@@ -1,10 +1,13 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>While in your Graveyard: once per turn at turn start, heal 1 HP (GraveyardRelic).</summary>
 public sealed class Darklord_Marie : EffectMonsterCard
 {
     public Darklord_Marie()
@@ -22,4 +25,8 @@ public sealed class Darklord_Marie : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Heal;
+
+    public override Type[] RelatedCards => new[] { typeof(Darklord_Marie) };
 }

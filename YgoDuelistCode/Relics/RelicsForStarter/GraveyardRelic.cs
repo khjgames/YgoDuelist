@@ -82,6 +82,10 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
+        YgoPlayerCombatTurnStamp.Bump(player);
+        YgoSanganNameLock.Clear(player);
+        YgoDdScoutPlaneEndPhase.ClearTurnUsedFlags(player);
+
         YgoDealWithDarkRulerState.OnPlayerTurnStart(player);
         await YgoDealWithDarkRulerState.ApplyBerserkDragonStandbyAtkLossAsync(player);
 
@@ -146,15 +150,32 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         await YgoJamBreedingMachineContinuous.TryResolvePlayerTurnStart(choiceContext, player);
         await YgoCardTraderContinuous.TryResolvePlayerTurnStart(choiceContext, player);
         await SliferSkyDragonService.ApplySliferPressureToAllEnemiesAsync(choiceContext, player);
+        await YgoGoraTurtleService.ApplyPlayerTurnStartAsync(choiceContext, player);
     }
 
     /// <summary>Bottomless Shifting Sand: hand count for its effect uses size before the end-of-turn discard flush.</summary>
     public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)
     {
+        if (player.PlayerCombatState != null)
+        {
+            foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+            {
+                if (pet.GetPower<BazooSoulEaterTempAtkPower>() != null)
+                    await PowerCmd.Remove<BazooSoulEaterTempAtkPower>(pet);
+                if (pet.GetPower<SpiritRyuTempAtkDefPower>() != null)
+                    await PowerCmd.Remove<SpiritRyuTempAtkDefPower>(pet);
+            }
+        }
+
         if (player == Owner)
             await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
         await YgoMirageTokenEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
+        await YgoTwinHeadedBehemothEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
+        await YgoDdScoutPlaneEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
         await SliferSkyDragonService.BeforePlayerTurnEndFlushAsync(choiceContext, player);
+        await YgoSolarFlareDragonEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
+        await YgoManticoreOfDarknessEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
+        await YgoWickedWormBeastEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
     }
 
     public override async Task AfterCreatureAddedToCombat(Creature creature)
@@ -236,6 +257,8 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         }
 
         bool splinter = monster.AttackDealsSplinterDamage;
+        if (!splinter)
+            splinter = EnragedBattleOxService.AttackGetsSplinterFromOxAura(monster, atkOwner);
         if (!splinter)
         {
             foreach (var eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))
@@ -428,7 +451,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             }
         }
 
-        if (monster is Shinato_King_of_a_Higher_Plane)
+        if (monster is Shinato_King_of_a_Higher_Plane or Des_Volstgalph)
         {
             foreach (DamageResult r in command.Results)
             {
@@ -472,6 +495,19 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     continue;
                 await PowerCmd.Apply<StrengthPower>(command.Attacker, 1m, atkPlayer.Creature, monster);
                 await PowerCmd.Apply<ArtifactPower>(command.Attacker, 1m, atkPlayer.Creature, monster);
+            }
+        }
+
+        if (monster is Guardian_Angel_Joan joan && atkPlayer?.Creature != null)
+        {
+            foreach (DamageResult r in command.Results)
+            {
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                    continue;
+                decimal mgc = joan.DynamicVars["Mgc"].BaseValue;
+                decimal pct = r.Receiver.MaxHp * 0.02m;
+                await CreatureCmd.Heal(atkPlayer.Creature, mgc + pct);
+                break;
             }
         }
     }

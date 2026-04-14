@@ -276,6 +276,8 @@ public static class YgoSpellTrapZoneBridge
 
         YgoEquipSpellRegistry.Attach(card, targetMonster);
 
+        await YgoGearfriedEquipReaction.TryReactAfterEquipAttachedAsync(player, card, targetMonster);
+
         SyncFromZonePile(player);
     }
 

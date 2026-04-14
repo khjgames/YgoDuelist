@@ -1,17 +1,37 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using MonsterActivatedEffectRuntime = YgoDuelist.YgoDuelistCode.Cards.Core.MonsterActivatedEffectRuntime;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Relics;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard
+/// <summary>
+/// Once per turn: pay 1 energy, banish 2 LIGHT monsters from your Graveyard, inflict Blight on target enemy equal to this card's ATK (see Effect_Monsters_TODO).
+/// </summary>
+public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard, IMonsterActivatedEffect
 {
+    private static readonly LocString BanishPrompt = new("cards", "YGODUELIST-FREED_THE_BRAVE_WANDERER.banish_light");
+
     public Freed_the_Brave_Wanderer()
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
@@ -22,4 +42,85 @@ public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Warrior | YgoCardPackTags.Burn;
+
+    public override Type[] RelatedCards => new[] { typeof(Freed_the_Brave_Wanderer) };
+
+    public int ActivatedEffectEnergyCost => 1;
+    public CardType ActivatedEffectCardType => CardType.Skill;
+    public TargetType ActivatedEffectTarget => TargetType.AnyEnemy;
+    public string ActivatedEffectDescriptionLocKey => "YGODUELIST-FREED_THE_BRAVE_WANDERER.activated_effect.description";
+
+    public bool IsActivatedEffectAvailable
+    {
+        get
+        {
+            if (Owner?.Creature?.CombatState == null)
+                return false;
+            Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this, Owner);
+            if (pet == null || !MonsterCommandRegistry.TryGet(pet, out var cmd) || cmd.HasUsedActivatedEffectThisTurn)
+                return false;
+            if (CountLightInGraveyard(Owner) < 2)
+                return false;
+            return Owner.Creature.CombatState.HittableEnemies.Any(e => e.IsAlive);
+        }
+    }
+
+    public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
+    {
+        Player? player = source.Owner ?? cardPlay.Card?.Owner;
+        if (player?.Creature?.CombatState == null)
+            return;
+
+        Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source, player);
+        if (pet == null)
+            return;
+
+        List<BaseMonsterCard> pool = GraveyardRelic
+            .GetGraveyardCards(player)
+            .OfType<BaseMonsterCard>()
+            .Where(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Light)
+            .ToList();
+        if (pool.Count < 2)
+            return;
+
+        IEnumerable<CardModel> pick;
+        try
+        {
+            pick = await CardSelectCmd.FromSimpleGrid(
+                choiceContext,
+                pool,
+                player,
+                new CardSelectorPrefs(BanishPrompt, 2, 2) { Cancelable = true });
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        List<BaseMonsterCard> banished = pick.OfType<BaseMonsterCard>().Distinct().Take(2).ToList();
+        if (banished.Count < 2)
+            return;
+
+        foreach (BaseMonsterCard m in banished)
+            await YgoBanishedService.BanishCard(player, m);
+
+        Creature? target = cardPlay.Target;
+        if (target == null || !target.IsAlive)
+            return;
+
+        if (source is not Freed_the_Brave_Wanderer freed)
+            return;
+
+        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(player);
+        int blight = freed.CalcDuelMonsterStats(field).Atk;
+        if (blight > 0)
+            await PowerCmd.Apply<BlightPower>(target, blight, player.Creature, freed);
+
+        MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
+    }
+
+    private static int CountLightInGraveyard(Player player) =>
+        GraveyardRelic.GetGraveyardCards(player).OfType<BaseMonsterCard>().Count(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Light);
 }

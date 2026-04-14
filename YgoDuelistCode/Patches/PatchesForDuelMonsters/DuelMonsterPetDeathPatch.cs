@@ -163,6 +163,36 @@ public static class DuelMonsterPetDeathPatch
                 && cmdSnake.DestroyedByEnemyBattleDamage)
                 TaskHelper.RunSafely(Poisonous_Snake_Token.ApplyWhenDestroyedByBattleAsync(player, cmdSnake.BattleDamageKillerEnemy));
 
+            if (card is Mother_Grizzly motherGrizzly
+                && MonsterCommandRegistry.TryGet(pet, out var cmdMother)
+                && cmdMother.DestroyedByEnemyBattleDamage)
+                YgoMotherGrizzlyBattleDeathGate.Mark(motherGrizzly);
+
+            if (card is Pyramid_Turtle pyramidTurtle
+                && MonsterCommandRegistry.TryGet(pet, out var cmdPyramid)
+                && cmdPyramid.DestroyedByEnemyBattleDamage)
+                YgoPyramidTurtleBattleDeathGate.Mark(pyramidTurtle);
+
+            if (card is Mystic_Tomato mysticTomato
+                && MonsterCommandRegistry.TryGet(pet, out var cmdMysticTomato)
+                && cmdMysticTomato.DestroyedByEnemyBattleDamage)
+                YgoMysticTomatoBattleDeathGate.Mark(mysticTomato);
+
+            if (card is Shining_Angel shiningAngel
+                && MonsterCommandRegistry.TryGet(pet, out var cmdShiningAngel)
+                && cmdShiningAngel.DestroyedByEnemyBattleDamage)
+                YgoShiningAngelBattleDeathGate.Mark(shiningAngel);
+
+            if (card is Giant_Germ giantGerm
+                && MonsterCommandRegistry.TryGet(pet, out var cmdGiantGerm)
+                && cmdGiantGerm.DestroyedByEnemyBattleDamage)
+                YgoGiantGermBattleDeathGate.Mark(giantGerm);
+
+            if (card is Lord_Poison lordPoison
+                && MonsterCommandRegistry.TryGet(pet, out var cmdLordPoison)
+                && cmdLordPoison.DestroyedByEnemyBattleDamage)
+                YgoLordPoisonBattleDeathGate.Mark(lordPoison);
+
             if (player.Creature?.HasPower<AccumulatedSpiritsPower>() == true)
                 YgoDuelistPassivePowerState.RegisterAccumulatedSpiritsFieldLoss(player);
 
@@ -201,6 +231,10 @@ public static class DuelMonsterPetDeathPatch
             // Remove from field/command registries so it no longer affects stats or menus.
             DuelMonsterFieldRegistry.UnregisterPet(pet);
             MonsterCommandRegistry.Clear(pet);
+            if (card is Enraged_Battle_Ox)
+                TaskHelper.RunSafely(EnragedBattleOxService.SyncPlayerPowerAsync(player));
+            if (player?.Creature != null)
+                RunRelocationBlocking(() => FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player));
             GD.Print("[ZGO] DuelMonsterPetDeathPatch: unregistered pet and cleared command state.");
 
             // Manually remove the dead duel monster's visuals and creature from combat,

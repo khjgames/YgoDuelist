@@ -1,12 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Gravekeeper_s_Spy : EffectMonsterCard
+/// <summary>FLIP: Special Summon 1 "Gravekeeper's" monster with printed ATK 15 or less from the deck.</summary>
+public sealed class Gravekeeper_s_Spy : EffectMonsterCard, IMonsterFlipEffect
 {
+    private const int MaxPrintedAtk = 15;
+    private static readonly LocString SummonPrompt = new("cards", "YGODUELIST-GRAVEKEEPER_S_SPY.flip_summon_select");
+
     public Gravekeeper_s_Spy()
         : base(
             cost: 1,
@@ -22,4 +37,55 @@ public sealed class Gravekeeper_s_Spy : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+
+    public override Type[] RelatedCards => new[] { typeof(Gravekeeper_s_Spy) };
+
+    public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
+    {
+        if (self is not Gravekeeper_s_Spy || Owner == null)
+            return;
+        if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
+            return;
+
+        List<BaseMonsterCard> candidates = CollectDeckCandidates(Owner);
+        if (candidates.Count == 0)
+            return;
+
+        IEnumerable<CardModel> pick;
+        try
+        {
+            pick = await CardSelectCmd.FromSimpleGrid(
+                choiceContext,
+                candidates.Cast<CardModel>().ToList(),
+                Owner,
+                new CardSelectorPrefs(SummonPrompt, 1, 1) { Cancelable = true });
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        if (pick.FirstOrDefault() is not BaseMonsterCard chosen)
+            return;
+
+        await DuelMonsterSummon.TrySummonDuelMonsterSpecial(Owner, chosen, choiceContext);
+    }
+
+    private static List<BaseMonsterCard> CollectDeckCandidates(Player player)
+    {
+        CardPile? draw = PileType.Draw.GetPile(player);
+        if (draw == null)
+            return [];
+
+        return draw.Cards
+            .OfType<BaseMonsterCard>()
+            .Where(m => IsGravekeeperLowAtk(m) && m.CanSummonDuelMonster)
+            .ToList();
+    }
+
+    private static bool IsGravekeeperLowAtk(BaseMonsterCard m) =>
+        m.Id.Entry.Contains("GRAVEKEEPER", StringComparison.OrdinalIgnoreCase)
+        && m.BaseAtk <= MaxPrintedAtk;
 }

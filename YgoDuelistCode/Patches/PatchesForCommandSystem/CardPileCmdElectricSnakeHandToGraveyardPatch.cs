@@ -7,13 +7,14 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// <see cref="Electric_Snake"/>: when sent from hand to the Graveyard, draw cards equal to printed <c>Mgc</c>.
+/// <see cref="Electric_Snake"/> / <see cref="Elephant_Statue_of_Blessing"/>: when sent from hand to the Graveyard, draw cards equal to printed <c>Mgc</c>.
 /// </summary>
 [HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Add), typeof(IEnumerable<CardModel>), typeof(CardPile), typeof(CardPilePosition), typeof(AbstractModel), typeof(bool))]
 public static class CardPileCmdElectricSnakeHandToGraveyardPatch
@@ -41,14 +42,23 @@ public static class CardPileCmdElectricSnakeHandToGraveyardPatch
 
         foreach ((CardModel card, PileType? from) in state)
         {
-            if (from != PileType.Hand || card is not Electric_Snake snake)
+            if (from != PileType.Hand)
                 continue;
 
-            Player? player = snake.Owner;
+            BaseMonsterCard? drawSource = card switch
+            {
+                Electric_Snake es => es,
+                Elephant_Statue_of_Blessing el => el,
+                _ => null
+            };
+            if (drawSource == null)
+                continue;
+
+            Player? player = drawSource.Owner;
             if (player?.Creature?.CombatState == null)
                 continue;
 
-            decimal n = snake.DynamicVars["Mgc"].BaseValue;
+            decimal n = drawSource.DynamicVars["Mgc"].BaseValue;
             if (n <= 0m)
                 continue;
 

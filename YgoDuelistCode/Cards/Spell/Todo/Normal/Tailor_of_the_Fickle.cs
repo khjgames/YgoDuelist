@@ -33,7 +33,7 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard
 
         return DuelMonsterFieldRegistry.GetFieldMonsters(player)
             .OfType<BaseMonsterCard>()
-            .Where(m => !ReferenceEquals(m, current) && equip.CanEquipTo(m))
+            .Where(m => !ReferenceEquals(m, current) && YgoEquipSpellTargetRules.IsLegalEquipTarget(equip, m))
             .ToList();
     }
 

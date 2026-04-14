@@ -26,6 +26,12 @@ public sealed class Activate_Effect : MonsterCommandCard
     {
     }
 
+    public override int CanonicalStarCost =>
+        SourceMonster is Gravekeeper_s_Chief ? 1 : base.CanonicalStarCost;
+
+    public override int CurrentStarCost =>
+        SourceMonster is Gravekeeper_s_Chief ? 1 : base.CurrentStarCost;
+
     protected override int CanonicalEnergyCost
     {
         get

@@ -1,10 +1,13 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>Battle-death Blight + deck SS — <see cref="YgoDuelist.YgoDuelistCode.Services.YgoGiantGermGraveyard"/>.</summary>
 public sealed class Giant_Germ : EffectMonsterCard
 {
     public Giant_Germ()
@@ -22,4 +25,14 @@ public sealed class Giant_Germ : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Burn;
+
+    public override Type[] RelatedCards => new[] { typeof(Giant_Germ) };
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 7m;
+    }
 }

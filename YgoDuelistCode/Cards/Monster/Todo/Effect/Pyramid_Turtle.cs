@@ -1,11 +1,12 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
+using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>When destroyed by battle: optional Special Summon 1 Zombie with printed DEF 20 or less from the deck (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoPyramidTurtleGraveyard"/>).</summary>
 public sealed class Pyramid_Turtle : EffectMonsterCard
 {
     public Pyramid_Turtle()
@@ -25,5 +26,4 @@ public sealed class Pyramid_Turtle : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Zombie;
-
 }

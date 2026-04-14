@@ -111,7 +111,7 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
                 return DuelMonsterFieldRegistry
                     .GetFieldMonsters(Owner)
                     .OfType<BaseMonsterCard>()
-                    .Any(CanEquipTo);
+                    .Any(m => YgoEquipSpellTargetRules.IsLegalEquipTarget(this, m));
             }
 
             if (Pile?.Type != PileType.Hand || Owner == null)
@@ -126,7 +126,7 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
             return DuelMonsterFieldRegistry
                 .GetFieldMonsters(Owner)
                 .OfType<BaseMonsterCard>()
-                .Any(CanEquipTo);
+                .Any(m => YgoEquipSpellTargetRules.IsLegalEquipTarget(this, m));
         }
     }
 
@@ -146,7 +146,7 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
         if (!EquipSpellPlayPayload.TryTakePending(this, out var targetMonster) || targetMonster == null)
             return;
 
-        if (!CanEquipTo(targetMonster))
+        if (!YgoEquipSpellTargetRules.IsLegalEquipTarget(this, targetMonster))
             return;
 
         PrepareSpellForActiveFieldZone();

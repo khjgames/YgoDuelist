@@ -22,7 +22,7 @@ public sealed class Skelengel : EffectMonsterCard, IMonsterFlipEffect
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 9,
             baseDef: 4,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }

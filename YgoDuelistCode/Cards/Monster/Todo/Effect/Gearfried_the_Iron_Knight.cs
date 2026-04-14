@@ -1,3 +1,4 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -5,6 +6,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>Destroys Equip Spells on attach, gains Energy and Gearfried Power stacks (see YgoGearfriedEquipReaction).</summary>
 public sealed class Gearfried_the_Iron_Knight : EffectMonsterCard
 {
     public Gearfried_the_Iron_Knight()
@@ -22,4 +24,14 @@ public sealed class Gearfried_the_Iron_Knight : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Burn;
+
+    public override Type[] RelatedCards => new[] { typeof(Gearfried_the_Iron_Knight) };
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 2m;
+    }
 }

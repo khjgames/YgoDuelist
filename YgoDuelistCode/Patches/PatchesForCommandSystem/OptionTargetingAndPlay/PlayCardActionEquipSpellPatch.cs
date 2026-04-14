@@ -70,7 +70,7 @@ public static class PlayCardActionEquipSpellPatch
             var player = action.Player;
             var candidates = DuelMonsterFieldRegistry.GetFieldMonsters(player)
                 .OfType<BaseMonsterCard>()
-                .Where(equip.CanEquipTo)
+                .Where(m => YgoEquipSpellTargetRules.IsLegalEquipTarget(equip, m))
                 .Cast<CardModel>()
                 .ToList();
 

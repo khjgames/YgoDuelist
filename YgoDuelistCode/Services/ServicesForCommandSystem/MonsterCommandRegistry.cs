@@ -52,6 +52,20 @@ public sealed class MonsterCommandState
     /// <summary>Per-turn Command Defend slot when <see cref="BaseMonsterCard.AllowsSeparateAttackAndDefendCommandsPerTurn"/>.</summary>
     public bool HasUsedDefendCommandThisTurn;
 
+    /// <summary><see cref="Cards.Monster.Todo.Effect.Gray_Wing"/>: activated — −Mgc ATK and +1 attack resolution this turn.</summary>
+    public int GrayWingAtkPenaltyThisTurn;
+
+    public bool GrayWingDoubleAttackThisTurn;
+
+    /// <summary><see cref="Cards.Monster.Todo.Effect.Tyrant_Dragon"/>: activated — +1 attack resolution this turn.</summary>
+    public bool TyrantDragonDoubleAttackThisTurn;
+
+    /// <summary><see cref="Cards.Monster.Todo.Effect.Catapult_Turtle"/>: once per turn activated tribute Blight.</summary>
+    public bool CatapultTurtleActivatedThisTurn;
+
+    /// <summary><see cref="Cards.Monster.Todo.Effect.Goddess_of_Whim"/>: 1.0 = none, 2.0 = double, 0.5 = halve printed ATK this turn.</summary>
+    public decimal GoddessOfWhimAtkMultiplierThisTurn = 1m;
+
     /// <summary>Set when this pet was killed by enemy combat damage (Move); read before <see cref="MonsterCommandRegistry.Clear"/>.</summary>
     public bool DestroyedByEnemyBattleDamage;
 
@@ -325,6 +339,11 @@ public static class MonsterCommandRegistry
             s.KarateManDestroyAtEndOfOwnerTurn = false;
             s.GuardianSlimeDestroyAtEndOfOwnerTurn = false;
             s.HasUsedSecondActivatedEffectThisTurn = false;
+            s.GrayWingAtkPenaltyThisTurn = 0;
+            s.GrayWingDoubleAttackThisTurn = false;
+            s.TyrantDragonDoubleAttackThisTurn = false;
+            s.CatapultTurtleActivatedThisTurn = false;
+            s.GoddessOfWhimAtkMultiplierThisTurn = 1m;
         }
 
         foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.GetFieldMonsters(player))

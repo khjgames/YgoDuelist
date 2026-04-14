@@ -62,6 +62,9 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
             && !monster.IsAttackBattlePosition
             && monster.FaceDown;
 
+        bool wasFaceDownDefenseForFlipSummon =
+            !wasAttackPosition && monster.FaceDown && !monster.IsAttackBattlePosition;
+
         bool switchedDefToAtk = monster.ApplyBattlePositionChangeFromCommandMenu();
 
         // UpdateFaceDownKeywordFromBool queues stance sync asynchronously; GameAction must finish after powers match card state.
@@ -79,6 +82,21 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
 
         if (sourceMonster is Stealth_Bird bird && wasFaceDownDefense && switchedDefToAtk)
             await Stealth_Bird.DealFlipSummonDamageIfEligibleAsync(ctx, bird, wasFaceDownDefense, enemyTarget, player.Creature);
+
+        if (sourceMonster is Berfomet berfomet && wasFaceDownDefense && switchedDefToAtk)
+            await berfomet.OnFlipSummonedAsync(ctx, player);
+
+        if (wasFaceDownDefenseForFlipSummon && switchedDefToAtk)
+        {
+            if (sourceMonster is Manju_of_the_Ten_Thousand_Hands manju)
+                await manju.OnFlipSummonedAsync(ctx, player);
+            else if (sourceMonster is Senju_of_the_Thousand_Hands senju)
+                await senju.OnFlipSummonedAsync(ctx, player);
+            else if (sourceMonster is Sonic_Bird sonic)
+                await sonic.OnFlipSummonedAsync(ctx, player);
+            else if (sourceMonster is Apprentice_Magician apprentice)
+                await apprentice.OnFlipSummonedAsync(ctx, player);
+        }
 
         YgoOptionHandBridge.RequestDeferredSyncFromOptionPile(player);
     }

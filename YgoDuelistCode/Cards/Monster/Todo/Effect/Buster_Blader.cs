@@ -1,10 +1,15 @@
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Relics;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>Gains printed <c>Mgc</c> ATK for each Dragon monster you control (face-up) or in your Graveyard.</summary>
 public sealed class Buster_Blader : EffectMonsterCard
 {
     public Buster_Blader()
@@ -17,9 +22,42 @@ public sealed class Buster_Blader : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 26,
             baseDef: 23,
-            baseMgc: 0,
+            baseMgc: 3,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Dragon;
+
+    protected override (int atk, int def) GetSecondaryStats()
+    {
+        if (Owner == null)
+            return base.GetSecondaryStats();
+
+        int dragons = 0;
+        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner);
+        foreach (BaseMonsterCard? m in field)
+        {
+            if (m == null || m.FaceDown)
+                continue;
+            if (m.DuelMonsterRace == DuelMonsterRace.Dragon)
+                dragons++;
+        }
+
+        foreach (CardModel c in GraveyardRelic.GetGraveyardCards(Owner))
+        {
+            if (c is BaseMonsterCard bm && bm.DuelMonsterRace == DuelMonsterRace.Dragon)
+                dragons++;
+        }
+
+        int mgc = (int)DynamicVars["Mgc"].BaseValue;
+        return (dragons * mgc, 0);
+    }
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 5m;
+    }
 }

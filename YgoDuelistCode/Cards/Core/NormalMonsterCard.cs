@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -143,6 +144,10 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         }
     }
 
+    /// <summary>Attack/defend resolutions per command or hand summon (e.g. <see cref="YgoNarrowPassField"/>, Gray Wing, Tyrant Dragon).</summary>
+    protected virtual int GetAttackDefendResolutionCount(Player? player) =>
+        YgoNarrowPassField.GetAttackOrDefendResolutionCount(player);
+
     public async Task CombatAction(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         int atk = BaseAtk;
@@ -159,7 +164,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             def = stats.Def;
         }
 
-        int resolutionCount = YgoNarrowPassField.GetAttackOrDefendResolutionCount(Owner);
+        int resolutionCount = GetAttackDefendResolutionCount(Owner);
 
         // HasRecklessBlockerKeyword only affects which keyword chips render (see BaseMonsterCard.RecklessKeywordStackCountForDisplay); it must not skip gameplay self-damage.
         int recklessSelf = GetTotalRecklessCombatSelfDamage();

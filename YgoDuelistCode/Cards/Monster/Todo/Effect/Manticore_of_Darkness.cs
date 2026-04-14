@@ -1,10 +1,13 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>GY end-phase Special Summon — <see cref="YgoDuelist.YgoDuelistCode.Services.YgoManticoreOfDarknessEndPhase"/>.</summary>
 public sealed class Manticore_of_Darkness : EffectMonsterCard
 {
     public Manticore_of_Darkness()
@@ -22,4 +25,8 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Burn;
+
+    public override Type[] RelatedCards => new[] { typeof(Manticore_of_Darkness) };
 }

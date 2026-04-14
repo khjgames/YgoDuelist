@@ -93,7 +93,15 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         // Track this card as an active field monster for aura/stat calculations and menu commands.
         DuelMonsterFieldRegistry.RegisterSummon(player, card, petCreature);
 
-        await card.OnSummoned(player, _, petCreature);
+        YgoDuelMonsterSummonStyleContext.Push(!canAttackThisTurn);
+        try
+        {
+            await card.OnSummoned(player, _, petCreature);
+        }
+        finally
+        {
+            YgoDuelMonsterSummonStyleContext.Pop();
+        }
 
         // Halved ATK/DEF timer: normal summon in attack (face-up) only — not when set face-down; flip uses YgoMonsterFlipEffectRunner.
         if (card is Hourglass_of_Courage hoc && !canAttackThisTurn && hoc.Type == CardType.Attack && !hoc.FaceDown)
@@ -141,7 +149,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
             }
         }
 
-        await FortifiedBeastsDuelMonsterHp.SyncPetFromCardAsync(petCreature, card, player);
+        await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
+
+        await EnragedBattleOxService.SyncPlayerPowerAsync(player);
 
         LegionFiendJesterSpellcasterConduit.RegisterWaivedSummonAfterNormalSpellcasterSummon(
             player,

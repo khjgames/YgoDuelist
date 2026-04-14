@@ -1,3 +1,4 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -5,6 +6,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
+/// <summary>GY → deck top — <see cref="YgoCockroachKnightGraveyard"/>.</summary>
 public sealed class Cockroach_Knight : EffectMonsterCard
 {
     public Cockroach_Knight()
@@ -21,4 +23,9 @@ public sealed class Cockroach_Knight : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Insect;
+
+    public override Type[] RelatedCards => new[] { typeof(Cockroach_Knight) };
 }

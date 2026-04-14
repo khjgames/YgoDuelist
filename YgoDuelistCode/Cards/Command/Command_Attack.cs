@@ -132,6 +132,13 @@ public sealed class Command_Attack : MonsterCommandCard
                 player.Creature);
         }
 
+        if (SourceMonster is Gravekeeper_s_Assailant assailant && cardPlay.Target != null)
+            await Gravekeeper_s_Assailant.TryApplyNecrovalleyAttackDebuffAsync(
+                choiceContext,
+                assailant,
+                player,
+                cardPlay.Target);
+
         if (SourceMonster is Dice_Jar diceJar)
             await diceJar.RunDiceJarAttackAsync(choiceContext, cardPlay);
         else
