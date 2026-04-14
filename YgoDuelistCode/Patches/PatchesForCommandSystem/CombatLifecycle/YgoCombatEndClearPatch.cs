@@ -41,6 +41,7 @@ public static class YgoCombatEndClearPatch
         NormalSummonTracker.ClearAll();
         LegionFiendJesterSpellcasterConduit.ClearAll();
         ReactorSlimeSummonGate.ClearAll();
+        YgoTotalDefenseShogunDeferredBlock.ClearAll();
         TributeSummonPlayPayload.ClearAll();
         EquipSpellPlayPayload.ClearAll();
         RitualSpellPlayPayload.ClearAll();

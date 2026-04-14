@@ -1,7 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -22,4 +31,25 @@ public sealed class Don_Turtle : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Draw;
+
+    public override Type[] RelatedCards => new[] { typeof(Don_Turtle) };
+
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
+    {
+        await base.OnSummoned(player, choiceContext, duelMonsterPet);
+        if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
+            return;
+        CardPile? hand = PileType.Hand.GetPile(player);
+        if (hand == null)
+            return;
+        List<Don_Turtle> copies = hand.Cards.OfType<Don_Turtle>().ToList();
+        foreach (Don_Turtle copy in copies)
+        {
+            if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
+                break;
+            await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, copy, choiceContext);
+        }
+    }
 }

@@ -1,7 +1,14 @@
+using System;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -23,4 +30,24 @@ public sealed class Goblin_Attack_Force : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Warrior | YgoCardPackTags.Earth;
+
+    public override Type[] RelatedCards => new[] { typeof(Goblin_Attack_Force) };
+
+    protected override async Task OnAfterMonsterAttackHitAsync(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay,
+        AttackCommand attackCommand)
+    {
+        await base.OnAfterMonsterAttackHitAsync(choiceContext, cardPlay, attackCommand);
+        if (Owner == null)
+            return;
+        Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this, Owner);
+        if (pet == null)
+            return;
+
+        await ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync(choiceContext, Owner, attackPosition: false);
+        MonsterCommandRegistry.GetOrCreate(pet).KeepCommandLockOnNextTurnStart = true;
+    }
 }

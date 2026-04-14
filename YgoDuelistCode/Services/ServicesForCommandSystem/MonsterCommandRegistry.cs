@@ -58,6 +58,9 @@ public sealed class MonsterCommandState
     /// <summary>Enemy creature that dealt the killing Move blow; set with <see cref="DestroyedByEnemyBattleDamage"/>.</summary>
     public Creature? BattleDamageKillerEnemy;
 
+    /// <summary>When true, turn-start lock clear is skipped once (used by cards whose post-attack lock persists).</summary>
+    public bool KeepCommandLockOnNextTurnStart;
+
 }
 
 public static class MonsterCommandRegistry

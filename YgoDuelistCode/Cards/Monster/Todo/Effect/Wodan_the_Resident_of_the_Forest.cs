@@ -27,6 +27,11 @@ public sealed class Wodan_the_Resident_of_the_Forest : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw;
+
+    public override Type[] RelatedCards => new[] { typeof(Wodan_the_Resident_of_the_Forest) };
+
     protected override (int atk, int def) GetSecondaryStats()
     {
         if (Owner == null)

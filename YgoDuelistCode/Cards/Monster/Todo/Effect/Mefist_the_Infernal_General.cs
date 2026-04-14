@@ -1,5 +1,7 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -21,6 +23,11 @@ public sealed class Mefist_the_Infernal_General : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Fiend | YgoCardPackTags.Dark;
+
+    public override Type[] RelatedCards => new[] { typeof(Mefist_the_Infernal_General) };
 
     public override bool CardShowsSplinterKeyword => true;
 

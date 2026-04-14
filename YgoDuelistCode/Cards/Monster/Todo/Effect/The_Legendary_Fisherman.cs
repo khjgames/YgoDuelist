@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -25,6 +26,11 @@ public sealed class The_Legendary_Fisherman : EffectMonsterCard
             duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Warrior;
+
+    public override Type[] RelatedCards => new[] { typeof(The_Legendary_Fisherman), typeof(Umi), typeof(A_Legendary_Ocean) };
 
     public override int GetDuelMonsterPlayEnergyDiscount() =>
         (!IsCanonical && Owner != null && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<Umi>(Owner) ? 1 : 0)

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using HarmonyLib;
 using Godot;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -8,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -34,8 +36,13 @@ public static class MonsterCommandTurnResetPatch
 
         foreach (Creature pet in combatPlayer.PlayerCombatState.Pets)
         {
-            if (!MonsterCommandRegistry.TryGet(pet, out _))
+            if (!MonsterCommandRegistry.TryGet(pet, out MonsterCommandState state))
                 continue;
+            if (state.KeepCommandLockOnNextTurnStart)
+            {
+                state.KeepCommandLockOnNextTurnStart = false;
+                continue;
+            }
 
             bool hadStiffOrFatigue = pet.HasPower<StiffPower>() || pet.HasPower<FatiguePower>();
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(pet, false, combatPlayer.Creature, null);
@@ -54,9 +61,31 @@ public static class MonsterCommandTurnResetPatch
         BaseTrapCard.ClearSetThisTurnForFacedownSetTrapsInZone(combatPlayer);
 
         Ominous_Fortunetelling.RefillAllInSpellTrapZoneForPlayer(combatPlayer);
+        await YgoTotalDefenseShogunDeferredBlock.ResolveAtTurnStartAsync(choiceContext, combatPlayer);
+        await ResolveLegendaryFiendTurnStartGrowth(combatPlayer);
 
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRefreshAfterTurnStartIfZoneViewActive(combatPlayer);
 
         await Task.CompletedTask;
+    }
+
+    private static async Task ResolveLegendaryFiendTurnStartGrowth(Player player)
+    {
+        if (player.PlayerCombatState == null)
+            return;
+
+        foreach (Creature pet in player.PlayerCombatState.Pets)
+        {
+            if (!pet.IsAlive)
+                continue;
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not Legendary_Fiend)
+                continue;
+
+            LegendaryFiendAtkPower? p = pet.GetPower<LegendaryFiendAtkPower>();
+            if (p == null)
+                await PowerCmd.Apply<LegendaryFiendAtkPower>(pet, 7m, player.Creature, null);
+            else
+                await PowerCmd.ModifyAmount(p, 7m, player.Creature, null);
+        }
     }
 }

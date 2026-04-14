@@ -54,6 +54,12 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     /// <summary>While true, nested <see cref="DamageCmd.Attack"/> from splinter chain must not start another splinter chain.</summary>
     private bool _splinterChainRunning;
 
+    /// <summary>
+    /// Enemies (by <see cref="Creature.CombatId"/>) that have already triggered per-hit monster on-damage effects (Cestus, Bistro Butcher, Masked Sorcerer)
+    /// for the current attack chain. Cleared at the start of each top-level <see cref="AfterAttack"/>; splinter nested calls share the same set so each enemy procs at most once per chain.
+    /// </summary>
+    private readonly HashSet<uint> _onDamageEffectSeenEnemyIds = new();
+
     public override Task BeforeCombatStart()
     {
         SubscribeToGraveyardPile();
@@ -209,14 +215,24 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             return;
 
         Player? atkOwner = command.Attacker.Player;
-        if (monster is Spirit_of_the_Breeze && atkOwner?.Creature != null)
-            await CreatureCmd.Heal(atkOwner.Creature, 1m);
+        Player? atkPlayer = atkOwner;
 
-        if (monster is D_D_Warrior_Lady warriorLady)
+        if (!_splinterChainRunning)
         {
-            Creature? wlPet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(warriorLady);
-            if (wlPet != null)
-                MonsterCommandRegistry.GetOrCreate(wlPet).WarriorLadyBanishWindowActive = true;
+            _onDamageEffectSeenEnemyIds.Clear();
+
+            if (monster is Spirit_of_the_Breeze && atkOwner?.Creature != null)
+                await CreatureCmd.Heal(atkOwner.Creature, 1m);
+
+            if (monster is D_D_Warrior_Lady warriorLady)
+            {
+                Creature? wlPet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(warriorLady);
+                if (wlPet != null)
+                    MonsterCommandRegistry.GetOrCreate(wlPet).WarriorLadyBanishWindowActive = true;
+            }
+
+            // Main hit before splinter so "first damage" order matches combat; shared set dedupes splinter bounces per enemy per chain.
+            await ProcessMonsterUnblockedOnDamageEffectsAsync(command, monster, atkPlayer, ctx);
         }
 
         bool splinter = monster.AttackDealsSplinterDamage;
@@ -286,39 +302,49 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (!_splinterChainRunning)
             await ProcessMonsterExecuteKillEffectsAsync(command, monster, cs);
 
-        Player? atkPlayer = command.Attacker.Player;
-        if (atkPlayer?.Creature != null)
+        // Splinter nested attacks: on-damage heal/draw once per unique enemy per chain (see _onDamageEffectSeenEnemyIds).
+        if (_splinterChainRunning)
+            await ProcessMonsterUnblockedOnDamageEffectsAsync(command, monster, atkPlayer, ctx);
+    }
+
+    /// <summary>
+    /// Cestus heal, Bistro Butcher draw, Masked Sorcerer draw — only for enemies taking unblocked damage for the first time in this attack chain (main + splinter).
+    /// </summary>
+    private async Task ProcessMonsterUnblockedOnDamageEffectsAsync(
+        AttackCommand command,
+        BaseMonsterCard monster,
+        Player? atkPlayer,
+        BlockingPlayerChoiceContext ctx)
+    {
+        if (atkPlayer?.Creature == null)
+            return;
+
+        foreach (DamageResult r in command.Results)
         {
-            bool anyUnblocked = false;
-            foreach (DamageResult r in command.Results)
+            if (r.Receiver.Side != CombatSide.Enemy || r.UnblockedDamage <= 0)
+                continue;
+            if (r.Receiver.CombatId is not uint cid)
+                continue;
+            if (!_onDamageEffectSeenEnemyIds.Add(cid))
+                continue;
+
+            foreach (BaseEquipSpellCard eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))
             {
-                if (r.Receiver.Side == CombatSide.Enemy && r.UnblockedDamage > 0)
+                if (eq is Cestus_of_Dagla cestus)
                 {
-                    anyUnblocked = true;
+                    await CreatureCmd.Heal(atkPlayer.Creature, cestus.DynamicVars["Mgc"].BaseValue);
                     break;
                 }
             }
 
-            if (anyUnblocked)
+            if (monster is The_Bistro_Butcher butcher)
             {
-                foreach (BaseEquipSpellCard eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))
-                {
-                    if (eq is Cestus_of_Dagla cestus)
-                    {
-                        await CreatureCmd.Heal(atkPlayer.Creature, cestus.DynamicVars["Mgc"].BaseValue);
-                        break;
-                    }
-                }
-
-                if (monster is The_Bistro_Butcher butcher)
-                {
-                    int draw = butcher.IsUpgraded ? 2 : 1;
-                    await CardPileCmd.Draw(ctx, draw, atkPlayer);
-                }
-
-                if (monster is Masked_Sorcerer)
-                    await CardPileCmd.Draw(ctx, 1, atkPlayer);
+                int draw = butcher.IsUpgraded ? 2 : 1;
+                await CardPileCmd.Draw(ctx, draw, atkPlayer);
             }
+
+            if (monster is Masked_Sorcerer)
+                await CardPileCmd.Draw(ctx, 1, atkPlayer);
         }
     }
 

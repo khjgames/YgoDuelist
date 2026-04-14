@@ -1,11 +1,18 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Bubonic_Vermin : EffectMonsterCard
+public sealed class Bubonic_Vermin : EffectMonsterCard, IMonsterFlipEffect
 {
     public Bubonic_Vermin()
         : base(
@@ -22,4 +29,23 @@ public sealed class Bubonic_Vermin : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw;
+
+    public override Type[] RelatedCards => new[] { typeof(Bubonic_Vermin) };
+
+    public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
+    {
+        if (self is not Bubonic_Vermin || Owner == null)
+            return;
+        if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
+            return;
+
+        CardPile? draw = PileType.Draw.GetPile(Owner);
+        Bubonic_Vermin? copy = draw?.Cards.OfType<Bubonic_Vermin>().FirstOrDefault(c => !ReferenceEquals(c, this));
+        if (copy == null)
+            return;
+        copy.FaceDown = true;
+        await DuelMonsterSummon.TrySummonDuelMonsterSpecial(Owner, copy, choiceContext);
+    }
 }

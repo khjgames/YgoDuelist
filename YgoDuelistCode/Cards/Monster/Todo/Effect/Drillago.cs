@@ -1,7 +1,11 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -22,8 +26,29 @@ public sealed class Drillago : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Machine | YgoCardPackTags.Dark | YgoCardPackTags.Burn;
+
+    public override Type[] RelatedCards => new[] { typeof(Drillago) };
+
     public override bool CardShowsBlightKeyword => true;
 
     public override bool AttackDealsBlightedDamage => true;
+
+    public override bool AttackDealsFullBlightedDamage => TargetIntendsToAttack();
+
+    private bool TargetIntendsToAttack()
+    {
+        if (Owner?.Creature?.CombatState == null)
+            return false;
+        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies)
+        {
+            if (!enemy.IsAlive)
+                continue;
+            if (YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, Owner.Creature) > 0)
+                return true;
+        }
+        return false;
+    }
 
 }
