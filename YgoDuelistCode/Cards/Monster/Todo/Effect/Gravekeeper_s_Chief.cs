@@ -11,13 +11,13 @@ public sealed class Gravekeeper_s_Chief : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 19,
             baseDef: 12,
-            baseMgc: 0,
+            baseMgc: 2,
             duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }

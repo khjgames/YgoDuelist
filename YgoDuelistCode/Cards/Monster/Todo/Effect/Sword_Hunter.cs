@@ -11,7 +11,7 @@ public sealed class Sword_Hunter : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
@@ -21,6 +21,8 @@ public sealed class Sword_Hunter : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
+    // Dictates the card pack tags this card will be included in.
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
 
     public override int PermanentAtkDeltaOnEnemyExecute => IsUpgraded ? 4 : 3;
 

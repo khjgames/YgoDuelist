@@ -46,6 +46,8 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
         ModelDb.Card<Command_Attack>(),
         ModelDb.Card<Command_Defend>(),
         ModelDb.Card<Activate_Effect>(),
+        ModelDb.Card<Activate_Shackles>(),
+        ModelDb.Card<Activate_Shackles_Plus>(),
         ModelDb.Card<Special_Summon_Egyptian_God_Slime>(),
         ModelDb.Card<Heads>(),
         ModelDb.Card<PreviewEffect>(),

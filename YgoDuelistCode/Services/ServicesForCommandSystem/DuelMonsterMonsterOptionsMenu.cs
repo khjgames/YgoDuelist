@@ -11,6 +11,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -82,6 +83,20 @@ public static class DuelMonsterMonsterOptionsMenu
             Activate_Effect_2 activate2 = combatState.CreateCard<Activate_Effect_2>(player);
             activate2.InitializeSource(monsterCard, pet);
             commands.Add(activate2);
+        }
+
+        if (pet.GetPower<ConsumableShacklesPower>() is ConsumableShacklesPower shacklesPow && shacklesPow.Amount >= 1m)
+        {
+            Activate_Shackles shackles = combatState.CreateCard<Activate_Shackles>(player);
+            shackles.InitializeSource(monsterCard, pet);
+            commands.Add(shackles);
+        }
+
+        if (pet.GetPower<ConsumableShacklesPlusPower>() is ConsumableShacklesPlusPower shacklesPlusPow && shacklesPlusPow.Amount >= 1m)
+        {
+            Activate_Shackles_Plus shacklesPlus = combatState.CreateCard<Activate_Shackles_Plus>(player);
+            shacklesPlus.InitializeSource(monsterCard, pet);
+            commands.Add(shacklesPlus);
         }
 
         if (Egyptian_God_Slime.PlayerHasSlimeInExtraDeck(player)

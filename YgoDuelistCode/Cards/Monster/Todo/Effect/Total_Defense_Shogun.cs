@@ -10,7 +10,7 @@ public sealed class Total_Defense_Shogun : EffectMonsterCard
     public Total_Defense_Shogun()
         : base(
             cost: 1,
-            type: CardType.Attack,
+            type: CardType.Rare,
             rarity: CardRarity.Common,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,

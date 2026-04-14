@@ -20,7 +20,7 @@ public sealed class The_A_Forces : BaseContinuousSpellCard
         new[] { new DynamicVar("Mgc", (decimal)PrintedAtkPerMonster) };
 
     public The_A_Forces()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
 

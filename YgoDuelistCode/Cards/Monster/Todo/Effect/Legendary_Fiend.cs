@@ -11,14 +11,15 @@ public sealed class Legendary_Fiend : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 15,
             baseDef: 18,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Fiend)
+            duelMonsterRace: DuelMonsterRace.Fiend,
+            duelMonsterAttackPlayEnergyOverride: 2)
     {
     }
 }

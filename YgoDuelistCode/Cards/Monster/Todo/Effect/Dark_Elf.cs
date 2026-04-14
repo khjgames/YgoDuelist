@@ -11,14 +11,16 @@ public sealed class Dark_Elf : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 20,
             baseDef: 8,
-            baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Spellcaster)
+            baseMgc: 10,
+            duelMonsterRace: DuelMonsterRace.Spellcaster,
+            duelMonsterAttackPlayEnergyOverride: 0
+            )
     {
     }
 

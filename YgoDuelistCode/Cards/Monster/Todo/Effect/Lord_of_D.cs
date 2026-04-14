@@ -26,6 +26,7 @@ public sealed class Lord_of_D : EffectMonsterCard
     {
     }
 
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dragon | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
     {
         if (target.DuelMonsterRace != DuelMonsterRace.Dragon)

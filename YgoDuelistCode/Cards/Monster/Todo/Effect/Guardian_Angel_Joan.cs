@@ -11,13 +11,13 @@ public sealed class Guardian_Angel_Joan : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 7,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 28,
             baseDef: 20,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }

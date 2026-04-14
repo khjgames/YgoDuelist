@@ -11,13 +11,13 @@ public sealed class Gilasaurus : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 14,
             baseDef: 4,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.Dinosaur)
     {
     }

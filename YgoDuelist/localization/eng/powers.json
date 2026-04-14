@@ -224,5 +224,17 @@
   "YGODUELIST-RIRYOKU_ATK_SHIFT_RECEIVER_POWER.smartDescription": "This duel monster gains [blue]{Amount}[/blue] ATK until end of turn.",
   "YGODUELIST-SECRET_PASS_TREASURES_BLIGHT_POWER.title": "Secret Pass",
   "YGODUELIST-SECRET_PASS_TREASURES_BLIGHT_POWER.description": "Blight from this duel monster's attacks uses a percentage of damage dealt.",
-  "YGODUELIST-SECRET_PASS_TREASURES_BLIGHT_POWER.smartDescription": "Blight from this duel monster's attacks uses [purple]{Amount}%[/purple] of damage dealt until end of turn."
+  "YGODUELIST-SECRET_PASS_TREASURES_BLIGHT_POWER.smartDescription": "Blight from this duel monster's attacks uses [purple]{Amount}%[/purple] of damage dealt until end of turn.",
+  "YGODUELIST-CONSUMABLE_SHACKLES_POWER.title": "Consumable Shackles",
+  "YGODUELIST-CONSUMABLE_SHACKLES_POWER.description": "Spend stacks from the monster options menu with Activate Shackles to weaken an enemy.",
+  "YGODUELIST-CONSUMABLE_SHACKLES_POWER.smartDescription": "[blue]{Amount}[/blue] stack(s). Spend with Activate Shackles from monster options.",
+  "YGODUELIST-CONSUMABLE_SHACKLES_PLUS_POWER.title": "Consumable Shackles +",
+  "YGODUELIST-CONSUMABLE_SHACKLES_PLUS_POWER.description": "Spend stacks from the monster options menu with Activate Shackles + to weaken an enemy.",
+  "YGODUELIST-CONSUMABLE_SHACKLES_PLUS_POWER.smartDescription": "[blue]{Amount}[/blue] stack(s). Spend with Activate Shackles + from monster options.",
+  "YGODUELIST-ACTIVE_SHACKLES_POWER.title": "Active Shackles",
+  "YGODUELIST-ACTIVE_SHACKLES_POWER.description": "Lose Strength until end of turn (shackles).",
+  "YGODUELIST-ACTIVE_SHACKLES_POWER.smartDescription": "Lose [red]{Amount}[/red] Strength until end of turn.",
+  "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.title": "Active Shackles +",
+  "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.description": "Lose Strength until end of turn (shackles +).",
+  "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.smartDescription": "Lose [red]{Amount}[/red] Strength until end of turn."
 }

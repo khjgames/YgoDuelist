@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -14,14 +17,24 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
 public sealed class Dark_Piercing_Light : BaseSpellCard
 {
-    private const decimal BlockPerAttackingEnemy = 5m;
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 5m) };
 
     public Dark_Piercing_Light()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Spell;
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Concat(IsUpgraded ? new[] { CardKeyword.Innate } : Enumerable.Empty<CardKeyword>());
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        base.ExtraHoverTips.Concat(
+            IsUpgraded
+                ? new[] { HoverTipFactory.FromKeyword(CardKeyword.Innate) }
+                : Enumerable.Empty<IHoverTip>());
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -34,8 +47,12 @@ public sealed class Dark_Piercing_Light : BaseSpellCard
         if (count <= 0)
             return;
 
-        await CreatureCmd.GainBlock(Owner.Creature, BlockPerAttackingEnemy * count, default, cardPlay);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars["Mgc"].BaseValue * count, default, cardPlay);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].UpgradeValueBy(2m); 
+    }
 }

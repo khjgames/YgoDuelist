@@ -11,13 +11,13 @@ public sealed class Giant_Germ : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 10,
             baseDef: 1,
-            baseMgc: 0,
+            baseMgc: 4,
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }

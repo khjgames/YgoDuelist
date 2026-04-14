@@ -11,13 +11,13 @@ public sealed class Gale_Dogra : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 6,
             baseDef: 6,
-            baseMgc: 0,
+            baseMgc: 25,
             duelMonsterRace: DuelMonsterRace.Insect)
     {
     }

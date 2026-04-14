@@ -11,13 +11,13 @@ public sealed class Cyber_Stein : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 7,
             baseDef: 5,
-            baseMgc: 0,
+            baseMgc: 45,
             duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
