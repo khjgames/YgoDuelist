@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -14,7 +15,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Sangan (field → GY), Twin-Headed Behemoth (field → GY end-phase setup), Twin mini-stats clear (field → elsewhere).
+/// Field → GY deck search (<see cref="IFieldToGraveyardDeckSearchEffect"/>), Twin-Headed Behemoth (field → GY end-phase setup), Twin mini-stats clear (field → elsewhere).
 /// </summary>
 [HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Add), typeof(IEnumerable<CardModel>), typeof(CardPile), typeof(CardPilePosition), typeof(AbstractModel), typeof(bool))]
 public static class CardPileCmdFieldMonsterGraveyardEffectsPatch
@@ -54,8 +55,8 @@ public static class CardPileCmdFieldMonsterGraveyardEffectsPatch
             if (card is Twin_Headed_Behemoth th)
                 YgoTwinHeadedBehemothEndPhase.MarkSentFromFieldToGraveyardThisTurn(player, th);
 
-            if (card is Sangan sangan)
-                TaskHelper.RunSafely(YgoSanganGraveyard.OnSentFromFieldToGraveyardAsync(player, sangan));
+            if (card is IFieldToGraveyardDeckSearchEffect && card is BaseMonsterCard bmSearch)
+                TaskHelper.RunSafely(YgoFieldToGraveyardDeckSearch.OnSentFromFieldToGraveyardAsync(player, bmSearch));
 
             if (card is The_Immortal_of_Thunder immortal)
                 TaskHelper.RunSafely(YgoImmortalOfThunderFieldToGraveyard.RunAsync(player, immortal));

@@ -52,7 +52,7 @@ public sealed class Berfomet : EffectMonsterCard
         await TryOfferGazelleFromDeckAsync(ctx, player);
     }
 
-    public async Task OnFlipSummonedAsync(PlayerChoiceContext choiceContext, Player player) =>
+    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player) =>
         await TryOfferGazelleFromDeckAsync(choiceContext, player);
 
     private static async Task TryOfferGazelleFromDeckAsync(PlayerChoiceContext choiceContext, Player player)

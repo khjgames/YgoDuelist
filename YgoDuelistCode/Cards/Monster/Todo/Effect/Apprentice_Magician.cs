@@ -74,7 +74,7 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
         await TryPlaceSpellCounterOnFieldAsync(ctx, player);
     }
 
-    public async Task OnFlipSummonedAsync(PlayerChoiceContext choiceContext, Player player)
+    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player)
     {
         var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
         await TryPlaceSpellCounterOnFieldAsync(ctx, player);

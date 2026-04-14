@@ -4,10 +4,9 @@ using MegaCrit.Sts2.Core.Models;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// <see cref="Cards.Monster.Todo.Effect.Mystic_Tomato"/>: GY search only when destroyed by battle;
-/// <see cref="Patches.DuelMonsterPetDeathPatch"/> marks the card before it hits the Graveyard.
+/// Single pending mark: pet died by battle and the source card is about to hit the Graveyard — consumed by the matching GY handler.
 /// </summary>
-public static class YgoMysticTomatoBattleDeathGate
+public static class YgoBattleDeathMarkedCards
 {
     private static readonly HashSet<CardModel> Marked = new();
 

@@ -2302,6 +2302,8 @@
   "YGODUELIST-GIANT_RAT.description_skill": "Gain [blue]{Block}[/blue] block.\\nWhen this card is destroyed by battle and sent to the Graveyard: You can Special Summon 1 EARTH monster with 15 or less ATK from your deck, in Attack Position.\\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-GIANT_RAT.description_skill_combat": "Gain [blue]{CalculatedDEF}[/blue] block.\\nWhen this card is destroyed by battle and sent to the Graveyard: You can Special Summon 1 EARTH monster with 15 or less ATK from your deck, in Attack Position.\\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
   "YGODUELIST-GIANT_RAT.title": "Giant Rat",
+  "YGODUELIST-GIANT_RAT.activate_effect": "Giant Rat: activate this effect?",
+  "YGODUELIST-GIANT_RAT.summon_earth": "Special Summon 1 EARTH monster with 15 or less printed ATK from your deck.",
   "YGODUELIST-GIANT_RED_SEASNAKE.description": "Deal [blue]{Damage}[/blue] damage.\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-GIANT_RED_SEASNAKE.description_combat": "Deal [blue]{CalculatedATK}[/blue] damage.\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
   "YGODUELIST-GIANT_RED_SEASNAKE.description_skill": "Gain [blue]{Block}[/blue] block.\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",

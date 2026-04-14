@@ -44,12 +44,7 @@ public static class YgoCombatEndClearPatch
         YgoTotalDefenseShogunDeferredBlock.ClearAll();
         YgoPlayerCombatTurnStamp.ClearAll();
         YgoSanganNameLock.ClearAll();
-        YgoMotherGrizzlyBattleDeathGate.ClearAll();
-        YgoPyramidTurtleBattleDeathGate.ClearAll();
-        YgoMysticTomatoBattleDeathGate.ClearAll();
-        YgoShiningAngelBattleDeathGate.ClearAll();
-        YgoGiantGermBattleDeathGate.ClearAll();
-        YgoLordPoisonBattleDeathGate.ClearAll();
+        YgoBattleDeathMarkedCards.ClearAll();
         YgoManticoreOfDarknessEndPhase.ClearAll();
         TributeSummonPlayPayload.ClearAll();
         EquipSpellPlayPayload.ClearAll();

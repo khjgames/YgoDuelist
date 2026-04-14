@@ -1,14 +1,18 @@
 using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>Battle-death GY search — <see cref="YgoMotherGrizzlyGraveyard"/>.</summary>
-public sealed class Mother_Grizzly : EffectMonsterCard
+/// <summary>Battle-death optional summon — <see cref="Services.YgoBattleDeathOptionalDeckSpecialSummon"/>.</summary>
+public sealed class Mother_Grizzly : EffectMonsterCard, IBattleDeathOptionalDeckSpecialSummon
 {
+    private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-MOTHER_GRIZZLY.activate_effect");
+    private static readonly LocString SummonPrompt = new("cards", "YGODUELIST-MOTHER_GRIZZLY.summon_water");
+
     public Mother_Grizzly()
         : base(
             cost: 1,
@@ -23,6 +27,13 @@ public sealed class Mother_Grizzly : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
+
+    LocString IBattleDeathOptionalDeckSpecialSummon.BattleDeathActivatePrompt => ActivatePrompt;
+
+    LocString IBattleDeathOptionalDeckSpecialSummon.BattleDeathSummonPrompt => SummonPrompt;
+
+    bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
+        m.DuelMonsterAttribute == DuelMonsterAttribute.Water && m.BaseAtk <= 15 && m.CanSummonDuelMonster;
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Warrior;

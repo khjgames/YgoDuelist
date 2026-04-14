@@ -41,7 +41,7 @@ public sealed class Sonic_Bird : EffectMonsterCard
         await YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(player, ctx, RitualDeckSearchKind.RitualSpellOnly);
     }
 
-    public async Task OnFlipSummonedAsync(PlayerChoiceContext choiceContext, Player player)
+    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player)
     {
         var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
         await YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(player, ctx, RitualDeckSearchKind.RitualSpellOnly);

@@ -251,6 +251,13 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     public virtual Task OnSwitchedFromAttackToDefenseFromCommandAsync(PlayerChoiceContext choiceContext, Player player) =>
         Task.CompletedTask;
 
+    /// <summary>
+    /// Face-down defense flipped to attack via <see cref="Command.Command_Change_Battle_Position"/> (command menu flip).
+    /// Override for flip effects; default no-op.
+    /// </summary>
+    public virtual Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player) =>
+        Task.CompletedTask;
+
     /// <summary>Cycles attack / defense, or attack / defense / hand effect when supported. Right-click in hand.</summary>
     /// <param name="allowCanonicalUiPreview">When true, canonical library/compendium instances may toggle (preview-only).</param>
     public void ToggleAttackSkill(bool allowCanonicalUiPreview = false)

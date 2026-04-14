@@ -6,38 +6,35 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>
-/// <see cref="Sangan"/>: sent from the field to the Graveyard — add 1 monster with printed ATK 15 or less from the deck to the hand
-/// (name cannot be played for the rest of the turn).
-/// </summary>
-public static class YgoSanganGraveyard
+/// <summary>Field → GY: add one main-deck monster matching <see cref="IFieldToGraveyardDeckSearchEffect"/> to hand.</summary>
+public static class YgoFieldToGraveyardDeckSearch
 {
-    private static readonly LocString SearchPrompt = new("cards", "YGODUELIST-SANGAN.search_deck");
-
-    public static async Task OnSentFromFieldToGraveyardAsync(Player player, Sangan sangan)
+    public static async Task OnSentFromFieldToGraveyardAsync(Player player, BaseMonsterCard source)
     {
+        if (source is not IFieldToGraveyardDeckSearchEffect fx)
+            return;
+
         CardPile? draw = PileType.Draw.GetPile(player);
         CardPile? hand = PileType.Hand.GetPile(player);
         if (draw == null || hand == null)
             return;
 
+        int cap = fx.FieldToGraveyardSearchMaxPrintedAtk;
         List<BaseMonsterCard> candidates = draw.Cards
             .OfType<BaseMonsterCard>()
-            .Where(m => m.BaseAtk <= 15)
+            .Where(m => m.BaseAtk <= cap)
             .ToList();
         if (candidates.Count == 0)
             return;
 
         var ctx = new BlockingPlayerChoiceContext();
-        var prefs = new CardSelectorPrefs(SearchPrompt, 1, 1)
+        var prefs = new CardSelectorPrefs(fx.FieldToGraveyardSearchPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true
@@ -48,6 +45,7 @@ public static class YgoSanganGraveyard
             return;
 
         await CardPileCmd.Add(new CardModel[] { chosen }, hand, CardPilePosition.Top, chosen, false);
-        YgoSanganNameLock.Set(player, chosen.Id.Entry);
+        if (fx.FieldToGraveyardSearchApplyNameLock)
+            YgoSanganNameLock.Set(player, chosen.Id.Entry);
     }
 }

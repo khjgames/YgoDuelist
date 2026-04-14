@@ -41,7 +41,7 @@ public sealed class Manju_of_the_Ten_Thousand_Hands : EffectMonsterCard
         await YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(player, ctx, RitualDeckSearchKind.RitualMonsterOrSpell);
     }
 
-    public async Task OnFlipSummonedAsync(PlayerChoiceContext choiceContext, Player player)
+    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player)
     {
         var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
         await YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(player, ctx, RitualDeckSearchKind.RitualMonsterOrSpell);

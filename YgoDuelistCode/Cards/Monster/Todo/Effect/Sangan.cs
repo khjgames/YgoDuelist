@@ -1,14 +1,17 @@
 using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>Field → GY search — <see cref="YgoSanganGraveyard"/>; name lock — <see cref="Patches.CardModelSanganNameLockCanPlayPatch"/>.</summary>
-public sealed class Sangan : EffectMonsterCard
+/// <summary>Field → GY search — <see cref="Services.YgoFieldToGraveyardDeckSearch"/>; name lock — <see cref="Patches.CardModelSanganNameLockCanPlayPatch"/>.</summary>
+public sealed class Sangan : EffectMonsterCard, IFieldToGraveyardDeckSearchEffect
 {
+    private static readonly LocString SearchPrompt = new("cards", "YGODUELIST-SANGAN.search_deck");
+
     public Sangan()
         : base(
             cost: 1,
@@ -23,6 +26,12 @@ public sealed class Sangan : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
+
+    LocString IFieldToGraveyardDeckSearchEffect.FieldToGraveyardSearchPrompt => SearchPrompt;
+
+    int IFieldToGraveyardDeckSearchEffect.FieldToGraveyardSearchMaxPrintedAtk => 15;
+
+    bool IFieldToGraveyardDeckSearchEffect.FieldToGraveyardSearchApplyNameLock => true;
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Draw;

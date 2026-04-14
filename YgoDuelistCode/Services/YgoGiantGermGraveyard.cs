@@ -33,7 +33,7 @@ public static class YgoGiantGermGraveyard
     {
         if (addedCard is not Giant_Germ germ)
             return;
-        if (!YgoGiantGermBattleDeathGate.Consume(germ))
+        if (!YgoBattleDeathMarkedCards.Consume(germ))
             return;
         if (pile.Type != GraveyardPile.CustomType || !pile.IsCombatPile)
             return;

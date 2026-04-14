@@ -8,30 +8,23 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
-using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>
-/// <see cref="Mystic_Tomato"/>: when destroyed by battle and sent to the Graveyard, optional activation then
-/// Special Summon 1 DARK monster with printed ATK 15 or less from the deck.
-/// </summary>
-public static class YgoMysticTomatoGraveyard
+/// <summary>Optional activate in GY, then Special Summon from deck — shared by Mother Grizzly, Shining Angel, Pyramid Turtle, Mystic Tomato.</summary>
+public static class YgoBattleDeathOptionalDeckSpecialSummon
 {
-    private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-MYSTIC_TOMATO.activate_effect");
-    private static readonly LocString SummonPrompt = new("cards", "YGODUELIST-MYSTIC_TOMATO.summon_dark");
-
     public static void OnCardAddedToGraveyardPile(CardPile pile, CardModel addedCard)
     {
-        if (addedCard is not Mystic_Tomato mt)
+        if (addedCard is not BaseMonsterCard source)
             return;
-        if (!YgoMysticTomatoBattleDeathGate.Consume(mt))
+        if (source is not IBattleDeathOptionalDeckSpecialSummon effect)
+            return;
+        if (!YgoBattleDeathMarkedCards.Consume(source))
             return;
         if (pile.Type != GraveyardPile.CustomType || !pile.IsCombatPile)
             return;
@@ -45,7 +38,7 @@ public static class YgoMysticTomatoGraveyard
         if (player?.Creature?.CombatState == null || player.Creature.Side != CombatSide.Player)
             return;
 
-        TaskHelper.RunSafely(RunAsync(player, mt));
+        TaskHelper.RunSafely(RunAsync(player, source, effect));
     }
 
     private static Player? ResolveGraveyardOwner(CombatState cs, CardPile pile)
@@ -59,7 +52,7 @@ public static class YgoMysticTomatoGraveyard
         return null;
     }
 
-    private static List<BaseMonsterCard> CollectDeckCandidates(Player player)
+    private static List<BaseMonsterCard> CollectCandidates(Player player, IBattleDeathOptionalDeckSpecialSummon effect)
     {
         CardPile? draw = PileType.Draw.GetPile(player);
         if (draw == null)
@@ -67,22 +60,22 @@ public static class YgoMysticTomatoGraveyard
 
         return draw.Cards
             .OfType<BaseMonsterCard>()
-            .Where(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Dark && m.BaseAtk <= 15 && m.CanSummonDuelMonster)
+            .Where(effect.IsBattleDeathDeckSummonCandidate)
             .ToList();
     }
 
-    private static async Task RunAsync(Player player, Mystic_Tomato sourceInGraveyard)
+    private static async Task RunAsync(Player player, BaseMonsterCard source, IBattleDeathOptionalDeckSpecialSummon effect)
     {
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        List<BaseMonsterCard> candidates = CollectDeckCandidates(player);
+        List<BaseMonsterCard> candidates = CollectCandidates(player, effect);
         if (candidates.Count == 0)
             return;
 
         var ctx = new BlockingPlayerChoiceContext();
 
-        var activatePrefs = new CardSelectorPrefs(ActivatePrompt, 1, 1)
+        var activatePrefs = new CardSelectorPrefs(effect.BattleDeathActivatePrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true
@@ -90,21 +83,21 @@ public static class YgoMysticTomatoGraveyard
 
         IEnumerable<CardModel> activationPick = await CardSelectCmd.FromSimpleGrid(
             ctx,
-            new[] { sourceInGraveyard },
+            new[] { source },
             player,
             activatePrefs);
 
-        if (activationPick.FirstOrDefault() is not Mystic_Tomato)
+        if (activationPick.FirstOrDefault() != source)
             return;
 
-        candidates = CollectDeckCandidates(player);
+        candidates = CollectCandidates(player, effect);
         if (candidates.Count == 0)
             return;
 
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        var summonPrefs = new CardSelectorPrefs(SummonPrompt, 1, 1)
+        var summonPrefs = new CardSelectorPrefs(effect.BattleDeathSummonPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true

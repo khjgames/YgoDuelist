@@ -30,7 +30,7 @@ public static class YgoLordPoisonGraveyard
     {
         if (addedCard is not Lord_Poison lp)
             return;
-        if (!YgoLordPoisonBattleDeathGate.Consume(lp))
+        if (!YgoBattleDeathMarkedCards.Consume(lp))
             return;
         if (pile.Type != GraveyardPile.CustomType || !pile.IsCombatPile)
             return;

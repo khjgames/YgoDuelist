@@ -41,7 +41,7 @@ public sealed class Senju_of_the_Thousand_Hands : EffectMonsterCard
         await YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(player, ctx, RitualDeckSearchKind.RitualMonsterOnly);
     }
 
-    public async Task OnFlipSummonedAsync(PlayerChoiceContext choiceContext, Player player)
+    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player)
     {
         var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
         await YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(player, ctx, RitualDeckSearchKind.RitualMonsterOnly);
