@@ -96,6 +96,49 @@ public enum YgoCardArchetype : ulong
     WingedBeastBoost = 1UL << 23,
     /// <summary>Wasteland terrain (no flat Rock equip in pool).</summary>
     RockBoost = 1UL << 24,
+
+    /// <summary>Cards that place or consume Spell Counters.</summary>
+    SpellCounter = 1UL << 25,
+    /// <summary>Red-Eyes Black Dragon family and fusion materials.</summary>
+    RedEyesBlackDragon = 1UL << 26,
+    /// <summary>Harpie Lady family and support.</summary>
+    HarpieLady = 1UL << 27,
+    /// <summary>God pack (<see cref="YgoCardPackTags.God"/>) cards; pool built from pack tags.</summary>
+    DivineBeast = 1UL << 28,
+    /// <summary>Heads/Tails coin flip resolution.</summary>
+    Coinflip = 1UL << 29,
+    /// <summary>Dice rolls (d6, Graceful Dice, etc.).</summary>
+    Diceroll = 1UL << 30,
+    /// <summary>Attacks or effects that apply Blight damage.</summary>
+    Blight = 1UL << 31,
+    /// <summary>Attacks or equips that apply Splinter damage.</summary>
+    Splinter = 1UL << 32,
+    /// <summary>Take blockable damage to the player (costs, upkeep, wrong coin calls).</summary>
+    TakeDamage = 1UL << 33,
+    /// <summary>Combat-end Doom / RaDoomed-style downside packages.</summary>
+    Doomed = 1UL << 34,
+    /// <summary>Monsters with permanent or scaling printed ATK/DEF growth.</summary>
+    GrowthType = 1UL << 35,
+    /// <summary>Necrovalley and Gravekeeper monsters.</summary>
+    Gravekeeper = 1UL << 36,
+    /// <summary>Umi, A Legendary Ocean, and direct sea-field synergy.</summary>
+    Umi = 1UL << 37,
+    /// <summary>Heal when a monster is summoned (including self on summon).</summary>
+    SummonHeal = 1UL << 38,
+    /// <summary>Heal the player without summon-gated triggers.</summary>
+    SelfHeal = 1UL << 39,
+    /// <summary>Spells and same-turn monster effects that grant Block.</summary>
+    QuickBlock = 1UL << 40,
+    /// <summary>Traps that grant Block on activation.</summary>
+    SlowBlock = 1UL << 41,
+    /// <summary>All-monster temporary ATK/DEF boost until end of turn.</summary>
+    GenericAllMonstersTempStatBoost = 1UL << 42,
+    /// <summary>Continuous field-wide or team-wide ATK/DEF modifiers.</summary>
+    GenericAllMonstersContinuousStatBoost = 1UL << 43,
+    /// <summary>Single-target temporary ATK/DEF shift.</summary>
+    GenericSingleMonsterTempStatBoost = 1UL << 44,
+    /// <summary>Energy discounts, surcharges, or summon cost modifiers.</summary>
+    Energy = 1UL << 45,
 }
 
 /// <summary>How a single fusion material slot accepts materials: exact named card, requirement filter only, or either.</summary>
