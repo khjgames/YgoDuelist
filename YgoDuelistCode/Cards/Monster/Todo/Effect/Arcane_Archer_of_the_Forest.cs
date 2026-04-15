@@ -66,6 +66,8 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
 
     public bool IsActivatedEffectAvailable => IsEarthTributeAvailable(Owner);
 
+    public override bool IsActivatedEffectAvailableInCommandContext(Player? commandOwner) => IsEarthTributeAvailable(commandOwner);
+
     /// <summary>Another Earth duel monster on the field to tribute (not this card). Uses <paramref name="playerContext"/> when the field card's Owner is not set.</summary>
     internal bool IsEarthTributeAvailable(Player? playerContext)
     {

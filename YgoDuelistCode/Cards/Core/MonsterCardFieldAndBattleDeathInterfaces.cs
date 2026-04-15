@@ -17,3 +17,11 @@ public interface IBattleDeathOptionalDeckSpecialSummon
     LocString BattleDeathSummonPrompt { get; }
     bool IsBattleDeathDeckSummonCandidate(BaseMonsterCard m);
 }
+
+/// <summary>Sent to GY (no battle-death mark): optional activate, then Special Summon one matching monster from the deck — <see cref="YgoDuelist.YgoDuelistCode.Services.YgoGraveyardOptionalDeckSpecialSummon"/>.</summary>
+public interface IGraveyardOptionalDeckSpecialSummon
+{
+    LocString GraveyardActivatePrompt { get; }
+    LocString GraveyardSummonPrompt { get; }
+    bool IsGraveyardDeckSummonCandidate(BaseMonsterCard m);
+}

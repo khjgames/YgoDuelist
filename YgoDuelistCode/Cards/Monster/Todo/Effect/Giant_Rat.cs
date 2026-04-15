@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>Battle-death optional summon — <see cref="Services.YgoBattleDeathOptionalDeckSpecialSummon"/>.</summary>
+/// <summary>Battle-death optional summon — <see cref="YgoDuelist.YgoDuelistCode.Services.YgoGraveyardOptionalDeckSpecialSummon"/>.</summary>
 public sealed class Giant_Rat : EffectMonsterCard, IBattleDeathOptionalDeckSpecialSummon
 {
     private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-GIANT_RAT.activate_effect");

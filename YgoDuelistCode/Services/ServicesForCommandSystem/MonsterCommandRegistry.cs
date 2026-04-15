@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -280,46 +282,19 @@ public static class MonsterCommandRegistry
         _states.Remove(pet);
     }
 
-    /// <summary>End of controlling player turn: destroy Karate Man after its burst effect (before other per-turn clears).</summary>
-    public static async Task ResolveKarateManEndOfTurnDestructionAsync(Player? player)
+    /// <summary>End of controlling player turn: per-field-monster cleanup (Karate Man, Guardian Slime) before <see cref="ClearPerTurnExtrasForPlayer"/>.</summary>
+    public static async Task ResolveOwnerTurnEndFieldCleanupAsync(PlayerChoiceContext ctx, Player? player)
     {
         if (player?.PlayerCombatState == null)
             return;
 
-        var toKill = new List<Creature>();
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not Karate_Man)
-                continue;
-            if (TryGet(pet, out MonsterCommandState s) && s.KarateManDestroyAtEndOfOwnerTurn)
-                toKill.Add(pet);
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard card)
+                await card.OnOwnerTurnEndFieldCleanupAsync(ctx, player, pet);
         }
-
-        foreach (Creature pet in toKill)
-            await CreatureCmd.Kill(pet, force: true);
-    }
-
-    /// <summary>End of controlling player turn: destroy Guardian Slime after its block effect.</summary>
-    public static async Task ResolveGuardianSlimeEndOfTurnDestructionAsync(Player? player)
-    {
-        if (player?.PlayerCombatState == null)
-            return;
-
-        var toKill = new List<Creature>();
-        foreach (Creature pet in player.PlayerCombatState.Pets)
-        {
-            if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
-                continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not Guardian_Slime)
-                continue;
-            if (TryGet(pet, out MonsterCommandState s) && s.GuardianSlimeDestroyAtEndOfOwnerTurn)
-                toKill.Add(pet);
-        }
-
-        foreach (Creature pet in toKill)
-            await CreatureCmd.Kill(pet, force: true);
     }
 
     /// <summary>End of player turn: Cyber Jar free commands and D.D. Warrior Lady attack-gated window.</summary>

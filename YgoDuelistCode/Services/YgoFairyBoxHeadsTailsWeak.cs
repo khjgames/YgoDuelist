@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -25,7 +25,7 @@ public static class YgoFairyBoxHeadsTailsWeak
         CombatState cs,
         Player player,
         Creature ownerCreature,
-        Fairy_Box trapCard) =>
+        BaseTrapCard trapCard) =>
         RunCoinCallFlipAndWeakAsync(choiceContext, cs, player, ownerCreature, trapCard, "ACTIVATE");
 
     public static Task RunStartOfYourTurnAsync(
@@ -33,7 +33,7 @@ public static class YgoFairyBoxHeadsTailsWeak
         CombatState cs,
         Player player,
         Creature ownerCreature,
-        Fairy_Box trapCard) =>
+        BaseTrapCard trapCard) =>
         RunCoinCallFlipAndWeakAsync(choiceContext, cs, player, ownerCreature, trapCard, "TURN_START");
 
     private static async Task RunCoinCallFlipAndWeakAsync(
@@ -41,7 +41,7 @@ public static class YgoFairyBoxHeadsTailsWeak
         CombatState cs,
         Player player,
         Creature ownerCreature,
-        Fairy_Box trapCard,
+        BaseTrapCard trapCard,
         string coinSaltSegment)
     {
         CardModel headsCall = cs.CreateCard<Heads>(player);

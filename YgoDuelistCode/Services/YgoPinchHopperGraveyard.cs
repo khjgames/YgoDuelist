@@ -14,8 +14,6 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Relics;
-
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
@@ -30,30 +28,10 @@ public static class YgoPinchHopperGraveyard
     {
         if (addedCard is not Pinch_Hopper pinch)
             return;
-        if (pile.Type != GraveyardPile.CustomType || !pile.IsCombatPile)
-            return;
-        if (CombatManager.Instance is not { IsInProgress: true })
-            return;
-        CombatState? cs = CombatManager.Instance.DebugOnlyGetState();
-        if (cs == null)
-            return;
-
-        Player? player = ResolveGraveyardOwner(cs, pile) ?? addedCard.Owner;
-        if (player?.Creature?.CombatState == null || player.Creature.Side != CombatSide.Player)
+        if (!YgoGraveyardPileHooks.TryGetPlayerForGraveyardAdd(pile, addedCard, out Player? player))
             return;
 
         TaskHelper.RunSafely(RunAsync(player, pinch));
-    }
-
-    private static Player? ResolveGraveyardOwner(CombatState cs, CardPile pile)
-    {
-        foreach (Player p in cs.Players)
-        {
-            if (GraveyardRelic.GetGraveyardPile(p) == pile)
-                return p;
-        }
-
-        return null;
     }
 
     private static List<BaseMonsterCard> CollectInsectMonstersInHand(Player player)

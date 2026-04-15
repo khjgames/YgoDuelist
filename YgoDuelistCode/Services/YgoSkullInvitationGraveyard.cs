@@ -12,8 +12,6 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Relics;
-
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary><see cref="Skull_Invitation"/>: each card added to the YGO Graveyard deals <c>Mgc</c> to a random enemy.</summary>
@@ -21,18 +19,7 @@ public static class YgoSkullInvitationGraveyard
 {
     public static void OnCardAddedToGraveyardPile(CardPile pile, CardModel addedCard)
     {
-        if (pile.Type != GraveyardPile.CustomType || !pile.IsCombatPile)
-            return;
-        if (CombatManager.Instance is not { IsInProgress: true })
-            return;
-        CombatState? cs = CombatManager.Instance.DebugOnlyGetState();
-        if (cs == null)
-            return;
-
-        Player? gyOwner = ResolveGraveyardOwner(cs, pile);
-        if (gyOwner == null)
-            gyOwner = addedCard.Owner;
-        if (gyOwner?.Creature?.CombatState == null || gyOwner.Creature.Side != CombatSide.Player)
+        if (!YgoGraveyardPileHooks.TryGetPlayerForGraveyardAdd(pile, addedCard, out Player? gyOwner))
             return;
 
         CardPile? zone = SpellTrapZonePile.CustomType.GetPile(gyOwner);
@@ -48,16 +35,6 @@ public static class YgoSkullInvitationGraveyard
         string key = $"SKULL_INVITATION-{addedCard.Id}-{pile.Cards.Count}";
 
         TaskHelper.RunSafely(DealOnceAsync(gyOwner, inv, dmg, key, mix));
-    }
-
-    private static Player? ResolveGraveyardOwner(CombatState cs, CardPile pile)
-    {
-        foreach (Player p in cs.Players)
-        {
-            if (GraveyardRelic.GetGraveyardPile(p) == pile)
-                return p;
-        }
-        return null;
     }
 
     private static async Task DealOnceAsync(Player player, Skull_Invitation inv, decimal dmg, string rngKey, ulong mix)

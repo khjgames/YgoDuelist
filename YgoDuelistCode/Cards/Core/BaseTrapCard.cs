@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -304,5 +305,17 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 fallback.Add(tip);
             return fallback;
         }
+    }
+
+    /// <summary>Used by Fairy Box field powers to find the face-up trap without scanning concrete trap types.</summary>
+    public virtual bool MatchesFairyBoxFieldPowerTier(bool expectPlus) => false;
+
+    public override string? GetSpellTrapZoneFaceUpEnergyOrbOverridePath(CardPile? pile)
+    {
+        if (pile?.Type != SpellTrapZonePile.CustomType || FaceDown)
+            return null;
+        if (this is IYgoSpellTrapEquipLink && YgoSpellTrapEquipLinkRegistry.GetLinkedMonster(this) != null)
+            return BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
+        return null;
     }
 }

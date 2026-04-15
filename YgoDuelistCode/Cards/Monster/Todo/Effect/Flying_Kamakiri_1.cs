@@ -1,5 +1,6 @@
 using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -9,9 +10,12 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>Graveyard trigger — <see cref="YgoFlyingKamakiri1Graveyard"/>.</summary>
-public sealed class Flying_Kamakiri_1 : EffectMonsterCard
+/// <summary>Graveyard optional summon — <see cref="YgoGraveyardOptionalDeckSpecialSummon"/>.</summary>
+public sealed class Flying_Kamakiri_1 : EffectMonsterCard, IGraveyardOptionalDeckSpecialSummon
 {
+    private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-FLYING_KAMAKIRI_1.activate_effect");
+    private static readonly LocString SummonPrompt = new("cards", "YGODUELIST-FLYING_KAMAKIRI_1.summon_wind");
+
     public Flying_Kamakiri_1()
         : base(
             cost: 1,
@@ -26,6 +30,13 @@ public sealed class Flying_Kamakiri_1 : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
+
+    LocString IGraveyardOptionalDeckSpecialSummon.GraveyardActivatePrompt => ActivatePrompt;
+
+    LocString IGraveyardOptionalDeckSpecialSummon.GraveyardSummonPrompt => SummonPrompt;
+
+    bool IGraveyardOptionalDeckSpecialSummon.IsGraveyardDeckSummonCandidate(BaseMonsterCard m) =>
+        m.DuelMonsterAttribute == DuelMonsterAttribute.Wind && m.BaseAtk <= 15 && m.CanSummonDuelMonster;
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;

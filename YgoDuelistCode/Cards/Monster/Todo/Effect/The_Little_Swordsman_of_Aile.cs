@@ -55,7 +55,9 @@ public sealed class The_Little_Swordsman_of_Aile : EffectMonsterCard, IMonsterAc
 
     public bool IsActivatedEffectAvailable => IsAnotherMonsterControlled(Owner);
 
-    /// <summary>Used by <see cref="Activate_Effect"/> when the source card has not yet set <see cref="CardModel.Owner"/>.</summary>
+    public override bool IsActivatedEffectAvailableInCommandContext(Player? commandOwner) => IsAnotherMonsterControlled(commandOwner);
+
+    /// <summary>Used when the source card has not yet set <see cref="CardModel.Owner"/>.</summary>
     public bool IsAnotherMonsterControlled(Player? playerContext)
     {
         Player? player = playerContext ?? Owner;

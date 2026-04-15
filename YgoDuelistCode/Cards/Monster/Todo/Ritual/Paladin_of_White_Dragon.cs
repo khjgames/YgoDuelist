@@ -55,6 +55,8 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
 
     public bool IsActivatedEffectAvailable => IsActivatedEffectPlayable(Owner);
 
+    public override bool IsActivatedEffectAvailableInCommandContext(Player? commandOwner) => IsActivatedEffectPlayable(commandOwner);
+
     public bool IsActivatedEffectPlayable(Player? player)
     {
         Player? p = player ?? Owner;

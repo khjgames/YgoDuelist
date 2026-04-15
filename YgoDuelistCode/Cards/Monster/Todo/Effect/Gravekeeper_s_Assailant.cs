@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
@@ -40,6 +41,17 @@ public sealed class Gravekeeper_s_Assailant : EffectMonsterCard
     {
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 2m;
+    }
+
+    public override async Task OnCommandAttackAfterStanceSyncedAsync(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        Creature? pet,
+        CardPlay cardPlay,
+        bool stealthBirdWasFaceDownDefenseBeforeCommandAttack)
+    {
+        if (cardPlay.Target != null)
+            await TryApplyNecrovalleyAttackDebuffAsync(choiceContext, this, player, cardPlay.Target);
     }
 
     internal static async Task TryApplyNecrovalleyAttackDebuffAsync(

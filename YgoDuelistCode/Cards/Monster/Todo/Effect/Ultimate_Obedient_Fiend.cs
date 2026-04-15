@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -68,4 +69,7 @@ public sealed class Ultimate_Obedient_Fiend : EffectMonsterCard
             return IsAttackPlayAllowed(Owner, this);
         }
     }
+
+    public override bool IsCommandAttackPlayable(Player? owner, Creature? pet) =>
+        owner == null || IsAttackPlayAllowed(owner, this);
 }

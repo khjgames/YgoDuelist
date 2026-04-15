@@ -1,6 +1,12 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -41,4 +47,10 @@ public sealed class Masked_Sorcerer : EffectMonsterCard
         typeof(Masked_Sorcerer),
     };
 
+    public override Task OnFirstUnblockedDamageToEnemyThisChainAsync(
+        AttackCommand command,
+        DamageResult r,
+        Player atkPlayer,
+        BlockingPlayerChoiceContext ctx) =>
+        CardPileCmd.Draw(ctx, 1, atkPlayer);
 }

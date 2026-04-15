@@ -19,13 +19,11 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -76,30 +74,12 @@ public static class DuelMonsterPetDeathPatch
                     $"[YgoDuelist][MP][DuelDeath] NetCombatCard missing for source card={card.Id?.Entry} ownerNet={player.NetId} petCombatId={pet.CombatId}: {ex.Message}");
             }
 
-            if (card is Burning_Algae)
-            {
-                var cs = pet.CombatState;
-                if (cs != null)
-                {
-                    TaskHelper.RunSafely(HealAllEnemiesAsync(cs, 10m));
-                }
-            }
+            AbstractMonsterCard? abstractMonster = card as AbstractMonsterCard;
+            MonsterCommandState? cmdState = MonsterCommandRegistry.TryGet(pet, out MonsterCommandState st) ? st : null;
+            var ctx = new DuelMonsterPetDeathContext(player, pet, cmdState);
 
-            if (card is BaseMonsterCard bmc && bmc.DuelMonsterRace == DuelMonsterRace.Dragon)
-                GraveyardRelic.RegisterDragonMonsterDestroyed(player);
-
-            if (card is BaseMonsterCard level8Plus && level8Plus.DuelMonsterLevel >= 8 && level8Plus is not Berserk_Dragon)
-                YgoDealWithDarkRulerState.RegisterLevel8PlusMonsterSentToGraveyard(player);
-
-            if (card is BaseMonsterCard fairySrc
-                && fairySrc.DuelMonsterRace == DuelMonsterRace.Fairy
-                && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<The_Sanctuary_in_the_Sky>(player))
-            {
-                bool dieForYou = pet.HasPower<DieForYouPower>()
-                    || (MonsterCommandRegistry.TryGet(pet, out var monsterCommandState) && monsterCommandState.DieForYouEnabled);
-                if (dieForYou)
-                    GraveyardRelic.ArmSanctuaryHalveNextSpillDamage(player);
-            }
+            if (abstractMonster != null)
+                TaskHelper.RunSafely(abstractMonster.OnPetDiedBeforeOptionPileHandlingAsync(ctx));
 
             // If the current option pile is for this monster, clear it so the player can't use options pointing at a dead monster.
             var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
@@ -132,52 +112,8 @@ public static class DuelMonsterPetDeathPatch
                 }
             }
 
-            if (card is Amazoness_Swords_Woman aws && player.Creature != null)
-                TaskHelper.RunSafely(AmazonessSwordsWomanThornsSync.StripBeforeFieldUnregisterAsync(aws, player.Creature));
-
-            if (card is Zone_Eater)
-            {
-                var cs = pet.CombatState;
-                if (cs != null)
-                    TaskHelper.RunSafely(ZoneEaterMarkPower.RemoveAllFromSourceCardAsync(cs, card));
-            }
-
-            if (card is Yomi_Ship yomi
-                && MonsterCommandRegistry.TryGet(pet, out var cmdState)
-                && cmdState.DestroyedByEnemyBattleDamage)
-                TaskHelper.RunSafely(Yomi_Ship.ApplyBlightWhenDestroyedByBattleAsync(player, yomi));
-
-            if (card is Electric_Lizard electricLizard
-                && MonsterCommandRegistry.TryGet(pet, out var cmdElectric)
-                && cmdElectric.DestroyedByEnemyBattleDamage
-                && cmdElectric.BattleDamageKillerEnemy != null)
-                TaskHelper.RunSafely(Electric_Lizard.ApplyWhenDestroyedByBattleAsync(player, electricLizard, cmdElectric.BattleDamageKillerEnemy));
-
-            if (card is Rigorous_Reaver rigorous
-                && MonsterCommandRegistry.TryGet(pet, out var cmdRigorous)
-                && cmdRigorous.DestroyedByEnemyBattleDamage)
-                TaskHelper.RunSafely(Rigorous_Reaver.ApplyWhenDestroyedByBattleAsync(player, rigorous));
-
-            if (card is Poisonous_Snake_Token
-                && MonsterCommandRegistry.TryGet(pet, out var cmdSnake)
-                && cmdSnake.DestroyedByEnemyBattleDamage)
-                TaskHelper.RunSafely(Poisonous_Snake_Token.ApplyWhenDestroyedByBattleAsync(player, cmdSnake.BattleDamageKillerEnemy));
-
-            if (card is IBattleDeathOptionalDeckSpecialSummon
-                && card is BaseMonsterCard battleDeathOptionalSummon
-                && MonsterCommandRegistry.TryGet(pet, out var cmdBattleDeathOptionalSummon)
-                && cmdBattleDeathOptionalSummon.DestroyedByEnemyBattleDamage)
-                YgoBattleDeathMarkedCards.Mark(battleDeathOptionalSummon);
-
-            if (card is Giant_Germ giantGerm
-                && MonsterCommandRegistry.TryGet(pet, out var cmdGiantGerm)
-                && cmdGiantGerm.DestroyedByEnemyBattleDamage)
-                YgoBattleDeathMarkedCards.Mark(giantGerm);
-
-            if (card is Lord_Poison lordPoison
-                && MonsterCommandRegistry.TryGet(pet, out var cmdLordPoison)
-                && cmdLordPoison.DestroyedByEnemyBattleDamage)
-                YgoBattleDeathMarkedCards.Mark(lordPoison);
+            if (abstractMonster != null)
+                TaskHelper.RunSafely(abstractMonster.OnPetDiedAfterOptionPileHandlingAsync(ctx));
 
             if (player.Creature?.HasPower<AccumulatedSpiritsPower>() == true)
                 YgoDuelistPassivePowerState.RegisterAccumulatedSpiritsFieldLoss(player);
@@ -258,8 +194,6 @@ public static class DuelMonsterPetDeathPatch
     /// Card pile moves must finish before <see cref="DuelMonsterFieldRegistry.UnregisterPet"/> / RemoveCreature.
     /// Fire-and-forget <see cref="TaskHelper.RunSafely"/> let those run first; <see cref="CardPileCmd.Add"/> could then
     /// leave the source card in no pile (vanished from GY/hand/deck UI).
-    /// </summary>
-    /// <summary>
     /// MP: <see cref="MonsterCommandCard.SourceMonster"/> is not replicated; host may have a reference match while client does not.
     /// Use <see cref="MonsterCommandCard.SourcePetCombatId"/> vs the dying pet's <see cref="Creature.CombatId"/>, and resolve source when possible.
     /// </summary>
@@ -282,12 +216,6 @@ public static class DuelMonsterPetDeathPatch
         {
             MainFile.Logger.Error($"DuelMonsterPetDeathPatch relocation failed: {ex}");
         }
-    }
-
-    private static async Task HealAllEnemiesAsync(CombatState cs, decimal amount)
-    {
-        foreach (Creature enemy in cs.Enemies.Where(e => e.IsAlive))
-            await CreatureCmd.Heal(enemy, amount);
     }
 
     internal static async Task MoveEquipsToGraveyardThenMonsterToPileAsync(

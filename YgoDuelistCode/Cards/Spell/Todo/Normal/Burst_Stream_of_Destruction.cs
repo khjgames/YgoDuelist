@@ -96,4 +96,20 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
         Creature? chosen = pick?.TargetCreature;
         return chosen != null && chosen.IsAlive && blueEyesPets.Contains(chosen) ? chosen : null;
     }
+
+    public override async Task<Creature?> TryResolveSpellTrapZonePlayTargetAsync(Player player, Creature? targetFromAction, bool cancelable)
+    {
+        if (targetFromAction != null)
+            return targetFromAction;
+        return await PickBlueEyesOnFieldAsync(player, cancelable);
+    }
+
+    public override bool IsValidTargetForSpellTrapZonePlay(Creature? target)
+    {
+        if (target == null || !target.IsAlive || Owner?.Creature == null)
+            return false;
+        if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not Blue_Eyes_White_Dragon)
+            return false;
+        return target.Side == Owner.Creature.Side;
+    }
 }

@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards;
@@ -85,6 +86,17 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
 
     /// <summary>Spell/trap cards: show Reckless keyword chip (e.g. equips that grant combat self-damage on the monster).</summary>
     public virtual bool CardShowsRecklessKeyword => false;
+
+    /// <summary>
+    /// When non-null in the Spell/Trap zone (face-up), energy UI uses this texture for the orb overlay
+    /// (<see cref="Patches.YgoMonsterCommandEnergyCostVisualPatch"/>).
+    /// </summary>
+    public virtual string? GetSpellTrapZoneFaceUpEnergyOrbOverridePath(CardPile? pile) => null;
+
+    /// <summary>
+    /// When true, <see cref="Powers.YgoTemporaryThornsPower"/> may reflect damage even if the hit was flagged unpowered.
+    /// </summary>
+    public virtual bool TemporaryThornsReflectsUnpoweredDamage => false;
 
     /// <summary>
     /// Resolves <c>description</c> vs <c>description_combat</c> and optional <c>_upgraded</c> suffixes; used by <see cref="Patches.MonsterCardRightClickPatch.GetDescriptionLocString"/>.

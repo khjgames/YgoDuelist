@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -160,6 +162,21 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
             await PowerCmd.Apply<DoomPower>(player.Creature, gain, player.Creature, source);
 
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
+    }
+
+    public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
+    {
+        Player? atkPlayer = command.Attacker.Player;
+        if (atkPlayer?.Creature == null)
+            return;
+        decimal gain = DynamicVars["Mgc2"].BaseValue;
+        foreach (DamageResult r in command.Results)
+        {
+            if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                continue;
+            await PowerCmd.Apply<RaRebirthPower>(atkPlayer.Creature, gain, atkPlayer.Creature, this);
+            break;
+        }
     }
 
     protected override (int atk, int def) GetSecondaryStats()

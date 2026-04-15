@@ -59,7 +59,9 @@ public sealed class Winged_Minion : EffectMonsterCard, IMonsterActivatedEffect, 
 
     public bool IsActivatedEffectAvailable => IsAnotherFiendControlled(Owner);
 
-    /// <summary>Used by <see cref="Activate_Effect"/> when the source card has not yet set <see cref="CardModel.Owner"/>.</summary>
+    public override bool IsActivatedEffectAvailableInCommandContext(Player? commandOwner) => IsAnotherFiendControlled(commandOwner);
+
+    /// <summary>Used when the source card has not yet set <see cref="CardModel.Owner"/>.</summary>
     public bool IsAnotherFiendControlled(Player? playerContext)
     {
         Player? player = playerContext ?? Owner;

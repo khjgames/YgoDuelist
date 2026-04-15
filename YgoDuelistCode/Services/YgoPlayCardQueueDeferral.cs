@@ -152,4 +152,20 @@ public static class YgoPlayCardQueueDeferral
 
         return false;
     }
+
+    /// <summary>
+    /// <see cref="Patches.PlayCardFromSpellTrapZonePatch"/> must not shortcut these — same cards as hand/zone deferral
+    /// that run a custom <see cref="PlayCardAction.ExecuteAction"/> body after prep.
+    /// </summary>
+    public static bool SpellTrapZonePlayRequiresVanillaExecuteAction(CardModel card) =>
+        card is FusionSpellCard
+            or RitualSpellCard
+            or BaseEquipSpellCard
+            or IYgoPrePlayCancelableGridSelection
+            or Emergency_Provisions
+            or Riryoku
+            or Secret_Pass_to_the_Treasures
+            or Tailor_of_the_Fickle
+            or Rush_Recklessly
+            or The_Reliable_Guardian;
 }

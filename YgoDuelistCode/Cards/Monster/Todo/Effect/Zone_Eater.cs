@@ -93,5 +93,13 @@ public sealed class Zone_Eater : EffectMonsterCard
         await PowerCmd.Apply<ZoneEaterMarkPower>(target, 5m, Owner.Creature, this);
     }
 
+    public override async Task OnPetDiedAfterOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx)
+    {
+        CombatState? cs = ctx.Pet.CombatState;
+        if (cs != null)
+            await ZoneEaterMarkPower.RemoveAllFromSourceCardAsync(cs, this);
+        await base.OnPetDiedAfterOptionPileHandlingAsync(ctx);
+    }
+
     protected override void OnUpgrade() => base.OnUpgrade();
 }

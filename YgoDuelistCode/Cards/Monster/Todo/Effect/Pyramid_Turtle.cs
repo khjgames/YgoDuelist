@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>When destroyed by battle: optional Special Summon 1 Zombie with printed DEF 20 or less from the deck (<see cref="Services.YgoBattleDeathOptionalDeckSpecialSummon"/>).</summary>
+/// <summary>When destroyed by battle: optional Special Summon 1 Zombie with printed DEF 20 or less from the deck (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoGraveyardOptionalDeckSpecialSummon"/>).</summary>
 public sealed class Pyramid_Turtle : EffectMonsterCard, IBattleDeathOptionalDeckSpecialSummon
 {
     private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-PYRAMID_TURTLE.activate_effect");

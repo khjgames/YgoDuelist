@@ -1,10 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -42,6 +50,24 @@ public sealed class Insect_Princess : EffectMonsterCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", Mgc2Base) });
+
+    public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
+    {
+        if (Owner?.Creature == null || Owner.PlayerCombatState == null)
+            return;
+        foreach (DamageResult r in command.Results)
+        {
+            if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                continue;
+            Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this);
+            if (pet == null || !pet.IsAlive)
+                continue;
+            decimal stacks = DynamicVars["Mgc2"].BaseValue;
+            if (stacks <= 0m)
+                continue;
+            await PowerCmd.Apply<InsectPrincessExecuteAtkPower>(pet, stacks, Owner.Creature, this);
+        }
+    }
 
     protected override void OnUpgrade()
     {

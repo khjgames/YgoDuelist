@@ -32,30 +32,10 @@ public static class YgoLordPoisonGraveyard
             return;
         if (!YgoBattleDeathMarkedCards.Consume(lp))
             return;
-        if (pile.Type != GraveyardPile.CustomType || !pile.IsCombatPile)
-            return;
-        if (CombatManager.Instance is not { IsInProgress: true })
-            return;
-        CombatState? cs = CombatManager.Instance.DebugOnlyGetState();
-        if (cs == null)
-            return;
-
-        Player? player = ResolveGraveyardOwner(cs, pile) ?? addedCard.Owner;
-        if (player?.Creature?.CombatState == null || player.Creature.Side != CombatSide.Player)
+        if (!YgoGraveyardPileHooks.TryGetPlayerForGraveyardAdd(pile, addedCard, out Player? player))
             return;
 
         TaskHelper.RunSafely(RunAsync(player, lp));
-    }
-
-    private static Player? ResolveGraveyardOwner(CombatState cs, CardPile pile)
-    {
-        foreach (Player p in cs.Players)
-        {
-            if (GraveyardRelic.GetGraveyardPile(p) == pile)
-                return p;
-        }
-
-        return null;
     }
 
     private static List<BaseMonsterCard> CollectPlantsExceptLordPoison(Player player)

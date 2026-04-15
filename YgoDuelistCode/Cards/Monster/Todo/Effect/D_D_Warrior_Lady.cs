@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -48,6 +50,17 @@ public sealed class D_D_Warrior_Lady : EffectMonsterCard, IMonsterActivatedEffec
                 && MonsterCommandRegistry.TryGet(pet, out MonsterCommandState s)
                 && s.WarriorLadyBanishWindowActive;
         }
+    }
+
+    public override Task OnGraveyardRelicAfterAttackOpeningAsync(
+        AttackCommand command,
+        Player? attackingPlayer,
+        BlockingPlayerChoiceContext ctx)
+    {
+        Creature? wlPet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this);
+        if (wlPet != null)
+            MonsterCommandRegistry.GetOrCreate(wlPet).WarriorLadyBanishWindowActive = true;
+        return Task.CompletedTask;
     }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)

@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -48,6 +50,14 @@ public sealed class Command_Knight : EffectMonsterCard
 
         int mgc = (int)DynamicVars["Mgc"].BaseValue;
         return new StatEffectTotal(mgc, 0);
+    }
+
+    public override int GetFortifiedBeastsBonusMaxHp(Player player)
+    {
+        IReadOnlyCollection<BaseMonsterCard>? field = DuelMonsterFieldRegistry.GetFieldMonsters(player);
+        if (field == null || field.Count < 2)
+            return 0;
+        return (int)DynamicVars["Mgc2"].BaseValue;
     }
 
     protected override void OnUpgrade()

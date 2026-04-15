@@ -24,6 +24,8 @@ public sealed class Fairy_Box : BaseContinuousTrapCard
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
+
+    public override bool MatchesFairyBoxFieldPowerTier(bool expectPlus) => !FaceDown && IsUpgraded == expectPlus;
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Chance | YgoCardPackTags.Trap;
 

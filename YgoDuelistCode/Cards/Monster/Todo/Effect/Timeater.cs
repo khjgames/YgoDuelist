@@ -1,6 +1,14 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -38,4 +46,21 @@ public sealed class Timeater : EffectMonsterCard
         typeof(Timeater),
     };
 
+    public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
+    {
+        bool executed = false;
+        foreach (DamageResult r in command.Results)
+        {
+            if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                continue;
+            executed = true;
+            break;
+        }
+
+        if (!executed)
+            return;
+
+        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive).ToList())
+            await CreatureCmd.Stun(e);
+    }
 }

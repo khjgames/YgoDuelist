@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -53,6 +54,22 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     /// energy overlay and can blank the <c>0</c> cost label.
     /// </summary>
     protected internal virtual string? CustomCommandEnergyTexturePath => null;
+
+    private protected const float CommandMonsterLevelStripAttributeRightOffsetExtra = 4f;
+    private protected const float CommandMonsterLevelStripRaceRightOffsetExtra = 2f;
+    private protected const float CommandMonsterLevelStripRaceVerticalOffsetExtra = 73f;
+
+    /// <summary>Extra px for attribute icon horizontal placement (<see cref="Patches.YgoMonsterLevelStripPatch"/>).</summary>
+    public virtual float MonsterLevelStripAttributeRightOffsetExtra => CommandMonsterLevelStripAttributeRightOffsetExtra;
+
+    /// <summary>Extra px for race icon horizontal placement (<see cref="Patches.YgoMonsterLevelStripPatch"/>).</summary>
+    public virtual float MonsterLevelStripRaceRightOffsetExtra => CommandMonsterLevelStripRaceRightOffsetExtra;
+
+    /// <summary>Extra vertical offset for the race icon row (<see cref="Patches.YgoMonsterLevelStripPatch"/>).</summary>
+    public virtual float MonsterLevelStripRaceVerticalOffsetExtra => CommandMonsterLevelStripRaceVerticalOffsetExtra;
+
+    /// <summary>When non-null, <see cref="Patches.MonsterCardRightClickPatch.GetDescriptionLocString"/> uses this for pile display.</summary>
+    public virtual LocString? GetPatchedDescriptionLocStringForDisplay() => null;
 
     /// <summary>
     /// When non-null and <see cref="CustomCommandEnergyTexturePath"/> is empty, <see cref="Patches.YgoEnergyIconNodePatch"/> uses this

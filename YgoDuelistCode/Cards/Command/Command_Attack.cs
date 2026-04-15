@@ -7,8 +7,8 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -50,6 +50,25 @@ public sealed class Command_Attack : MonsterCommandCard
     /// <summary>Always targets an enemy so option-row play gets targeting arrows and does not highlight the player. Parameterless ctor chains to base(Self); this override fixes that.</summary>
     public override TargetType TargetType => TargetType.AnyEnemy;
 
+    public override LocString? GetPatchedDescriptionLocStringForDisplay()
+    {
+        if (SourceMonster is not BaseMonsterCard atkSource)
+            return null;
+
+        string suffix = ".description_combat";
+        if (atkSource.UseAlternateUpgradedDescription
+            && (atkSource.IsUpgraded || atkSource.UpgradePreviewType != CardUpgradePreviewType.None))
+        {
+            var alt = new LocString("cards", atkSource.Id.Entry + ".description_combat_upgraded");
+            if (alt.Exists())
+                suffix = ".description_combat_upgraded";
+        }
+
+        var loc = new LocString("cards", atkSource.Id.Entry + suffix);
+        atkSource.DynamicVars.AddTo(loc);
+        return loc;
+    }
+
     public new LocString Description
     {
         get
@@ -71,15 +90,7 @@ public sealed class Command_Attack : MonsterCommandCard
             if (pet == null) return false;
             if (pet.HasPower<YgoStumblingDefendOnlyPower>())
                 return false;
-            if (SourceMonster is Dark_Zebra && Owner != null)
-            {
-                var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.ToList() ?? [];
-                if (field.Count == 1 && field[0] == SourceMonster)
-                    return false;
-            }
-
-            if (SourceMonster is Ultimate_Obedient_Fiend uof && Owner != null
-                && !Ultimate_Obedient_Fiend.IsAttackPlayAllowed(Owner, uof))
+            if (!SourceMonster.IsCommandAttackPlayable(Owner, pet))
                 return false;
 
             if (IsRegularDeckMonsterCommandWithLivePet(pet))
@@ -110,8 +121,8 @@ public sealed class Command_Attack : MonsterCommandCard
                 await MonsterCommandRegistry.CommitMonsterCommandAfterPlay(pet, isAttackCommand: true, player.Creature, SourceMonster);
         }
 
-        bool wasFaceDownDefense =
-            SourceMonster is Stealth_Bird
+        bool stealthBirdWasFaceDownDefense =
+            SourceMonster.UsesFaceDownFlipDamageOnCommandAttack
             && !SourceMonster.IsAttackBattlePosition
             && SourceMonster.FaceDown;
 
@@ -122,27 +133,14 @@ public sealed class Command_Attack : MonsterCommandCard
         if (pet != null && SourceMonster is AbstractMonsterCard amcStance)
             await DuelMonsterStancePowerSync.SyncForPetAsync(pet, amcStance, player.Creature, SourceMonster);
 
-        if (SourceMonster is Stealth_Bird bird && wasFaceDownDefense && cardPlay.Target != null)
-        {
-            await Stealth_Bird.DealFlipSummonDamageIfEligibleAsync(
-                choiceContext,
-                bird,
-                wasFaceDownDefense,
-                cardPlay.Target,
-                player.Creature);
-        }
+        await SourceMonster.OnCommandAttackAfterStanceSyncedAsync(
+            choiceContext,
+            player,
+            pet,
+            cardPlay,
+            stealthBirdWasFaceDownDefense);
 
-        if (SourceMonster is Gravekeeper_s_Assailant assailant && cardPlay.Target != null)
-            await Gravekeeper_s_Assailant.TryApplyNecrovalleyAttackDebuffAsync(
-                choiceContext,
-                assailant,
-                player,
-                cardPlay.Target);
-
-        if (SourceMonster is Dice_Jar diceJar)
-            await diceJar.RunDiceJarAttackAsync(choiceContext, cardPlay);
-        else
-            await SourceMonster.CombatAction(choiceContext, cardPlay);
+        await SourceMonster.RunCommandAttackCombatActionAsync(choiceContext, cardPlay);
     }
 
     private static Creature? FindPetForMonster(NormalMonsterCard source)

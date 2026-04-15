@@ -60,4 +60,11 @@ public sealed class Guardian_Slime : EffectMonsterCard, IMonsterActivatedEffect
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();
+
+    public override async Task OnOwnerTurnEndFieldCleanupAsync(PlayerChoiceContext ctx, Player owner, Creature pet)
+    {
+        if (!MonsterCommandRegistry.TryGet(pet, out MonsterCommandState st) || !st.GuardianSlimeDestroyAtEndOfOwnerTurn)
+            return;
+        await CreatureCmd.Kill(pet, force: true);
+    }
 }

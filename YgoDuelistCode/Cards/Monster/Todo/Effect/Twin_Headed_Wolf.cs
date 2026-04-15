@@ -1,7 +1,15 @@
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -22,4 +30,17 @@ public sealed class Twin_Headed_Wolf : EffectMonsterCard
     {
     }
 
+    public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
+    {
+        Player? atkPlayer = command.Attacker.Player;
+        if (atkPlayer?.Creature == null || !YgoExecuteKillShared.PlayerControlsAtLeastTwoFiendsOnField(atkPlayer))
+            return;
+        foreach (var r in command.Results)
+        {
+            if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                continue;
+            await PowerCmd.Apply<StrengthPower>(command.Attacker, 1m, atkPlayer.Creature, this);
+            await PowerCmd.Apply<ArtifactPower>(command.Attacker, 1m, atkPlayer.Creature, this);
+        }
+    }
 }

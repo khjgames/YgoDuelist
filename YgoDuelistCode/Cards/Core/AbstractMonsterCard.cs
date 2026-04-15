@@ -126,6 +126,12 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// </summary>
     public CardType RegisteredCardType => _registeredCardType;
 
+    /// <summary>When this card's duel monster pet dies — before option-pile cleanup (see DuelMonsterPetDeathPatch).</summary>
+    public virtual Task OnPetDiedBeforeOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx) => Task.CompletedTask;
+
+    /// <summary>When this card's duel monster pet dies — after option-pile cleanup, before GY relocation.</summary>
+    public virtual Task OnPetDiedAfterOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx) => Task.CompletedTask;
+
     /// <summary>
     /// Sets whether this monster starts in attack position (Attack card) or defense position (Skill card).
     /// Called by derived classes once their stats (e.g. base ATK/DEF) are known.

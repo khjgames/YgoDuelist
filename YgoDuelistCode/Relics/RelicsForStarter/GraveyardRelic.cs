@@ -24,7 +24,6 @@ using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -104,46 +103,32 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<The_Sanctuary_in_the_Sky>(player)
             && TryConsumeAnnual("SANCTUARY_MERCURY_DRAW"))
         {
-            bool hasMercury = false;
             foreach (Creature pet in player.PlayerCombatState.Pets)
             {
                 if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                     continue;
-                if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is The_Agent_of_Wisdom_Mercury)
+                if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard m
+                    && m.ParticipatesInSanctuaryMercuryDraw)
                 {
-                    hasMercury = true;
+                    await CardPileCmd.Draw(choiceContext, 1, player);
                     break;
                 }
             }
-
-            if (hasMercury)
-                await CardPileCmd.Draw(choiceContext, 1, player);
         }
 
         foreach (Creature pet in player.PlayerCombatState.Pets)
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            CardModel? src = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
-            if (src is not Cure_Mermaid mermaid)
-                continue;
-            string key = $"CURE_MERMAID_{pet.CombatId}";
-            if (!TryConsumeAnnual(key))
-                continue;
-            decimal maintenance = mermaid.IsUpgraded ? 0m : 1m;
-            if (maintenance > 0)
-                await CreatureCmd.Damage(
-                    choiceContext,
-                    pet,
-                    maintenance,
-                    ValueProp.Unblockable | ValueProp.Unpowered,
-                    player.Creature,
-                    mermaid);
-            await CreatureCmd.Heal(player.Creature, 1m);
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard bm)
+                await bm.OnGraveyardRelicOwnerTurnStartForFieldPetAsync(choiceContext, player, pet, this);
         }
 
-        if (GetGraveyardCards(player).Any(c => c is Darklord_Marie) && TryConsumeAnnual("DARKLORD_MARIE_GY"))
-            await CreatureCmd.Heal(player.Creature, 1m);
+        foreach (CardModel c in GetGraveyardCards(player))
+        {
+            if (c is BaseMonsterCard bm)
+                await bm.OnGraveyardRelicOwnerTurnStartWhileInGraveyardAsync(choiceContext, player, this);
+        }
 
         await YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(player);
         await YgoBlindDestructionContinuous.TryResolvePlayerTurnStart(choiceContext, player);
@@ -200,8 +185,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         if (side == CombatSide.Player && Owner?.PlayerCombatState != null)
         {
-            await MonsterCommandRegistry.ResolveKarateManEndOfTurnDestructionAsync(Owner);
-            await MonsterCommandRegistry.ResolveGuardianSlimeEndOfTurnDestructionAsync(Owner);
+            await MonsterCommandRegistry.ResolveOwnerTurnEndFieldCleanupAsync(choiceContext, Owner);
             MonsterCommandRegistry.ClearPerTurnExtrasForPlayer(Owner);
         }
 
@@ -242,15 +226,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         {
             _onDamageEffectSeenEnemyIds.Clear();
 
-            if (monster is Spirit_of_the_Breeze && atkOwner?.Creature != null)
-                await CreatureCmd.Heal(atkOwner.Creature, 1m);
-
-            if (monster is D_D_Warrior_Lady warriorLady)
-            {
-                Creature? wlPet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(warriorLady);
-                if (wlPet != null)
-                    MonsterCommandRegistry.GetOrCreate(wlPet).WarriorLadyBanishWindowActive = true;
-            }
+            await monster.OnGraveyardRelicAfterAttackOpeningAsync(command, atkOwner, ctx);
 
             // Main hit before splinter so "first damage" order matches combat; shared set dedupes splinter bounces per enemy per chain.
             await ProcessMonsterUnblockedOnDamageEffectsAsync(command, monster, atkPlayer, ctx);
@@ -309,7 +285,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                 blightMultiplier = 1m;
             foreach (DamageResult r in command.Results)
             {
-                int hitDamage = FullIncomingDamage(r);
+                int hitDamage = YgoExecuteKillShared.FullIncomingDamage(r);
                 if (r.Receiver.Side != CombatSide.Enemy || hitDamage <= 0)
                     continue;
 
@@ -353,21 +329,14 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
             foreach (BaseEquipSpellCard eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))
             {
-                if (eq is Cestus_of_Dagla cestus)
+                if (eq is IEquipFirstUnblockedDamageEffect fx)
                 {
-                    await CreatureCmd.Heal(atkPlayer.Creature, cestus.DynamicVars["Mgc"].BaseValue);
+                    await fx.ApplyWhenEquippedMonsterDealsFirstUnblockedDamageAsync(ctx, atkPlayer, monster, r);
                     break;
                 }
             }
 
-            if (monster is The_Bistro_Butcher butcher)
-            {
-                int draw = butcher.IsUpgraded ? 2 : 1;
-                await CardPileCmd.Draw(ctx, draw, atkPlayer);
-            }
-
-            if (monster is Masked_Sorcerer)
-                await CardPileCmd.Draw(ctx, 1, atkPlayer);
+            await monster.OnFirstUnblockedDamageToEnemyThisChainAsync(command, r, atkPlayer, ctx);
         }
     }
 
@@ -394,7 +363,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     }
 
     /// <summary>
-    /// Permanent execute ATK, Timeater stun, Shinato Corpse-Blight, Twin-Headed Wolf kill bonuses — keyed on <see cref="DamageResult.WasTargetKilled"/> for this attack command.
+    /// Permanent execute ATK (<see cref="BaseMonsterCard.PermanentAtkDeltaOnEnemyExecute"/>), then per-card <see cref="BaseMonsterCard.OnEnemyExecutedByThisAttackAsync"/>.
     /// Called for the main hit from <see cref="AfterAttack"/> and for each splinter hit from <see cref="ResolveSplinterChainAsync"/> (nested AfterAttack skips while <see cref="_splinterChainRunning"/> to avoid double-processing).
     /// </summary>
     private static async Task ProcessMonsterExecuteKillEffectsAsync(
@@ -415,101 +384,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             }
         }
 
-        if (monster is Insect_Princess princess
-            && princess.Owner?.Creature != null
-            && princess.Owner.PlayerCombatState != null)
-        {
-            foreach (DamageResult r in command.Results)
-            {
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                    continue;
-                Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(princess);
-                if (pet == null || !pet.IsAlive)
-                    continue;
-                decimal stacks = princess.DynamicVars["Mgc2"].BaseValue;
-                if (stacks <= 0m)
-                    continue;
-                await PowerCmd.Apply<InsectPrincessExecuteAtkPower>(pet, stacks, princess.Owner.Creature, princess);
-            }
-        }
-
-        if (monster is Timeater)
-        {
-            bool executed = false;
-            foreach (DamageResult r in command.Results)
-            {
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                    continue;
-                executed = true;
-                break;
-            }
-
-            if (executed)
-            {
-                foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive).ToList())
-                    await CreatureCmd.Stun(e);
-            }
-        }
-
-        if (monster is Shinato_King_of_a_Higher_Plane or Des_Volstgalph)
-        {
-            foreach (DamageResult r in command.Results)
-            {
-                int hitDamage = FullIncomingDamage(r);
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled || hitDamage <= 0)
-                    continue;
-
-                int blight = (int)decimal.Floor(hitDamage * 0.5m);
-                if (blight <= 0)
-                    continue;
-
-                foreach (Creature enemy in cs.HittableEnemies)
-                {
-                    if (!enemy.IsAlive)
-                        continue;
-                    await PowerCmd.Apply<BlightPower>(enemy, blight, command.Attacker, monster);
-                }
-            }
-        }
-
-        Player? atkPlayer = command.Attacker.Player;
-        if (atkPlayer?.Creature != null && monster is The_Winged_Dragon_of_Ra ra)
-        {
-            decimal gain = ra.DynamicVars["Mgc2"].BaseValue;
-            foreach (DamageResult r in command.Results)
-            {
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                    continue;
-                await PowerCmd.Apply<RaRebirthPower>(atkPlayer.Creature, gain, atkPlayer.Creature, ra);
-                break;
-            }
-        }
-
-        if (atkPlayer?.Creature != null
-            && monster is Twin_Headed_Wolf
-            && PlayerControlsAtLeastTwoFiendsOnField(atkPlayer))
-        {
-            foreach (DamageResult r in command.Results)
-            {
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                    continue;
-                await PowerCmd.Apply<StrengthPower>(command.Attacker, 1m, atkPlayer.Creature, monster);
-                await PowerCmd.Apply<ArtifactPower>(command.Attacker, 1m, atkPlayer.Creature, monster);
-            }
-        }
-
-        if (monster is Guardian_Angel_Joan joan && atkPlayer?.Creature != null)
-        {
-            foreach (DamageResult r in command.Results)
-            {
-                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                    continue;
-                decimal mgc = joan.DynamicVars["Mgc"].BaseValue;
-                decimal pct = r.Receiver.MaxHp * 0.02m;
-                await CreatureCmd.Heal(atkPlayer.Creature, mgc + pct);
-                break;
-            }
-        }
+        await monster.OnEnemyExecutedByThisAttackAsync(command, cs);
     }
 
     /// <summary>
@@ -610,11 +485,6 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
         return null;
     }
-
-    /// <summary>
-    /// <see cref="DamageResult.TotalDamage"/> is block + HP removed only; killing blows store excess in <see cref="DamageResult.OverkillDamage"/>.
-    /// </summary>
-    private static int FullIncomingDamage(DamageResult r) => r.TotalDamage + r.OverkillDamage;
 
     /// <summary>Damage that got past block: HP removed + overkill (not half of <see cref="DamageResult.BlockedDamage"/>).</summary>
     private static int DamagePastBlock(DamageResult r) => r.UnblockedDamage + r.OverkillDamage;
@@ -717,16 +587,4 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     /// <summary>Dragon duel monsters destroyed during the current player turn (for Super Rejuvenation). Cleared at the start of your next turn.</summary>
     public int DragonMonstersDestroyedThisTurn => _dragonMonstersDestroyedThisTurn;
-
-    private static bool PlayerControlsAtLeastTwoFiendsOnField(Player player)
-    {
-        int fiends = 0;
-        foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.GetFieldMonsters(player))
-        {
-            if (c.DuelMonsterRace == DuelMonsterRace.Fiend)
-                fiends++;
-        }
-
-        return fiends >= 2;
-    }
 }

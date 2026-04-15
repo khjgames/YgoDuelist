@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -8,8 +7,6 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Relics;
-
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
@@ -21,30 +18,10 @@ public static class YgoCockroachKnightGraveyard
     {
         if (addedCard is not Cockroach_Knight roach)
             return;
-        if (pile.Type != GraveyardPile.CustomType || !pile.IsCombatPile)
-            return;
-        if (CombatManager.Instance is not { IsInProgress: true })
-            return;
-        CombatState? cs = CombatManager.Instance.DebugOnlyGetState();
-        if (cs == null)
-            return;
-
-        Player? player = ResolveGraveyardOwner(cs, pile) ?? addedCard.Owner;
-        if (player?.Creature?.CombatState == null || player.Creature.Side != CombatSide.Player)
+        if (!YgoGraveyardPileHooks.TryGetPlayerForGraveyardAdd(pile, addedCard, out Player? player))
             return;
 
         TaskHelper.RunSafely(RunAsync(player, roach));
-    }
-
-    private static Player? ResolveGraveyardOwner(CombatState cs, CardPile pile)
-    {
-        foreach (Player p in cs.Players)
-        {
-            if (GraveyardRelic.GetGraveyardPile(p) == pile)
-                return p;
-        }
-
-        return null;
     }
 
     private static async Task RunAsync(Player player, Cockroach_Knight roach)

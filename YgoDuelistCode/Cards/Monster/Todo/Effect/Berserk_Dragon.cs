@@ -33,6 +33,8 @@ public sealed class Berserk_Dragon : EffectMonsterCard
 
     public override bool CanSummonDuelMonster => false;
 
+    protected override bool RegistersForLevel8DealWithDarkRulerWhenDestroyed => false;
+
     public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate =>
         YgoDealWithDarkRulerState.IsDealWithDarkRulerSummonBypassActive;
 

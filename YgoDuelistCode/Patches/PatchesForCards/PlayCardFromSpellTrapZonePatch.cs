@@ -12,7 +12,6 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -37,23 +36,8 @@ public static class PlayCardFromSpellTrapZonePatch
         if (card == null)
             return true;
 
-        // Harmony aborts later Prefix patches when one returns false. Any card with a custom ExecuteAction
-        // (pre-play grids, payloads, then mirrored body) must bypass this shortcut — same idea as fusion/ritual/equip.
-        if (card is FusionSpellCard or RitualSpellCard)
-            return true;
-
-        if (card is BaseEquipSpellCard)
-            return true;
-
-        if (card is IYgoPrePlayCancelableGridSelection)
-            return true;
-
-        if (card is Emergency_Provisions
-            or Riryoku
-            or Secret_Pass_to_the_Treasures
-            or Tailor_of_the_Fickle
-            or Rush_Recklessly
-            or The_Reliable_Guardian)
+        // Harmony aborts later Prefix patches when one returns false. Same card set as YgoPlayCardQueueDeferral.
+        if (YgoPlayCardQueueDeferral.SpellTrapZonePlayRequiresVanillaExecuteAction(card))
             return true;
 
         CardPile? pile = card.Pile;
@@ -75,21 +59,10 @@ public static class PlayCardFromSpellTrapZonePatch
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
 
-        // Burst Stream / Diffusion Wave (played from set Spell/Trap zone): pick field monster when no target id.
-        if (card is Burst_Stream_of_Destruction && target == null)
+        if (card is BaseSpellCard bs)
         {
-            target = await Burst_Stream_of_Destruction.PickBlueEyesOnFieldAsync(action.Player, cancelable: true);
-            if (target == null)
-            {
-                action.Cancel();
-                return;
-            }
-        }
-
-        if (card is Diffusion_Wave_Motion && target == null)
-        {
-            target = await Diffusion_Wave_Motion.PickLevelSevenSpellcasterOnFieldAsync(action.Player, cancelable: true);
-            if (target == null)
+            target = await bs.TryResolveSpellTrapZonePlayTargetAsync(action.Player, target, cancelable: true);
+            if (target == null && card is Burst_Stream_of_Destruction or Diffusion_Wave_Motion)
             {
                 action.Cancel();
                 return;
@@ -135,25 +108,8 @@ public static class PlayCardFromSpellTrapZonePatch
     /// </summary>
     private static bool IsValidTargetForSpellTrapZonePlay(CardModel card, Creature? target)
     {
-        if (card is Burst_Stream_of_Destruction)
-        {
-            if (target == null || !target.IsAlive || card.Owner?.Creature == null)
-                return false;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not Blue_Eyes_White_Dragon)
-                return false;
-            return target.Side == card.Owner.Creature.Side;
-        }
-
-        if (card is Diffusion_Wave_Motion)
-        {
-            if (target == null || !target.IsAlive || card.Owner?.Creature == null)
-                return false;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not BaseMonsterCard m
-                || !Diffusion_Wave_Motion.IsLevelSevenPlusSpellcaster(m))
-                return false;
-            return target.Side == card.Owner.Creature.Side;
-        }
-
+        if (card is BaseSpellCard bs)
+            return bs.IsValidTargetForSpellTrapZonePlay(target);
         return card.IsValidTarget(target);
     }
 }

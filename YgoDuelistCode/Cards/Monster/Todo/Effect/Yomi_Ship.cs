@@ -48,6 +48,13 @@ public sealed class Yomi_Ship : EffectMonsterCard
 
     public override bool AttackDealsBlightedDamage => true;
 
+    public override async Task OnPetDiedAfterOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx)
+    {
+        if (ctx.CommandState?.DestroyedByEnemyBattleDamage == true)
+            await ApplyBlightWhenDestroyedByBattleAsync(ctx.Player, this);
+        await base.OnPetDiedAfterOptionPileHandlingAsync(ctx);
+    }
+
     internal static async Task ApplyBlightWhenDestroyedByBattleAsync(Player player, Yomi_Ship card)
     {
         if (player.Creature?.CombatState == null)

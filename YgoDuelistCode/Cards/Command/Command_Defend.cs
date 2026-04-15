@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -38,6 +39,25 @@ public sealed class Command_Defend : MonsterCommandCard
                 return 0;
             return YgoMonsterCommandEnergyModifiers.GetFieldCommandDefendEnergyCost(SourceMonster);
         }
+    }
+
+    public override LocString? GetPatchedDescriptionLocStringForDisplay()
+    {
+        if (SourceMonster is not BaseMonsterCard defSource)
+            return null;
+
+        string suffix = ".description_skill_combat";
+        if (defSource.UseAlternateUpgradedDescription
+            && (defSource.IsUpgraded || defSource.UpgradePreviewType != CardUpgradePreviewType.None))
+        {
+            var alt = new LocString("cards", defSource.Id.Entry + ".description_skill_combat_upgraded");
+            if (alt.Exists())
+                suffix = ".description_skill_combat_upgraded";
+        }
+
+        var loc = new LocString("cards", defSource.Id.Entry + suffix);
+        defSource.DynamicVars.AddTo(loc);
+        return loc;
     }
 
     public new LocString Description

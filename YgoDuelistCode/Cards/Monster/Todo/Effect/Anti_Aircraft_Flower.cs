@@ -61,6 +61,8 @@ public sealed class Anti_Aircraft_Flower : EffectMonsterCard, IMonsterActivatedE
 
     public bool IsActivatedEffectAvailable => IsEarthTributeAvailable(Owner);
 
+    public override bool IsActivatedEffectAvailableInCommandContext(Player? commandOwner) => IsEarthTributeAvailable(commandOwner);
+
     internal bool IsEarthTributeAvailable(Player? playerContext)
     {
         Player? player = playerContext ?? Owner;

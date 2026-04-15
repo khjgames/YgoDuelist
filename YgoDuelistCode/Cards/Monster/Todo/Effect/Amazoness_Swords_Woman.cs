@@ -1,6 +1,11 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -28,6 +33,58 @@ public sealed class Amazoness_Swords_Woman : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
+
+    public override async Task SyncPlayerThornsFromFieldPetPresenceAsync(Creature pet, Creature? applier, CardModel? sourceCard)
+    {
+        if (applier == null)
+            return;
+
+        if (FaceDown)
+        {
+            if (PendingThornsOnPlayer > 0m)
+                await StripThornsAsync(applier);
+            return;
+        }
+
+        if (PendingThornsOnPlayer > 0m || ThornsGrantExhaustedForThisField)
+            return;
+
+        decimal amt = DynamicVars["Mgc"].BaseValue;
+        if (amt <= 0m)
+            return;
+
+        await PowerCmd.Apply<ThornsPower>(applier, amt, applier, this);
+        PendingThornsOnPlayer = amt;
+        ThornsGrantExhaustedForThisField = true;
+    }
+
+    public override async Task StripPlayerThornsGrantedFromFieldPresenceAsync(Creature playerCreature)
+    {
+        if (PendingThornsOnPlayer > 0m)
+            await StripThornsAsync(playerCreature);
+    }
+
+    private async Task StripThornsAsync(Creature playerCreature)
+    {
+        decimal n = PendingThornsOnPlayer;
+        PendingThornsOnPlayer = 0m;
+        if (n <= 0m)
+            return;
+
+        ThornsPower? t = playerCreature.GetPower<ThornsPower>();
+        if (t == null)
+            return;
+
+        await PowerCmd.ModifyAmount(t, -n, playerCreature, this);
+    }
+
+    public override async Task OnPetDiedAfterOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx)
+    {
+        if (ctx.Player.Creature != null)
+            await StripPlayerThornsGrantedFromFieldPresenceAsync(ctx.Player.Creature);
+        await base.OnPetDiedAfterOptionPileHandlingAsync(ctx);
+    }
+
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn;
     // You will always see bundled cards when RNG rolls this card, but not the other way around.

@@ -8,7 +8,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>Battle-death optional summon — <see cref="Services.YgoBattleDeathOptionalDeckSpecialSummon"/>.</summary>
+/// <summary>Battle-death optional summon — <see cref="YgoDuelist.YgoDuelistCode.Services.YgoGraveyardOptionalDeckSpecialSummon"/>.</summary>
 public sealed class Mystic_Tomato : EffectMonsterCard, IBattleDeathOptionalDeckSpecialSummon
 {
     private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-MYSTIC_TOMATO.activate_effect");

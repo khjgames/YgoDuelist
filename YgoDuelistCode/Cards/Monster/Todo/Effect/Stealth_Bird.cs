@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -43,10 +44,9 @@ public sealed class Stealth_Bird : EffectMonsterCard
         typeof(Stealth_Bird),
     };
 
-    /// <summary>
-    /// Flip Summon / flip-to-attack from face-down defense: magic damage to the chosen enemy
-    /// (<see cref="Command.Command_Change_Battle_Position"/> or <see cref="Command.Command_Attack"/>).
-    /// </summary>
+    public override bool UsesFaceDownFlipDamageOnCommandAttack => true;
+
+    /// <summary>Flip Summon / flip-to-attack from face-down defense: magic damage — <see cref="OnCommandAttackAfterStanceSyncedAsync"/>.</summary>
     public static async Task DealFlipSummonDamageIfEligibleAsync(
         PlayerChoiceContext choiceContext,
         Stealth_Bird bird,
@@ -62,6 +62,23 @@ public sealed class Stealth_Bird : EffectMonsterCard
             return;
 
         await CreatureCmd.Damage(choiceContext, target, dmg, ValueProp.Unpowered, playerCreature, bird);
+    }
+
+    public override async Task OnCommandAttackAfterStanceSyncedAsync(
+        PlayerChoiceContext ctx,
+        Player player,
+        Creature? pet,
+        CardPlay cardPlay,
+        bool stealthBirdWasFaceDownDefenseBeforeCommandAttack)
+    {
+        if (!stealthBirdWasFaceDownDefenseBeforeCommandAttack || cardPlay.Target == null)
+            return;
+        await DealFlipSummonDamageIfEligibleAsync(
+            ctx,
+            this,
+            stealthBirdWasFaceDownDefenseBeforeCommandAttack,
+            cardPlay.Target,
+            player.Creature);
     }
 
     protected override void OnUpgrade()

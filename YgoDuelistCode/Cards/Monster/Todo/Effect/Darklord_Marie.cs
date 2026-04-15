@@ -1,13 +1,18 @@
 using System;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>While in your Graveyard: once per turn at turn start, heal 1 HP (GraveyardRelic).</summary>
+/// <summary>While in your Graveyard: once per turn at turn start, heal 1 HP — <see cref="BaseMonsterCard.OnGraveyardRelicOwnerTurnStartWhileInGraveyardAsync"/>.</summary>
 public sealed class Darklord_Marie : EffectMonsterCard
 {
     public Darklord_Marie()
@@ -29,4 +34,15 @@ public sealed class Darklord_Marie : EffectMonsterCard
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Heal;
 
     public override Type[] RelatedCards => new[] { typeof(Darklord_Marie) };
+
+    public override async Task OnGraveyardRelicOwnerTurnStartWhileInGraveyardAsync(
+        PlayerChoiceContext ctx,
+        Player player,
+        GraveyardRelic relic)
+    {
+        if (!relic.TryConsumeAnnual("DARKLORD_MARIE_GY"))
+            return;
+        if (player.Creature != null)
+            await CreatureCmd.Heal(player.Creature, 1m);
+    }
 }

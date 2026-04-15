@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -47,6 +48,12 @@ public sealed class Hourglass_of_Courage : EffectMonsterCard
     {
         typeof(Hourglass_of_Courage),
     };
+
+    public override async Task OnAfterSummonPipelineAsync(Player player, PlayerChoiceContext ctx, Creature pet, bool canAttackThisTurn)
+    {
+        if (!canAttackThisTurn && Type == CardType.Attack && !FaceDown)
+            await PowerCmd.Apply<HourglassOfCourageHalvedPower>(pet, 2m, player.Creature, this);
+    }
 
     protected override StatEffectTotalMultiplier GetSelfStatMultiplier()
     {

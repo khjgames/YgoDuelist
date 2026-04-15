@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -39,6 +44,17 @@ public sealed class Cestus_of_Dagla : BaseEquipSpellCard
     public override bool CanEquipTo(BaseMonsterCard target) => target.DuelMonsterRace == DuelMonsterRace.Spellcaster;
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;
+
+    public Task ApplyWhenEquippedMonsterDealsFirstUnblockedDamageAsync(
+        BlockingPlayerChoiceContext ctx,
+        Player atkPlayer,
+        BaseMonsterCard equippedMonster,
+        DamageResult hit)
+    {
+        if (atkPlayer.Creature == null)
+            return Task.CompletedTask;
+        return CreatureCmd.Heal(atkPlayer.Creature, DynamicVars["Mgc"].BaseValue);
+    }
 
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
 }

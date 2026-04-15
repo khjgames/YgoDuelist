@@ -1,9 +1,14 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -44,4 +49,6 @@ public sealed class The_Hunter_with_7_Weapons : EffectMonsterCard
         DynamicVars["Mgc"].BaseValue = 14m;
     }
 
+    public override Task OnAfterSummonPipelineAsync(Player player, PlayerChoiceContext ctx, Creature pet, bool canAttackThisTurn) =>
+        SevenWeaponsHunterState.SyncHunterPetsAsync(player);
 }

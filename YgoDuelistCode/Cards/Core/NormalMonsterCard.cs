@@ -148,6 +148,10 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     protected virtual int GetAttackDefendResolutionCount(Player? player) =>
         YgoNarrowPassField.GetAttackOrDefendResolutionCount(player);
 
+    /// <summary>Command Attack resolution: default <see cref="CombatAction"/>; Dice Jar overrides.</summary>
+    public virtual Task RunCommandAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        CombatAction(choiceContext, cardPlay);
+
     public async Task CombatAction(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         int atk = BaseAtk;
@@ -414,5 +418,15 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         var stats = monster.CalcDuelMonsterStats(field);
         return stats.Def;
+    }
+
+    /// <summary>
+    /// <see cref="Activate_Effect"/> playability with command-card owner (earth tribute, field gates). Default: <see cref="IMonsterActivatedEffect.IsActivatedEffectAvailable"/>.
+    /// </summary>
+    public virtual bool IsActivatedEffectAvailableInCommandContext(Player? commandOwner)
+    {
+        if (this is not IMonsterActivatedEffect fx)
+            return false;
+        return fx.IsActivatedEffectAvailable;
     }
 }

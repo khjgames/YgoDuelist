@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -53,6 +54,13 @@ public sealed class Rigorous_Reaver : EffectMonsterCard
     /// If there are 2+ enemies, pick uniformly at random among the two with the highest MaxHp.
     /// Otherwise the sole enemy is targeted.
     /// </summary>
+    public override Task OnPetDiedAfterOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx)
+    {
+        if (ctx.CommandState?.DestroyedByEnemyBattleDamage == true)
+            TaskHelper.RunSafely(ApplyWhenDestroyedByBattleAsync(ctx.Player, this));
+        return base.OnPetDiedAfterOptionPileHandlingAsync(ctx);
+    }
+
     internal static async Task ApplyWhenDestroyedByBattleAsync(Player player, Rigorous_Reaver card)
     {
         Creature? playerCreature = player.Creature;

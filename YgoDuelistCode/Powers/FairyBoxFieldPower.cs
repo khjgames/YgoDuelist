@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -21,10 +22,10 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 
 internal static class FairyBoxFieldPowerShared
 {
-    internal static Fairy_Box? FaceUpTrapForTier(Player player, bool expectPlus) =>
+    internal static BaseTrapCard? FaceUpTrapForTier(Player player, bool expectPlus) =>
         SpellTrapZonePile.CustomType.GetPile(player)?.Cards
-            .OfType<Fairy_Box>()
-            .FirstOrDefault(c => !c.FaceDown && c.IsUpgraded == expectPlus);
+            .OfType<BaseTrapCard>()
+            .FirstOrDefault(c => c.MatchesFairyBoxFieldPowerTier(expectPlus));
 
     internal static async Task AfterPlayerTurnStartLateAsync(
         YgoDuelistPower self,
@@ -39,7 +40,7 @@ internal static class FairyBoxFieldPowerShared
         if (!YgoAnnualTracker.TryConsumeAnnual(player, "FAIRY_BOX_TURN_COIN"))
             return;
 
-        Fairy_Box? src = FaceUpTrapForTier(player, expectPlus);
+        BaseTrapCard? src = FaceUpTrapForTier(player, expectPlus);
         if (src == null)
         {
             await PowerCmd.Remove(self);
@@ -67,7 +68,7 @@ internal static class FairyBoxFieldPowerShared
         if (!YgoAnnualTracker.TryConsumeAnnual(player, "FAIRY_BOX_UPKEEP"))
             return;
 
-        Fairy_Box? src = FaceUpTrapForTier(player, expectPlus);
+        BaseTrapCard? src = FaceUpTrapForTier(player, expectPlus);
         if (src == null)
         {
             await PowerCmd.Remove(self);
@@ -108,7 +109,7 @@ internal static class FairyBoxFieldPowerShared
     private static async Task DestroyTrapAndRemovePowerAsync(Player pl, YgoDuelistPower self, bool expectPlus)
     {
         CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
-        Fairy_Box? box = zone?.Cards.OfType<Fairy_Box>().FirstOrDefault(c => !c.FaceDown && c.IsUpgraded == expectPlus);
+        BaseTrapCard? box = zone?.Cards.OfType<BaseTrapCard>().FirstOrDefault(c => c.MatchesFairyBoxFieldPowerTier(expectPlus));
         CardPile? gy = GraveyardPile.CustomType.GetPile(pl);
         if (box != null && gy != null)
             await CardPileCmd.Add(new[] { box }, gy, CardPilePosition.Top, box, false);

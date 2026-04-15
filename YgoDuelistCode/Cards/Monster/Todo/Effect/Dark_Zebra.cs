@@ -1,12 +1,17 @@
+using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>Cannot attack while it is your only face-up monster — enforced in <see cref="Command.Command_Attack"/>.</summary>
+/// <summary>Cannot attack while it is your only face-up monster — <see cref="IsCommandAttackPlayable"/>.</summary>
 public sealed class Dark_Zebra : EffectMonsterCard
 {
     public Dark_Zebra()
@@ -26,4 +31,12 @@ public sealed class Dark_Zebra : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+
+    public override bool IsCommandAttackPlayable(Player? owner, Creature? pet)
+    {
+        if (owner == null)
+            return true;
+        List<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(owner)?.ToList() ?? [];
+        return !(field.Count == 1 && field[0] == this);
+    }
 }

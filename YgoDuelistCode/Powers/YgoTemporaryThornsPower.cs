@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.ValueProps;
+using YgoDuelist.YgoDuelistCode.Cards;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -27,7 +28,9 @@ public sealed class YgoTemporaryThornsPower : YgoDuelistPower
 
     public override async Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (target == Owner && dealer != null && (!props.HasFlag(ValueProp.Unpowered) || cardSource is Omnislice))
+        bool reflectUnpowered = cardSource is Omnislice
+                                || (cardSource is YgoDuelistCard ygo && ygo.TemporaryThornsReflectsUnpoweredDamage);
+        if (target == Owner && dealer != null && (!props.HasFlag(ValueProp.Unpowered) || reflectUnpowered))
         {
             Flash();
             await CreatureCmd.Damage(choiceContext, dealer, Amount, ValueProp.Unpowered | ValueProp.SkipHurtAnim, Owner, null);

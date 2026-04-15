@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -25,21 +24,8 @@ public static class FortifiedBeastsDuelMonsterHp
     public static int GetTargetMaxHp(BaseMonsterCard card, Player player)
     {
         int bonus = YgoDuelistPassivePowerState.GetFortifiedBeastsTotalBonus(player);
-        bonus += GetCommandKnightBonusMaxHp(card, player);
+        bonus += card.GetFortifiedBeastsBonusMaxHp(player);
         return GetBaseMaxHpForCard(card) + bonus;
-    }
-
-    /// <summary>
-    /// <see cref="Command_Knight"/>: if you control at least one other monster, this card gets +<c>Mgc2</c> max HP.
-    /// </summary>
-    private static int GetCommandKnightBonusMaxHp(BaseMonsterCard card, Player player)
-    {
-        if (card is not Command_Knight ck)
-            return 0;
-        IReadOnlyCollection<BaseMonsterCard>? field = DuelMonsterFieldRegistry.GetFieldMonsters(player);
-        if (field == null || field.Count < 2)
-            return 0;
-        return (int)ck.DynamicVars["Mgc2"].BaseValue;
     }
 
     /// <summary>

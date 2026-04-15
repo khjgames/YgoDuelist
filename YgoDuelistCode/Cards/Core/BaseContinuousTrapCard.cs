@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -41,6 +42,9 @@ public abstract class BaseContinuousTrapCard : BaseTrapCard
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
     }
+
+    public override string? GetSpellTrapZoneFaceUpEnergyOrbOverridePath(CardPile? pile) =>
+        pile?.Type == SpellTrapZonePile.CustomType && !FaceDown ? BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath : null;
 
     /// <summary>After the card is in the Spell/Trap zone (e.g. <see cref="YgoSpellTrapEquipLinkRegistry"/> attach).</summary>
     protected virtual Task OnAfterContinuousTrapEnteredSpellTrapZoneAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>

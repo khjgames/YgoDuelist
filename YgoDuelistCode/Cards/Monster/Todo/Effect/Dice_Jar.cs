@@ -141,6 +141,9 @@ public sealed class Dice_Jar : EffectMonsterCard
         await OnAfterGainBlockFromCombatActionAsync(choiceContext, cardPlay, def);
     }
 
+    public override Task RunCommandAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        RunDiceJarAttackAsync(choiceContext, cardPlay);
+
     /// <summary>Attack combat from hand (after summon) or from field <c>Command_Attack</c>.</summary>
     public async Task RunDiceJarAttackAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

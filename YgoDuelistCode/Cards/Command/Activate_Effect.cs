@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
@@ -57,7 +56,7 @@ public sealed class Activate_Effect : MonsterCommandCard
                 return false;
             if (SourceMonster.FaceDown)
                 return false;
-            if (!IsActivatedEffectAvailableInContext(SourceMonster, impl, Owner))
+            if (!SourceMonster.IsActivatedEffectAvailableInCommandContext(Owner))
                 return false;
             var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
             if (pet == null)
@@ -83,23 +82,5 @@ public sealed class Activate_Effect : MonsterCommandCard
             await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
 
         await impl.OnActivatedEffect(choiceContext, cardPlay, SourceMonster);
-    }
-
-    /// <summary>
-    /// Earth-tribute activated effects must see the same player as this command card when the source monster's Owner is not yet wired.
-    /// </summary>
-    private static bool IsActivatedEffectAvailableInContext(NormalMonsterCard source, IMonsterActivatedEffect impl, Player? commandOwner)
-    {
-        if (source is Arcane_Archer_of_the_Forest aa)
-            return aa.IsEarthTributeAvailable(commandOwner);
-        if (source is Anti_Aircraft_Flower af)
-            return af.IsEarthTributeAvailable(commandOwner);
-        if (source is The_Little_Swordsman_of_Aile little)
-            return little.IsAnotherMonsterControlled(commandOwner);
-        if (source is Winged_Minion winged)
-            return winged.IsAnotherFiendControlled(commandOwner);
-        if (source is Paladin_of_White_Dragon paladin)
-            return paladin.IsActivatedEffectPlayable(commandOwner);
-        return impl.IsActivatedEffectAvailable;
     }
 }

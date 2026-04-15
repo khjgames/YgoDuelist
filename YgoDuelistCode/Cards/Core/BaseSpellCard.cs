@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -106,6 +108,13 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         WasSetIntoSpellTrapZone = false;
         FaceDown = false;
     }
+
+    /// <summary>Spell/Trap zone play when action has no target id (Burst Stream, Diffusion Wave).</summary>
+    public virtual Task<Creature?> TryResolveSpellTrapZonePlayTargetAsync(Player player, Creature? targetFromAction, bool cancelable) =>
+        Task.FromResult(targetFromAction);
+
+    /// <summary>Shortcut zone-play validation for field spells with unusual targeting.</summary>
+    public virtual bool IsValidTargetForSpellTrapZonePlay(Creature? target) => IsValidTarget(target);
 
     private async Task SendThisSpellToGraveyard(PlayerChoiceContext choiceContext)
     {

@@ -94,4 +94,21 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard
         Creature? chosen = pick?.TargetCreature;
         return chosen != null && chosen.IsAlive && eligible.Contains(chosen) ? chosen : null;
     }
+
+    public override async Task<Creature?> TryResolveSpellTrapZonePlayTargetAsync(Player player, Creature? targetFromAction, bool cancelable)
+    {
+        if (targetFromAction != null)
+            return targetFromAction;
+        return await PickLevelSevenSpellcasterOnFieldAsync(player, cancelable);
+    }
+
+    public override bool IsValidTargetForSpellTrapZonePlay(Creature? target)
+    {
+        if (target == null || !target.IsAlive || Owner?.Creature == null)
+            return false;
+        if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not BaseMonsterCard m
+            || !IsLevelSevenPlusSpellcaster(m))
+            return false;
+        return target.Side == Owner.Creature.Side;
+    }
 }

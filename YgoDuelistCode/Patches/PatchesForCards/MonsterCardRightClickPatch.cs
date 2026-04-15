@@ -175,37 +175,13 @@ internal static class MonsterCardRightClickPatch
         if (card is YgoDuelistCard { UsesCombatHandDescription: true } ygoHandDesc)
             return ygoHandDesc.GetCombatHandDescriptionLocString();
 
-        // Only swap description for Attack/Defend; leave Toggle_Die_For_You, Exit_Monster_Options unchanged.
-        if (card is Command_Attack && ((MonsterCommandCard)card).SourceMonster is BaseMonsterCard atkSource)
+        if (card is MonsterCommandCard mcc)
         {
-            string suffix = ".description_combat";
-            if (atkSource.UseAlternateUpgradedDescription
-                && (atkSource.IsUpgraded || atkSource.UpgradePreviewType != CardUpgradePreviewType.None))
-            {
-                var alt = new LocString("cards", atkSource.Id.Entry + ".description_combat_upgraded");
-                if (alt.Exists())
-                    suffix = ".description_combat_upgraded";
-            }
-
-            var loc = new LocString("cards", atkSource.Id.Entry + suffix);
-            atkSource.DynamicVars.AddTo(loc);
-            return loc;
+            LocString? fromCmd = mcc.GetPatchedDescriptionLocStringForDisplay();
+            if (fromCmd != null)
+                return fromCmd;
         }
-        if (card is Command_Defend && ((MonsterCommandCard)card).SourceMonster is BaseMonsterCard defSource)
-        {
-            string suffix = ".description_skill_combat";
-            if (defSource.UseAlternateUpgradedDescription
-                && (defSource.IsUpgraded || defSource.UpgradePreviewType != CardUpgradePreviewType.None))
-            {
-                var alt = new LocString("cards", defSource.Id.Entry + ".description_skill_combat_upgraded");
-                if (alt.Exists())
-                    suffix = ".description_skill_combat_upgraded";
-            }
 
-            var loc = new LocString("cards", defSource.Id.Entry + suffix);
-            defSource.DynamicVars.AddTo(loc);
-            return loc;
-        }
         return card.Description;
     }
 

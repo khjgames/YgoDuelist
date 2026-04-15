@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -51,6 +52,13 @@ public sealed class Electric_Lizard : EffectMonsterCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", 1m) });
+
+    public override Task OnPetDiedAfterOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx)
+    {
+        if (ctx.CommandState?.DestroyedByEnemyBattleDamage == true && ctx.CommandState.BattleDamageKillerEnemy != null)
+            TaskHelper.RunSafely(ApplyWhenDestroyedByBattleAsync(ctx.Player, this, ctx.CommandState.BattleDamageKillerEnemy));
+        return base.OnPetDiedAfterOptionPileHandlingAsync(ctx);
+    }
 
     internal static async Task ApplyWhenDestroyedByBattleAsync(Player player, Electric_Lizard card, Creature killer)
     {

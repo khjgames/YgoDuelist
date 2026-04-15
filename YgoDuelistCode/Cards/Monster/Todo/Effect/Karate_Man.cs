@@ -1,8 +1,10 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -86,5 +88,12 @@ public sealed class Karate_Man : EffectMonsterCard, IMonsterActivatedEffect
         }
 
         return false;
+    }
+
+    public override async Task OnOwnerTurnEndFieldCleanupAsync(PlayerChoiceContext ctx, Player owner, Creature pet)
+    {
+        if (!MonsterCommandRegistry.TryGet(pet, out MonsterCommandState s) || !s.KarateManDestroyAtEndOfOwnerTurn)
+            return;
+        await CreatureCmd.Kill(pet, force: true);
     }
 }

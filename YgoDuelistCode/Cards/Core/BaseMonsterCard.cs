@@ -1,15 +1,20 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -222,6 +227,15 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// </summary>
     protected internal virtual Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
         Task.CompletedTask;
+
+    /// <summary>
+    /// Right after <see cref="OnSummoned"/> in <see cref="DuelMonsterSummon.TrySummonDuelMonster"/> (before stumble/anubis/stiff). Hourglass, Hunter, Cure Mermaid.
+    /// </summary>
+    public virtual Task OnAfterSummonPipelineAsync(
+        Player player,
+        PlayerChoiceContext ctx,
+        Creature pet,
+        bool canAttackThisTurn) => Task.CompletedTask;
 
     /// <summary>
     /// When true, Command Attack is omitted from the duel monster options menu (e.g. trap monsters that cannot attack).
@@ -850,4 +864,102 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         }
         return sum;
     }
+
+    /// <summary>When <see cref="DuelMonsterLevel"/> ≥ 8, registers for Deal with the Dark Ruler — opt out on specific cards (e.g. Berserk Dragon).</summary>
+    protected virtual bool RegistersForLevel8DealWithDarkRulerWhenDestroyed => DuelMonsterLevel >= 8;
+
+    /// <summary>Consume <see cref="YgoBattleDeathMarkedCards"/> when destroyed by battle (optional deck SS, Giant Germ, Lord Poison, etc.).</summary>
+    protected virtual bool UsesBattleDeathGraveyardMark => this is IBattleDeathOptionalDeckSpecialSummon;
+
+    /// <inheritdoc cref="AbstractMonsterCard.OnPetDiedBeforeOptionPileHandlingAsync" />
+    public override Task OnPetDiedBeforeOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx)
+    {
+        if (DuelMonsterRace == DuelMonsterRace.Dragon)
+            GraveyardRelic.RegisterDragonMonsterDestroyed(ctx.Player);
+
+        if (RegistersForLevel8DealWithDarkRulerWhenDestroyed)
+            YgoDealWithDarkRulerState.RegisterLevel8PlusMonsterSentToGraveyard(ctx.Player);
+
+        if (DuelMonsterRace == DuelMonsterRace.Fairy
+            && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<The_Sanctuary_in_the_Sky>(ctx.Player))
+        {
+            bool dieForYou = ctx.Pet.HasPower<DieForYouPower>()
+                || (ctx.CommandState != null && ctx.CommandState.DieForYouEnabled);
+            if (dieForYou)
+                GraveyardRelic.ArmSanctuaryHalveNextSpillDamage(ctx.Player);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc cref="AbstractMonsterCard.OnPetDiedAfterOptionPileHandlingAsync" />
+    public override Task OnPetDiedAfterOptionPileHandlingAsync(DuelMonsterPetDeathContext ctx)
+    {
+        if (ctx.CommandState?.DestroyedByEnemyBattleDamage == true && UsesBattleDeathGraveyardMark)
+            YgoBattleDeathMarkedCards.Mark(this);
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Enemy execute kills from this monster's attack (GraveyardRelic + splinter chain).</summary>
+    public virtual Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs) => Task.CompletedTask;
+
+    /// <summary>Top-level GraveyardRelic AfterAttack before splinter / on-damage (Spirit of the Breeze, D.D. Warrior Lady).</summary>
+    public virtual Task OnGraveyardRelicAfterAttackOpeningAsync(
+        AttackCommand command,
+        Player? attackingPlayer,
+        BlockingPlayerChoiceContext ctx) => Task.CompletedTask;
+
+    /// <summary>First unblocked damage to each enemy in this attack chain (Cestus is equip; Bistro / Masked use this).</summary>
+    public virtual Task OnFirstUnblockedDamageToEnemyThisChainAsync(
+        AttackCommand command,
+        DamageResult r,
+        Player atkPlayer,
+        BlockingPlayerChoiceContext ctx) => Task.CompletedTask;
+
+    /// <summary>With Sanctuary field face-up, Mercury draw once per turn — override on The Agent of Wisdom Mercury.</summary>
+    public virtual bool ParticipatesInSanctuaryMercuryDraw => false;
+
+    /// <summary>GraveyardRelic owner turn start: per face-up field pet (e.g. Cure Mermaid maintenance).</summary>
+    public virtual Task OnGraveyardRelicOwnerTurnStartForFieldPetAsync(
+        PlayerChoiceContext ctx,
+        Player player,
+        Creature pet,
+        GraveyardRelic relic) => Task.CompletedTask;
+
+    /// <summary>GraveyardRelic owner turn start: for each copy of this card in your GY (e.g. Darklord Marie).</summary>
+    public virtual Task OnGraveyardRelicOwnerTurnStartWhileInGraveyardAsync(
+        PlayerChoiceContext ctx,
+        Player player,
+        GraveyardRelic relic) => Task.CompletedTask;
+
+    /// <summary>End of controlling player turn: field cleanup before per-turn command flags clear (Karate Man, Guardian Slime).</summary>
+    public virtual Task OnOwnerTurnEndFieldCleanupAsync(
+        PlayerChoiceContext ctx,
+        Player owner,
+        Creature pet) => Task.CompletedTask;
+
+    /// <summary>Extra max HP from Fortified Beasts sync (Command Knight).</summary>
+    public virtual int GetFortifiedBeastsBonusMaxHp(Player player) => 0;
+
+    /// <summary>When true with face-down defense, Command Attack may deal flip damage before stance change (Stealth Bird).</summary>
+    public virtual bool UsesFaceDownFlipDamageOnCommandAttack => false;
+
+    /// <summary>Extra Command Attack playability (Dark Zebra, Ultimate Obedient Fiend).</summary>
+    public virtual bool IsCommandAttackPlayable(Player? owner, Creature? pet) => true;
+
+    /// <summary>Stance sync: grant/strip player thorns tied to field presence (e.g. Amazoness Swords Woman).</summary>
+    public virtual Task SyncPlayerThornsFromFieldPetPresenceAsync(Creature pet, Creature? applier, CardModel? sourceCard) =>
+        Task.CompletedTask;
+
+    /// <summary>Before this card leaves the field: remove thorns granted via <see cref="SyncPlayerThornsFromFieldPetPresenceAsync"/>.</summary>
+    public virtual Task StripPlayerThornsGrantedFromFieldPresenceAsync(Creature playerCreature) => Task.CompletedTask;
+
+    /// <summary>After stance sync on Command Attack, before main hit (Stealth Bird flip, Gravekeeper's Assailant).</summary>
+    public virtual Task OnCommandAttackAfterStanceSyncedAsync(
+        PlayerChoiceContext ctx,
+        Player player,
+        Creature? pet,
+        CardPlay cardPlay,
+        bool stealthBirdWasFaceDownDefenseBeforeCommandAttack) => Task.CompletedTask;
 }

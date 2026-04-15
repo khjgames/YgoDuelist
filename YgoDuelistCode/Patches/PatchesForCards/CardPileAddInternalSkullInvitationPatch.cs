@@ -11,11 +11,10 @@ public static class CardPileAddInternalSkullInvitationPatch
     static void Postfix(CardPile __instance, CardModel card, int index, bool silent)
     {
         YgoCockroachKnightGraveyard.OnCardAddedToGraveyardPile(__instance, card);
-        YgoBattleDeathOptionalDeckSpecialSummon.OnCardAddedToGraveyardPile(__instance, card);
+        YgoGraveyardOptionalDeckSpecialSummon.OnCardAddedToGraveyardPile(__instance, card);
         YgoSkullInvitationGraveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoBlackPendantGraveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoPinchHopperGraveyard.OnCardAddedToGraveyardPile(__instance, card);
-        YgoFlyingKamakiri1Graveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoSkullMarkLadybugGraveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoOutstandingDogMarronGraveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoGiantGermGraveyard.OnCardAddedToGraveyardPile(__instance, card);
