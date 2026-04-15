@@ -32,4 +32,7 @@ public sealed class Des_Counterblow : BaseContinuousTrapCard
     };
 
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) => Task.CompletedTask;
+
+    protected override void OnUpgrade() { EnergyCost.UpgradeBy(-1); }
+
 }

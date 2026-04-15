@@ -38,7 +38,7 @@ public sealed class Gravekeeper_s_Spy : EffectMonsterCard, IMonsterFlipEffect
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+        YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Gravekeeper_s_Spy) };
 

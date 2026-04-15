@@ -16,14 +16,16 @@ public sealed class Arsenal_Bug : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 20,
             baseDef: 20,
-            baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Insect)
+            baseMgc: 10,
+            duelMonsterRace: DuelMonsterRace.Insect,
+            duelMonsterAttackPlayEnergyOverride: 1,
+            duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
 
@@ -38,7 +40,7 @@ public sealed class Arsenal_Bug : EffectMonsterCard
             return base.GetSecondaryStats();
 
         GetDynamicPrintedAtkDef(out int patk, out int pdef);
-        return (10 - patk, 10 - pdef);
+        return ((int)(this.DynamicVars["Mgc"].BaseValue - patk), (int)(this.DynamicVars["Mgc"].BaseValue - pdef));
     }
 
     private bool HasOtherInsectOnField(Player player)

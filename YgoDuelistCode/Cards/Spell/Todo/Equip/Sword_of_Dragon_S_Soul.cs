@@ -13,7 +13,7 @@ public sealed class Sword_of_Dragon_S_Soul : BaseEquipSpellCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Dragon;
+        YgoCardPackTags.Spell | YgoCardPackTags.Dragon;
 
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 

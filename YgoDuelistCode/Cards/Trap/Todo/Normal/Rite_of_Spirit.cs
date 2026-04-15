@@ -33,7 +33,5 @@ public sealed class Rite_of_Spirit : BaseTrapCard
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
-    protected override void OnUpgrade()
-    {
-    }
+    protected override void OnUpgrade() { EnergyCost.UpgradeBy(-1); }
 }

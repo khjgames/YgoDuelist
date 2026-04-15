@@ -19,7 +19,7 @@ public sealed class Theban_Nightmare : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 15,
             baseDef: 5,
-            baseMgc: 0,
+            baseMgc: 8,
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }

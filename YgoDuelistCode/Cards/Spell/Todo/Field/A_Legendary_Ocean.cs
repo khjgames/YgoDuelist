@@ -15,10 +15,10 @@ public sealed class A_Legendary_Ocean : BaseFieldSpellCard
     private const int PrintedAtkDef = 2;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[] { new DynamicVar("Mgc", (decimal)PrintedAtkDef) };
-
+        new[] { new DynamicVar("Mgc", (decimal)PrintedAtkDef), new DynamicVar("Mgc2", 1m) };
+        
     public A_Legendary_Ocean()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
 
@@ -31,7 +31,7 @@ public sealed class A_Legendary_Ocean : BaseFieldSpellCard
             return StatEffectTotal.None;
         int atk = YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedAtkDef, IsUpgraded);
         int def = YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedAtkDef, IsUpgraded);
-        return new StatEffectTotal(atk, def, -1);
+        return new StatEffectTotal(atk, def, -(int)DynamicVars["Mgc2"].BaseValue);
     }
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
@@ -41,5 +41,6 @@ public sealed class A_Legendary_Ocean : BaseFieldSpellCard
     {
         EnergyCost.UpgradeBy(-1);
         DynamicVars["Mgc"].BaseValue = YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedAtkDef, true);
+        DynamicVars["Mgc2"].BaseValue = 2m;
     }
 }

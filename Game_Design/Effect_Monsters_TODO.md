@@ -28,7 +28,7 @@ Implement Gale Dogra, his Activate Effect is gain [purple]Doomed[/purple] & Gain
 
 ✅ CRITICAL REVIEW PASSED @YgoDuelist/YgoDuelistCode/Cards/Monster/Todo/Effect/Goblin_Attack_Force.cs Implement its effect (After this card attacks it is changed to Defense Position and its Fatigued & Stiff is not cleared af the end of that turn.) Assign him Tags. and fix his localization.
 
-✅ CRITICAL REVIEW PASSED @YgoDuelist/YgoDuelistCode/Cards/Monster/Todo/Effect/Black_Tyranno.cs This cards attacks apply Blight (50% of damage as stacks). When target enemy has block or intends to block this cards attacks instead apply Blight (100% of damage as stacks). Assign him Tags. and fix his localization.
+✅ CRITICAL REVIEW PASSED @YgoDuelist/YgoDuelistCode/Cards/Monster/Todo/Effect/Black_Tyranno.cs [purple]Blight[/purple] (50% of damage as stacks). When target enemy has block or intends to block instead apply [purple]Blight[/purple] (100% of damage as stacks). Assign him Tags. and fix his localization.
 
 ✅ CRITICAL REVIEW PASSED @YgoDuelist/YgoDuelistCode/Cards/Monster/Todo/Effect/Drillago.cs This cards attacks apply Blight (50% of damage as stacks). Against enemies who intend to attack you instead apply Blight (100% of damage as stacks). Assign him Tags. and fix his localization.
 

@@ -19,7 +19,7 @@ public sealed class Super_Rejuvenation : BaseSpellCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Draw;
+        YgoCardPackTags.Spell | YgoCardPackTags.Draw;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

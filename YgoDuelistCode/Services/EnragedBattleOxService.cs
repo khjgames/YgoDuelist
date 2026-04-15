@@ -11,10 +11,16 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 public static class EnragedBattleOxService
 {
-    public static bool MonsterCardShowsSplinterFromOx(BaseMonsterCard m) =>
-        m is { Owner: { Creature: { } c } }
-        && c.GetPower<EnragedBattleOxPower>() != null
-        && m.DuelMonsterRace == DuelMonsterRace.BeastWarrior;
+    public static bool MonsterCardShowsSplinterFromOx(BaseMonsterCard m)
+    {
+        // Canonical templates (card library, compendium) have no Owner; CardModel.Owner asserts mutable.
+        if (m.IsCanonical)
+            return false;
+
+        return m is { Owner: { Creature: { } c } }
+            && c.GetPower<EnragedBattleOxPower>() != null
+            && m.DuelMonsterRace == DuelMonsterRace.BeastWarrior;
+    }
 
     public static bool AttackGetsSplinterFromOxAura(BaseMonsterCard monster, Player? attackingPlayer)
     {

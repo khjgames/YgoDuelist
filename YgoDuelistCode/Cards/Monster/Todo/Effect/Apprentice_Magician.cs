@@ -41,7 +41,7 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark | YgoCardPackTags.Spell;
+        YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark | YgoCardPackTags.Spell;
 
     public int CurrentSpellCounters => SpellCounters;
 

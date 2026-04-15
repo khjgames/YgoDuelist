@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -37,6 +39,10 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
         YgoCardPackTags.Starter | YgoCardPackTags.Ocean | YgoCardPackTags.Water;
 
     public override Type[] RelatedCards => new[] { typeof(Ocean_Dragon_Lord_Neo_Daedalus), typeof(Levia_Dragon_Daedalus) };
+
+    /// <summary>Blight multiplier for the activated effect (<c>ATK × Mgc2</c>).</summary>
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", 2m) });
 
     protected override bool SupportsHandEffectForm => true;
     public override bool CanSummonDuelMonster => false;
@@ -103,7 +109,11 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
             await CardPileCmd.Add(zone.Cards.ToList(), gy, CardPilePosition.Top, this, false);
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc2"].BaseValue = 3m;
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc2"].BaseValue = 3m;
+    }
 
     private bool CanTributeLeviaForHandSummon()
     {

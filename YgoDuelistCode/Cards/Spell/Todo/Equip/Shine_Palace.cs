@@ -14,8 +14,8 @@ public sealed class Shine_Palace : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light;
+    //public override YgoCardPackTags PackTags =>
+    //    YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light;
 
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 

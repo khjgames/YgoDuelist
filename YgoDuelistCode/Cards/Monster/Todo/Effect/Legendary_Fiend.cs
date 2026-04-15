@@ -25,7 +25,7 @@ public sealed class Legendary_Fiend : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 15,
             baseDef: 18,
-            baseMgc: 0,
+            baseMgc: 5,
             duelMonsterRace: DuelMonsterRace.Fiend,
             duelMonsterAttackPlayEnergyOverride: 2)
     {
@@ -40,6 +40,6 @@ public sealed class Legendary_Fiend : EffectMonsterCard
     {
         await base.OnSummoned(player, choiceContext, duelMonsterPet);
         if (!duelMonsterPet.HasPower<LegendaryFiendAtkPower>())
-            await PowerCmd.Apply<LegendaryFiendAtkPower>(duelMonsterPet, 7m, player.Creature, this);
+            await PowerCmd.Apply<LegendaryFiendAtkPower>(duelMonsterPet, this.DynamicVars["Mgc"].BaseValue, player.Creature, this);
     }
 }

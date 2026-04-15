@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -26,7 +28,7 @@ public sealed class Lady_Assailant_of_Flames : EffectMonsterCard, IMonsterFlipEf
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
             baseAtk: 15,
             baseDef: 10,
-            baseMgc: 0,
+            baseMgc: 3,
             duelMonsterRace: DuelMonsterRace.Pyro)
     {
     }
@@ -35,6 +37,10 @@ public sealed class Lady_Assailant_of_Flames : EffectMonsterCard, IMonsterFlipEf
         YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Banish | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Lady_Assailant_of_Flames) };
+
+    /// <summary>FLIP banish count uses <c>Mgc</c>; Blight stacks use <c>Mgc2</c> (see <c>OnUpgrade</c>).</summary>
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", 10m) });
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {
@@ -69,6 +75,7 @@ public sealed class Lady_Assailant_of_Flames : EffectMonsterCard, IMonsterFlipEf
 
     protected override void OnUpgrade()
     {
+        base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 4m;
         DynamicVars["Mgc2"].BaseValue = 13m;
     }

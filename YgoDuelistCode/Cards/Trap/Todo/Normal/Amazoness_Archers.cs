@@ -19,10 +19,10 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 public sealed class Amazoness_Archers : BaseTrapCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[] { new DynamicVar("Mgc", 2m) };
+        new[] { new DynamicVar("Mgc", 3m) };
 
     public Amazoness_Archers()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 
@@ -42,5 +42,8 @@ public sealed class Amazoness_Archers : BaseTrapCard
         }
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade(){
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].BaseValue = 3m;
+    }
 }

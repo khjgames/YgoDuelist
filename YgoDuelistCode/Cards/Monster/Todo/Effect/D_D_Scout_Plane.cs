@@ -27,7 +27,7 @@ public sealed class D_D_Scout_Plane : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Machine | YgoCardPackTags.Banish;
+        YgoCardPackTags.Dark | YgoCardPackTags.Machine | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(D_D_Scout_Plane) };
 

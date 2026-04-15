@@ -550,6 +550,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             {
                 var title = new LocString("card_keywords", "20041.title");
                 var description = new LocString("cards", Id.Entry + ".flip_effect.description");
+                DynamicVars.AddTo(description);
                 tips.Add(new HoverTip(title, description));
             }
 

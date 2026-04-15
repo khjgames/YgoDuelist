@@ -24,7 +24,7 @@ public sealed class Exiled_Force : EffectMonsterCard, IMonsterActivatedEffect
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 10,
             baseDef: 10,
-            baseMgc: 0,
+            baseMgc: 10,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
@@ -65,12 +65,16 @@ public sealed class Exiled_Force : EffectMonsterCard, IMonsterActivatedEffect
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
-        await DamageCmd.Attack(10m)
+        await DamageCmd.Attack(DynamicVars["Mgc"].BaseValue)
             .FromCard(source)
             .Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].UpgradeValueBy(1m);
+    }
 }

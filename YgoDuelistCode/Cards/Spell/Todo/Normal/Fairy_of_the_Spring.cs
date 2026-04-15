@@ -25,6 +25,8 @@ public sealed class Fairy_of_the_Spring : BaseSpellCard, IYgoPrePlayCancelableGr
     {
     }
 
+    public override bool UseAlternateUpgradedDescription => true;
+
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
     protected override bool IsPlayable =>

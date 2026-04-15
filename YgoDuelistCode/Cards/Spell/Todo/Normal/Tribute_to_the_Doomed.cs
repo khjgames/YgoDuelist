@@ -22,7 +22,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 public sealed class Tribute_to_the_Doomed : BaseSpellCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[] { new DynamicVar("Mgc", 25m) };
+        new[] { new DynamicVar("Mgc", 11m) };
 
     public Tribute_to_the_Doomed()
         : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.SpellNormal)

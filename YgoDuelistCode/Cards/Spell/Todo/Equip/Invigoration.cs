@@ -14,8 +14,8 @@ public sealed class Invigoration : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+    //public override YgoCardPackTags PackTags =>
+    //    YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
 
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 

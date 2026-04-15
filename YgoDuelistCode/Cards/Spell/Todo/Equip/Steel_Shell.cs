@@ -14,8 +14,8 @@ public sealed class Steel_Shell : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Ocean;
+    //public override YgoCardPackTags PackTags =>
+    //    YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Ocean;
 
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 

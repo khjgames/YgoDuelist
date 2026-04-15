@@ -14,8 +14,8 @@ public sealed class Gust_Fan : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Wind;
+    //public override YgoCardPackTags PackTags =>
+    //    YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Wind;
 
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 

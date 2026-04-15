@@ -21,7 +21,7 @@ public sealed class Timeater : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Uncommon,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,

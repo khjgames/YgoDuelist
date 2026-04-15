@@ -28,7 +28,7 @@ public sealed class D_D_Warrior_Lady : EffectMonsterCard, IMonsterActivatedEffec
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 15,
             baseDef: 16,
-            baseMgc: 0,
+            baseMgc: 2,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
@@ -80,9 +80,12 @@ public sealed class D_D_Warrior_Lady : EffectMonsterCard, IMonsterActivatedEffec
         await CreatureCmd.Kill(pet, force: true);
         await YgoBanishedService.BanishCard(player, source);
 
-        decimal vuln = source.IsUpgraded ? 3m : 2m;
-        await PowerCmd.Apply<VulnerablePower>(target, vuln, player.Creature, source);
+        await PowerCmd.Apply<VulnerablePower>(target, DynamicVars["Mgc"].BaseValue, player.Creature, source);
     }
 
-    protected override void OnUpgrade() => base.OnUpgrade();
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 3m;
+    }
 }

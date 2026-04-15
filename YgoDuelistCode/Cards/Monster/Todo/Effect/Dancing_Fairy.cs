@@ -15,13 +15,13 @@ public sealed class Dancing_Fairy : EffectMonsterCard
         : base(
             cost: 2,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
             baseAtk: 17,
             baseDef: 10,
-            baseMgc: 0,
+            baseMgc: 10,
             duelMonsterRace: DuelMonsterRace.Fairy)
     {
     }
@@ -37,7 +37,7 @@ public sealed class Dancing_Fairy : EffectMonsterCard
         if (Type != CardType.Skill)
             return;
 
-        await CreatureCmd.GainBlock(Owner.Creature, 10m, default, cardPlay);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars["Mgc"].BaseValue, default, cardPlay);
         await CreatureCmd.Heal(Owner.Creature, 1m);
     }
 }

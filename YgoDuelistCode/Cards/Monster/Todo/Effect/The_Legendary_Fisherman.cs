@@ -28,7 +28,7 @@ public sealed class The_Legendary_Fisherman : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Warrior;
+        YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Warrior;
 
     public override Type[] RelatedCards => new[] { typeof(The_Legendary_Fisherman), typeof(Umi), typeof(A_Legendary_Ocean) };
 

@@ -39,4 +39,11 @@ public sealed class Dark_Zebra : EffectMonsterCard
         List<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(owner)?.ToList() ?? [];
         return !(field.Count == 1 && field[0] == this);
     }
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars.Damage.UpgradeValueBy(2);
+    }
+
 }

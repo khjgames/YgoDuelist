@@ -66,8 +66,9 @@ public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
             return;
 
         await CardCmd.Discard(choiceContext, spell);
-
-        await PowerCmd.Apply<ArtifactPower>(Owner.Creature, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
+        
+        await PowerCmd.Apply<ArtifactPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<PlatingPower>(Owner.Creature, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);

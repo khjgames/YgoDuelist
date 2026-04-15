@@ -29,18 +29,4 @@ public sealed class Twin_Headed_Wolf : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
-
-    public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
-    {
-        Player? atkPlayer = command.Attacker.Player;
-        if (atkPlayer?.Creature == null || !YgoExecuteKillShared.PlayerControlsAtLeastTwoFiendsOnField(atkPlayer))
-            return;
-        foreach (var r in command.Results)
-        {
-            if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
-                continue;
-            await PowerCmd.Apply<StrengthPower>(command.Attacker, 1m, atkPlayer.Creature, this);
-            await PowerCmd.Apply<ArtifactPower>(command.Attacker, 1m, atkPlayer.Creature, this);
-        }
-    }
 }

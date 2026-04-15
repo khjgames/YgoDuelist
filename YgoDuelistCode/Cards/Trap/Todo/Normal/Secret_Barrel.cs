@@ -26,7 +26,7 @@ public sealed class Secret_Barrel : BaseTrapCard
         };
 
     public Secret_Barrel()
-        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
     // Dictates the card pack tags this card will be included in.
@@ -50,6 +50,14 @@ public sealed class Secret_Barrel : BaseTrapCard
         if (Owner?.Creature?.CombatState == null)
             return;
 
+        if (Owner?.Creature == null)
+            return;
+
+        Creature? target = cardPlay.Target;
+        if (target == null || !target.IsAlive || !target.CombatId.HasValue)
+            return;
+
+
         var handPile = PileType.Hand.GetPile(Owner);
         int hits = handPile?.Cards?.Count ?? 0;
         if (hits <= 0)
@@ -64,15 +72,7 @@ public sealed class Secret_Barrel : BaseTrapCard
 
         for (int i = 0; i < hits; i++)
         {
-            List<Creature> enemies = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
-            if (enemies.Count == 0)
-                return;
-
-            Creature? victim = YgoDeterministicRng.PickOne(cs, enemies, $"SECRET_BARREL-{Id.Entry}-{i}", mix);
-            if (victim == null || !victim.IsAlive)
-                continue;
-
-            await CreatureCmd.Damage(choiceContext, victim, dmg, ValueProp.Unpowered, Owner.Creature, this);
+            await CreatureCmd.Damage(choiceContext, target, dmg, ValueProp.Unpowered, Owner.Creature, this);
         }
     }
 

@@ -16,13 +16,13 @@ public sealed class Insect_Soldiers_of_the_Sky : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,
             baseAtk: 10,
             baseDef: 8,
-            baseMgc: 7,
+            baseMgc: 6,
             duelMonsterRace: DuelMonsterRace.Insect)
     {
     }
@@ -50,6 +50,6 @@ public sealed class Insect_Soldiers_of_the_Sky : EffectMonsterCard
     protected override void OnUpgrade()
     {
         base.OnUpgrade();
-        DynamicVars["Mgc"].BaseValue = 12m;
+        DynamicVars["Mgc"].BaseValue = 8m;
     }
 }

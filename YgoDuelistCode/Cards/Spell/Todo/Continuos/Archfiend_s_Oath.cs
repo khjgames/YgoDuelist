@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
@@ -17,7 +18,10 @@ public sealed class Archfiend_s_Oath : BaseContinuousSpellCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Fiend;
+        YgoCardPackTags.Spell | YgoCardPackTags.Draw | YgoCardPackTags.Fiend;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", 5m) };
 
     public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 
@@ -30,5 +34,9 @@ public sealed class Archfiend_s_Oath : BaseContinuousSpellCard
         await PowerCmd.Apply<Archfiend_s_Oath_FieldPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].BaseValue = 3m;
+    }
 }

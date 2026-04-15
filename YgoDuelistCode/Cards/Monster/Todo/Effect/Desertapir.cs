@@ -38,8 +38,7 @@ public sealed class Desertapir : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Desertapir) };
 

@@ -35,7 +35,7 @@ public sealed class Chaos_Command_Magician : EffectMonsterCard
         if (Owner?.Creature == null)
             return;
 
-        await PowerCmd.Apply<ArtifactPower>(Owner.Creature, 2m, Owner.Creature, this);
+        await PowerCmd.Apply<ArtifactPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();

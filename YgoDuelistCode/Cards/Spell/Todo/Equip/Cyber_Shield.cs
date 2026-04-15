@@ -14,8 +14,8 @@ public sealed class Cyber_Shield : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Machine;
+    //public override YgoCardPackTags PackTags =>
+    //     YgoCardPackTags.Spell | YgoCardPackTags.Machine;
 
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 

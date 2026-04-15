@@ -20,7 +20,7 @@ public sealed class Outstanding_Dog_Marron : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 1,
             baseDef: 1,
-            baseMgc: 0,
+            baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.Beast)
     {
     }
@@ -28,4 +28,10 @@ public sealed class Outstanding_Dog_Marron : EffectMonsterCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Outstanding_Dog_Marron) };
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 2m;
+    }
 }

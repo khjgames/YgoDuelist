@@ -33,6 +33,9 @@ public sealed class MonsterCommandState
     /// <summary>D.D. Warrior Lady: Activate Effect usable after this pet resolved an attack this turn.</summary>
     public bool WarriorLadyBanishWindowActive;
 
+    /// <summary>D.D. Warrior: Activate Effect usable after this pet resolved an attack this turn.</summary>
+    public bool WarriorBanishWindowActive;
+
     /// <summary>Exarion Universe: activated effect — Splinter on attacks and -4 ATK until end of turn.</summary>
     public bool ExarionUniversePiercingStanceThisTurn;
 
@@ -309,6 +312,7 @@ public static class MonsterCommandRegistry
                 continue;
             s.ZeroEnergyMonsterCommandsThisTurn = false;
             s.WarriorLadyBanishWindowActive = false;
+            s.WarriorBanishWindowActive = false;
             s.ExarionUniversePiercingStanceThisTurn = false;
             s.KarateManBurstAtkThisTurn = false;
             s.KarateManDestroyAtEndOfOwnerTurn = false;
