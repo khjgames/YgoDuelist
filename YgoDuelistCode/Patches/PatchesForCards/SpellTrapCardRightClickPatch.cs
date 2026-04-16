@@ -7,8 +7,6 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -30,21 +28,12 @@ internal static class SpellTrapCardRightClickPatch
 
     public static void TryToggleSpellTrapAndRefresh(NCardHolder holder)
     {
-        if (holder is NHandCardHolder handFt
-            && holder.CardNode?.Model is Ominous_Fortunetelling fort
-            && fort.Pile?.Type == SpellTrapZonePile.CustomType
-            && !fort.FaceDown)
+        if (holder is NHandCardHolder zoneHand
+            && holder.CardNode?.Model is IYgoCardZoneRightClick zoneRc)
         {
-            if (Ominous_Fortunetelling.TryHandleZoneRightClick(handFt, fort))
-                return;
-        }
-
-        if (holder is NHandCardHolder handFusion
-            && holder.CardNode?.Model is Fusion_Gate fusionGate
-            && fusionGate.Pile?.Type == SpellTrapZonePile.CustomType
-            && !fusionGate.FaceDown)
-        {
-            if (Fusion_Gate.TryHandleZoneRightClick(handFusion, fusionGate))
+            CardModel model = holder.CardNode.Model;
+            if (MatchesRightClickActivation(model, zoneRc.RightClickActivationMask)
+                && zoneRc.TryHandleCardZoneRightClick(zoneHand))
                 return;
         }
 
@@ -68,6 +57,26 @@ internal static class SpellTrapCardRightClickPatch
                 return;
             RefreshHolder(holder);
         }
+    }
+
+    private static bool MatchesRightClickActivation(CardModel card, YgoCardRightClickActivation mask)
+    {
+        if (mask == YgoCardRightClickActivation.None)
+            return false;
+
+        bool faceUp = card is BaseSpellCard s ? !s.FaceDown : card is BaseTrapCard t && !t.FaceDown;
+
+        if ((mask & YgoCardRightClickActivation.SpellTrapZoneFaceUp) != 0
+            && card.Pile?.Type == SpellTrapZonePile.CustomType
+            && faceUp)
+            return true;
+
+        if ((mask & YgoCardRightClickActivation.OptionPileFaceUp) != 0
+            && card.Pile?.Type == YgoCardOptionPile.CustomType
+            && faceUp)
+            return true;
+
+        return false;
     }
 
     internal static void RefreshHolder(NCardHolder holder)

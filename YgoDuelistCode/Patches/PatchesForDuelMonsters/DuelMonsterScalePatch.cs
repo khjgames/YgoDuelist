@@ -4,6 +4,8 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Entities.Players;
+using YgoDuelistCharacter = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -24,6 +26,12 @@ public static class DuelMonsterScalePatch
         // Keep this specific summon tiny and interactable.
         nCreature.SetDefaultScaleTo(DuelMonsterSummon.DuelMonsterScale, 0f);
         nCreature.ToggleIsInteractable(on: true);
+
+        if (creature.PetOwner is Player ownerPl && ownerPl.Character is YgoDuelistCharacter)
+        {
+            nCreature.ZAsRelative = false;
+            nCreature.ZIndex = 140;
+        }
 
         var room = NCombatRoom.Instance;
         var player = creature.PetOwner?.Creature ?? creature;
@@ -79,6 +87,12 @@ public static class DuelMonsterScalePatch
 
             dn.Position = new Vector2(basePos.X + xOffset, basePos.Y + yOffset);
             dn.ToggleIsInteractable(on: true);
+
+            if (dn.Entity.PetOwner is Player rowOwner && rowOwner.Character is YgoDuelistCharacter)
+            {
+                dn.ZAsRelative = false;
+                dn.ZIndex = 140;
+            }
 
             // Swap the simple sprite's texture to the card portrait, if available.
             if (dn.Entity.Monster is DuelMonsterModel m && !string.IsNullOrEmpty(m.PortraitPath))

@@ -153,6 +153,9 @@ public static class DuelMonsterPetDeathPatch
             // Remove from field/command registries so it no longer affects stats or menus.
             DuelMonsterFieldRegistry.UnregisterPet(pet);
             MonsterCommandRegistry.Clear(pet);
+
+            NotifyZoneCardsAfterDuelMonsterDied(player, ctx);
+
             if (card is Enraged_Battle_Ox)
                 TaskHelper.RunSafely(EnragedBattleOxService.SyncPlayerPowerAsync(player));
             if (player?.Creature != null)
@@ -187,6 +190,19 @@ public static class DuelMonsterPetDeathPatch
         catch (Exception e)
         {
             MainFile.Logger.Error($"DuelMonsterPetDeathPatch error: {e}");
+        }
+    }
+
+    private static void NotifyZoneCardsAfterDuelMonsterDied(Player player, DuelMonsterPetDeathContext ctx)
+    {
+        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        if (zone == null)
+            return;
+
+        foreach (CardModel c in zone.Cards.ToList())
+        {
+            if (c is IYgoAfterDuelMonsterDiedZoneCard hook)
+                RunRelocationBlocking(() => hook.AfterDuelMonsterDiedAsync(ctx));
         }
     }
 

@@ -20,7 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 /// Field Spell: remains face-up in the field zone. Right-click during your turn to Fusion Summon
 /// (materials banished). Purple highlight while at least one legal fusion is possible.
 /// </summary>
-public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource
+public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource, IYgoCardZoneRightClick
 {
     private bool _fusionGateFlowActive;
 
@@ -54,6 +54,12 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource
     {
         EnergyCost.UpgradeBy(-1);
     }
+
+    public YgoCardRightClickActivation RightClickActivationMask =>
+        YgoCardRightClickActivation.SpellTrapZoneFaceUp;
+
+    public bool TryHandleCardZoneRightClick(NHandCardHolder holder) =>
+        TryHandleZoneRightClick(holder, this);
 
     /// <summary>Right-click on this card in the Spell/Trap zone (second hand). Returns true if the click was consumed.</summary>
     public static bool TryHandleZoneRightClick(NHandCardHolder holder, Fusion_Gate card)

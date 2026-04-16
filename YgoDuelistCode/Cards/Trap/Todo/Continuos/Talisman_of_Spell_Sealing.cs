@@ -13,7 +13,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
-public sealed class Talisman_of_Spell_Sealing : BaseContinuousTrapCard
+public sealed class Talisman_of_Spell_Sealing : BaseContinuousTrapCard, IYgoAfterDuelMonsterDiedZoneCard
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 2m) };
@@ -22,7 +22,10 @@ public sealed class Talisman_of_Spell_Sealing : BaseContinuousTrapCard
         : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
-    
+
+    public Task AfterDuelMonsterDiedAsync(DuelMonsterPetDeathContext ctx) =>
+        YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(ctx.Player);
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && YgoSealmasterMeiseiGate.HasFaceUpSealmaster(Owner);

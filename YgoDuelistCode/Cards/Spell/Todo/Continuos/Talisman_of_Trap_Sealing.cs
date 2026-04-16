@@ -4,23 +4,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Entities.Multiplayer;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
-public sealed class Talisman_of_Trap_Sealing : BaseContinuousSpellCard
+public sealed class Talisman_of_Trap_Sealing
+    : BaseContinuousSpellCard, IYgoCardZoneRightClick, IYgoAfterDuelMonsterDiedZoneCard
 {
     private const string AnnualKey = "TALISMAN_TRAP_SEALING";
+
+    private bool _activationFlowActive;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 2m) };
@@ -29,8 +34,39 @@ public sealed class Talisman_of_Trap_Sealing : BaseContinuousSpellCard
         : base(0, CardRarity.Uncommon, TargetType.Self)
     {
     }
-        
+
     public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
+
+    public YgoCardRightClickActivation RightClickActivationMask =>
+        YgoCardRightClickActivation.SpellTrapZoneFaceUp;
+
+    public Task AfterDuelMonsterDiedAsync(DuelMonsterPetDeathContext ctx) =>
+        YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(ctx.Player);
+
+    public bool TryHandleCardZoneRightClick(NHandCardHolder holder)
+    {
+        if (!IsLocalControllingOwner(this))
+            return false;
+
+        if (_activationFlowActive)
+            return true;
+
+        if (Owner == null || Pile?.Type != SpellTrapZonePile.CustomType || FaceDown)
+            return false;
+
+        if (!YgoSealmasterMeiseiGate.HasFaceUpSealmaster(Owner))
+            return false;
+
+        if (!YgoAnnualTracker.IsAnnualAvailable(Owner, AnnualKey))
+            return false;
+
+        CardPile? hand = PileType.Hand.GetPile(Owner);
+        if (hand?.Cards.Any(IsStatusOrCurse) != true)
+            return false;
+
+        _ = RunTrapSealingActivationAsync(holder);
+        return true;
+    }
 
     protected override bool IsPlayable
     {
@@ -50,24 +86,43 @@ public sealed class Talisman_of_Trap_Sealing : BaseContinuousSpellCard
         }
     }
 
-    protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        if (Owner == null)
-            return;
-
-        // Initial activation from hand/set just moves this card face-up into the zone.
-        if (Pile?.Type != SpellTrapZonePile.CustomType || FaceDown)
-            return;
-
-        if (!YgoSealmasterMeiseiGate.HasFaceUpSealmaster(Owner))
-            return;
-        if (!YgoAnnualTracker.TryConsumeAnnual(Owner, AnnualKey))
-            return;
-
-        await ExhaustStatusesOrCursesAsync(choiceContext, Owner);
-    }
+    protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
+        Task.CompletedTask;
 
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
+
+    private static bool IsLocalControllingOwner(CardModel card)
+    {
+        if (card.Owner?.RunState == null)
+            return false;
+        Player? me = LocalContext.GetMe(card.Owner.RunState);
+        return me != null && ReferenceEquals(me, card.Owner);
+    }
+
+    private async Task RunTrapSealingActivationAsync(NHandCardHolder holder)
+    {
+        _activationFlowActive = true;
+        try
+        {
+            Player? player = Owner;
+            if (player == null)
+                return;
+
+            if (!YgoSealmasterMeiseiGate.HasFaceUpSealmaster(player))
+                return;
+
+            if (!YgoAnnualTracker.TryConsumeAnnual(player, AnnualKey))
+                return;
+
+            var ctx = new BlockingPlayerChoiceContext();
+            await ExhaustStatusesOrCursesAsync(ctx, player);
+        }
+        finally
+        {
+            _activationFlowActive = false;
+            SpellTrapCardRightClickPatch.RefreshHolder(holder);
+        }
+    }
 
     private async Task ExhaustStatusesOrCursesAsync(PlayerChoiceContext choiceContext, Player player)
     {

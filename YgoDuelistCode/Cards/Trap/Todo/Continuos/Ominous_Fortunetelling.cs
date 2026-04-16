@@ -21,7 +21,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
-public sealed class Ominous_Fortunetelling : BaseContinuousTrapCard
+public sealed class Ominous_Fortunetelling : BaseContinuousTrapCard, IYgoCardZoneRightClick
 {
     private static readonly LocString GuessPrompt = new("combat_messages", "OMINOUS_FORTUNETELLING_GUESS_PROMPT");
 
@@ -72,6 +72,12 @@ public sealed class Ominous_Fortunetelling : BaseContinuousTrapCard
     {
         _activationsLeftThisTurn = IsUpgraded ? 2 : 1;
     }
+
+    public YgoCardRightClickActivation RightClickActivationMask =>
+        YgoCardRightClickActivation.SpellTrapZoneFaceUp;
+
+    public bool TryHandleCardZoneRightClick(NHandCardHolder holder) =>
+        TryHandleZoneRightClick(holder, this);
 
     /// <summary>Right-click on this card in the Spell/Trap zone (second hand). Returns true if the click was consumed.</summary>
     public static bool TryHandleZoneRightClick(NHandCardHolder holder, Ominous_Fortunetelling card)

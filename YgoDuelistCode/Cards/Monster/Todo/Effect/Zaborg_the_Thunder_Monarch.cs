@@ -39,6 +39,10 @@ public sealed class Zaborg_the_Thunder_Monarch : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Zaborg_the_Thunder_Monarch) };
 
+    /// <inheritdoc cref="BaseMonsterCard.NonAttackPlayTargetType" />
+    /// <remarks>Tribute summon from skill (defense) stance still needs an enemy target for the optional blight.</remarks>
+    protected override TargetType NonAttackPlayTargetType => TargetType.AnyEnemy;
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         _handPlayEnemyTarget = cardPlay.Target;
