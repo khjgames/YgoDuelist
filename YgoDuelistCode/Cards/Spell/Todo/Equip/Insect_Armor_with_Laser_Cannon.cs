@@ -13,7 +13,7 @@ public sealed class Insect_Armor_with_Laser_Cannon : BaseEquipSpellCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Insect;
+        YgoCardPackTags.Spell | YgoCardPackTags.Insect;
 
     public override bool CanEquipTo(BaseMonsterCard target) => true;
 

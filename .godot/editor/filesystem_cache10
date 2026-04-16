@@ -1,15 +1,15 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1776219749
+::res://::1776239515
 export_presets.cfg::TextFile::-1::1773513087::0::1::::<><><>0<>0<><>::
 MainFile.cs::CSharpScript::4205972269297282253::1776106903::0::1::::<><><>0<>0<><>::
 monster_no_packtags.txt::TextFile::-1::1775731862::0::1::::<><><>0<>0<><>::
 README.md::TextFile::-1::1773577795::0::1::::<><><>0<>0<><>::
 t.txt::TextFile::-1::1775731862::0::1::::<><><>0<>0<><>::
-YgoDuelist.json::JSON::-1::1775731851::0::1::::<><><>0<>0<><>::
+YgoDuelist.json::JSON::-1::1776239515::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1776238753
+::res://bin/ExportRelease/net9.0/publish/::1776239440
 YgoDuelist.deps.json::JSON::-1::1776213648::0::1::::<><><>0<>0<><>::
 ::res://docs/::1775731862
 card_database_import.schema.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
@@ -2975,7 +2975,7 @@ Red_Eyes_Black_Metal_Dragon.cs::CSharpScript::1614273021088436676::1775731858::0
 Reflect_Bounder.cs::CSharpScript::4501340474453667339::1775731858::0::1::::<><><>0<>0<><>::
 Regenerating_Mummy.cs::CSharpScript::9035979183031314087::1775731858::0::1::::<><><>0<>0<><>::
 Revival_Jam.cs::CSharpScript::6578567831571835174::1775731858::0::1::::<><><>0<>0<><>::
-Rigorous_Reaver.cs::CSharpScript::5391638803530587831::1776207699::0::1::::<><><>0<>0<><>::
+Rigorous_Reaver.cs::CSharpScript::5391638803530587831::1776239375::0::1::::<><><>0<>0<><>::
 Rocket_Jumper.cs::CSharpScript::3804975247579457410::1776222658::0::1::::<><><>0<>0<><>::
 Rocket_Warrior.cs::CSharpScript::8134662945693315136::1775731858::0::1::::<><><>0<>0<><>::
 Rose_Witch.cs::CSharpScript::3149592459428867603::1775731858::0::1::::<><><>0<>0<><>::
@@ -3008,7 +3008,7 @@ Skilled_White_Magician.cs::CSharpScript::1466060603613186819::1776154775::0::1::
 Skull_Archfiend_of_Lightning.cs::CSharpScript::5590366513075675879::1775731858::0::1::::<><><>0<>0<><>::
 Skull_Knight_2.cs::CSharpScript::6754469176017860665::1775731858::0::1::::<><><>0<>0<><>::
 Skull_Mark_Ladybug.cs::CSharpScript::829791540865336901::1775731858::0::1::::<><><>0<>0<><>::
-Slate_Warrior.cs::CSharpScript::4081894786308303777::1775731858::0::1::::<><><>0<>0<><>::
+Slate_Warrior.cs::CSharpScript::4081894786308303777::1776239395::0::1::::<><><>0<>0<><>::
 Slifer_the_Sky_Dragon.cs::CSharpScript::5413566064541584968::1776220653::0::1::::<><><>0<>0<><>::
 Solar_Flare_Dragon.cs::CSharpScript::1513315703687828497::1776194923::0::1::::<><><>0<>0<><>::
 Sonic_Bird.cs::CSharpScript::8629703773934322894::1776205051::0::1::::<><><>0<>0<><>::
