@@ -37,16 +37,6 @@ public static class PlayCardActionEmergencyProvisionsPatch
         if (!CombatManager.Instance.IsInProgress)
             return true;
 
-        try
-        {
-            if (!LocalContext.IsMe(__instance.Player))
-                return true;
-        }
-        catch
-        {
-            return true;
-        }
-
         var card = __instance.NetCombatCard.ToCardModel();
         if (card is not Emergency_Provisions)
             return true;
@@ -140,7 +130,8 @@ public static class PlayCardActionEmergencyProvisionsPatch
         if (warnMissingTarget)
             Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
 
-        if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+        bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+        if (!observingOtherPlayer && (!card.CanPlay(out _, out _) || !card.IsValidTarget(target)))
         {
             action.Cancel();
             return;

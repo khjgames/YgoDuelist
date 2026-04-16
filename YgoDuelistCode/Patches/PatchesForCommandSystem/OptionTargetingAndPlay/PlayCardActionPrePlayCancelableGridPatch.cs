@@ -1,16 +1,20 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -32,27 +36,72 @@ public static class PlayCardActionPrePlayCancelableGridPatch
         if (!CombatManager.Instance.IsInProgress)
             return true;
 
-        try
-        {
-            if (!LocalContext.IsMe(__instance.Player))
-                return true;
-        }
-        catch
-        {
-            return true;
-        }
-
         CardModel? card = __instance.NetCombatCard.ToCardModel();
         if (card is not IYgoPrePlayCancelableGridSelection preplay)
             return true;
 
-        bool fromHand = card.Pile?.Type == PileType.Hand;
-        bool fromSpellTrapZone = card.Pile?.Type == SpellTrapZonePile.CustomType;
-        bool fromOptionPile = card.Pile?.Type == YgoCardOptionPile.CustomType;
-        if (!fromHand && !fromSpellTrapZone && !fromOptionPile)
+        if (!TryResolveAllowedPrePlayPlaySource(__instance.Player, card, out string sourceTag))
             return true;
 
+        if (sourceTag.EndsWith("_infer", StringComparison.Ordinal))
+            GD.PrintErr(
+                $"[YgoDuelist][MP][PrePlayGrid] pile_infer source={sourceTag} owner={__instance.Player?.NetId} card={card.Id?.Entry} " +
+                $"pileType={(int)(card.Pile?.Type ?? 0)} (MP observer / stale Pile reference)");
+
         __result = ExecuteWithPrePlayGridAsync(__instance, card, preplay);
+        return false;
+    }
+
+    /// <summary>
+    /// Pre-play grid must run on <b>every</b> peer for lockstep. Remote <see cref="CardModel.Pile"/> is often null or not
+    /// reference-equal to the zone pile even when the card is in hand / spell-trap / option row — then we would skip this
+    /// patch, run vanilla <see cref="PlayCardAction"/> (no grid, no <see cref="CardModel.OnPlayWrapper"/>), and checksum diverges.
+    /// </summary>
+    private static bool TryResolveAllowedPrePlayPlaySource(Player? player, CardModel card, out string sourceTag)
+    {
+        sourceTag = "";
+        if (player == null)
+            return false;
+
+        if (card.Pile?.Type == PileType.Hand)
+        {
+            sourceTag = "hand";
+            return true;
+        }
+
+        if (card.Pile?.Type == SpellTrapZonePile.CustomType)
+        {
+            sourceTag = "spell_trap_zone";
+            return true;
+        }
+
+        if (card.Pile?.Type == YgoCardOptionPile.CustomType)
+        {
+            sourceTag = "option_pile";
+            return true;
+        }
+
+        if (RunManager.Instance?.NetService.Type == NetGameType.Singleplayer)
+            return false;
+
+        if (PileType.Hand.GetPile(player)?.Cards.Contains(card) == true)
+        {
+            sourceTag = "hand_infer";
+            return true;
+        }
+
+        if (SpellTrapZonePile.CustomType.GetPile(player)?.Cards.Contains(card) == true)
+        {
+            sourceTag = "spell_trap_zone_infer";
+            return true;
+        }
+
+        if (YgoCardOptionPile.CustomType.GetPile(player)?.Cards.Contains(card) == true)
+        {
+            sourceTag = "option_pile_infer";
+            return true;
+        }
+
         return false;
     }
 
@@ -61,15 +110,31 @@ public static class PlayCardActionPrePlayCancelableGridPatch
         CardModel card,
         IYgoPrePlayCancelableGridSelection preplay)
     {
+        bool localOwner;
+        try
+        {
+            localOwner = LocalContext.IsMe(action.Player);
+        }
+        catch
+        {
+            localOwner = false;
+        }
+
+        GD.Print(
+            $"[YgoDuelist][MP][PrePlayGrid] begin owner={action.Player.NetId} localOwner={localOwner} card={card.Id?.Entry}");
         try
         {
             if (!await preplay.TryPreparePrePlayCancelableGridAsync(action.Player, card))
             {
+                GD.Print(
+                    $"[YgoDuelist][MP][PrePlayGrid] canceled_before_play owner={action.Player.NetId} localOwner={localOwner} card={card.Id?.Entry}");
                 action.Cancel();
                 return;
             }
 
             await ExecuteVanillaPlayCardActionBody(action);
+            GD.Print(
+                $"[YgoDuelist][MP][PrePlayGrid] execute_complete owner={action.Player.NetId} localOwner={localOwner} card={card.Id?.Entry}");
         }
         finally
         {
@@ -87,16 +152,18 @@ public static class PlayCardActionPrePlayCancelableGridPatch
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
 
-        CardPile? pile = card.Pile;
-        bool pileOk = pile != null
-            && (pile.Type == PileType.Hand
-                || pile.Type == SpellTrapZonePile.CustomType
-                || pile.Type == YgoCardOptionPile.CustomType);
+        bool pileOk = TryResolveAllowedPrePlayPlaySource(action.Player, card, out string sourceTagBody);
         if (!pileOk)
         {
+            GD.PrintErr(
+                $"[YgoDuelist][MP][PrePlayGrid] execute_abort_no_pile owner={action.Player?.NetId} card={card.Id?.Entry} pileNull={card.Pile == null}");
             NCardPlayQueue.Instance?.RemoveCardFromQueueForCancellation(action);
             return;
         }
+
+        if (sourceTagBody.EndsWith("_infer", StringComparison.Ordinal))
+            GD.PrintErr(
+                $"[YgoDuelist][MP][PrePlayGrid] execute_pile_infer source={sourceTagBody} owner={action.Player?.NetId} card={card.Id?.Entry}");
 
         bool warnMissingTarget = target == null;
         if (warnMissingTarget)
@@ -107,8 +174,14 @@ public static class PlayCardActionPrePlayCancelableGridPatch
 
         if (warnMissingTarget)
             Log.Warn($"Attempted to play card {card} with TargetType of type 'Any', but no target was passed to the play card action!");
+        bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+        if (observingOtherPlayer)
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][PrePlayGrid] observing_remote_skip_playability_checks owner={action.Player.NetId} card={card.Id?.Entry}");
+        }
 
-        if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+        if (!observingOtherPlayer && (!card.CanPlay(out _, out _) || !card.IsValidTarget(target)))
         {
             action.Cancel();
             return;

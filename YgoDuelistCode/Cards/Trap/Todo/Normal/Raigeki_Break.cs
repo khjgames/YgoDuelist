@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -27,6 +28,7 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
         : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Uncommon, target: TargetType.AnyEnemy, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
+
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Trap;
 
@@ -46,8 +48,14 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
         var candidates = GetDestroyableHandCards(player, sourceCard);
+        GD.Print(
+            $"[YgoDuelist][MP][RaigekiBreak] preplay_begin owner={player.NetId} source={sourceCard.Id?.Entry} candidates={candidates.Count}");
         if (candidates.Count == 0)
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][RaigekiBreak] preplay_cancel_no_candidates owner={player.NetId} source={sourceCard.Id?.Entry}");
             return false;
+        }
 
         var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
 
@@ -62,14 +70,22 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
         }
         catch (OperationCanceledException)
         {
+            GD.Print(
+                $"[YgoDuelist][MP][RaigekiBreak] preplay_cancel_user owner={player.NetId} source={sourceCard.Id?.Entry}");
             return false;
         }
 
         var chosen = selected.FirstOrDefault();
         if (chosen == null || !candidates.Contains(chosen))
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][RaigekiBreak] preplay_cancel_invalid_choice owner={player.NetId} source={sourceCard.Id?.Entry}");
             return false;
+        }
 
         YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
+        GD.Print(
+            $"[YgoDuelist][MP][RaigekiBreak] preplay_confirm owner={player.NetId} source={sourceCard.Id?.Entry} discard={chosen.Id?.Entry}");
         return true;
     }
 
@@ -82,15 +98,27 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
             return;
 
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? chosen) || chosen == null)
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][RaigekiBreak] onplay_missing_payload owner={player.NetId} source={Id?.Entry}");
             return;
+        }
 
         var hand = PileType.Hand.GetPile(player);
         if (hand == null || !hand.Cards.Contains(chosen))
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][RaigekiBreak] onplay_chosen_not_in_hand owner={player.NetId} source={Id?.Entry} discard={chosen.Id?.Entry}");
             return;
+        }
 
+        GD.Print(
+            $"[YgoDuelist][MP][RaigekiBreak] onplay_send_to_grave owner={player.NetId} source={Id?.Entry} discard={chosen.Id?.Entry}");
         await SendHandCardToGraveyard(choiceContext, player, chosen);
 
         await PowerCmd.Apply<BlightPower>(cardPlay.Target, DynamicVars["Mgc"].BaseValue, base.Owner.Creature, this);
+        GD.Print(
+            $"[YgoDuelist][MP][RaigekiBreak] onplay_apply_blight owner={player.NetId} source={Id?.Entry} target={cardPlay.Target.ModelId}");
     }
 
     private static List<CardModel> GetDestroyableHandCards(Player player, CardModel sourceCard)

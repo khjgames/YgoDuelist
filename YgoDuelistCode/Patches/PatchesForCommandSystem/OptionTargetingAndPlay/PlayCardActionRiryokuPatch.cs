@@ -31,16 +31,6 @@ public static class PlayCardActionRiryokuPatch
         if (!CombatManager.Instance.IsInProgress)
             return true;
 
-        try
-        {
-            if (!LocalContext.IsMe(__instance.Player))
-                return true;
-        }
-        catch
-        {
-            return true;
-        }
-
         var card = __instance.NetCombatCard.ToCardModel();
         if (card is not Riryoku)
             return true;
@@ -127,7 +117,8 @@ public static class PlayCardActionRiryokuPatch
             return;
         }
 
-        if (!card.CanPlay(out _, out _) || !card.IsValidTarget(target))
+        bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+        if (!observingOtherPlayer && (!card.CanPlay(out _, out _) || !card.IsValidTarget(target)))
         {
             action.Cancel();
             return;
