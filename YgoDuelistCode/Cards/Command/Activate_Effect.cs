@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
@@ -18,6 +19,8 @@ public sealed class Activate_Effect : MonsterCommandCard
     private IMonsterActivatedEffect? Effect => SourceMonster as IMonsterActivatedEffect;
 
     protected override bool MirrorSourceMonsterUpgradeVisual => true;
+
+    internal override bool LogsOptionPileLifecycle => true;
 
     protected internal override string? CommandEnergyIconPrefix => "silent";
 
@@ -82,5 +85,28 @@ public sealed class Activate_Effect : MonsterCommandCard
             await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
 
         await impl.OnActivatedEffect(choiceContext, cardPlay, SourceMonster);
+    }
+
+    internal bool TryGetPileDescriptionForActivateEffect(ref string result)
+    {
+        if (SourceMonster is not NormalMonsterCard sourceMonster || sourceMonster is not IMonsterActivatedEffect impl)
+            return false;
+        var loc = new LocString("cards", impl.ActivatedEffectDescriptionLocKey);
+        sourceMonster.DynamicVars.AddTo(loc);
+        string text = loc.GetFormattedText();
+        if (string.IsNullOrEmpty(text))
+            return false;
+        result = text;
+        return true;
+    }
+
+    internal bool TryGetTitleForActivateEffect(ref string result)
+    {
+        var loc = new LocString("cards", "YGODUELIST-ACTIVATE_EFFECT.title");
+        string text = loc.GetFormattedText();
+        if (string.IsNullOrEmpty(text))
+            return false;
+        result = text;
+        return true;
     }
 }

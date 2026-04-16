@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 /// <summary>At start of your turn, enemies with attack intent vs you ≥ <c>Mgc</c> get 1 Weak (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoGoraTurtleService"/>).</summary>
-public sealed class Gora_Turtle : EffectMonsterCard
+public sealed class Gora_Turtle : EffectMonsterCard, IYgoTurnStartWeakFromAttackIntent
 {
     public Gora_Turtle()
         : base(
@@ -26,6 +26,8 @@ public sealed class Gora_Turtle : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water;
+
+    public int AttackIntentWeakThreshold => (int)DynamicVars["Mgc"].BaseValue;
 
     protected override void OnUpgrade()
     {

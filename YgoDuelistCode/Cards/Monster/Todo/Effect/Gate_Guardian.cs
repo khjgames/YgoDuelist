@@ -157,6 +157,12 @@ public sealed class Gate_Guardian : EffectMonsterCard
         }
     }
 
+    public override void ApplyPostDeserializePrintedStatBonuses()
+    {
+        base.ApplyPostDeserializePrintedStatBonuses();
+        ApplySavedGateGuardianSummonDefBonusToPrintedDefense();
+    }
+
     internal void ApplySavedGateGuardianSummonDefBonusToPrintedDefense()
     {
         if (GateGuardianSummonPrintedDefBonus == 0 || DynamicVars == null)

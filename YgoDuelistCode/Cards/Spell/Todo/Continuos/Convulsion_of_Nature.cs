@@ -9,7 +9,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
-public sealed class Convulsion_of_Nature : BaseContinuousSpellCard
+public sealed class Convulsion_of_Nature : BaseContinuousSpellCard, IYgoConvulsionDrawPilePreviewSource
 {
     public Convulsion_of_Nature()
         : base(1, CardRarity.Uncommon, TargetType.Self)
@@ -32,6 +32,8 @@ public sealed class Convulsion_of_Nature : BaseContinuousSpellCard
     };
 
     public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
+
+    public bool IsFaceUpActiveForConvulsionDrawPreview() => !FaceDown;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

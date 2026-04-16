@@ -25,6 +25,8 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard
 
     public override bool UseAlternateUpgradedDescription => true;
 
+    public override bool CancelSpellTrapZonePlayWhenUnresolvedTargetAfterResolve => true;
+
     public Burst_Stream_of_Destruction()
         : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {

@@ -19,7 +19,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>
 /// When destroyed as a field monster, after this card hits the Graveyard: choose up to 2 cards there to add to your discard pile.
 /// </summary>
-public sealed class Keldo : EffectMonsterCard
+public sealed class Keldo : EffectMonsterCard, IYgoCustomFieldMonsterDeathGraveyardRelocation
 {
     private static readonly LocString GraveyardToDiscardPrompt =
         new("cards", "YGODUELIST-KELDO.destroy.graveyard_select");
@@ -45,14 +45,14 @@ public sealed class Keldo : EffectMonsterCard
     /// <summary>
     /// Called from <see cref="DuelMonsterPetDeathPatch"/> after the duel monster dies: move equips + this card to GY, then resolve the optional GY → discard selection.
     /// </summary>
-    internal static async Task RunAfterDestroyedOnFieldAsync(Player player, Keldo keldo, CardPile graveyard)
+    public async Task RunCustomFieldMonsterDeathGraveyardRelocationAsync(Player player, CardPile graveyard)
     {
         if (player == null || graveyard == null)
             return;
 
         await DuelMonsterPetDeathPatch.MoveEquipsToGraveyardThenMonsterToPileAsync(
             player,
-            keldo,
+            this,
             graveyard,
             graveyard);
 

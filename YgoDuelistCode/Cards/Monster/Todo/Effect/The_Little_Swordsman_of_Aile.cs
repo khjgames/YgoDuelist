@@ -79,6 +79,8 @@ public sealed class The_Little_Swordsman_of_Aile : EffectMonsterCard, IMonsterAc
     /// <summary>Clears the tribute ATK bonus at end of the player's turn (<see cref="MonsterCommandRegistry.ClearPerTurnExtrasForPlayer"/>).</summary>
     public void ClearTributeAtkBuffForTurnEnd() => _tributeAtkBonusThisTurn = 0;
 
+    public override void ClearTurnEndFieldBuffsFromMonsterCommandRegistry() => ClearTributeAtkBuffForTurnEnd();
+
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
         if (source is not The_Little_Swordsman_of_Aile || Owner?.PlayerCombatState == null)

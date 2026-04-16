@@ -172,6 +172,12 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
         }
     }
 
+    public override void ApplyPostDeserializePrintedStatBonuses()
+    {
+        base.ApplyPostDeserializePrintedStatBonuses();
+        ApplySavedObeliskActivatedEffectDefBonusToPrintedDefense();
+    }
+
     internal void ApplySavedObeliskActivatedEffectDefBonusToPrintedDefense()
     {
         if (ObeliskActivatedEffectPrintedDefBonus == 0 || DynamicVars == null)

@@ -238,6 +238,20 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         bool canAttackThisTurn) => Task.CompletedTask;
 
     /// <summary>
+    /// After field relocation toward graveyard in <see cref="Patches.DuelMonsterPetDeathPatch"/>, before registries clear.
+    /// Default: no-op. Override for powers that key off field presence (e.g. Enraged Battle Ox).
+    /// </summary>
+    public virtual Task OnAfterDuelMonsterPetDeathBeforeUnregisterAsync(Player player) => Task.CompletedTask;
+
+    /// <summary>
+    /// After <see cref="MegaCrit.Sts2.Core.Commands.CardPileCmd.Add"/> completes for this card.
+    /// <paramref name="from"/> is the pile type before the move; <paramref name="newPileType"/> is the destination pile.
+    /// </summary>
+    public virtual void OnAfterPileMoveCompleted(Player? player, PileType? from, PileType newPileType)
+    {
+    }
+
+    /// <summary>
     /// When true, Command Attack is omitted from the duel monster options menu (e.g. trap monsters that cannot attack).
     /// </summary>
     public virtual bool DuelMonsterExcludesCommandAttack => false;
@@ -308,6 +322,28 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         decimal baseline = template.DynamicVars.Damage.BaseValue;
         DynamicVars.Damage.BaseValue = baseline + PermanentAtkBonusFromExecutes;
         SyncPermanentExecuteIncreaseVar();
+    }
+
+    /// <summary>
+    /// After <see cref="CardModel.FromSerializable"/> completes enchantments and upgrade; re-apply saved printed-stat bonuses
+    /// that would otherwise be overwritten. Override when the card has additional saved bonuses beyond execute ATK.
+    /// </summary>
+    public virtual void ApplyPostDeserializePrintedStatBonuses() => ApplySavedExecuteAtkBonusToPrintedDamage();
+
+    /// <summary>
+    /// Multiplayer checksum: reconcile <see cref="DieForYouPower"/> on the duel pet before snapshot. Return <c>true</c> to skip
+    /// generic optional-toggle reconciliation for this pet (e.g. Cure Mermaid forced Die For You).
+    /// </summary>
+    public virtual bool ReconcileDieForYouChecksumForPet(Creature pet, Player player) => false;
+
+    /// <summary>When true, <see cref="YgoDuelist.YgoDuelistCode.Services.YgoEquipSpellTargetRules"/> skips equip race/restriction checks.</summary>
+    public virtual bool IgnoresEquipSpellRaceRestrictions => false;
+
+    /// <summary>
+    /// End of owner turn: clear temporary field buffs tied to <see cref="YgoDuelist.YgoDuelistCode.Services.MonsterCommandRegistry.ClearPerTurnExtrasForPlayer"/>.
+    /// </summary>
+    public virtual void ClearTurnEndFieldBuffsFromMonsterCommandRegistry()
+    {
     }
 
     /// <summary>

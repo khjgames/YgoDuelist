@@ -19,7 +19,6 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 using MegaCrit.Sts2.Core.Helpers;
@@ -138,15 +137,15 @@ public static class DuelMonsterPetDeathPatch
             }
             else if (graveyard != null && card.Pile != graveyard)
             {
-                if (card is Keldo keldo)
+                if (card is IYgoCustomFieldMonsterDeathGraveyardRelocation customGy)
                 {
-                    GD.Print($"[ZGO] DuelMonsterPetDeathPatch: Keldo {card.Id.Entry} — move to GY then graveyard→discard effect.");
-                    RunRelocationBlocking(() => Keldo.RunAfterDestroyedOnFieldAsync(player, keldo, graveyard));
+                    GD.Print($"[ZGO] DuelMonsterPetDeathPatch: custom GY relocation {card.Id.Entry}");
+                    RunRelocationBlocking(() => customGy.RunCustomFieldMonsterDeathGraveyardRelocationAsync(player, graveyard));
                 }
-                else
+                else if (card is BaseMonsterCard bmToGy)
                 {
                     GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
-                    RunRelocationBlocking(() => MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, graveyard, graveyard));
+                    RunRelocationBlocking(() => MoveEquipsToGraveyardThenMonsterToPileAsync(player, bmToGy, graveyard, graveyard));
                 }
             }
 
@@ -156,8 +155,8 @@ public static class DuelMonsterPetDeathPatch
 
             NotifyZoneCardsAfterDuelMonsterDied(player, ctx);
 
-            if (card is Enraged_Battle_Ox)
-                TaskHelper.RunSafely(EnragedBattleOxService.SyncPlayerPowerAsync(player));
+            if (card is BaseMonsterCard bmDeathHook)
+                TaskHelper.RunSafely(bmDeathHook.OnAfterDuelMonsterPetDeathBeforeUnregisterAsync(player));
             if (player?.Creature != null)
                 RunRelocationBlocking(() => FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player));
             GD.Print("[ZGO] DuelMonsterPetDeathPatch: unregistered pet and cleared command state.");

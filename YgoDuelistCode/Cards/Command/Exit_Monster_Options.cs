@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.GameActions;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -25,6 +27,12 @@ public sealed class Exit_Monster_Options : MonsterCommandCard
     }
 
     protected override bool IsPlayable => false;
+
+    internal override bool TryEnqueueUnplayableOptionPileMenu(Player player, Creature? target)
+    {
+        YgoMonsterMenuCommandNetHelper.TryEnqueueOrRunLocal(this, target);
+        return true;
+    }
 
     protected internal override string? CustomCommandEnergyTexturePath =>
         BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;

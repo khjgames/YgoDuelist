@@ -169,6 +169,12 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
         }
     }
 
+    public override void ApplyPostDeserializePrintedStatBonuses()
+    {
+        base.ApplyPostDeserializePrintedStatBonuses();
+        ApplySavedSummonAbsorbDefBonusToPrintedDefense();
+    }
+
     internal void ApplySavedSummonAbsorbDefBonusToPrintedDefense()
     {
         if (SummonAbsorbPrintedDefBonus == 0 || DynamicVars == null)

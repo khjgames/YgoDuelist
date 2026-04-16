@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.GameActions;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -41,6 +42,12 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
             : TargetType.Self;
 
     protected override bool IsPlayable => false;
+
+    internal override bool TryEnqueueUnplayableOptionPileMenu(Player player, Creature? target)
+    {
+        YgoMonsterMenuCommandNetHelper.TryEnqueueOrRunLocal(this, target);
+        return true;
+    }
 
     protected internal override string? CustomCommandEnergyTexturePath =>
         "YgoDuelist/images/card_frames/Invisible_Energy.png";

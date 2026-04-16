@@ -8,7 +8,6 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -43,8 +42,9 @@ public static class CardPileCmdFieldMonsterGraveyardEffectsPatch
 
         foreach ((CardModel card, PileType? from) in state)
         {
-            if (from == MonsterPile.CustomType && card is Twin_Headed_Behemoth twinLeavingField && newPile.Type != MonsterPile.CustomType)
-                twinLeavingField.ClearReviveMiniStats();
+            Player? owner = card.Owner as Player;
+            if (card is BaseMonsterCard bmMoved)
+                bmMoved.OnAfterPileMoveCompleted(owner, from, newPile.Type);
 
             if (newPile.Type != GraveyardPile.CustomType || from != MonsterPile.CustomType)
                 continue;
@@ -52,14 +52,8 @@ public static class CardPileCmdFieldMonsterGraveyardEffectsPatch
             if (card.Owner is not Player player)
                 continue;
 
-            if (card is Twin_Headed_Behemoth th)
-                YgoTwinHeadedBehemothEndPhase.MarkSentFromFieldToGraveyardThisTurn(player, th);
-
             if (card is IFieldToGraveyardDeckSearchEffect && card is BaseMonsterCard bmSearch)
                 TaskHelper.RunSafely(YgoFieldToGraveyardDeckSearch.OnSentFromFieldToGraveyardAsync(player, bmSearch));
-
-            if (card is The_Immortal_of_Thunder immortal)
-                TaskHelper.RunSafely(YgoImmortalOfThunderFieldToGraveyard.RunAsync(player, immortal));
         }
     }
 }

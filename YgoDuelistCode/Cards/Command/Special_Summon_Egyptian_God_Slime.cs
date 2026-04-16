@@ -1,11 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -17,7 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 /// <summary>
 /// Extra command while <see cref="Egyptian_God_Slime"/> is in the Extra Deck: tribute this Level 10 Aqua 0-ATK monster to Special Summon it.
 /// </summary>
-public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard
+public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard, IYgoNHandPlayPhaseHighlightOverride
 {
     protected override bool MirrorSourceMonsterUpgradeVisual => true;
 
@@ -32,6 +35,32 @@ public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard
     public override CardType Type => CardType.Skill;
 
     public override TargetType TargetType => TargetType.Self;
+
+    public Color? GetNHandPlayPhaseHighlightModulateOverride(
+        NHandCardHolder holder,
+        bool vanillaWouldUseCyanPlayableHighlight)
+    {
+        _ = holder;
+        PileType pileType = Pile?.Type ?? PileType.None;
+        if (pileType != YgoCardOptionPile.CustomType)
+            return null;
+        if (Owner == null)
+            return null;
+        try
+        {
+            if (!LocalContext.IsMe(Owner))
+                return null;
+        }
+        catch
+        {
+            return null;
+        }
+
+        if (!vanillaWouldUseCyanPlayableHighlight)
+            return null;
+
+        return YgoNHandPlayPhaseHighlightColors.FusionStylePurple;
+    }
 
     protected override bool IsPlayable
     {

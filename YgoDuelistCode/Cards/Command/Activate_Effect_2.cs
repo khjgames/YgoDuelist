@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -76,5 +77,28 @@ public sealed class Activate_Effect_2 : MonsterCommandCard
             await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
 
         await impl.OnSecondActivatedEffect(choiceContext, cardPlay, SourceMonster);
+    }
+
+    internal bool TryGetPileDescriptionForActivateEffect2(ref string result)
+    {
+        if (SourceMonster is not NormalMonsterCard src2 || src2 is not IMonsterSecondActivatedEffect impl2)
+            return false;
+        var loc2 = new LocString("cards", impl2.SecondActivatedEffectDescriptionLocKey);
+        src2.DynamicVars.AddTo(loc2);
+        string text2 = loc2.GetFormattedText();
+        if (string.IsNullOrEmpty(text2))
+            return false;
+        result = text2;
+        return true;
+    }
+
+    internal bool TryGetTitleForActivateEffect2(ref string result)
+    {
+        var loc2 = new LocString("cards", "YGODUELIST-ACTIVATE_EFFECT_2.title");
+        string t2 = loc2.GetFormattedText();
+        if (string.IsNullOrEmpty(t2))
+            return false;
+        result = t2;
+        return true;
     }
 }

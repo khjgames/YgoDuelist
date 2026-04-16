@@ -1,10 +1,8 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
-using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -18,28 +16,11 @@ public static class ActivateEffectCardTextPatch
 {
     static void Postfix(CardModel __instance, ref string __result)
     {
-        if (__instance is Activate_Effect_2 { SourceMonster: NormalMonsterCard src2 })
-        {
-            if (src2 is not IMonsterSecondActivatedEffect impl2)
-                return;
-            var loc2 = new LocString("cards", impl2.SecondActivatedEffectDescriptionLocKey);
-            src2.DynamicVars.AddTo(loc2);
-            string text2 = loc2.GetFormattedText();
-            if (!string.IsNullOrEmpty(text2))
-                __result = text2;
-            return;
-        }
-
-        if (__instance is not Activate_Effect { SourceMonster: NormalMonsterCard sourceMonster })
-            return;
-        if (sourceMonster is not IMonsterActivatedEffect impl)
+        if (__instance is Activate_Effect_2 ae2 && ae2.TryGetPileDescriptionForActivateEffect2(ref __result))
             return;
 
-        var loc = new LocString("cards", impl.ActivatedEffectDescriptionLocKey);
-        sourceMonster.DynamicVars.AddTo(loc);
-        string text = loc.GetFormattedText();
-        if (!string.IsNullOrEmpty(text))
-            __result = text;
+        if (__instance is Activate_Effect ae && ae.TryGetPileDescriptionForActivateEffect(ref __result))
+            return;
     }
 }
 
@@ -48,21 +29,10 @@ public static class ActivateEffectTitlePatch
 {
     static void Postfix(CardModel __instance, ref string __result)
     {
-        if (__instance is Activate_Effect_2)
-        {
-            var loc2 = new LocString("cards", "YGODUELIST-ACTIVATE_EFFECT_2.title");
-            string t2 = loc2.GetFormattedText();
-            if (!string.IsNullOrEmpty(t2))
-                __result = t2;
-            return;
-        }
-
-        if (__instance is not Activate_Effect)
+        if (__instance is Activate_Effect_2 ae2 && ae2.TryGetTitleForActivateEffect2(ref __result))
             return;
 
-        var loc = new LocString("cards", "YGODUELIST-ACTIVATE_EFFECT.title");
-        string text = loc.GetFormattedText();
-        if (!string.IsNullOrEmpty(text))
-            __result = text;
+        if (__instance is Activate_Effect ae && ae.TryGetTitleForActivateEffect(ref __result))
+            return;
     }
 }

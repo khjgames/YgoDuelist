@@ -1,0 +1,19 @@
+Triage: Services/**/*.cs — `\bis [A-Z][a-zA-Z0-9_]*_[a-zA-Z0-9_]+` (underscore types)
+
+DONE — Wave 1 services (sample): MonsterCommandRegistry — ClearTurnEndFieldBuffsFromMonsterCommandRegistry on BaseMonsterCard (The_Little_Swordsman_of_Aile, Copycat overrides).
+DONE — Wave 1 services: YgoEquipSpellTargetRules — BaseMonsterCard.IgnoresEquipSpellRaceRestrictions (Gearfried override).
+DONE — Wave 1 services: YgoGoraTurtleService — IYgoTurnStartWeakFromAttackIntent (Gora_Turtle).
+
+Remaining (still domain services; refactor when a rule clearly belongs on a card):
+YgoPlayCardQueueDeferral.cs — Activate_Effect, Emergency_Provisions, Rush_Recklessly or The_Reliable_Guardian, Secret_Pass_to_the_Treasures, Tailor_of_the_Fickle
+YgoStarterCardCatalog.cs — Dark_Magic_Attack, Diffusion_Wave_Motion, Burst_Stream_of_Destruction
+YgoBanishedService.cs — Ancient_Chant
+TributeSummonGridSelect.cs — Mausoleum_Lose_HP
+TributeSummonSelection.cs — Gate_Guardian, Mausoleum_Lose_HP
+YgoGuardianSlimeGraveyard.cs — Ancient_Chant
+YgoMonsterFlipEffectRunner.cs — Hourglass_of_Courage
+YgoSealmasterMeiseiGate.cs — Sealmaster_Meisei; Talisman_of_Trap_Sealing or Talisman_of_Spell_Sealing
+SliferSkyDragonService.cs — Slifer_the_Sky_Dragon
+LegionFiendJesterSpellcasterConduit.cs — Legion_the_Fiend_Jester
+
+Review: many are domain services keyed to specific cards — candidates to fold into card interfaces over time.

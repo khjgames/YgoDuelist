@@ -83,6 +83,18 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     /// </summary>
     protected virtual bool MirrorSourceMonsterUpgradeVisual => false;
 
+    /// <summary>When true, upgraded cards use <c>.description_upgraded</c> (<see cref="Patches.YgoAlternateUpgradedDescriptionPatch"/>).</summary>
+    public virtual bool UseAlternateUpgradedDescription => false;
+
+    /// <summary>Verbose option-pile play lifecycle logging (<see cref="Patches.PlayCardFromOptionPilePatch"/>).</summary>
+    internal virtual bool LogsOptionPileLifecycle => false;
+
+    /// <summary>
+    /// When <see cref="IsPlayable"/> is false, option-pile play attempts route to
+    /// <see cref="YgoDuelist.YgoDuelistCode.GameActions.YgoMonsterMenuCommandNetHelper"/> instead of being ignored.
+    /// </summary>
+    internal virtual bool TryEnqueueUnplayableOptionPileMenu(Player player, Creature? target) => false;
+
     // Parameterless ctor for reflection / scanners – never used at runtime for real commands.
     protected MonsterCommandCard()
         : base(0, CardType.Skill, CardRarity.Event, TargetType.Self)

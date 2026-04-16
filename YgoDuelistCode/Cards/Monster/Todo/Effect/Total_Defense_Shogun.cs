@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Total_Defense_Shogun : EffectMonsterCard
+public sealed class Total_Defense_Shogun : EffectMonsterCard, IYgoDeferredBlockFromDefendCommand
 {
     public Total_Defense_Shogun()
         : base(
@@ -29,5 +29,5 @@ public sealed class Total_Defense_Shogun : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Total_Defense_Shogun) };
 
-    public int GetDeferredBlockOnDefend() => (int)(NormalMonsterCard.GetTotalDefForPreview(this) / 5m);
+    public int GetDeferredBlockForDefendCommand() => (int)(NormalMonsterCard.GetTotalDefForPreview(this) / 5m);
 }

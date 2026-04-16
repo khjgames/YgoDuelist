@@ -1,0 +1,18 @@
+Triage: Patches/**/*.cs — lines matching `\bis [A-Z][a-zA-Z0-9_]*_[a-zA-Z0-9_]+` (underscore card types) plus Keldo (no underscore).
+
+DONE — Wave 0: YgoFusionGateFieldGlowPatch → IYgoNHandPlayPhaseHighlightOverride only (no Fusion_Gate / Slime types in patch).
+
+DONE — Wave 1a: DuelMonsterPetDeathPatch (Keldo → IYgoCustomFieldMonsterDeathGraveyardRelocation; Enraged_Battle_Ox → BaseMonsterCard.OnAfterDuelMonsterPetDeathBeforeUnregisterAsync).
+DONE — Wave 1a: PlayCardFromSpellTrapZonePatch → BaseSpellCard.CancelSpellTrapZonePlayWhenUnresolvedTargetAfterResolve.
+DONE — Wave 1a: HookAfterCardPlayedEffectMonsterPatch → IYgoDeferredBlockFromDefendCommand.
+DONE — Wave 1a: CardPileCmdFieldMonsterGraveyardEffectsPatch → BaseMonsterCard.OnAfterPileMoveCompleted (Twin_Headed_Behemoth, The_Immortal_of_Thunder); IFieldToGraveyardDeckSearchEffect unchanged.
+
+DONE — Wave 1b: NetFullCombatStateYgoChecksumPatch → BaseMonsterCard.ReconcileDieForYouChecksumForPet (Cure_Mermaid override).
+DONE — Wave 1b: PlayCardFromOptionPilePatch → MonsterCommandCard.LogsOptionPileLifecycle, TryEnqueueUnplayableOptionPileMenu (Exit / Change Position / Toggle Die For You).
+DONE — Wave 1b: ActivateEffectCardTextPatch / ActivateEffectTitlePatch → Activate_Effect / Activate_Effect_2 instance helpers.
+DONE — Wave 1b: CardModelFromSerializableMonsterPermanentStatsPatch → BaseMonsterCard.ApplyPostDeserializePrintedStatBonuses (Last Warrior, Obelisk, Gate_Guardian overrides).
+DONE — Wave 1b: ConvulsionOfNaturePreviewUiPatch → IYgoConvulsionDrawPilePreviewSource.
+DONE — Wave 1b: YgoEnergyIconNodePatch → YgoDuelistCard.YgoStrikeDefendEnergyIconTexturePath (Strike/Defend stubs).
+DONE — Wave 1b: YgoAlternateUpgradedDescriptionPatch → MonsterCommandCard.UseAlternateUpgradedDescription (Fairy_Box_Upkeep_Take_Damage).
+
+Remaining manual review: re-run grep on Patches/** after future edits; spot-check for new concrete card branches.

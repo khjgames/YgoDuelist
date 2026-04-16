@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -60,6 +61,36 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource, IYgoCa
 
     public bool TryHandleCardZoneRightClick(NHandCardHolder holder) =>
         TryHandleZoneRightClick(holder, this);
+
+    public override Color? GetNHandPlayPhaseHighlightModulateOverride(
+        NHandCardHolder holder,
+        bool vanillaWouldUseCyanPlayableHighlight)
+    {
+        _ = holder;
+        PileType pileType = Pile?.Type ?? PileType.None;
+        if (pileType != SpellTrapZonePile.CustomType && pileType != PileType.Hand)
+            return null;
+        if (Owner == null)
+            return null;
+        try
+        {
+            if (!LocalContext.IsMe(Owner))
+                return null;
+        }
+        catch
+        {
+            return null;
+        }
+
+        if (!FusionSummonSelection.HasFeasibleFusionPlay(Owner, this))
+            return null;
+
+        bool faceUpInZone = pileType == SpellTrapZonePile.CustomType && !FaceDown;
+        if (!vanillaWouldUseCyanPlayableHighlight && !faceUpInZone)
+            return null;
+
+        return YgoNHandPlayPhaseHighlightColors.FusionStylePurple;
+    }
 
     /// <summary>Right-click on this card in the Spell/Trap zone (second hand). Returns true if the click was consumed.</summary>
     public static bool TryHandleZoneRightClick(NHandCardHolder holder, Fusion_Gate card)

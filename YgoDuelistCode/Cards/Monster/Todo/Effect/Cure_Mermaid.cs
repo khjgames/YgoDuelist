@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -54,6 +55,21 @@ public sealed class Cure_Mermaid : EffectMonsterCard
     };
 
     protected override void OnUpgrade() => base.OnUpgrade();
+
+    public override bool ReconcileDieForYouChecksumForPet(Creature pet, Player player)
+    {
+        if (!pet.HasPower<DieForYouPower>())
+        {
+            MonsterCommandState st = MonsterCommandRegistry.GetOrCreate(pet);
+            st.DieForYouForced = true;
+            st.DieForYouEnabled = true;
+            MonsterCommandRegistry.ApplyDieForYouSyncForChecksum(pet, player.Creature, this);
+            GD.Print(
+                $"[YgoDuelist][MP][DieForYou] Reconciled Cure_Mermaid forced DieForYouPower (playerNetId={player.NetId} petCombatId={pet.CombatId})");
+        }
+
+        return true;
+    }
 
     public override async Task OnAfterSummonPipelineAsync(Player player, PlayerChoiceContext ctx, Creature pet, bool canAttackThisTurn)
     {

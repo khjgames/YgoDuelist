@@ -12,7 +12,6 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 
@@ -326,12 +325,7 @@ public static class MonsterCommandRegistry
         }
 
         foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.GetFieldMonsters(player))
-        {
-            if (c is The_Little_Swordsman_of_Aile aile)
-                aile.ClearTributeAtkBuffForTurnEnd();
-            else if (c is Copycat copycat)
-                copycat.ClearIntentMirrorBonusForTurnEnd();
-        }
+            c.ClearTurnEndFieldBuffsFromMonsterCommandRegistry();
     }
 
     /// <summary>Clears all command state. Call at end of combat.</summary>

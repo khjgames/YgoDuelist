@@ -11,7 +11,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -62,7 +61,7 @@ public static class PlayCardFromSpellTrapZonePatch
         if (card is BaseSpellCard bs)
         {
             target = await bs.TryResolveSpellTrapZonePlayTargetAsync(action.Player, target, cancelable: true);
-            if (target == null && card is Burst_Stream_of_Destruction or Diffusion_Wave_Motion)
+            if (target == null && bs.CancelSpellTrapZonePlayWhenUnresolvedTargetAfterResolve)
             {
                 action.Cancel();
                 return;

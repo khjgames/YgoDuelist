@@ -9,7 +9,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Swaps to <c>.description_upgraded</c> for <see cref="YgoDuelistCard.UseAlternateUpgradedDescription"/> when the card is upgraded or shown in upgrade preview.
+/// Swaps to <c>.description_upgraded</c> for <see cref="YgoDuelistCard.UseAlternateUpgradedDescription"/> or <see cref="MonsterCommandCard.UseAlternateUpgradedDescription"/> when the card is upgraded or shown in upgrade preview.
 /// Monsters use <see cref="AbstractMonsterCard.GetDescriptionLocString"/> for all four base keys plus <c>_upgraded</c> variants; do not intercept here.
 /// </summary>
 [HarmonyPatch(typeof(CardModel), nameof(CardModel.Description), MethodType.Getter)]
@@ -19,18 +19,10 @@ public static class YgoAlternateUpgradedDescriptionPatch
     {
         if (__instance is AbstractMonsterCard)
             return true;
-        if (__instance is Fairy_Box_Upkeep_Take_Damage)
-        {
-            bool upkeepShowUpgraded = __instance.IsUpgraded || __instance.UpgradePreviewType != CardUpgradePreviewType.None;
-            if (!upkeepShowUpgraded)
-                return true;
-            var upkeepLoc = new LocString("cards", __instance.Id.Entry + ".description_upgraded");
-            if (!upkeepLoc.Exists())
-                return true;
-            __result = upkeepLoc;
-            return false;
-        }
-        if (__instance is not YgoDuelistCard ygo || !ygo.UseAlternateUpgradedDescription)
+
+        bool useAlternate = __instance is YgoDuelistCard ygo && ygo.UseAlternateUpgradedDescription
+            || __instance is MonsterCommandCard mcc && mcc.UseAlternateUpgradedDescription;
+        if (!useAlternate)
             return true;
         bool showUpgraded = __instance.IsUpgraded || __instance.UpgradePreviewType != CardUpgradePreviewType.None;
         if (!showUpgraded)

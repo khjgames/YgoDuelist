@@ -6,7 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Nodes;
 using YgoDuelist.YgoDuelistCode.Piles;
 
@@ -103,7 +103,9 @@ public static class ConvulsionOfNaturePreviewUiPatch
 
         // "Control the card" = you currently have Convulsion of Nature face-up in your Spell/Trap zone pile.
         var zonePile = SpellTrapZonePile.CustomType.GetPile(me);
-        bool enabled = zonePile != null && zonePile.Cards.Any(c => c is Convulsion_of_Nature spell && !spell.FaceDown);
+        bool enabled = zonePile != null
+            && zonePile.Cards.Any(c =>
+                c is IYgoConvulsionDrawPilePreviewSource preview && preview.IsFaceUpActiveForConvulsionDrawPreview());
         var draw = me.PlayerCombatState?.DrawPile;
         if (!enabled || draw == null || draw.IsEmpty)
         {

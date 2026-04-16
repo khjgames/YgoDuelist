@@ -12,6 +12,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Basic;
 
 public sealed class Defend_YgoDuelist : YgoDuelistCard
 {
+    public override string? YgoStrikeDefendEnergyIconTexturePath => "YgoDuelist/images/card_frames/defense_monster_energy_icon.png";
+
     public override (float H, float S, float V)? CustomFrameTintHsv => (0f, 0f, 0.6f);
 
     public override string CustomPortraitPath => VanillaBorrowedPortraitPaths.PackedPng<DefendIronclad>();

@@ -77,6 +77,8 @@ public sealed class Copycat : EffectMonsterCard, IMonsterActivatedEffect
     /// <summary>Clears the intent-mirror ATK/DEF bonus at end of the player's turn.</summary>
     public void ClearIntentMirrorBonusForTurnEnd() => _intentMirrorBonusThisTurn = 0;
 
+    public override void ClearTurnEndFieldBuffsFromMonsterCommandRegistry() => ClearIntentMirrorBonusForTurnEnd();
+
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
         Player? player = source.Owner ?? cardPlay.Card?.Owner;

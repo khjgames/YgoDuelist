@@ -113,6 +113,12 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
     public virtual Task<Creature?> TryResolveSpellTrapZonePlayTargetAsync(Player player, Creature? targetFromAction, bool cancelable) =>
         Task.FromResult(targetFromAction);
 
+    /// <summary>
+    /// When true, spell/trap zone play from the second hand is cancelled if
+    /// <see cref="TryResolveSpellTrapZonePlayTargetAsync"/> still returns null (player cancelled grid).
+    /// </summary>
+    public virtual bool CancelSpellTrapZonePlayWhenUnresolvedTargetAfterResolve => false;
+
     /// <summary>Shortcut zone-play validation for field spells with unusual targeting.</summary>
     public virtual bool IsValidTargetForSpellTrapZonePlay(Creature? target) => IsValidTarget(target);
 

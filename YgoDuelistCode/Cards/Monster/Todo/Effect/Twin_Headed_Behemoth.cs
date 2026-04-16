@@ -1,8 +1,10 @@
 using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
@@ -53,5 +55,13 @@ public sealed class Twin_Headed_Behemoth : EffectMonsterCard
             DynamicVars.Damage.BaseValue = BaseAtk;
         if (DynamicVars != null && DynamicVars.ContainsKey("Def"))
             DynamicVars["Def"].BaseValue = BaseDef;
+    }
+
+    public override void OnAfterPileMoveCompleted(Player? player, PileType? from, PileType newPileType)
+    {
+        if (from == MonsterPile.CustomType && newPileType != MonsterPile.CustomType)
+            ClearReviveMiniStats();
+        if (player != null && from == MonsterPile.CustomType && newPileType == GraveyardPile.CustomType)
+            YgoTwinHeadedBehemothEndPhase.MarkSentFromFieldToGraveyardThisTurn(player, this);
     }
 }

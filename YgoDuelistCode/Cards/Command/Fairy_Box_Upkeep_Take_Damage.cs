@@ -19,6 +19,8 @@ public sealed class Fairy_Box_Upkeep_Take_Damage : MonsterCommandCard
 
     protected override bool IsPlayable => false;
 
+    public override bool UseAlternateUpgradedDescription => true;
+
     protected internal override string? CustomCommandEnergyTexturePath =>
         BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
 

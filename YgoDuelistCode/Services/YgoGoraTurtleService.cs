@@ -6,13 +6,14 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// <see cref="Gora_Turtle"/>: at start of your turn, enemies whose attack intent vs you is at least this card's <c>Mgc</c> get 1 Weak.
+/// Field monsters implementing <see cref="IYgoTurnStartWeakFromAttackIntent"/> (e.g. Gora Turtle):
+/// at start of your turn, enemies whose attack intent vs you is at least the threshold get 1 Weak.
 /// </summary>
 public static class YgoGoraTurtleService
 {
@@ -21,22 +22,24 @@ public static class YgoGoraTurtleService
         if (player?.Creature?.CombatState == null)
             return;
 
-        Gora_Turtle? source = null;
+        BaseMonsterCard? source = null;
         foreach (Creature pet in player.PlayerCombatState.Pets)
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is Gora_Turtle gora && !gora.FaceDown)
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard bm
+                && !bm.FaceDown
+                && bm is IYgoTurnStartWeakFromAttackIntent)
             {
-                source = gora;
+                source = bm;
                 break;
             }
         }
 
-        if (source == null || source.Owner == null)
+        if (source is not IYgoTurnStartWeakFromAttackIntent weakAura || source.Owner == null)
             return;
 
-        int threshold = (int)source.DynamicVars["Mgc"].BaseValue;
+        int threshold = weakAura.AttackIntentWeakThreshold;
         if (threshold <= 0)
             return;
 

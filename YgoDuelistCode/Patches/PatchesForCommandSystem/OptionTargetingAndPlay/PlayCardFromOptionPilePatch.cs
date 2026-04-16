@@ -35,11 +35,8 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch(typeof(PlayCardAction), "ExecuteAction")]
 public static class PlayCardFromOptionPilePatch
 {
-    private static bool IsLifecycleDebugCard(CardModel? card)
-    {
-        var modelName = card?.GetType().Name;
-        return modelName == "Activate_Effect";
-    }
+    private static bool IsLifecycleDebugCard(CardModel? card) =>
+        card is MonsterCommandCard mcc && mcc.LogsOptionPileLifecycle;
 
     /// <summary>
     /// Option-pile cards use a custom <see cref="PileType"/>; <see cref="NCard.FindOnTable"/> does not resolve them.
@@ -277,10 +274,9 @@ public static class PlayCardFromOptionPilePatch
                 GD.Print(
                     $"[YgoDuelist][MP][OptionPile] unplayable or invalid target card={card?.Id.Entry} unplayable={unplayable} targetCombat={target?.CombatId}");
                 GD.Print("[YgoDuelist] PlayCardFromOptionPile: CanPlay false or invalid target, card=", card?.Id.Entry ?? "null");
-                if (card is Exit_Monster_Options or Command_Change_Battle_Position or Toggle_Die_For_You)
+                if (card is MonsterCommandCard mccMenu && mccMenu.TryEnqueueUnplayableOptionPileMenu(action.Player!, target))
                 {
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: unplayable menu card — YgoMonsterMenuCommandNetHelper");
-                    YgoMonsterMenuCommandNetHelper.TryEnqueueOrRunLocal(card, target);
                 }
                 else
                     GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is not a known option-pile click handler, skipping OnClickedOption");

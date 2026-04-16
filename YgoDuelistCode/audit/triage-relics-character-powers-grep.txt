@@ -1,0 +1,10 @@
+Triage: Relics/**/*.cs, Character/**/*.cs, Powers/**/*.cs — same pattern as patches/services:
+lines matching `\bis [A-Z][a-zA-Z0-9_]*_[a-zA-Z0-9_]+` (underscore card/command types).
+
+2026-04-16 scan (ripgrep-style):
+
+- Relics: no matches for `is [A-Z][a-zA-Z0-9_]*_[a-zA-Z0-9_]+`
+- Character: no matches
+- Powers: FairyBoxFieldPower.cs — `pick is Fairy_Box_Upkeep_Take_Damage`, `pick is Fairy_Box_Upkeep_Destroy`
+
+Follow-up (optional): replace Fairy Box branches with a small marker interface on those command types if we want zero concrete names in Powers.

@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.GameActions;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -30,6 +31,12 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
     }
 
     protected override bool IsPlayable => false;
+
+    internal override bool TryEnqueueUnplayableOptionPileMenu(Player player, Creature? target)
+    {
+        YgoMonsterMenuCommandNetHelper.TryEnqueueOrRunLocal(this, target);
+        return true;
+    }
 
     protected internal override string? CustomCommandEnergyTexturePath =>
         "YgoDuelist/images/card_frames/Invisible_Energy.png";

@@ -58,4 +58,7 @@ public sealed class Enraged_Battle_Ox : EffectMonsterCard, IMonsterFlipEffect
             return;
         await EnragedBattleOxService.SyncPlayerPowerAsync(Owner);
     }
+
+    public override Task OnAfterDuelMonsterPetDeathBeforeUnregisterAsync(Player player) =>
+        EnragedBattleOxService.SyncPlayerPowerAsync(player);
 }

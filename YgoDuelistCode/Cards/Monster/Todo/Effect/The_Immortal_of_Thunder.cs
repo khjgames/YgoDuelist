@@ -2,11 +2,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -56,5 +60,12 @@ public sealed class The_Immortal_of_Thunder : EffectMonsterCard, IMonsterFlipEff
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 4m;
         DynamicVars["Mgc2"].BaseValue = 3m;
+    }
+
+    public override void OnAfterPileMoveCompleted(Player? player, PileType? from, PileType newPileType)
+    {
+        if (player == null || from != MonsterPile.CustomType || newPileType != GraveyardPile.CustomType)
+            return;
+        TaskHelper.RunSafely(YgoImmortalOfThunderFieldToGraveyard.RunAsync(player, this));
     }
 }

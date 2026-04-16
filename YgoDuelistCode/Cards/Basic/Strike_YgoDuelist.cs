@@ -13,6 +13,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Basic;
 
 public sealed class Strike_YgoDuelist : YgoDuelistCard
 {
+    public override string? YgoStrikeDefendEnergyIconTexturePath => "YgoDuelist/images/card_frames/attack_monster_energy_icon.png";
+
     public override (float H, float S, float V)? CustomFrameTintHsv => (0f, 0f, 0.6f);
 
     public override string CustomPortraitPath => VanillaBorrowedPortraitPaths.PackedPng<StrikeSilent>();

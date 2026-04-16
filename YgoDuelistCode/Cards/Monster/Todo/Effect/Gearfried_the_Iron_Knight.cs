@@ -29,6 +29,8 @@ public sealed class Gearfried_the_Iron_Knight : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Gearfried_the_Iron_Knight) };
 
+    public override bool IgnoresEquipSpellRaceRestrictions => true;
+
     protected override void OnUpgrade()
     {
         base.OnUpgrade();

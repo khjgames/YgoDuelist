@@ -17,7 +17,6 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 using YgoChar = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -254,20 +253,8 @@ public static class NetFullCombatStateYgoChecksumPatch
                 if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard bm)
                     continue;
 
-                if (bm is Cure_Mermaid cm)
-                {
-                    if (!pet.HasPower<DieForYouPower>())
-                    {
-                        MonsterCommandState st = MonsterCommandRegistry.GetOrCreate(pet);
-                        st.DieForYouForced = true;
-                        st.DieForYouEnabled = true;
-                        MonsterCommandRegistry.ApplyDieForYouSyncForChecksum(pet, player.Creature, cm);
-                        GD.Print(
-                            $"[YgoDuelist][MP][DieForYou] Reconciled Cure_Mermaid forced DieForYouPower (playerNetId={player.NetId} petCombatId={pet.CombatId})");
-                    }
-
+                if (bm.ReconcileDieForYouChecksumForPet(pet, player))
                     continue;
-                }
 
                 if (MonsterCommandRegistry.TryGet(pet, out var forcedReg) && forcedReg.DieForYouForced)
                     continue;

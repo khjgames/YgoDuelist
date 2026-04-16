@@ -8,7 +8,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -31,9 +30,9 @@ public static class HookAfterCardPlayedEffectMonsterPatch
         if (cardPlay.Card is BaseSpellCard)
             RegisterSpellCounterOnFieldMonsters(player);
 
-        if (cardPlay.Card is Command_Defend defend && defend.SourceMonster is Total_Defense_Shogun shogun)
+        if (cardPlay.Card is Command_Defend defend && defend.SourceMonster is IYgoDeferredBlockFromDefendCommand src)
         {
-            int delayedBlock = shogun.GetDeferredBlockOnDefend();
+            int delayedBlock = src.GetDeferredBlockForDefendCommand();
             if (delayedBlock > 0)
                 YgoTotalDefenseShogunDeferredBlock.Queue(player, delayedBlock);
         }

@@ -11,13 +11,16 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards;
 
 [Pool(typeof(YgoDuelistCardPool))]
 public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity, TargetType target) :
-    CustomCardModel(cost, type, rarity, target)
+    CustomCardModel(cost, type, rarity, target),
+    IYgoNHandPlayPhaseHighlightOverride
 {
     public virtual YgoCardPackTags PackTags => YgoCardPackTags.None;
 
@@ -69,6 +72,11 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual bool UseAlternateUpgradedDescription => false;
 
     /// <summary>
+    /// When non-null, <see cref="Patches.YgoEnergyIconNodePatch"/> uses this texture for the character strike/defend stubs instead of default energy styling.
+    /// </summary>
+    public virtual string? YgoStrikeDefendEnergyIconTexturePath => null;
+
+    /// <summary>
     /// When true, <see cref="GetCombatHandDescriptionLocString"/> uses <c>.description_combat</c> in combat hand (like monster attack/skill combat keys), else <c>.description</c>.
     /// </summary>
     public virtual bool UsesCombatHandDescription => false;
@@ -92,6 +100,19 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     /// (<see cref="Patches.YgoMonsterCommandEnergyCostVisualPatch"/>).
     /// </summary>
     public virtual string? GetSpellTrapZoneFaceUpEnergyOrbOverridePath(CardPile? pile) => null;
+
+    /// <summary>
+    /// When non-null during combat play phase, replaces the vanilla cyan playable outline on <see cref="NHandCardHolder"/>.
+    /// Default: no override. Non-<see cref="YgoDuelistCard"/> models use <see cref="IYgoNHandPlayPhaseHighlightOverride"/> directly.
+    /// </summary>
+    public virtual Color? GetNHandPlayPhaseHighlightModulateOverride(
+        NHandCardHolder holder,
+        bool vanillaWouldUseCyanPlayableHighlight) => null;
+
+    Color? IYgoNHandPlayPhaseHighlightOverride.GetNHandPlayPhaseHighlightModulateOverride(
+        NHandCardHolder holder,
+        bool vanillaWouldUseCyanPlayableHighlight) =>
+        GetNHandPlayPhaseHighlightModulateOverride(holder, vanillaWouldUseCyanPlayableHighlight);
 
     /// <summary>
     /// When true, <see cref="Powers.YgoTemporaryThornsPower"/> may reflect damage even if the hit was flagged unpowered.

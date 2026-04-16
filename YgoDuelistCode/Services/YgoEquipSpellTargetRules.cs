@@ -1,14 +1,13 @@
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary><see cref="Gearfried_the_Iron_Knight"/> ignores equip spell race/restriction text.</summary>
+/// <summary>Uses <see cref="BaseMonsterCard.IgnoresEquipSpellRaceRestrictions"/> (e.g. Gearfried).</summary>
 public static class YgoEquipSpellTargetRules
 {
     public static bool IsLegalEquipTarget(BaseEquipSpellCard equip, BaseMonsterCard target)
     {
-        if (target is Gearfried_the_Iron_Knight)
+        if (target.IgnoresEquipSpellRaceRestrictions)
             return true;
         return equip.CanEquipTo(target);
     }
