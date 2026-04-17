@@ -1,6 +1,7 @@
-Card logic scoping audit — generated file list
+Card logic scoping — optional audit files (not wired to build)
 
-- all-cs-files.txt: one absolute path per line, sorted (UTF-8). Excludes \obj\ and \bin\ under YgoDuelistCode.
-- File count: 2134 (verify with: (Get-Content all-cs-files.txt).Count)
-- triage-patches-grep.txt / triage-services-grep.txt: machine triage hints.
-- triage-tier-summary.md: Patches / Services / Cards tier status and follow-ups.
+- all-cs-files.txt: may list YgoDuelistCode *.cs paths (one-time or occasional; not auto-required).
+- triage-patches-grep.txt / triage-services-grep.txt / triage-tier-summary.md: narrative notes when you run triage passes.
+- Run-CardLogicAudit.ps1: optional manual script to regenerate all-cs-files.txt and audit/generated/*.txt (run from repo root in PowerShell if you want fresh snapshots).
+
+Task queue: use your Cursor plan (card_logic_scoping next wave) YAML todos if you use that workflow — not generated here.

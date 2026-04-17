@@ -3,7 +3,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -16,7 +16,7 @@ public static class CardPileAddInternalBanishedDdScoutPatch
     {
         if (__instance.Type != BanishedPile.CustomType || !__instance.IsCombatPile)
             return;
-        if (card is not D_D_Scout_Plane plane)
+        if (card is not IYgoDdScoutPlaneCard plane)
             return;
 
         CombatState? cs = CombatManager.Instance?.DebugOnlyGetState();

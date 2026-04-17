@@ -7,19 +7,19 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// <see cref="D_D_Scout_Plane"/>: End Phase optional Special Summon if banished this turn.
+/// D.D. Scout Plane: End Phase optional Special Summon if banished this turn.
 /// </summary>
 public static class YgoDdScoutPlaneEndPhase
 {
     private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-D_D_SCOUT_PLANE.activate_return");
 
-    public static void OnAddedToBanishedPile(Player player, D_D_Scout_Plane plane)
+    public static void OnAddedToBanishedPile(Player player, IYgoDdScoutPlaneCard plane)
     {
         if (player == null)
             return;
@@ -37,7 +37,7 @@ public static class YgoDdScoutPlaneEndPhase
                 return;
             foreach (CardModel c in pile.Cards)
             {
-                if (c is D_D_Scout_Plane d)
+                if (c is IYgoDdScoutPlaneCard d)
                     d.DdScoutEndPhaseUsedThisTurn = false;
             }
         }
@@ -57,9 +57,9 @@ public static class YgoDdScoutPlaneEndPhase
             return;
 
         int stamp = YgoPlayerCombatTurnStamp.Get(player);
-        foreach (D_D_Scout_Plane plane in banished.Cards.OfType<D_D_Scout_Plane>().ToList())
+        foreach (IYgoDdScoutPlaneCard planeCard in banished.Cards.OfType<IYgoDdScoutPlaneCard>().ToList())
         {
-            if (!plane.IsBanishedThisTurnForEndPhase(stamp) || plane.DdScoutEndPhaseUsedThisTurn)
+            if (!planeCard.IsBanishedThisTurnForEndPhase(stamp) || planeCard.DdScoutEndPhaseUsedThisTurn)
                 continue;
 
             if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
@@ -71,16 +71,20 @@ public static class YgoDdScoutPlaneEndPhase
                 Cancelable = true
             };
 
-            var pick = await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { plane }, player, prefs);
-            if (pick.FirstOrDefault() is not D_D_Scout_Plane)
+            if (planeCard is not CardModel cardModel)
                 continue;
 
-            if (!banished.Cards.Contains(plane))
+            var pick = await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { cardModel }, player, prefs);
+            if (pick.FirstOrDefault() is not IYgoDdScoutPlaneCard)
                 continue;
 
-            plane.DdScoutEndPhaseUsedThisTurn = true;
-            await CardPileCmd.RemoveFromCombat(plane, false);
-            await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, plane, choiceContext);
+            if (!banished.Cards.Contains(cardModel))
+                continue;
+
+            planeCard.DdScoutEndPhaseUsedThisTurn = true;
+            await CardPileCmd.RemoveFromCombat(cardModel, false);
+            if (planeCard is BaseMonsterCard bm)
+                await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, bm, choiceContext);
         }
     }
 }

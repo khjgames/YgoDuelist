@@ -18,7 +18,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Burst_Stream_of_Destruction : BaseSpellCard
+public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatureBurstStreamSpell
 {
     private static readonly LocString BlueEyesSelectionPrompt =
         new("combat_messages", "BURST_STREAM_PICK_BLUE_EYES");

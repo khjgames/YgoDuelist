@@ -346,6 +346,14 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     {
     }
 
+    /// <summary>Variable tribute grid minimum selection count (named triple recipes may require <paramref name="tributeNeed"/> picks).</summary>
+    public virtual int MinTributeSelectionPickCount(int tributeNeed) => 1;
+
+    /// <summary>Optional hook before generic <see cref="IMonsterFlipEffect"/> flip resolution (e.g. Hourglass of Courage).</summary>
+    public virtual void ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline()
+    {
+    }
+
     /// <summary>
     /// Keeps the <c>Increase</c> dynamic var aligned with <see cref="PermanentAtkDeltaOnEnemyExecute"/> after upgrade (cf. <c>TheScythe</c>).
     /// </summary>
@@ -974,6 +982,12 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         PlayerChoiceContext ctx,
         Player owner,
         Creature pet) => Task.CompletedTask;
+
+    /// <summary>
+    /// After this monster was moved to the graveyard from hand or field (<paramref name="from"/> is the pre-move source pile).
+    /// Invoked only for those sources; default no-op.
+    /// </summary>
+    public virtual void OnMovedToGraveyardFromHandOrField(PileType from) { }
 
     /// <summary>Extra max HP from Fortified Beasts sync (Command Knight).</summary>
     public virtual int GetFortifiedBeastsBonusMaxHp(Player player) => 0;

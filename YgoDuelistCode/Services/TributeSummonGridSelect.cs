@@ -20,6 +20,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -33,7 +34,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </para>
 /// <para>
 /// <b>Index wire</b> (<see cref="FromSimpleGridIndexed"/>): for tribute grids that include synthetic entries such as
-/// <see cref="Mausoleum_Lose_HP"/> which are not stable across the combat-card net path. Remote peers rebuild the canonical
+/// <see cref="IYgoMausoleumHpTributeOption"/> rows which are not stable across the combat-card net path. Remote peers rebuild the canonical
 /// candidate list then apply indexes.
 /// </para>
 /// </summary>
@@ -344,7 +345,7 @@ public static class TributeSummonGridSelect
         for (int i = 0; i < resolve.Count; i++)
         {
             CardModel c = resolve[i];
-            string extra = c is Mausoleum_Lose_HP m ? $" slot={m.MausoleumGridSlot}" : "";
+            string extra = c is IYgoMausoleumHpTributeOption m ? $" slot={m.MausoleumGridSlot}" : "";
             lines.Add($"  [{i}] {c.Id?.Entry}{extra}");
         }
 

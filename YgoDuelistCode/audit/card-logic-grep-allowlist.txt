@@ -1,0 +1,5 @@
+# Optional: for manual Run-CardLogicAudit.ps1 -Enforce — paste exact lines from
+# audit/generated/patches-underscore-is.txt, services-underscore-is.txt, and nodes-underscore-is.txt (one line per allowed hit).
+# While this file has no non-comment lines, enforce mode skips the strict line check.
+
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Nodes\NYgoSealedPackWidget.cs:398:                // Modulate must be white: engine multiplies COLOR after fragment; tag tint is tint_color uniform only.

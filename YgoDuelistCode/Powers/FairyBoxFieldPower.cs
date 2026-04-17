@@ -95,14 +95,14 @@ internal static class FairyBoxFieldPowerShared
         if (pick == null)
             return;
 
-        if (pick is Fairy_Box_Upkeep_Take_Damage)
+        if (pick is IYgoFairyBoxUpkeepTakeDamageCommand)
         {
             decimal upkeepDamage = src.DynamicVars["Mgc2"].BaseValue;
             await CreatureCmd.Damage(choiceContext, ownerCreature, upkeepDamage, ValueProp.Unpowered, ownerCreature, src);
             return;
         }
 
-        if (pick is Fairy_Box_Upkeep_Destroy)
+        if (pick is IYgoFairyBoxUpkeepDestroyTrapCommand)
             await DestroyTrapAndRemovePowerAsync(player, self, expectPlus);
     }
 

@@ -17,7 +17,6 @@ using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -48,8 +47,8 @@ public static class TributeSummonSelection
     /// <summary>Whether the field can pay <see cref="BaseMonsterCard.TributeReleaseCount"/> for this summon (including double-tribute materials).</summary>
     public static bool CanMeetTributeCostForSummon(Player? player, BaseMonsterCard summon)
     {
-        if (summon is Gate_Guardian)
-            return Gate_Guardian.CanMeetNamedTributeRequirement(player);
+        if (summon is IYgoNamedTripleTributeSummon named)
+            return named.CanMeetNamedTripleTributeRequirement(player);
 
         int need = summon.TributeReleaseCount;
         if (need <= 0)
@@ -102,12 +101,8 @@ public static class TributeSummonSelection
         int mausoleumHpTributes,
         int mausoleumHpLossTotal)
     {
-        if (summon is Gate_Guardian)
-        {
-            if (mausoleumHpTributes != 0 || mausoleumHpLossTotal != 0)
-                return false;
-            return Gate_Guardian.TributeSelectionMeetsGateGuardianRecipe(pets);
-        }
+        if (summon is IYgoNamedTripleTributeSummon namedSummon)
+            return namedSummon.NamedTributeRecipeMatches(pets, mausoleumHpTributes, mausoleumHpLossTotal);
 
         int need = summon.TributeReleaseCount;
         if (need <= 0)
@@ -146,7 +141,7 @@ public static class TributeSummonSelection
         if (candidates.Count == 0)
             return null;
 
-        int minPick = summonCard is Gate_Guardian ? need : 1;
+        int minPick = summonCard.MinTributeSelectionPickCount(need);
         var prefs = new CardSelectorPrefs(TributePrompt, minCount: minPick, maxCount: need)
         {
             RequireManualConfirmation = true,
@@ -158,7 +153,7 @@ public static class TributeSummonSelection
 
         // Field-only tribute grids: same combat-card wire as fusion/ritual (GridCombatMpExpectation, FromMutableCombatCards).
         // Mausoleum synthetic rows are not stable on the combat-card net path — keep Index wire + rebuild for those.
-        bool useCombatWire = candidates.TrueForAll(c => c is not Mausoleum_Lose_HP);
+        bool useCombatWire = candidates.TrueForAll(c => c is not IYgoMausoleumHpTributeOption);
         if (RunManager.Instance.NetService.Type != NetGameType.Singleplayer)
         {
             GD.Print(
@@ -192,7 +187,7 @@ public static class TributeSummonSelection
             return null;
 
         List<BaseMonsterCard> pickedField = picked.OfType<BaseMonsterCard>().ToList();
-        int mausoleumHpTributes = picked.OfType<Mausoleum_Lose_HP>().Count();
+        int mausoleumHpTributes = picked.OfType<IYgoMausoleumHpTributeOption>().Count();
         if (pickedField.Count + mausoleumHpTributes != picked.Count)
             return null;
         if (pickedField.Distinct().Count() != pickedField.Count)
@@ -212,7 +207,7 @@ public static class TributeSummonSelection
         if (pets.Distinct().Count() != pets.Count)
             return null;
 
-        int mausoleumHpLossTotal = picked.OfType<Mausoleum_Lose_HP>().Sum(c => c.TributeHpLoss);
+        int mausoleumHpLossTotal = picked.OfType<IYgoMausoleumHpTributeOption>().Sum(c => c.TributeHpLoss);
         if (!TributeSelectionMeetsCost(summonCard, player, pets, mausoleumHpTributes, mausoleumHpLossTotal))
             return new TributeSummonPendingResolution(new List<Creature>(), 0, 0);
 
@@ -251,16 +246,17 @@ public static class TributeSummonSelection
     private static void StabilizeFullTributeCandidateList(List<CardModel> candidates)
     {
         var field = new List<CardModel>();
-        var hp = new List<Mausoleum_Lose_HP>();
+        var hp = new List<CardModel>();
         foreach (CardModel c in candidates)
         {
-            if (c is Mausoleum_Lose_HP m)
-                hp.Add(m);
+            if (c is IYgoMausoleumHpTributeOption)
+                hp.Add(c);
             else
                 field.Add(c);
         }
 
-        hp.Sort((a, b) => a.MausoleumGridSlot.CompareTo(b.MausoleumGridSlot));
+        hp.Sort((a, b) =>
+            ((IYgoMausoleumHpTributeOption)a).MausoleumGridSlot.CompareTo(((IYgoMausoleumHpTributeOption)b).MausoleumGridSlot));
         candidates.Clear();
         candidates.AddRange(field);
         candidates.AddRange(hp);

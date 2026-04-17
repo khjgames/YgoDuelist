@@ -3,7 +3,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -24,7 +23,7 @@ public static class LegionFiendJesterSpellcasterConduit
         int n = 0;
         foreach (BaseMonsterCard? m in DuelMonsterFieldRegistry.GetFieldMonsters(player))
         {
-            if (m is Legion_the_Fiend_Jester)
+            if (m is IYgoLegionFiendJesterFieldMonster)
                 n++;
         }
 

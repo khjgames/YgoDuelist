@@ -67,4 +67,10 @@ public sealed class Rush_Recklessly : BaseSpellCard
     {
         EnergyCost.UpgradeBy(-1);
     }
+
+    public override bool TryGetPlayCardQueueOnActionEnqueuedDeferral(out string? reason)
+    {
+        reason = "rush_reliable";
+        return true;
+    }
 }

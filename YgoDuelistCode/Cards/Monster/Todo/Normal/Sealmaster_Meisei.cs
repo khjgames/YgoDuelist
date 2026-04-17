@@ -8,7 +8,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
-public sealed class Sealmaster_Meisei : NormalMonsterCard
+public sealed class Sealmaster_Meisei : NormalMonsterCard, IYgoSealmasterMeiseiFieldMonster
 {
     public Sealmaster_Meisei()
         : base(

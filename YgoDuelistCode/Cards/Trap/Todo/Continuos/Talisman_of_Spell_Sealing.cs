@@ -13,7 +13,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
-public sealed class Talisman_of_Spell_Sealing : BaseContinuousTrapCard, IYgoAfterDuelMonsterDiedZoneCard
+public sealed class Talisman_of_Spell_Sealing : BaseContinuousTrapCard, IYgoAfterDuelMonsterDiedZoneCard, IYgoSealmasterDependentTalisman
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 2m) };

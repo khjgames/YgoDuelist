@@ -17,7 +17,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Gate_Guardian : EffectMonsterCard
+public sealed class Gate_Guardian : EffectMonsterCard, IYgoNamedTripleTributeSummon
 {
     /// <summary>Printed DEF added by summon effect; reapplied after full save load (see <c>CardModelFromSerializableMonsterPermanentStatsPatch</c>).</summary>
     [SavedProperty]
@@ -49,6 +49,17 @@ public sealed class Gate_Guardian : EffectMonsterCard
     public override bool AllowsMausoleumHpTributeForThisTributeSummon => false;
 
     protected override int? TributeReleaseCountOverride => 3;
+
+    public bool CanMeetNamedTripleTributeRequirement(Player? player) => CanMeetNamedTributeRequirement(player);
+
+    public bool NamedTributeRecipeMatches(List<Creature>? pets, int mausoleumHpTributes, int mausoleumHpLossTotal)
+    {
+        if (mausoleumHpTributes != 0 || mausoleumHpLossTotal != 0)
+            return false;
+        return TributeSelectionMeetsGateGuardianRecipe(pets);
+    }
+
+    public override int MinTributeSelectionPickCount(int tributeNeed) => tributeNeed;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Concat(
@@ -108,7 +119,7 @@ public sealed class Gate_Guardian : EffectMonsterCard
         for (int i = candidates.Count - 1; i >= 0; i--)
         {
             CardModel c = candidates[i];
-            if (c is Mausoleum_Lose_HP)
+            if (c is IYgoMausoleumHpTributeOption)
             {
                 candidates.RemoveAt(i);
                 continue;

@@ -7,7 +7,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 /// <summary>Banish + end-phase return — <see cref="YgoDdScoutPlaneEndPhase"/>.</summary>
-public sealed class D_D_Scout_Plane : EffectMonsterCard
+public sealed class D_D_Scout_Plane : EffectMonsterCard, IYgoDdScoutPlaneCard
 {
     private int _banishedThisOwnerTurnStamp = -1;
 
@@ -33,8 +33,8 @@ public sealed class D_D_Scout_Plane : EffectMonsterCard
 
     public bool DdScoutEndPhaseUsedThisTurn { get; set; }
 
-    internal void MarkBanishedThisOwnerTurn(int stamp) => _banishedThisOwnerTurnStamp = stamp;
+    public void MarkBanishedThisOwnerTurn(int stamp) => _banishedThisOwnerTurnStamp = stamp;
 
-    internal bool IsBanishedThisTurnForEndPhase(int ownerTurnStamp) =>
+    public bool IsBanishedThisTurnForEndPhase(int ownerTurnStamp) =>
         _banishedThisOwnerTurnStamp >= 0 && _banishedThisOwnerTurnStamp == ownerTurnStamp;
 }

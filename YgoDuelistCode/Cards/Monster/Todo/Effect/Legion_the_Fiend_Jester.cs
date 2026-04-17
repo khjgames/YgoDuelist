@@ -14,7 +14,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>
 /// Field effect: <see cref="LegionFiendJesterSpellcasterConduit"/> waives conduit (stars) on normal/tribute Spellcaster hand summons while Legions are on the field.
 /// </summary>
-public sealed class Legion_the_Fiend_Jester : EffectMonsterCard
+public sealed class Legion_the_Fiend_Jester : EffectMonsterCard, IYgoLegionFiendJesterFieldMonster
 {
     private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
 

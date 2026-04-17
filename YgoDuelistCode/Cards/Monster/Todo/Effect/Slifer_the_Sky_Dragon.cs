@@ -16,7 +16,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard
+public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDragonFieldMonster
 {
     private static readonly CardKeyword SlifersPressureKeyword = (CardKeyword)20049;
     private static readonly CardKeyword SlifersPressurePlusKeyword = (CardKeyword)20050;

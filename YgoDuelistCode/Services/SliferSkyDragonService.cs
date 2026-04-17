@@ -24,8 +24,9 @@ public static class SliferSkyDragonService
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is Slifer_the_Sky_Dragon s)
-                return s;
+            BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            if (src is IYgoSliferSkyDragonFieldMonster)
+                return (Slifer_the_Sky_Dragon)src;
         }
 
         return null;

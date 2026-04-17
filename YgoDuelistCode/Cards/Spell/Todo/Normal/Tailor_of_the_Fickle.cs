@@ -71,4 +71,10 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard
     {
         base.OnUpgrade();
     }
+
+    public override bool TryGetPlayCardQueueOnActionEnqueuedDeferral(out string? reason)
+    {
+        reason = "tailor_of_the_fickle";
+        return true;
+    }
 }

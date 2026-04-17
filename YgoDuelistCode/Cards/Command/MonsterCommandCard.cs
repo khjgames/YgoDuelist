@@ -95,6 +95,15 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
     /// </summary>
     internal virtual bool TryEnqueueUnplayableOptionPileMenu(Player player, Creature? target) => false;
 
+    /// <summary>
+    /// Option-pile plays that defer <c>NCardPlayQueue.OnActionEnqueued</c> (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPlayCardQueueDeferral"/>).
+    /// </summary>
+    internal virtual bool TryGetOptionPilePlayCardQueueDeferral(Player player, out string? reason)
+    {
+        reason = null;
+        return false;
+    }
+
     // Parameterless ctor for reflection / scanners – never used at runtime for real commands.
     protected MonsterCommandCard()
         : base(0, CardType.Skill, CardRarity.Event, TargetType.Self)

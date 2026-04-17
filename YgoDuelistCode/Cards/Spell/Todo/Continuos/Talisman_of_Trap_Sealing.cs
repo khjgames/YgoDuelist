@@ -21,7 +21,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
 public sealed class Talisman_of_Trap_Sealing
-    : BaseContinuousSpellCard, IYgoCardZoneRightClick, IYgoAfterDuelMonsterDiedZoneCard
+    : BaseContinuousSpellCard, IYgoCardZoneRightClick, IYgoAfterDuelMonsterDiedZoneCard, IYgoSealmasterDependentTalisman
 {
     private const string AnnualKey = "TALISMAN_TRAP_SEALING";
 

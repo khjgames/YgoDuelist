@@ -7,4 +7,4 @@ lines matching `\bis [A-Z][a-zA-Z0-9_]*_[a-zA-Z0-9_]+` (underscore card/command 
 - Character: no matches
 - Powers: FairyBoxFieldPower.cs — `pick is Fairy_Box_Upkeep_Take_Damage`, `pick is Fairy_Box_Upkeep_Destroy`
 
-Follow-up (optional): replace Fairy Box branches with a small marker interface on those command types if we want zero concrete names in Powers.
+DONE (Wave build-audit): Fairy Box upkeep uses `IYgoFairyBoxUpkeepTakeDamageCommand` / `IYgoFairyBoxUpkeepDestroyTrapCommand` in `FairyBoxFieldPowerShared`.

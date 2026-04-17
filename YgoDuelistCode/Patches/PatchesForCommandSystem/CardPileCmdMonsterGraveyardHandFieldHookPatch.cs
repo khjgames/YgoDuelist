@@ -5,17 +5,17 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// <see cref="Guardian_Slime"/>: optional search when sent from hand or field to the Graveyard.
+/// After monsters move to the Graveyard from hand or field, dispatches <see cref="BaseMonsterCard.OnMovedToGraveyardFromHandOrField"/>
+/// (e.g. <see cref="Cards.Monster.Todo.Effect.Guardian_Slime"/> optional Ancient Chant search).
 /// </summary>
 [HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Add), typeof(IEnumerable<CardModel>), typeof(CardPile), typeof(CardPilePosition), typeof(AbstractModel), typeof(bool))]
-public static class CardPileCmdGuardianSlimeToGraveyardPatch
+public static class CardPileCmdMonsterGraveyardHandFieldHookPatch
 {
     [HarmonyPrefix]
     public static void Prefix(IEnumerable<CardModel> cards, CardPile newPile, ref List<(CardModel Card, PileType? From)>? __state)
@@ -42,12 +42,12 @@ public static class CardPileCmdGuardianSlimeToGraveyardPatch
 
         foreach ((CardModel card, PileType? from) in state)
         {
-            if (card is not Guardian_Slime)
+            if (from is not PileType fromPile)
                 continue;
-            if (from != PileType.Hand && from != MonsterPile.CustomType)
+            if (fromPile != PileType.Hand && fromPile != MonsterPile.CustomType)
                 continue;
-
-            YgoGuardianSlimeGraveyard.OnGuardianSlimeSentToGraveyardFromHandOrField(card, from.Value);
+            if (card is BaseMonsterCard b)
+                b.OnMovedToGraveyardFromHandOrField(fromPile);
         }
     }
 }

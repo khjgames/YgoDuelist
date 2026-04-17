@@ -61,4 +61,10 @@ public sealed class Secret_Pass_to_the_Treasures : BaseSpellCard
         DynamicVars["Mgc"].UpgradeValueBy(10m);
         DynamicVars["Mgc2"].UpgradeValueBy(50m);
     }
+
+    public override bool TryGetPlayCardQueueOnActionEnqueuedDeferral(out string? reason)
+    {
+        reason = "secret_pass";
+        return true;
+    }
 }

@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
-using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -30,7 +29,8 @@ public static class HookAfterCardPlayedEffectMonsterPatch
         if (cardPlay.Card is BaseSpellCard)
             RegisterSpellCounterOnFieldMonsters(player);
 
-        if (cardPlay.Card is Command_Defend defend && defend.SourceMonster is IYgoDeferredBlockFromDefendCommand src)
+        if (cardPlay.Card is IYgoDefendMonsterCommand defendCmd
+            && defendCmd.SourceMonster is IYgoDeferredBlockFromDefendCommand src)
         {
             int delayedBlock = src.GetDeferredBlockForDefendCommand();
             if (delayedBlock > 0)

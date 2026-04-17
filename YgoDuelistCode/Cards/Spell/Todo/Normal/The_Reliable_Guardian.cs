@@ -62,4 +62,10 @@ public sealed class The_Reliable_Guardian : BaseSpellCard
     {
         EnergyCost.UpgradeBy(-1);
     }
+
+    public override bool TryGetPlayCardQueueOnActionEnqueuedDeferral(out string? reason)
+    {
+        reason = "rush_reliable";
+        return true;
+    }
 }

@@ -83,4 +83,10 @@ public sealed class Emergency_Provisions : BaseSpellCard
         EnergyCost.UpgradeBy(-1);
         DynamicVars["Mgc"].UpgradeValueBy(1m);
     }
+
+    public override bool TryGetPlayCardQueueOnActionEnqueuedDeferral(out string? reason)
+    {
+        reason = "emergency_provisions";
+        return true;
+    }
 }

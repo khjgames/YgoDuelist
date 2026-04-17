@@ -199,4 +199,14 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             return tips;
         }
     }
+
+    /// <summary>
+    /// When this returns true, <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPlayCardQueueDeferral"/> skips early
+    /// <c>NCardPlayQueue.OnActionEnqueued</c> for hand/zone plays (aligned with spell/trap zone vanilla execute path).
+    /// </summary>
+    public virtual bool TryGetPlayCardQueueOnActionEnqueuedDeferral(out string? reason)
+    {
+        reason = null;
+        return false;
+    }
 }

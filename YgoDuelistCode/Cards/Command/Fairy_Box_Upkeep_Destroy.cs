@@ -6,7 +6,7 @@ using YgoDuelist.YgoDuelistCode.Extensions;
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
 /// <summary>Fairy Box upkeep option: destroy Fairy Box. Display-only (choose-a-card UI).</summary>
-public sealed class Fairy_Box_Upkeep_Destroy : MonsterCommandCard
+public sealed class Fairy_Box_Upkeep_Destroy : MonsterCommandCard, IYgoFairyBoxUpkeepDestroyTrapCommand
 {
     public Fairy_Box_Upkeep_Destroy()
     {

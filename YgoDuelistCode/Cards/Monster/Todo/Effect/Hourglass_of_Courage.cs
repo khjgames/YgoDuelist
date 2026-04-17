@@ -62,6 +62,9 @@ public sealed class Hourglass_of_Courage : EffectMonsterCard
         return StatEffectTotalMultiplier.HourglassOfCourageNormalSummon;
     }
 
+    public override void ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline() =>
+        ScheduleApplyHalvePowerAfterFlipFaceUp(this);
+
     private bool NormalSummonHalveTimerActive()
     {
         if (IsCanonical || Owner?.PlayerCombatState == null)

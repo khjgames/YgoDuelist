@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -30,7 +29,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// Spell/trap plays from the field also require matching bypass in <c>PlayCardFromSpellTrapZonePatch</c> (priority 900):
 /// implement <see cref="IYgoPrePlayCancelableGridSelection"/> for grid+before-spend flows, or add the card type there
 /// if it uses a dedicated patch (Riryoku, Emergency Provisions, etc.).
-/// Option pile: only the <see cref="Activate_Effect"/> + <see cref="IMonsterActivatedEffectPrePlaySelection"/> path defers
+/// Option pile: only <see cref="Activate_Effect"/> + <see cref="IMonsterActivatedEffectPrePlaySelection"/> defers
 /// queue (see <c>PlayCardFromOptionPilePatch</c>); do not defer for every option-pile card.
 /// </summary>
 public static class YgoPlayCardQueueDeferral
@@ -68,19 +67,11 @@ public static class YgoPlayCardQueueDeferral
         if (player != null)
         {
             CardPile? optionPile = YgoCardOptionPile.CustomType.GetPile(player);
-            // Match PlayCardFromOptionPilePatch: only Activate_Effect + IMonsterActivatedEffectPrePlaySelection runs
-            // async prep before UpdateCardBeforeExecution. Other option-pile cards (Command_Attack, etc.) sync
-            // UpdateCardBeforeExecution at execute start — skipping OnActionEnqueued for all option cards caused MP
-            // divergence (checksum) vs peers that still expect vanilla enqueue ordering for those plays.
             if (optionPile != null
                 && ReferenceEquals(card.Pile, optionPile)
-                && card is Activate_Effect activate
-                && activate.SourceMonster is IMonsterActivatedEffectPrePlaySelection
-                && activate.SourceMonster is NormalMonsterCard)
-            {
-                reason = "option_pile_activated_effect_preplay";
+                && card is MonsterCommandCard mcc
+                && mcc.TryGetOptionPilePlayCardQueueDeferral(player, out reason))
                 return true;
-            }
         }
 
         if (TributeSummonSelection.IsHandTributeDuelNormalSummonPlay(action))
@@ -120,35 +111,8 @@ public static class YgoPlayCardQueueDeferral
             return true;
         }
 
-        if (card is Emergency_Provisions)
-        {
-            reason = "emergency_provisions";
+        if (card is BaseSpellCard bs && bs.TryGetPlayCardQueueOnActionEnqueuedDeferral(out reason))
             return true;
-        }
-
-        if (card is Riryoku)
-        {
-            reason = "riryoku";
-            return true;
-        }
-
-        if (card is Rush_Recklessly or The_Reliable_Guardian)
-        {
-            reason = "rush_reliable";
-            return true;
-        }
-
-        if (card is Secret_Pass_to_the_Treasures)
-        {
-            reason = "secret_pass";
-            return true;
-        }
-
-        if (card is Tailor_of_the_Fickle)
-        {
-            reason = "tailor_of_the_fickle";
-            return true;
-        }
 
         return false;
     }
@@ -157,15 +121,13 @@ public static class YgoPlayCardQueueDeferral
     /// <see cref="Patches.PlayCardFromSpellTrapZonePatch"/> must not shortcut these — same cards as hand/zone deferral
     /// that run a custom <see cref="PlayCardAction.ExecuteAction"/> body after prep.
     /// </summary>
-    public static bool SpellTrapZonePlayRequiresVanillaExecuteAction(CardModel card) =>
-        card is FusionSpellCard
+    public static bool SpellTrapZonePlayRequiresVanillaExecuteAction(CardModel card)
+    {
+        if (card is FusionSpellCard
             or RitualSpellCard
             or BaseEquipSpellCard
-            or IYgoPrePlayCancelableGridSelection
-            or Emergency_Provisions
-            or Riryoku
-            or Secret_Pass_to_the_Treasures
-            or Tailor_of_the_Fickle
-            or Rush_Recklessly
-            or The_Reliable_Guardian;
+            or IYgoPrePlayCancelableGridSelection)
+            return true;
+        return card is BaseSpellCard bs && bs.TryGetPlayCardQueueOnActionEnqueuedDeferral(out _);
+    }
 }

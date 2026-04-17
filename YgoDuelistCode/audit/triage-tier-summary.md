@@ -1,6 +1,6 @@
 # Triage by tier (plan: wave refactors)
 
-Master file list: `all-cs-files.txt` (2134 `.cs` files under `YgoDuelistCode`, excluding `bin`/`obj`).
+Master file list: `all-cs-files.txt` (optional; may be regenerated manually via `audit/Run-CardLogicAudit.ps1` if you use it).
 
 ## Tier 1 — `Patches/**`
 
@@ -18,7 +18,8 @@ Master file list: `all-cs-files.txt` (2134 `.cs` files under `YgoDuelistCode`, e
 |--------|--------|
 | Machine triage | See `triage-services-grep.txt`. |
 | Wave 1 sample | `MonsterCommandRegistry` turn-end field clears, `YgoEquipSpellTargetRules`, `YgoGoraTurtleService` (see triage file). |
-| Follow-up | Remaining lines in `triage-services-grep.txt`. |
+| Wave 2 done | Queue deferral, Neow signature markers, banish hook, tribute/Mausoleum interfaces, Guardian Slime GY hook on `BaseMonsterCard`, flip pipeline, Sealmaster/talisman markers, Slifer/Legion markers — see `triage-services-grep.txt`. |
+| Follow-up | Periodic re-grep Services for new concrete card branches. |
 
 ## Tier 3 — `Relics/**`, `Character/**`, `Powers/**`
 

@@ -11,12 +11,13 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Ancient_Chant : BaseSpellCard
+public sealed class Ancient_Chant : BaseSpellCard, IYgoApplyAncientChantPowerWhenBanishedFromGraveyard
 {
     private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
 
@@ -57,6 +58,13 @@ public sealed class Ancient_Chant : BaseSpellCard
         description.Add("conduitIcon", ConduitImgBbcode);
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
+    public async Task ApplyPowerWhenBanishedFromGraveyardAsync(Player player)
+    {
+        if (player.Creature == null)
+            return;
+        await PowerCmd.Apply<AncientChantRaTributeBuffPower>(player.Creature, 1m, player.Creature, this);
+    }
 
     private static List<The_Winged_Dragon_of_Ra> FindRaCandidates(Player player)
     {

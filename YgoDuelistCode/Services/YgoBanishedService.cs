@@ -5,9 +5,8 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -26,8 +25,10 @@ public static class YgoBanishedService
         if (pile == null)
             return;
 
-        if (card is Ancient_Chant && card.Pile?.Type == GraveyardPile.CustomType && player.Creature != null)
-            await PowerCmd.Apply<AncientChantRaTributeBuffPower>(player.Creature, 1m, player.Creature, card);
+        if (card is IYgoApplyAncientChantPowerWhenBanishedFromGraveyard chant
+            && card.Pile?.Type == GraveyardPile.CustomType
+            && player.Creature != null)
+            await chant.ApplyPowerWhenBanishedFromGraveyardAsync(player);
 
         await CardPileCmd.Add(
             new CardModel[] { card },

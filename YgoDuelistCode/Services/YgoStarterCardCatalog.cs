@@ -324,11 +324,11 @@ public static class YgoStarterCardCatalog
     /// </summary>
     private static void ApplyNeowSignatureMonsterSubstitutions(List<CardModel> grid, Rng rng)
     {
-        bool hasDarkMagicSpell = grid.Any(c => c is Dark_Magic_Attack or Diffusion_Wave_Motion);
+        bool hasDarkMagicSpell = grid.Any(c => c is IYgoNeowSignatureDarkMagicSupportSpell);
         if (hasDarkMagicSpell)
             TryReplaceLowestRarityLevel56MonsterWith(grid, rng, typeof(Dark_Magician));
 
-        bool hasBurstStream = grid.Any(c => c is Burst_Stream_of_Destruction);
+        bool hasBurstStream = grid.Any(c => c is IYgoNeowSignatureBurstStreamSpell);
         if (hasBurstStream)
             TryReplaceLowestRarityLevel56MonsterWith(grid, rng, typeof(Blue_Eyes_White_Dragon));
 

@@ -17,7 +17,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Diffusion_Wave_Motion : BaseSpellCard
+public sealed class Diffusion_Wave_Motion : BaseSpellCard, IYgoNeowSignatureDarkMagicSupportSpell
 {
     private static readonly LocString SpellcasterSelectionPrompt =
         new("combat_messages", "DIFFUSION_WAVE_PICK_SPELLCASTER");

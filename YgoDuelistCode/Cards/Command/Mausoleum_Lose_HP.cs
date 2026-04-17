@@ -5,8 +5,10 @@ using YgoDuelist.YgoDuelistCode.Extensions;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
-/// <summary>Fairy Box upkeep option: take blockable damage (trap <c>Mgc2</c>). Display-only (choose-a-card UI).</summary>
-public sealed class Mausoleum_Lose_HP : MonsterCommandCard
+/// <summary>
+/// Mausoleum of the Emperor synthetic HP row in tribute selection grids (<see cref="IYgoMausoleumHpTributeOption"/>).
+/// </summary>
+public sealed class Mausoleum_Lose_HP : MonsterCommandCard, IYgoMausoleumHpTributeOption
 {
     public const int BaseTributeHpLoss = 10;
     public const int UpgradedTributeHpLoss = 6;

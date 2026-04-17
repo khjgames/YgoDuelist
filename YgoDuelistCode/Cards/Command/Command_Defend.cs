@@ -14,7 +14,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 /// <summary>
 /// Command: this monster defends, giving you block equal to its current DEF.
 /// </summary>
-public sealed class Command_Defend : MonsterCommandCard
+public sealed class Command_Defend : MonsterCommandCard, IYgoDefendMonsterCommand
 {
     protected override bool MirrorSourceMonsterUpgradeVisual => true;
 

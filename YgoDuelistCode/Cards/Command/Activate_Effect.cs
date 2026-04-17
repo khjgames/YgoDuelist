@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
@@ -14,13 +15,28 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 /// <summary>
 /// Single monster-options command; behavior and display come from <see cref="IMonsterActivatedEffect"/> on <see cref="MonsterCommandCard.SourceMonster"/>.
 /// </summary>
-public sealed class Activate_Effect : MonsterCommandCard
+public sealed class Activate_Effect : MonsterCommandCard, IActivateEffectPileUi, IActivateEffectPrePlayOptionPileCommand
 {
     private IMonsterActivatedEffect? Effect => SourceMonster as IMonsterActivatedEffect;
 
     protected override bool MirrorSourceMonsterUpgradeVisual => true;
 
     internal override bool LogsOptionPileLifecycle => true;
+
+    internal override bool TryGetOptionPilePlayCardQueueDeferral(Player player, out string? reason)
+    {
+        reason = null;
+        CardPile? optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        if (optionPile == null || !ReferenceEquals(Pile, optionPile))
+            return false;
+        if (SourceMonster is IMonsterActivatedEffectPrePlaySelection && SourceMonster is NormalMonsterCard)
+        {
+            reason = "option_pile_activated_effect_preplay";
+            return true;
+        }
+
+        return false;
+    }
 
     protected internal override string? CommandEnergyIconPrefix => "silent";
 
@@ -109,4 +125,10 @@ public sealed class Activate_Effect : MonsterCommandCard
         result = text;
         return true;
     }
+
+    bool IActivateEffectPileUi.TryGetActivateEffectPileDescription(ref string result) =>
+        TryGetPileDescriptionForActivateEffect(ref result);
+
+    bool IActivateEffectPileUi.TryGetActivateEffectPileTitle(ref string result) =>
+        TryGetTitleForActivateEffect(ref result);
 }

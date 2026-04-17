@@ -54,4 +54,10 @@ public sealed class Riryoku : BaseSpellCard
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
+    public override bool TryGetPlayCardQueueOnActionEnqueuedDeferral(out string? reason)
+    {
+        reason = "riryoku";
+        return true;
+    }
 }

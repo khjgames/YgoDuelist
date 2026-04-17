@@ -35,8 +35,16 @@ Use for **orchestration** (fusion selection, pile moves, grids) that many cards 
 | Zone on duel monster death | `IYgoAfterDuelMonsterDiedZoneCard`, `DuelMonsterPetDeathPatch.NotifyZoneCardsAfterDuelMonsterDied` |
 | Play-phase hand glow | `IYgoNHandPlayPhaseHighlightOverride`, `YgoFusionGateFieldGlowPatch`, `Fusion_Gate`, `Special_Summon_Egyptian_God_Slime` |
 
-## Audit artifacts
+## Additional green references
 
-- `YgoDuelistCode/audit/all-cs-files.txt` — full checklist.
-- `YgoDuelistCode/audit/triage-patches-grep.txt`, `triage-services-grep.txt` — machine triage hints.
-- `YgoDuelistCode/audit/triage-tier-summary.md` — tier status.
+| Pattern | Location |
+|---------|----------|
+| Activate Effect pile UI | `IActivateEffectPileUi`, `ActivateEffectCardTextPatch`, `Activate_Effect` / `Activate_Effect_2` |
+| Activate option-pile pre-play | `IActivateEffectPrePlayOptionPileCommand`, `PlayCardFromOptionPilePatch` |
+| D.D. Scout Plane banish / end phase | `IYgoDdScoutPlaneCard`, `YgoDdScoutPlaneEndPhase`, `CardPileAddInternalBanishedDdScoutPatch` |
+| Fairy Box upkeep options | `IYgoFairyBoxUpkeepTakeDamageCommand`, `IYgoFairyBoxUpkeepDestroyTrapCommand`, `FairyBoxFieldPower` |
+| GY from hand/field hook | `BaseMonsterCard.OnMovedToGraveyardFromHandOrField`, `CardPileCmdMonsterGraveyardHandFieldHookPatch` |
+
+## Audit folder (optional, at your pace)
+
+`YgoDuelistCode/audit/` may contain a one-time or occasional file list (`all-cs-files.txt`), triage notes (`triage-*.txt`, `triage-tier-summary.md`), and an optional script `Run-CardLogicAudit.ps1` if you ever want to regenerate grep snapshots by hand. **Nothing here is required on build** and you should not maintain an ever-growing automated checklist — refactor card-scoping issues as you go, using the patterns above. Work tracking can live in your Cursor plan todos if you use that workflow.

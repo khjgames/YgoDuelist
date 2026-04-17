@@ -15,7 +15,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Dark_Magic_Attack : BaseSpellCard
+public sealed class Dark_Magic_Attack : BaseSpellCard, IYgoNeowSignatureDarkMagicSupportSpell
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[]

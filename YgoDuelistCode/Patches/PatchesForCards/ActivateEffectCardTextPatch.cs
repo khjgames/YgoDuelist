@@ -2,13 +2,13 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Command;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// <see cref="CardModel.GetDescriptionForPile"/> reads <see cref="CardModel.Description"/> via non-virtual dispatch, so
-/// per-source text for <see cref="Activate_Effect"/> must be injected here. Title uses shared <c>YGODUELIST-ACTIVATE_EFFECT.title</c>.
+/// per-source text for commands implementing <see cref="IActivateEffectPileUi"/> must be injected here.
 /// Dynamic vars ({Mgc}, {Mgc2}, etc.) live on <see cref="MonsterCommandCard.SourceMonster"/>, not on the command card.
 /// </summary>
 [HarmonyPatch(typeof(CardModel), nameof(CardModel.GetDescriptionForPile), typeof(PileType), typeof(Creature))]
@@ -16,10 +16,7 @@ public static class ActivateEffectCardTextPatch
 {
     static void Postfix(CardModel __instance, ref string __result)
     {
-        if (__instance is Activate_Effect_2 ae2 && ae2.TryGetPileDescriptionForActivateEffect2(ref __result))
-            return;
-
-        if (__instance is Activate_Effect ae && ae.TryGetPileDescriptionForActivateEffect(ref __result))
+        if (__instance is IActivateEffectPileUi ui && ui.TryGetActivateEffectPileDescription(ref __result))
             return;
     }
 }
@@ -29,10 +26,7 @@ public static class ActivateEffectTitlePatch
 {
     static void Postfix(CardModel __instance, ref string __result)
     {
-        if (__instance is Activate_Effect_2 ae2 && ae2.TryGetTitleForActivateEffect2(ref __result))
-            return;
-
-        if (__instance is Activate_Effect ae && ae.TryGetTitleForActivateEffect(ref __result))
+        if (__instance is IActivateEffectPileUi ui && ui.TryGetActivateEffectPileTitle(ref __result))
             return;
     }
 }

@@ -230,7 +230,8 @@ public static class PlayCardFromOptionPilePatch
                 return;
             }
 
-            if (card is Activate_Effect activate
+            if (card is IActivateEffectPrePlayOptionPileCommand
+                && card is MonsterCommandCard activate
                 && activate.SourceMonster is IMonsterActivatedEffectPrePlaySelection preplay
                 && activate.SourceMonster is NormalMonsterCard sourceMonster)
             {

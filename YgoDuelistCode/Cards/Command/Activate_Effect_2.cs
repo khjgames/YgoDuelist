@@ -13,7 +13,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 /// <summary>
 /// Second optional field effect on monsters implementing <see cref="IMonsterSecondActivatedEffect"/>.
 /// </summary>
-public sealed class Activate_Effect_2 : MonsterCommandCard
+public sealed class Activate_Effect_2 : MonsterCommandCard, IActivateEffectPileUi
 {
     private IMonsterSecondActivatedEffect? Effect => SourceMonster as IMonsterSecondActivatedEffect;
 
@@ -101,4 +101,10 @@ public sealed class Activate_Effect_2 : MonsterCommandCard
         result = t2;
         return true;
     }
+
+    bool IActivateEffectPileUi.TryGetActivateEffectPileDescription(ref string result) =>
+        TryGetPileDescriptionForActivateEffect2(ref result);
+
+    bool IActivateEffectPileUi.TryGetActivateEffectPileTitle(ref string result) =>
+        TryGetTitleForActivateEffect2(ref result);
 }

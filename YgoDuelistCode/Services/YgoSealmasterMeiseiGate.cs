@@ -4,9 +4,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -15,7 +13,7 @@ public static class YgoSealmasterMeiseiGate
 {
     public static bool HasFaceUpSealmaster(Player? player) =>
         player != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(player).Any(m => m is Sealmaster_Meisei && !m.FaceDown);
+        && DuelMonsterFieldRegistry.GetFieldMonsters(player).Any(m => m is IYgoSealmasterMeiseiFieldMonster && !m.FaceDown);
 
     public static async Task DestroyTalismansIfNoSealmaster(Player? player)
     {
@@ -28,7 +26,7 @@ public static class YgoSealmasterMeiseiGate
             return;
 
         CardModel[] toDestroy = zone.Cards
-            .Where(c => c is Talisman_of_Trap_Sealing or Talisman_of_Spell_Sealing)
+            .Where(c => c is IYgoSealmasterDependentTalisman)
             .ToArray();
         if (toDestroy.Length == 0)
             return;
