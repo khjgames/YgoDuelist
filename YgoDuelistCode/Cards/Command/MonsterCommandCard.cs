@@ -57,7 +57,8 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
 
     private protected const float CommandMonsterLevelStripAttributeRightOffsetExtra = 4f;
     private protected const float CommandMonsterLevelStripRaceRightOffsetExtra = 2f;
-    private protected const float CommandMonsterLevelStripRaceVerticalOffsetExtra = 73f;
+    /// <summary>0: same icon row as attribute; a large positive value pushes the race icon down and off-card in the option pile.</summary>
+    private protected const float CommandMonsterLevelStripRaceVerticalOffsetExtra = 0f;
 
     /// <summary>Extra px for attribute icon horizontal placement (<see cref="Patches.YgoMonsterLevelStripPatch"/>).</summary>
     public virtual float MonsterLevelStripAttributeRightOffsetExtra => CommandMonsterLevelStripAttributeRightOffsetExtra;

@@ -46,6 +46,8 @@ public static class DuelMonsterScalePatch
         var duelNodes = new List<NCreature>();
         foreach (var node in room.CreatureNodes)
         {
+            if (node.Entity == null)
+                continue;
             if (node.Entity.PetOwner == player.Player &&
                 node.Entity.Monster is DuelMonsterModel)
             {
@@ -97,34 +99,38 @@ public static class DuelMonsterScalePatch
             // Swap the simple sprite's texture to the card portrait, if available.
             if (dn.Entity.Monster is DuelMonsterModel m && !string.IsNullOrEmpty(m.PortraitPath))
             {
-                var body = dn.Visuals.GetNode<Node2D>("%Visuals");
-
-                // If the visuals body itself is a Sprite2D (static image enemy), use it directly.
-                Sprite2D? sprite = body as Sprite2D;
-
-                // Otherwise, fall back to expected child nodes.
-                if (sprite == null)
+                var visualsRoot = dn.Visuals;
+                if (visualsRoot != null)
                 {
-                    sprite = body.GetNodeOrNull<Sprite2D>("Portrait")
-                             ?? body.GetNodeOrNull<Sprite2D>("Sprite");
-                }
+                    var body = visualsRoot.GetNodeOrNull<Node2D>("%Visuals");
 
-                TextureRect? texRect = sprite == null
-                    ? body.GetNodeOrNull<TextureRect>("Portrait")
-                    : null;
+                    // If the visuals body itself is a Sprite2D (static image enemy), use it directly.
+                    Sprite2D? sprite = body as Sprite2D;
 
-                Texture2D? texture = ResourceLoader.Load<Texture2D>(
-                    m.PortraitPath,
-                    null,
-                    ResourceLoader.CacheMode.Reuse
-                );
+                    // Otherwise, fall back to expected child nodes.
+                    if (body != null && sprite == null)
+                    {
+                        sprite = body.GetNodeOrNull<Sprite2D>("Portrait")
+                                 ?? body.GetNodeOrNull<Sprite2D>("Sprite");
+                    }
 
-                if (texture != null)
-                {
-                    if (sprite != null)
-                        sprite.Texture = texture;
-                    else if (texRect != null)
-                        texRect.Texture = texture;
+                    TextureRect? texRect = sprite == null && body != null
+                        ? body.GetNodeOrNull<TextureRect>("Portrait")
+                        : null;
+
+                    Texture2D? texture = ResourceLoader.Load<Texture2D>(
+                        m.PortraitPath,
+                        null,
+                        ResourceLoader.CacheMode.Reuse
+                    );
+
+                    if (texture != null)
+                    {
+                        if (sprite != null)
+                            sprite.Texture = texture;
+                        else if (texRect != null)
+                            texRect.Texture = texture;
+                    }
                 }
             }
 

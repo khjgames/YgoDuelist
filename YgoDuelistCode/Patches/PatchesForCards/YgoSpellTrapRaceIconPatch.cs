@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
@@ -14,7 +15,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
 /// Renders YGO race icon on spell/trap cards (single icon under the title banner).
-/// Monsters use <see cref="YgoMonsterLevelStripPatch"/> instead.
+/// Field monsters and <see cref="MonsterCommandCard"/> use <see cref="YgoMonsterLevelStripPatch"/> instead.
 /// </summary>
 [HarmonyPatch(typeof(NCard), "Reload")]
 public static class YgoSpellTrapRaceIconPatch
@@ -49,8 +50,8 @@ public static class YgoSpellTrapRaceIconPatch
             return;
         bool useSetTransparency = YgoSetCardVisualHelper.ShouldUseSetFrame(model);
 
-        // Monsters are handled by YgoMonsterLevelStripPatch.
-        if (model is AbstractMonsterCard)
+        // Monsters and per-monster command options use YgoMonsterLevelStripPatch (attribute + race row).
+        if (model is AbstractMonsterCard or MonsterCommandCard)
             return;
 
         if (model is not IYgoCard ygo)

@@ -2,7 +2,9 @@
 
 [node name="YgoDuelMonster" type="Node2D"]
 
-[node name="Visuals" type="Sprite2D" parent="."]
+[node name="YgoDuelMonsterPortraitGroup" type="CanvasGroup" parent="."]
+
+[node name="Visuals" type="Sprite2D" parent="YgoDuelMonsterPortraitGroup"]
 unique_name_in_owner = true
 position = Vector2(0, -115)
 scale = Vector2(1, 1)

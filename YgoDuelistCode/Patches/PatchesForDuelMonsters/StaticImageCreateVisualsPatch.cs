@@ -16,6 +16,9 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 /// </summary>
 public static class StaticImageCreateVisualsPatch
 {
+    /// <summary>Matches <c>duel_monster.tscn</c>; portrait + overlays composite as one draw.</summary>
+    public const string DuelMonsterPortraitCanvasGroupName = "YgoDuelMonsterPortraitGroup";
+
     private const float StaticPortraitAttributeRaceIconScaleMultiplier = 0.5f;
     private const string StaticPortraitScaledMetaKey = "YgoStaticPortraitIconScaled";
 
@@ -72,11 +75,28 @@ public static class StaticImageCreateVisualsPatch
             }
         }
 
+        // Nested nodes (e.g. %Visuals under CanvasGroup) must register with NCreatureVisuals or GetNode("%Visuals") fails.
+        AssignUniqueNameOwnersRecursive(visuals, visuals);
+
         raw.QueueFree();
         ScaleAttributeAndRaceIconsForStaticPortrait(visuals);
         visuals.ChildEnteredTree += OnStaticPortraitChildEnteredTree;
         __result = visuals;
         return false;
+    }
+
+    private static void AssignUniqueNameOwnersRecursive(Node node, NCreatureVisuals root)
+    {
+        foreach (Node child in node.GetChildren())
+        {
+            if (child.UniqueNameInOwner)
+            {
+                child.Owner = root;
+                child.UniqueNameInOwner = true;
+            }
+
+            AssignUniqueNameOwnersRecursive(child, root);
+        }
     }
 
     /// <summary>
@@ -87,13 +107,16 @@ public static class StaticImageCreateVisualsPatch
     {
         var raw = new Node2D { Name = "YgoDuelMonster" };
 
+        var portraitGroup = new CanvasGroup { Name = DuelMonsterPortraitCanvasGroupName };
+        raw.AddChild(portraitGroup);
+
         var sprite = new Sprite2D
         {
             Name = "Visuals",
             Position = new Vector2(0, -115),
             UniqueNameInOwner = true
         };
-        raw.AddChild(sprite);
+        portraitGroup.AddChild(sprite);
 
         var bounds = new Control
         {
