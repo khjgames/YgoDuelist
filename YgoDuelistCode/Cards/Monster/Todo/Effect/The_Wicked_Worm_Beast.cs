@@ -1,17 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 /// <summary>End Phase: returns to hand. Upgraded: Retain.</summary>
-public sealed class The_Wicked_Worm_Beast : EffectMonsterCard
+public sealed class The_Wicked_Worm_Beast : EffectMonsterCard, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
 {
     public override bool UseAlternateUpgradedDescription => true;
 
@@ -48,4 +54,15 @@ public sealed class The_Wicked_Worm_Beast : EffectMonsterCard
             IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
                 ? new[] { HoverTipFactory.FromKeyword(CardKeyword.Retain) }
                 : Enumerable.Empty<IHoverTip>());
+
+    public bool IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(Creature pet) =>
+        !FaceDown && pet.IsAlive;
+
+    public async Task TryResolveOwnerBeforeTurnEndFlushFieldMonsterEffectAsync(PlayerChoiceContext choiceContext, Player owner, Creature pet)
+    {
+        if (!IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(pet))
+            return;
+        YgoDuelMonsterBounceToHand.RegisterForHandReturn(pet);
+        await CreatureCmd.Kill(pet, force: true);
+    }
 }

@@ -56,7 +56,7 @@ public partial class NYgoConvulsionPreviewHolder : NHandCardHolder, IPoolable
             Visible = false
         };
         // MegaLabel._Ready requires an explicit font override (inherited theme is not enough).
-        handIndexLabel.AddThemeFontOverride(ThemeConstants.Label.font, new SystemFont());
+        handIndexLabel.AddThemeFontOverride(ThemeConstants.Label.Font, new SystemFont());
         holder.AddChild(handIndexLabel);
         handIndexLabel.Owner = holder;
 

@@ -10,6 +10,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;

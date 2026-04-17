@@ -15,4 +15,21 @@ DONE — Wave 1b: ConvulsionOfNaturePreviewUiPatch → IYgoConvulsionDrawPilePre
 DONE — Wave 1b: YgoEnergyIconNodePatch → YgoDuelistCard.YgoStrikeDefendEnergyIconTexturePath (Strike/Defend stubs).
 DONE — Wave 1b: YgoAlternateUpgradedDescriptionPatch → MonsterCommandCard.UseAlternateUpgradedDescription (Fairy_Box_Upkeep_Take_Damage).
 
+DONE — Wave 2 systematic (card-scope): Bottomless_Trap_Hole / Dark_Mirror_Force → YgoDuelistCard.RefineIsValidTarget + CardModelIsValidTargetYgoRefinePatch (replaces BottomlessTrapHoleIsValidTargetPatch, DarkMirrorForceIsValidTargetPatch).
+DONE — Wave 2: Statue_of_the_Wicked → IYgoAfterFaceDownSetTrapDestroyedToGraveyardAsync + CardPileCmdFaceDownSetTrapToGraveyardHookPatch (replaces CardPileCmdStatueOfTheWickedToGraveyardPatch).
+DONE — Wave 2: Fear_from_the_Dark → IYgoAfterMonsterMovedToGraveyardFromHandOrDraw + CardPileCmdMonsterGraveyardFromHandOrDrawHookPatch (replaces CardPileCmdFearFromTheDarkHandOrDeckToGraveyardPatch).
+DONE — Wave 2: Electric_Snake / Elephant_Statue_of_Blessing → BaseMonsterCard.ScheduleDrawCardsEqualToPrintedMgcWhenMovedFromHandToGraveyard + OnMovedToGraveyardFromHandOrField (replaces CardPileCmdElectricSnakeHandToGraveyardPatch).
+DONE — Wave 2: Elephant_Statue_of_Disaster → logic on card via OnMovedToGraveyardFromHandOrField (replaces CardPileCmdElephantStatueDisasterHandDestroyPatch).
+
+DONE — Wave 3: PlayCardActionRushReliable / EmergencyProvisions / Riryoku / SecretPass / TailorOfTheFickle → IYgoPlayCardActionPreSpendResourceFlow + PlayCardActionIYgoPreSpendResourceFlowPatch; RushReliablePreSpendSelection shared helper.
+DONE — Wave 3: CreatureCmdHealFirePrincessPatch → IYgoAfterOwnerPlayerCreatureHealGain on Fire_Princess.
+DONE — Wave 3: CreatureCmdHealBadReactionToSimochiPatch / YgoBadReactionToSimochi → IYgoBadReactionToSimochiHealRedirect on Bad_Reaction_to_Simochi.
+DONE — Wave 3: NCardPlayCannotPlayOptionPilePatch → MonsterCommandCard.TryEnqueueUnplayableOptionPileMenu (no Exit_Monster_Options / Command_Change / Toggle concrete list).
+
+DONE — Wave 4: MonsterCommandTurnResetPatch (Legendary_Fiend ATK stack) → IYgoTurnStartAtkGrowthFromFieldMonsterAfterCommandReset on Legendary_Fiend.
+DONE — Wave 4: HookModifyPowerAmountReceivedTorpedoFishUmiPatch (Torpedo_Fish + Umi) → IYgoPetDebuffPowerAmountReceivedHook on Torpedo_Fish.
+DONE — Wave 4: YgoFairyBoxUpkeepTitleUpgradedPatch / CommandChangeBattlePositionTitlePatch → MonsterCommandCard.ShouldPatchTitleToCardsTitleUpgradedLoc / TryPatchLocalizedTitleForCardModelTitleGetter (Fairy_Box_Upkeep_Take_Damage, Command_Change_Battle_Position).
+
+DONE — Wave 5: CardPileAddInternalSkullInvitationPatch now dispatches generic card graveyard hook via YgoGraveyardPileHooks.DispatchCardAddedHook; removed concrete Black_Pendant branch from patch service list.
+
 Remaining manual review: re-run grep on Patches/** after future edits; spot-check for new concrete card branches.

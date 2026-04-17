@@ -1,5 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -9,7 +12,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Berserk_Dragon : EffectMonsterCard
+public sealed class Berserk_Dragon : EffectMonsterCard, IYgoOwnerTurnStartFieldMonsterEffect
 {
     public Berserk_Dragon()
         : base(
@@ -46,5 +49,24 @@ public sealed class Berserk_Dragon : EffectMonsterCard
     {
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 3m;
+    }
+
+    public bool IsOwnerTurnStartFieldMonsterEffectActive() => !FaceDown;
+
+    public Task TryResolveOwnerTurnStartFieldMonsterEffectAsync(PlayerChoiceContext choiceContext, Player owner)
+    {
+        _ = choiceContext;
+        _ = owner;
+        if (DynamicVars?.Damage == null || !DynamicVars.ContainsKey("Mgc"))
+            return Task.CompletedTask;
+
+        decimal loss = DynamicVars["Mgc"].BaseValue;
+        if (loss <= 0m)
+            return Task.CompletedTask;
+        decimal next = DynamicVars.Damage.BaseValue - loss;
+        if (next < 0m)
+            next = 0m;
+        DynamicVars.Damage.BaseValue = next;
+        return Task.CompletedTask;
     }
 }

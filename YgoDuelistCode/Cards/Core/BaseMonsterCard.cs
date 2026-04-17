@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -988,6 +990,28 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// Invoked only for those sources; default no-op.
     /// </summary>
     public virtual void OnMovedToGraveyardFromHandOrField(PileType from) { }
+
+    /// <summary>
+    /// Hand → GY: draw cards equal to printed <c>Mgc</c>. Used by <see cref="Cards.Monster.Todo.Effect.Electric_Snake"/>, <see cref="Cards.Monster.Todo.Effect.Elephant_Statue_of_Blessing"/>.
+    /// </summary>
+    protected void ScheduleDrawCardsEqualToPrintedMgcWhenMovedFromHandToGraveyard(PileType from)
+    {
+        if (from != PileType.Hand)
+            return;
+        Player? player = Owner;
+        if (player?.Creature?.CombatState == null)
+            return;
+        decimal n = DynamicVars["Mgc"].BaseValue;
+        if (n <= 0m)
+            return;
+        TaskHelper.RunSafely(DrawCardsForPrintedMgcAsync(player, n));
+    }
+
+    private static async Task DrawCardsForPrintedMgcAsync(Player player, decimal n)
+    {
+        var ctx = new BlockingPlayerChoiceContext();
+        await CardPileCmd.Draw(ctx, n, player);
+    }
 
     /// <summary>Extra max HP from Fortified Beasts sync (Command Knight).</summary>
     public virtual int GetFortifiedBeastsBonusMaxHp(Player player) => 0;

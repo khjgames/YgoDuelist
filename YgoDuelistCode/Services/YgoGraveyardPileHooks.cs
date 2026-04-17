@@ -4,6 +4,8 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Helpers;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Relics;
 
@@ -46,5 +48,18 @@ public static class YgoGraveyardPileHooks
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Dispatches card-owned graveyard hooks after owner resolution succeeds.
+    /// </summary>
+    public static void DispatchCardAddedHook(CardPile pile, CardModel addedCard)
+    {
+        if (addedCard is not IYgoOnAddedToYgoGraveyardPile hook)
+            return;
+        if (!TryGetPlayerForGraveyardAdd(pile, addedCard, out Player? owner))
+            return;
+
+        TaskHelper.RunSafely(hook.OnAddedToYgoGraveyardPileAsync(owner, pile));
     }
 }

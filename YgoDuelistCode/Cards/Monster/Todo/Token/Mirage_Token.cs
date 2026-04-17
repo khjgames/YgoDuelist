@@ -1,12 +1,18 @@
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 
 /// <summary>Token for <see cref="YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal.Physical_Double"/>: ATK/DEF/level are set when summoned.</summary>
-public sealed class Mirage_Token : YgoTokenEffectMonster
+public sealed class Mirage_Token : YgoTokenEffectMonster, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
 {
     [SavedProperty]
     public int MirageAtk { get; set; }
@@ -46,5 +52,15 @@ public sealed class Mirage_Token : YgoTokenEffectMonster
         MirageDef = def;
         MirageDestroyAtEndOfTurn = true;
         SetDuelMonsterLevel(level);
+    }
+
+    public bool IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(Creature pet) =>
+        MirageDestroyAtEndOfTurn && !FaceDown && pet.IsAlive;
+
+    public async Task TryResolveOwnerBeforeTurnEndFlushFieldMonsterEffectAsync(PlayerChoiceContext choiceContext, Player owner, Creature pet)
+    {
+        if (!IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(pet))
+            return;
+        await CreatureCmd.Kill(pet, force: true);
     }
 }

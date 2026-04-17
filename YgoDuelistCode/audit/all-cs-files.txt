@@ -52,6 +52,8 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Core\IMonsterOptionCommandProvider.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Core\IMonsterSecondActivatedEffect.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Core\IYgoAfterDuelMonsterDiedZoneCard.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Core\IYgoAfterFaceDownSetTrapDestroyedToGraveyardAsync.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Core\IYgoAfterMonsterMovedToGraveyardFromHandOrDraw.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Core\IYgoApplyAncientChantPowerWhenBanishedFromGraveyard.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Core\IYgoCardZoneRightClick.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Core\IYgoConvulsionDrawPilePreviewSource.cs
@@ -1702,8 +1704,8 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Nodes\NYgoSealedPackWidget.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\EnchantmentModelCanEnchantYgoMonsterPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\ActivateEffectCardTextPatch.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\BottomlessTrapHoleIsValidTargetPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\CardModelFromSerializableMonsterPermanentStatsPatch.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\CardModelIsValidTargetYgoRefinePatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\CardModelSanganNameLockCanPlayPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\CardModelSelectionScreenPromptFallbackPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\CardModelUpgradePreviewEnergyCachePatch.cs
@@ -1711,7 +1713,6 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\CardPileAddInternalMoveFusionToRunExtraDeckPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\CardPileAddInternalSkullInvitationPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\CommandChangeBattlePositionTitlePatch.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\DarkMirrorForceIsValidTargetPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\HookAfterCardPlayedEffectMonsterPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\MonsterCardRightClickPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCards\MonsterCommandHolderClickPatch.cs
@@ -1748,14 +1749,12 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCombat\YgoDuelistNotEnoughStarsDialoguePatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCombat\YgoDuelistStarCounterHoverTipPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCombat\YgoHoveredZoneEquipHandPatch.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdElectricSnakeHandToGraveyardPatch.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdElephantStatueDisasterHandDestroyPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdEquipSpellZoneDetachPatch.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdFaceDownSetTrapToGraveyardHookPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdFallenInsightsToGraveyardPatch.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdFearFromTheDarkHandOrDeckToGraveyardPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdFieldMonsterGraveyardEffectsPatch.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdMonsterGraveyardFromHandOrDrawHookPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdMonsterGraveyardHandFieldHookPatch.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CardPileCmdStatueOfTheWickedToGraveyardPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CombatLifecycle\DuelMonsterRightClickUiPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CombatLifecycle\MonsterCommandTurnResetPatch.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Patches\PatchesForCommandSystem\CombatLifecycle\PlayerPopulateCombatStateExtraDeckPatch.cs

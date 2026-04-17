@@ -38,6 +38,9 @@ public sealed class Electric_Snake : EffectMonsterCard
         typeof(Electric_Snake),
     };
 
+    public override void OnMovedToGraveyardFromHandOrField(PileType from) =>
+        ScheduleDrawCardsEqualToPrintedMgcWhenMovedFromHandToGraveyard(from);
+
     protected override void OnUpgrade()
     {
         base.OnUpgrade();

@@ -1,19 +1,27 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
-public sealed class Blind_Destruction : BaseContinuousTrapCard
+public sealed class Blind_Destruction : BaseContinuousTrapCard, IYgoOwnerTurnStartSpellTrapZoneEffect
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 12m) };
@@ -55,4 +63,42 @@ public sealed class Blind_Destruction : BaseContinuousTrapCard
 
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
+
+    public bool IsOwnerTurnStartSpellTrapZoneEffectActive() => !FaceDown;
+
+    public async Task TryResolveOwnerTurnStartSpellTrapZoneEffectAsync(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player.Creature?.CombatState == null || !IsOwnerTurnStartSpellTrapZoneEffectActive())
+            return;
+        if (!YgoAnnualTracker.TryConsumeAnnual(player, "BLIND_DESTRUCTION"))
+            return;
+
+        CombatState cs = player.Creature.CombatState;
+        ulong mix = YgoDeterministicRng.MixSpellTrapZoneSlot(player, this);
+        int roll = YgoDeterministicRng.RollDie(cs, 6, "BLIND_DESTRUCTION-D6", mix);
+        CardModel resultCard = YgoDeterministicRngResultDisplay.CreateD6RollResultCard(cs, player, roll);
+
+        var prompt = new LocString("cards", "YGODUELIST-BLIND_DESTRUCTION.die_result.selection");
+        prompt.Add("Roll", (decimal)roll);
+        var prefs = new CardSelectorPrefs(prompt, 0, 0)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = false
+        };
+        await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { resultCard }, player, prefs);
+
+        decimal sixCase = DynamicVars["Mgc"].BaseValue;
+        decimal dmg = roll == 6 ? sixCase : roll;
+        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
+            await CreatureCmd.Damage(choiceContext, e, dmg, ValueProp.Unpowered, player.Creature, this);
+
+        if (roll == 6 || player.PlayerCombatState == null)
+            return;
+
+        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+        {
+            if (pet.IsAlive)
+                await CreatureCmd.Damage(choiceContext, pet, dmg, ValueProp.Unpowered, player.Creature, this);
+        }
+    }
 }

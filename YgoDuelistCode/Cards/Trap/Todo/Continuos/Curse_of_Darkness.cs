@@ -12,7 +12,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
 /// <summary>While face-up: each time you resolve a Spell, a random enemy takes <c>{Mgc}</c> damage (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoCurseOfDarknessSpellHook"/>).</summary>
-public sealed class Curse_of_Darkness : BaseContinuousTrapCard
+public sealed class Curse_of_Darkness : BaseContinuousTrapCard, IYgoSpellResolvedOwnerDamageContributor
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 6m) };
@@ -38,6 +38,9 @@ public sealed class Curse_of_Darkness : BaseContinuousTrapCard
 
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
+
+    public decimal GetOwnerSpellResolvedDamageAmount() =>
+        FaceDown ? 0m : DynamicVars["Mgc"].BaseValue;
 
     protected override void OnUpgrade()
     {

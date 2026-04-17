@@ -28,7 +28,7 @@ public sealed class D_D_Warrior : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 12,
             baseDef: 10,
-            baseMgc: 0,
+            baseMgc: 2,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }

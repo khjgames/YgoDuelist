@@ -5,6 +5,8 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -14,7 +16,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class The_Reliable_Guardian : BaseSpellCard
+public sealed class The_Reliable_Guardian : BaseSpellCard, IYgoPlayCardActionPreSpendResourceFlow
 {
     public The_Reliable_Guardian()
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
@@ -68,4 +70,13 @@ public sealed class The_Reliable_Guardian : BaseSpellCard
         reason = "rush_reliable";
         return true;
     }
+
+    async Task<bool> IYgoPlayCardActionPreSpendResourceFlow.TryPreparePreSpendPlayAsync(
+        PlayCardAction action,
+        Player player,
+        CardModel self) =>
+        await RushReliablePreSpendSelection.TryPrepareAsync(self, player);
+
+    void IYgoPlayCardActionPreSpendResourceFlow.ClearPreSpendPlayState(CardModel self) =>
+        RushReliablePlayPayload.ClearForCard(self);
 }

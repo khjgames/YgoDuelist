@@ -25,4 +25,7 @@ public sealed class Fairy_Box_Upkeep_Take_Damage : MonsterCommandCard, IYgoFairy
         BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
 
     public override string PortraitPath => "fairy_box.png".CardImagePath();
+
+    internal override bool ShouldPatchTitleToCardsTitleUpgradedLoc(CardModel self) =>
+        self.IsUpgraded || self.UpgradePreviewType != CardUpgradePreviewType.None;
 }

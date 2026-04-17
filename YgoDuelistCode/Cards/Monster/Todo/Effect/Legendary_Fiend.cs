@@ -13,7 +13,7 @@ using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Legendary_Fiend : EffectMonsterCard
+public sealed class Legendary_Fiend : EffectMonsterCard, IYgoTurnStartAtkGrowthFromFieldMonsterAfterCommandReset
 {
     public Legendary_Fiend()
         : base(
@@ -41,5 +41,14 @@ public sealed class Legendary_Fiend : EffectMonsterCard
         await base.OnSummoned(player, choiceContext, duelMonsterPet);
         if (!duelMonsterPet.HasPower<LegendaryFiendAtkPower>())
             await PowerCmd.Apply<LegendaryFiendAtkPower>(duelMonsterPet, this.DynamicVars["Mgc"].BaseValue, player.Creature, this);
+    }
+
+    public async Task ApplyTurnStartAtkGrowthAsync(Player player, Creature pet)
+    {
+        LegendaryFiendAtkPower? p = pet.GetPower<LegendaryFiendAtkPower>();
+        if (p == null)
+            await PowerCmd.Apply<LegendaryFiendAtkPower>(pet, 7m, player.Creature, null);
+        else
+            await PowerCmd.ModifyAmount(p, 7m, player.Creature, null);
     }
 }

@@ -5,7 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -27,10 +27,10 @@ public static class CreatureCmdHealBadReactionToSimochiPatch
         if (cs == null || !YgoBadReactionToSimochi.IsCombatEnemy(cs, creature))
             return true;
 
-        if (!YgoBadReactionToSimochi.TryResolveBest(cs, out Bad_Reaction_to_Simochi? simochi, out decimal mult))
+        if (!YgoBadReactionToSimochi.TryResolveBest(cs, out CardModel? sourceCard, out decimal mult))
             return true;
 
-        Creature? dealer = simochi!.Owner?.Creature;
+        Creature? dealer = sourceCard?.Owner?.Creature;
         if (dealer == null)
             return true;
 
@@ -41,7 +41,7 @@ public static class CreatureCmdHealBadReactionToSimochiPatch
             damage,
             ValueProp.Unpowered,
             dealer,
-            simochi);
+            sourceCard);
         return false;
     }
 }

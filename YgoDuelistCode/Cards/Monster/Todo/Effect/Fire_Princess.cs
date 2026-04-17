@@ -1,13 +1,23 @@
-using YgoDuelist.YgoDuelistCode.Cards;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Fire_Princess : EffectMonsterCard
+public sealed class Fire_Princess : EffectMonsterCard, IYgoAfterOwnerPlayerCreatureHealGain
 {
     public Fire_Princess()
         : base(
@@ -38,4 +48,42 @@ public sealed class Fire_Princess : EffectMonsterCard
         typeof(Fire_Princess),
     };
 
+    public async Task ReactToOwnerPlayerHpGainAfterHealAsync(
+        Player owningPlayer,
+        Creature healedCreature,
+        decimal hpBeforeHeal,
+        decimal gainedHp,
+        CombatState combatState,
+        int deterministicTick)
+    {
+        _ = hpBeforeHeal;
+        if (gainedHp <= 0m || FaceDown || Owner?.PlayerCombatState == null)
+            return;
+
+        List<Creature> enemies = combatState.HittableEnemies.Where(e => e.IsAlive).ToList();
+        if (enemies.Count == 0)
+            return;
+
+        if (!Owner.PlayerCombatState.Pets.Any(p =>
+                p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), this)))
+            return;
+
+        decimal dmg = DynamicVars["Mgc"].BaseValue;
+        if (dmg <= 0m)
+            return;
+
+        Creature? target = enemies.Count == 1
+            ? enemies[0]
+            : YgoDeterministicRng.PickOne(combatState, enemies, $"FIRE_PRINCESS-{Id.Entry}-{deterministicTick}");
+
+        if (target == null || !target.IsAlive)
+            return;
+
+        var ctx = new BlockingPlayerChoiceContext();
+        await DamageCmd.Attack(dmg)
+            .FromCard(this)
+            .Targeting(target)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .Execute(ctx);
+    }
 }

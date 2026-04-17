@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Players;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -44,22 +41,4 @@ public static class YgoDealWithDarkRulerState
         Level8PlusMonsterSentToGraveyardThisTurn[player.NetId] = false;
     }
 
-    /// <summary>At the start of your turn: each <see cref="Berserk_Dragon"/> you control loses ATK equal to its <c>Mgc</c>.</summary>
-    public static Task ApplyBerserkDragonStandbyAtkLossAsync(Player player)
-    {
-        foreach (Berserk_Dragon b in DuelMonsterFieldRegistry.GetFieldMonsters(player).OfType<Berserk_Dragon>())
-        {
-            if (b.DynamicVars?.Damage == null || !b.DynamicVars.ContainsKey("Mgc"))
-                continue;
-            decimal loss = b.DynamicVars["Mgc"].BaseValue;
-            if (loss <= 0m)
-                continue;
-            decimal next = b.DynamicVars.Damage.BaseValue - loss;
-            if (next < 0m)
-                next = 0m;
-            b.DynamicVars.Damage.BaseValue = next;
-        }
-
-        return Task.CompletedTask;
-    }
 }

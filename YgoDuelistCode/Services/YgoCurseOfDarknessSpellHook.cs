@@ -11,12 +11,11 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// After each YGO Spell resolves, if <see cref="YgoCurseOfDarknessField"/> is active, deal total <c>Mgc</c> from face-up <see cref="Curse_of_Darkness"/> to a deterministically chosen random enemy.
+/// After each YGO Spell resolves, if <see cref="YgoCurseOfDarknessField"/> is active, deal accumulated post-spell contributor damage to a deterministically chosen random enemy.
 /// </summary>
 public static class YgoCurseOfDarknessSpellHook
 {
@@ -56,8 +55,7 @@ public static class YgoCurseOfDarknessSpellHook
         if (victim == null)
             return;
 
-        Curse_of_Darkness? curse = YgoCurseOfDarknessField.GetFirstActiveCurse(player);
-        CardModel damageSource = curse is not null ? curse : spell;
+        CardModel damageSource = YgoCurseOfDarknessField.GetFirstActiveContributor(player) ?? spell;
 
         await CreatureCmd.Damage(choiceContext, victim, damage, ValueProp.Unpowered, player.Creature, damageSource);
     }

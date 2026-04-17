@@ -1,16 +1,22 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
-public sealed class Black_Pendant : BaseEquipSpellCard
+public sealed class Black_Pendant : BaseEquipSpellCard, IYgoOnAddedToYgoGraveyardPile
 {
     private const int PrintedAtkBonus = 5;
 
@@ -44,4 +50,28 @@ public sealed class Black_Pendant : BaseEquipSpellCard
     public override bool CardShowsBlightKeyword => true;
 
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(3m);
+
+    public async Task OnAddedToYgoGraveyardPileAsync(Player owner, CardPile pile)
+    {
+        var cs = owner.Creature?.CombatState;
+        if (cs == null)
+            return;
+
+        int stacks = (int)DynamicVars["Mgc"].BaseValue;
+        if (stacks <= 0)
+            return;
+
+        ulong mix = YgoDeterministicRng.MixSpellTrapZoneSlot(owner, this);
+        string key = $"BLACK_PENDANT-{Id}-{pile.Cards.Count}";
+
+        List<Creature> enemies = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
+        if (enemies.Count == 0)
+            return;
+
+        Creature? victim = YgoDeterministicRng.PickOne(cs, enemies, key, mix);
+        if (victim == null || !victim.IsAlive)
+            return;
+
+        await PowerCmd.Apply<BlightPower>(victim, stacks, owner.Creature, this);
+    }
 }

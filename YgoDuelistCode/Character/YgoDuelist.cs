@@ -15,6 +15,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Spell;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
@@ -51,6 +52,27 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
 
     protected internal override string? CustomCommandEnergyTexturePath =>
         "YgoDuelist/images/card_frames/Invisible_Energy.png";
+
+    internal override bool TryPatchLocalizedTitleForCardModelTitleGetter(CardModel self, ref string title)
+    {
+        if (!ReferenceEquals(self, this) || SourceMonster is not AbstractMonsterCard monster)
+            return false;
+
+        var key = monster.Type == CardType.Skill
+            ? "COMMAND_CHANGE_BATTLE_POSITION.change_to_attack_title"
+            : "COMMAND_CHANGE_BATTLE_POSITION.change_to_defense_title";
+
+        title = new LocString("cards", key).GetFormattedText();
+        if (self.IsUpgraded)
+        {
+            if (self.MaxUpgradeLevel > 1)
+                title = $"{title}+{self.CurrentUpgradeLevel}";
+            else
+                title += "+";
+        }
+
+        return true;
+    }
 
     /// <summary>Shared by UI click and <see cref="GameActions.YgoMonsterMenuCommandGameAction"/> (MP).</summary>
     public static async Task ExecuteChangeBattlePositionFromPetAsync(Player player, Creature pet, Creature? enemyTarget)

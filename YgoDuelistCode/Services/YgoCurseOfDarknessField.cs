@@ -3,12 +3,12 @@ using BaseLib.Extensions;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>True while <see cref="Curse_of_Darkness"/> is face-up in this player's Spell/Trap zone.</summary>
+/// <summary>True while a face-up card contributes post-spell owner damage in this player's Spell/Trap zone.</summary>
 public static class YgoCurseOfDarknessField
 {
     public static bool IsActive(Player? player)
@@ -20,10 +20,12 @@ public static class YgoCurseOfDarknessField
         if (zone == null)
             return false;
 
-        return zone.Cards.OfType<Curse_of_Darkness>().Any(c => !c.FaceDown);
+        return zone.Cards
+            .OfType<IYgoSpellResolvedOwnerDamageContributor>()
+            .Any(c => c.GetOwnerSpellResolvedDamageAmount() > 0m);
     }
 
-    /// <summary>Sum of <c>Mgc</c> from each face-up <see cref="Curse_of_Darkness"/> in the zone (multiple copies stack).</summary>
+    /// <summary>Sum of spell-resolved owner damage contributed by each face-up zone card (multiple copies stack).</summary>
     public static decimal GetTotalMgcDamage(Player? player)
     {
         if (player == null)
@@ -34,17 +36,16 @@ public static class YgoCurseOfDarknessField
             return 0m;
 
         decimal sum = 0m;
-        foreach (Curse_of_Darkness c in zone.Cards.OfType<Curse_of_Darkness>())
+        foreach (IYgoSpellResolvedOwnerDamageContributor hook in zone.Cards.OfType<IYgoSpellResolvedOwnerDamageContributor>())
         {
-            if (!c.FaceDown)
-                sum += c.DynamicVars["Mgc"].BaseValue;
+            sum += hook.GetOwnerSpellResolvedDamageAmount();
         }
 
         return sum;
     }
 
-    /// <summary>First face-up curse in zone order, for damage attribution.</summary>
-    public static Curse_of_Darkness? GetFirstActiveCurse(Player? player)
+    /// <summary>First face-up contributor in zone order, for damage attribution.</summary>
+    public static CardModel? GetFirstActiveContributor(Player? player)
     {
         if (player == null)
             return null;
@@ -53,6 +54,15 @@ public static class YgoCurseOfDarknessField
         if (zone == null)
             return null;
 
-        return zone.Cards.OfType<Curse_of_Darkness>().FirstOrDefault(c => !c.FaceDown);
+        foreach (CardModel c in zone.Cards)
+        {
+            if (c is IYgoSpellResolvedOwnerDamageContributor hook
+                && hook.GetOwnerSpellResolvedDamageAmount() > 0m)
+            {
+                return c;
+            }
+        }
+
+        return null;
     }
 }

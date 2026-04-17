@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -11,7 +12,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 
-public sealed class Jam_Breeding_Machine : BaseContinuousSpellCard
+public sealed class Jam_Breeding_Machine : BaseContinuousSpellCard, IYgoOwnerTurnStartSpellTrapZoneEffect
 {
     public Jam_Breeding_Machine()
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
@@ -32,4 +33,16 @@ public sealed class Jam_Breeding_Machine : BaseContinuousSpellCard
         Task.CompletedTask;
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
+    public bool IsOwnerTurnStartSpellTrapZoneEffectActive() => !FaceDown;
+
+    public async Task TryResolveOwnerTurnStartSpellTrapZoneEffectAsync(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (!IsOwnerTurnStartSpellTrapZoneEffectActive())
+            return;
+        if (!YgoAnnualTracker.TryConsumeAnnual(player, "JAM_BREEDING_MACHINE"))
+            return;
+
+        await YgoTokenSummon.TrySpecialSummonTokenAsync<Slime_Token>(player, choiceContext, defensePosition: false);
+    }
 }

@@ -8,12 +8,12 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>Face-up <see cref="Narrow_Pass"/> in the Spell/Trap zone: +1 energy on Command Attack/Defend and hand ATK/DEF summons (not field activate-effect commands), pet life payment on those plays, and repeated attack/defend resolutions.</summary>
+/// <summary>Face-up spell/trap zone contributors can add command taxes and repeated attack/defend resolutions.</summary>
 public static class YgoNarrowPassField
 {
     /// <summary>
@@ -32,7 +32,9 @@ public static class YgoNarrowPassField
         if (zone == null)
             return false;
 
-        return zone.Cards.OfType<Narrow_Pass>().Any(c => !c.FaceDown);
+        return zone.Cards
+            .OfType<IYgoMonsterCommandFieldTaxContributor>()
+            .Any(c => c.IsMonsterCommandFieldTaxActive());
     }
 
     /// <summary>+1 energy per face-up Narrow Pass (stacking).</summary>
@@ -45,11 +47,24 @@ public static class YgoNarrowPassField
         if (zone == null)
             return 0;
 
-        return zone.Cards.OfType<Narrow_Pass>().Count(c => !c.FaceDown);
+        return zone.Cards
+            .OfType<IYgoMonsterCommandFieldTaxContributor>()
+            .Sum(c => c.GetMonsterCommandEnergyAdd());
     }
 
     public static int GetAttackOrDefendResolutionCount(Player? player) =>
-        1 + GetActiveCount(player);
+        1 + GetAttackOrDefendResolutionAdd(player);
+
+    private static int GetAttackOrDefendResolutionAdd(Player? player)
+    {
+        CardPile? zone = GetSpellTrapZoneInCombat(player);
+        if (zone == null)
+            return 0;
+
+        return zone.Cards
+            .OfType<IYgoMonsterCommandFieldTaxContributor>()
+            .Sum(c => c.GetMonsterCommandResolutionAdd());
+    }
 
     public static async Task ApplyMonsterCommandLifePaymentIfActiveAsync(
         PlayerChoiceContext choiceContext,
@@ -59,11 +74,11 @@ public static class YgoNarrowPassField
         if (player == null || pet == null || !pet.IsAlive)
             return;
 
-        Narrow_Pass? src = GetFirstActive(player);
+        CardModel? src = GetFirstActive(player);
         if (src == null)
             return;
 
-        int divisor = (int)src.DynamicVars["Mgc"].BaseValue;
+        int divisor = ((IYgoMonsterCommandFieldTaxContributor)src).GetMonsterCommandLifePaymentDivisor();
         if (divisor <= 0)
             return;
 
@@ -84,12 +99,14 @@ public static class YgoNarrowPassField
             src);
     }
 
-    public static Narrow_Pass? GetFirstActive(Player? player)
+    public static CardModel? GetFirstActive(Player? player)
     {
         CardPile? zone = GetSpellTrapZoneInCombat(player);
         if (zone == null)
             return null;
 
-        return zone.Cards.OfType<Narrow_Pass>().FirstOrDefault(c => !c.FaceDown);
+        return zone.Cards.FirstOrDefault(c =>
+            c is IYgoMonsterCommandFieldTaxContributor hook
+            && hook.IsMonsterCommandFieldTaxActive());
     }
 }

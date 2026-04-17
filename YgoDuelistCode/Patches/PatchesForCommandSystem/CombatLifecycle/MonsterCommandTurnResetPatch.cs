@@ -9,7 +9,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -62,14 +61,14 @@ public static class MonsterCommandTurnResetPatch
 
         Ominous_Fortunetelling.RefillAllInSpellTrapZoneForPlayer(combatPlayer);
         await YgoTotalDefenseShogunDeferredBlock.ResolveAtTurnStartAsync(choiceContext, combatPlayer);
-        await ResolveLegendaryFiendTurnStartGrowth(combatPlayer);
+        await ResolveTurnStartFieldMonsterAtkGrowthAsync(combatPlayer);
 
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRefreshAfterTurnStartIfZoneViewActive(combatPlayer);
 
         await Task.CompletedTask;
     }
 
-    private static async Task ResolveLegendaryFiendTurnStartGrowth(Player player)
+    private static async Task ResolveTurnStartFieldMonsterAtkGrowthAsync(Player player)
     {
         if (player.PlayerCombatState == null)
             return;
@@ -78,14 +77,10 @@ public static class MonsterCommandTurnResetPatch
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not Legendary_Fiend)
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not IYgoTurnStartAtkGrowthFromFieldMonsterAfterCommandReset hook)
                 continue;
 
-            LegendaryFiendAtkPower? p = pet.GetPower<LegendaryFiendAtkPower>();
-            if (p == null)
-                await PowerCmd.Apply<LegendaryFiendAtkPower>(pet, 7m, player.Creature, null);
-            else
-                await PowerCmd.ModifyAmount(p, 7m, player.Creature, null);
+            await hook.ApplyTurnStartAtkGrowthAsync(player, pet);
         }
     }
 }

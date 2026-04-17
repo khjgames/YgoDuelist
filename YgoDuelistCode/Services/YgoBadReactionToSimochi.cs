@@ -4,7 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -14,11 +14,11 @@ public static class YgoBadReactionToSimochi
     /// <summary>
     /// Picks the active face-up Simochi in any player's Spell/Trap zone with the highest damage multiplier.
     /// </summary>
-    public static bool TryResolveBest(CombatState cs, out Bad_Reaction_to_Simochi? simochi, out decimal damageMultiplier)
+    public static bool TryResolveBest(CombatState cs, out CardModel? sourceCard, out decimal damageMultiplier)
     {
-        simochi = null;
+        sourceCard = null;
         damageMultiplier = 1m;
-        Bad_Reaction_to_Simochi? best = null;
+        CardModel? best = null;
         decimal bestMult = 0m;
 
         foreach (Player player in cs.Players)
@@ -29,14 +29,16 @@ public static class YgoBadReactionToSimochi
 
             foreach (CardModel c in zone.Cards)
             {
-                if (c is not Bad_Reaction_to_Simochi br || br.FaceDown)
+                if (c is not BaseContinuousTrapCard trap || trap.FaceDown)
+                    continue;
+                if (c is not IYgoBadReactionToSimochiHealRedirect redir)
                     continue;
 
-                decimal m = br.IsUpgraded ? 1.5m : 1m;
+                decimal m = redir.GetEnemyHealRedirectDamageMultiplier();
                 if (m > bestMult)
                 {
                     bestMult = m;
-                    best = br;
+                    best = c;
                 }
             }
         }
@@ -44,7 +46,7 @@ public static class YgoBadReactionToSimochi
         if (best == null || bestMult <= 0m)
             return false;
 
-        simochi = best;
+        sourceCard = best;
         damageMultiplier = bestMult;
         return true;
     }

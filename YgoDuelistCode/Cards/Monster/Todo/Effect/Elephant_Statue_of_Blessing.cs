@@ -29,6 +29,9 @@ public sealed class Elephant_Statue_of_Blessing : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Elephant_Statue_of_Blessing) };
 
+    public override void OnMovedToGraveyardFromHandOrField(PileType from) =>
+        ScheduleDrawCardsEqualToPrintedMgcWhenMovedFromHandToGraveyard(from);
+
     protected override void OnUpgrade()
     {
         base.OnUpgrade();

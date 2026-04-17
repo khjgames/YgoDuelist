@@ -1,11 +1,16 @@
+using System.Linq;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Field;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Torpedo_Fish : EffectMonsterCard
+public sealed class Torpedo_Fish : EffectMonsterCard, IYgoPetDebuffPowerAmountReceivedHook
 {
     public Torpedo_Fish()
         : base(
@@ -22,4 +27,25 @@ public sealed class Torpedo_Fish : EffectMonsterCard
     {
     }
 
+    public bool TryZeroIncomingDebuffPowerAmount(
+        ref decimal result,
+        CombatState combatState,
+        PowerModel canonicalPower,
+        Creature target,
+        decimal amount,
+        Creature? giver)
+    {
+        _ = combatState;
+        _ = canonicalPower;
+        _ = amount;
+        _ = giver;
+        if (!target.IsPet || target.PetOwner?.Creature == null)
+            return false;
+        if (!ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(target), this))
+            return false;
+        if (!YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(target.PetOwner).Any(static fs => fs is Umi))
+            return false;
+        result = 0m;
+        return true;
+    }
 }

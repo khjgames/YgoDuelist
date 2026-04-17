@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -16,7 +18,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Rush_Recklessly : BaseSpellCard
+public sealed class Rush_Recklessly : BaseSpellCard, IYgoPlayCardActionPreSpendResourceFlow
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 7m) };
@@ -73,4 +75,13 @@ public sealed class Rush_Recklessly : BaseSpellCard
         reason = "rush_reliable";
         return true;
     }
+
+    async Task<bool> IYgoPlayCardActionPreSpendResourceFlow.TryPreparePreSpendPlayAsync(
+        PlayCardAction action,
+        Player player,
+        CardModel self) =>
+        await RushReliablePreSpendSelection.TryPrepareAsync(self, player);
+
+    void IYgoPlayCardActionPreSpendResourceFlow.ClearPreSpendPlayState(CardModel self) =>
+        RushReliablePlayPayload.ClearForCard(self);
 }

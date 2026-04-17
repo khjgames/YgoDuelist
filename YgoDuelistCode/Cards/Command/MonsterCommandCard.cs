@@ -104,6 +104,12 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
         return false;
     }
 
+    /// <summary><see cref="Patches.YgoFairyBoxUpkeepTitleUpgradedPatch"/> uses <c>cards/{Id}.title_upgraded</c> when applicable.</summary>
+    internal virtual bool ShouldPatchTitleToCardsTitleUpgradedLoc(CardModel self) => false;
+
+    /// <summary><see cref="Patches.CommandChangeBattlePositionTitlePatch"/> and similar; mutates <paramref name="title"/> when returning true.</summary>
+    internal virtual bool TryPatchLocalizedTitleForCardModelTitleGetter(CardModel self, ref string title) => false;
+
     // Parameterless ctor for reflection / scanners – never used at runtime for real commands.
     protected MonsterCommandCard()
         : base(0, CardType.Skill, CardRarity.Event, TargetType.Self)

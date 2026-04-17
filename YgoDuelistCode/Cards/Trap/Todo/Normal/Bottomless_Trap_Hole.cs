@@ -67,6 +67,15 @@ public sealed class Bottomless_Trap_Hole : BaseTrapCard
             && (decimal)YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) >= threshold);
     }
 
+    public override bool RefineIsValidTarget(Creature? target, bool vanillaResult)
+    {
+        if (!vanillaResult || target == null || Owner?.Creature == null)
+            return vanillaResult;
+        decimal threshold = DynamicVars["Mgc"].BaseValue;
+        int incoming = YgoIntentAttackDamage.GetTotalAttackIntentDamage(target, Owner.Creature);
+        return (decimal)incoming >= threshold;
+    }
+
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature == null)

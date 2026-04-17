@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -9,10 +11,11 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
 
-public sealed class Statue_of_the_Wicked : BaseTrapCard
+public sealed class Statue_of_the_Wicked : BaseTrapCard, IYgoAfterFaceDownSetTrapDestroyedToGraveyardAsync
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new DynamicVar[]
@@ -29,6 +32,16 @@ public sealed class Statue_of_the_Wicked : BaseTrapCard
         YgoCardPackTags.Dark | YgoCardPackTags.Trap | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Statue_of_the_Wicked), typeof(Wicked_Token) };
+
+    public async Task OnAfterFaceDownSetTrapDestroyedToGraveyardAsync(Player player)
+    {
+        if (player.Creature?.CombatState == null)
+            return;
+        if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
+            return;
+        var ctx = new BlockingPlayerChoiceContext();
+        await YgoTokenSummon.TrySpecialSummonTokenAsync<Wicked_Token>(player, ctx, defensePosition: false);
+    }
 
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;

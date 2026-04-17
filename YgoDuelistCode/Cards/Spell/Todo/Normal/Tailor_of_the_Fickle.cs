@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -11,7 +16,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Tailor_of_the_Fickle : BaseSpellCard
+public sealed class Tailor_of_the_Fickle : BaseSpellCard, IYgoPlayCardActionPreSpendResourceFlow
 {
     public Tailor_of_the_Fickle()
         : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
@@ -77,4 +82,46 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard
         reason = "tailor_of_the_fickle";
         return true;
     }
+
+    async Task<bool> IYgoPlayCardActionPreSpendResourceFlow.TryPreparePreSpendPlayAsync(
+        PlayCardAction action,
+        Player player,
+        CardModel self)
+    {
+        var equipCandidates = GetReassignableEquips(player).Cast<CardModel>().ToList();
+        if (equipCandidates.Count == 0)
+            return false;
+
+        var equipPrefs = new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = true
+        };
+
+        var equipPick = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), equipCandidates, player, equipPrefs);
+        var selectedEquip = equipPick.FirstOrDefault() as BaseEquipSpellCard;
+        if (selectedEquip == null)
+            return false;
+
+        var targetCandidates = GetAlternateValidTargets(selectedEquip, player).Cast<CardModel>().ToList();
+        if (targetCandidates.Count == 0)
+            return false;
+
+        var targetPrefs = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = true
+        };
+
+        var targetPick = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), targetCandidates, player, targetPrefs);
+        var selectedTarget = targetPick.FirstOrDefault() as BaseMonsterCard;
+        if (selectedTarget == null)
+            return false;
+
+        TailorOfTheFicklePlayPayload.SetPending(self, new TailorOfTheFicklePendingResolution(selectedEquip, selectedTarget));
+        return true;
+    }
+
+    void IYgoPlayCardActionPreSpendResourceFlow.ClearPreSpendPlayState(CardModel self) =>
+        TailorOfTheFicklePlayPayload.ClearForCard(self);
 }

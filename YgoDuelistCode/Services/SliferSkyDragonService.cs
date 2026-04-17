@@ -64,28 +64,4 @@ public static class SliferSkyDragonService
         }
     }
 
-    public static async Task BeforePlayerTurnEndFlushAsync(PlayerChoiceContext ctx, Player player)
-    {
-        Slifer_the_Sky_Dragon? slifer = GetControllingSlifer(player);
-        if (slifer == null || player.Creature?.CombatState == null)
-            return;
-
-        int blight = (int)slifer.DynamicVars["Mgc"].BaseValue;
-
-        foreach (Creature enemy in player.Creature.CombatState.HittableEnemies.ToList())
-        {
-            if (!enemy.IsAlive)
-                continue;
-
-            bool hasPressure = enemy.HasPower<SlifersPressureTemporaryStrengthPower>()
-                               || enemy.HasPower<SlifersPressureTemporaryStrengthPowerPlus>();
-            if (!hasPressure)
-                continue;
-
-            if (YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, player.Creature) > 0)
-                continue;
-
-            await PowerCmd.Apply<BlightPower>(enemy, blight, player.Creature, slifer);
-        }
-    }
 }

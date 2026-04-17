@@ -7,6 +7,7 @@ using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Extensions;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
@@ -100,6 +101,12 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     /// (<see cref="Patches.YgoMonsterCommandEnergyCostVisualPatch"/>).
     /// </summary>
     public virtual string? GetSpellTrapZoneFaceUpEnergyOrbOverridePath(CardPile? pile) => null;
+
+    /// <summary>
+    /// After vanilla <see cref="CardModel.IsValidTarget"/> yields <paramref name="vanillaResult"/>, optionally narrow the result
+    /// (e.g. attack-intent thresholds). Default: unchanged. Dispatched from <c>CardModel.IsValidTarget</c> postfix — keep logic on the card, not in patches.
+    /// </summary>
+    public virtual bool RefineIsValidTarget(Creature? target, bool vanillaResult) => vanillaResult;
 
     /// <summary>
     /// When non-null during combat play phase, replaces the vanilla cyan playable outline on <see cref="NHandCardHolder"/>.

@@ -45,7 +45,6 @@ public static class YgoCombatEndClearPatch
         YgoPlayerCombatTurnStamp.ClearAll();
         YgoSanganNameLock.ClearAll();
         YgoBattleDeathMarkedCards.ClearAll();
-        YgoManticoreOfDarknessEndPhase.ClearAll();
         TributeSummonPlayPayload.ClearAll();
         EquipSpellPlayPayload.ClearAll();
         RitualSpellPlayPayload.ClearAll();

@@ -77,7 +77,7 @@ public static class DuelMonsterPortraitDecorations
 
     internal static Sprite2D? GetPortraitSprite(NCreature nCreature)
     {
-        var body = nCreature.Visuals.Body;
+        var body = nCreature.Visuals.GetNode<Node2D>("%Visuals");
         if (body is Sprite2D s)
             return s;
         return body.GetNodeOrNull<Sprite2D>("Portrait")

@@ -1,6 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -10,8 +17,9 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 /// <summary>End-phase GY revive — <see cref="YgoTwinHeadedBehemothEndPhase"/>; field→GY tracking — <see cref="Patches.CardPileCmdFieldMonsterGraveyardEffectsPatch"/>.</summary>
-public sealed class Twin_Headed_Behemoth : EffectMonsterCard
+public sealed class Twin_Headed_Behemoth : EffectMonsterCard, IYgoOwnerBeforeTurnEndFlushGraveyardEffect
 {
+    private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-TWIN_HEADED_BEHEMOTH.activate_revive");
     private int _gyReviveEligibleStamp = -1;
 
     public Twin_Headed_Behemoth()
@@ -62,6 +70,35 @@ public sealed class Twin_Headed_Behemoth : EffectMonsterCard
         if (from == MonsterPile.CustomType && newPileType != MonsterPile.CustomType)
             ClearReviveMiniStats();
         if (player != null && from == MonsterPile.CustomType && newPileType == GraveyardPile.CustomType)
-            YgoTwinHeadedBehemothEndPhase.MarkSentFromFieldToGraveyardThisTurn(player, this);
+            MarkEndPhaseReviveEligible(YgoPlayerCombatTurnStamp.Get(player));
+    }
+
+    public bool IsOwnerBeforeTurnEndFlushGraveyardEffectActive() =>
+        Owner != null && IsEndPhaseReviveEligible(YgoPlayerCombatTurnStamp.Get(Owner));
+
+    public async Task TryResolveOwnerBeforeTurnEndFlushGraveyardEffectAsync(PlayerChoiceContext choiceContext, Player owner)
+    {
+        CardPile? gy = GraveyardPile.CustomType.GetPile(owner);
+        if (gy == null || !gy.Cards.Contains(this))
+            return;
+        int stamp = YgoPlayerCombatTurnStamp.Get(owner);
+        if (!IsEndPhaseReviveEligible(stamp))
+            return;
+        if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(owner, 0))
+            return;
+
+        var prefs = new CardSelectorPrefs(ActivatePrompt, 1, 1)
+        {
+            RequireManualConfirmation = true,
+            Cancelable = true
+        };
+        IEnumerable<CardModel> pick = await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { this }, owner, prefs);
+        if (pick.FirstOrDefault() is not Twin_Headed_Behemoth)
+            return;
+        if (!gy.Cards.Contains(this))
+            return;
+        ArmReviveSummonMiniStats();
+        await DuelMonsterSummon.TrySummonDuelMonsterSpecial(owner, this, choiceContext);
+        ClearEndPhaseReviveEligibility();
     }
 }

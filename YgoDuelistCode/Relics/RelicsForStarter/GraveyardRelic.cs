@@ -22,7 +22,6 @@ using MonsterActivatedEffectRuntime = YgoDuelist.YgoDuelistCode.Cards.Core.Monst
 using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
@@ -83,10 +82,8 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         YgoPlayerCombatTurnStamp.Bump(player);
         YgoSanganNameLock.Clear(player);
-        YgoDdScoutPlaneEndPhase.ClearTurnUsedFlags(player);
 
         YgoDealWithDarkRulerState.OnPlayerTurnStart(player);
-        await YgoDealWithDarkRulerState.ApplyBerserkDragonStandbyAtkLossAsync(player);
 
         if (player == Owner)
         {
@@ -100,21 +97,10 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (player != Owner || player.PlayerCombatState == null || player.Creature == null)
             return;
 
-        if (YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<The_Sanctuary_in_the_Sky>(player)
-            && TryConsumeAnnual("SANCTUARY_MERCURY_DRAW"))
-        {
-            foreach (Creature pet in player.PlayerCombatState.Pets)
-            {
-                if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
-                    continue;
-                if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard m
-                    && m.ParticipatesInSanctuaryMercuryDraw)
-                {
-                    await CardPileCmd.Draw(choiceContext, 1, player);
-                    break;
-                }
-            }
-        }
+        await YgoJamBreedingMachineContinuous.TryResolvePlayerTurnStartForPhase(
+            choiceContext,
+            player,
+            YgoOwnerTurnStartSpellTrapDispatchPhase.BeforeOwnerFieldPetHooks);
 
         foreach (Creature pet in player.PlayerCombatState.Pets)
         {
@@ -131,11 +117,11 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         }
 
         await YgoSealmasterMeiseiGate.DestroyTalismansIfNoSealmaster(player);
-        await YgoBlindDestructionContinuous.TryResolvePlayerTurnStart(choiceContext, player);
-        await YgoJamBreedingMachineContinuous.TryResolvePlayerTurnStart(choiceContext, player);
-        await YgoCardTraderContinuous.TryResolvePlayerTurnStart(choiceContext, player);
-        await SliferSkyDragonService.ApplySliferPressureToAllEnemiesAsync(choiceContext, player);
-        await YgoGoraTurtleService.ApplyPlayerTurnStartAsync(choiceContext, player);
+        await YgoJamBreedingMachineContinuous.TryResolvePlayerTurnStartForPhase(
+            choiceContext,
+            player,
+            YgoOwnerTurnStartSpellTrapDispatchPhase.AfterSealmasterBeforeFieldMonsterHooks);
+        await YgoOwnerTurnStartFieldMonsterHooks.TryResolvePlayerTurnStart(choiceContext, player);
     }
 
     /// <summary>Bottomless Shifting Sand: hand count for its effect uses size before the end-of-turn discard flush.</summary>
@@ -152,15 +138,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             }
         }
 
-        if (player == Owner)
-            await YgoBottomlessShiftingSandContinuous.TryResolveAfterPlayerTurnEnd(choiceContext, Owner);
-        await YgoMirageTokenEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
-        await YgoTwinHeadedBehemothEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
-        await YgoDdScoutPlaneEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
-        await SliferSkyDragonService.BeforePlayerTurnEndFlushAsync(choiceContext, player);
-        await YgoSolarFlareDragonEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
-        await YgoManticoreOfDarknessEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
-        await YgoWickedWormBeastEndPhase.TryResolveBeforePlayerTurnEndFlushAsync(choiceContext, player);
+        await YgoOwnerBeforeTurnEndFlushHooks.DispatchAsync(choiceContext, player);
     }
 
     public override async Task AfterCreatureAddedToCombat(Creature creature)

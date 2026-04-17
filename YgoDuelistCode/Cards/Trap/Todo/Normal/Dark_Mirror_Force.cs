@@ -52,6 +52,13 @@ public sealed class Dark_Mirror_Force : BaseTrapCard
         }
     }
 
+    public override bool RefineIsValidTarget(Creature? target, bool vanillaResult)
+    {
+        if (!vanillaResult || target == null || Owner?.Creature == null)
+            return vanillaResult;
+        return YgoIntentAttackDamage.GetTotalAttackIntentDamage(target, Owner.Creature) > 0;
+    }
+
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)

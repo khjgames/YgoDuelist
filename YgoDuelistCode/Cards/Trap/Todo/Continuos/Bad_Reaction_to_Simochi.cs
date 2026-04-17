@@ -12,7 +12,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
-public sealed class Bad_Reaction_to_Simochi : BaseContinuousTrapCard
+public sealed class Bad_Reaction_to_Simochi : BaseContinuousTrapCard, IYgoBadReactionToSimochiHealRedirect
 {
     public override bool UseAlternateUpgradedDescription => true;
 
@@ -49,4 +49,6 @@ public sealed class Bad_Reaction_to_Simochi : BaseContinuousTrapCard
             IsUpgraded
                 ? new[] { HoverTipFactory.FromKeyword(CardKeyword.Innate) }
                 : Enumerable.Empty<IHoverTip>());
+
+    decimal IYgoBadReactionToSimochiHealRedirect.GetEnemyHealRedirectDamageMultiplier() => IsUpgraded ? 1.5m : 1m;
 }

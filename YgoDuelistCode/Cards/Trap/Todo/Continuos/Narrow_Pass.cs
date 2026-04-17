@@ -18,7 +18,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 /// and duel monster attack/defend actions resolve one additional time per active copy.
 /// Upgrade: cost [E] −1, {Mgc} 8 → 12.
 /// </summary>
-public sealed class Narrow_Pass : BaseContinuousTrapCard
+public sealed class Narrow_Pass : BaseContinuousTrapCard, IYgoMonsterCommandFieldTaxContributor
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new DynamicVar("Mgc", 3m) };
@@ -60,4 +60,13 @@ public sealed class Narrow_Pass : BaseContinuousTrapCard
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay) =>
         Task.CompletedTask;
+
+    public bool IsMonsterCommandFieldTaxActive() => !FaceDown;
+
+    public int GetMonsterCommandEnergyAdd() => IsMonsterCommandFieldTaxActive() ? 1 : 0;
+
+    public int GetMonsterCommandResolutionAdd() => IsMonsterCommandFieldTaxActive() ? 1 : 0;
+
+    public int GetMonsterCommandLifePaymentDivisor() =>
+        IsMonsterCommandFieldTaxActive() ? (int)DynamicVars["Mgc"].BaseValue : 0;
 }

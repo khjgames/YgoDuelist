@@ -29,8 +29,8 @@ public static class DuelMonsterScalePatch
 
         if (creature.PetOwner is Player ownerPl && ownerPl.Character is YgoDuelistCharacter)
         {
-            nCreature.ZAsRelative = false;
-            nCreature.ZIndex = 140;
+            //nCreature.ZAsRelative = false;
+            //nCreature.ZIndex = 0;
         }
 
         var room = NCombatRoom.Instance;
@@ -90,14 +90,14 @@ public static class DuelMonsterScalePatch
 
             if (dn.Entity.PetOwner is Player rowOwner && rowOwner.Character is YgoDuelistCharacter)
             {
-                dn.ZAsRelative = false;
-                dn.ZIndex = 140;
+                //dn.ZAsRelative = false;
+                //dn.ZIndex = 0;
             }
 
             // Swap the simple sprite's texture to the card portrait, if available.
             if (dn.Entity.Monster is DuelMonsterModel m && !string.IsNullOrEmpty(m.PortraitPath))
             {
-                var body = dn.Visuals.Body;
+                var body = dn.Visuals.GetNode<Node2D>("%Visuals");
 
                 // If the visuals body itself is a Sprite2D (static image enemy), use it directly.
                 Sprite2D? sprite = body as Sprite2D;

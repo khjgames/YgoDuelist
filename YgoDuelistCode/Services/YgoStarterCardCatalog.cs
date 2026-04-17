@@ -12,6 +12,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
