@@ -12,20 +12,20 @@ using MegaCrit.Sts2.Core.Runs;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForRestSite;
 
 /// <summary>
-/// Rest <see cref="HealRestSiteOption"/> runs <see cref="MegaCrit.Sts2.Core.Commands.CreatureCmd.Heal"/> on every peer via
-/// <see cref="RestSiteSynchronizer"/>. <see cref="MegaCrit.Sts2.Core.Commands.CreatureCmd.Heal"/> clamps using
-/// <c>MaxHp - CurrentHp</c>; if a peer’s <see cref="MegaCrit.Sts2.Core.Entities.Creatures.Creature.CurrentHp"/> for the
-/// resting player is wrong, that peer applies a different effective heal than the host. A <see cref="CombatStateSynchronizer"/>
-/// round-trip <b>before</b> <see cref="HealRestSiteOption.ExecuteRestSiteHeal"/> aligns HP, then the existing post-option
-/// round-trip reapplies serialized players after hooks. Mend uses <see cref="CreatureCmd.Heal"/> directly and already behaved
-/// in your session; self-heal is the fragile path.
+/// After HEAL/MEND completes, runs <see cref="CombatStateSynchronizer.StartSync"/> + <see cref="CombatStateSynchronizer.WaitForSync"/>
+/// via <see cref="TaskHelper.RunSafely"/> so peers converge on serialized player state.
+/// <para/>
+/// <b>PreHeal sync was removed.</b> Logs showed the client stuck forever in <c>WaitForSync</c> (no <c>Received sync player message</c>
+/// from the host after <c>PreHeal_before</c>) while the host finished — full UI freeze. Running a combat sync barrier <i>inside</i>
+/// <see cref="HealRestSiteOption.OnSelect"/> / <see cref="HealRestSiteOption.ExecuteRestSiteHeal"/> interacts badly with the rest-site
+/// message flow; PostHeal runs after the option resolves and does not reproduce that hang.
 /// </summary>
 internal static class YgoRestSiteMpHealSync
 {
     /// <summary>Log when a round-trip completes (verbose).</summary>
     public static bool DebugLog;
 
-    /// <summary>Log one line per player before/after each MP rest sync phase (PreHeal / PostHeal).</summary>
+    /// <summary>Log one line per player before/after PostHeal sync.</summary>
     public static bool LogHpSnapshots = true;
 
     public static void Register(RestSiteSynchronizer sync)
@@ -78,26 +78,6 @@ internal static class YgoRestSiteMpHealSync
         }
     }
 
-    /// <summary>Blocking pre-heal sync (Harmony prefix on game thread).</summary>
-    internal static void RunRoundTripBlocking(RunManager rm, string phase, Player healTargetForLog)
-    {
-        if (!ShouldRunMpSync(rm, out string? skip))
-        {
-            if (DebugLog)
-                GD.Print($"[YgoDuelist][MP][RestSite][{phase}] skip: {skip}");
-            return;
-        }
-
-        try
-        {
-            RunRoundTripAsync(rm, phase, healTargetForLog).GetAwaiter().GetResult();
-        }
-        catch (Exception ex)
-        {
-            GD.PrintErr($"[YgoDuelist][MP][RestSite][{phase}] blocking sync failed: {ex.Message}\n{ex.StackTrace}");
-        }
-    }
-
     private static bool ShouldRunMpSync(RunManager rm, out string? skipReason)
     {
         skipReason = null;
@@ -135,24 +115,5 @@ internal static class YgoRestSiteMpHealSync
             GD.Print(
                 $"[YgoDuelist][MP][RestSite][{phase}] netId={p.NetId} isMe={LocalContext.IsMe(p)} hp={p.Creature.CurrentHp}/{p.Creature.MaxHp}");
         }
-    }
-}
-
-/// <summary>
-/// Aligns all peers’ <see cref="MegaCrit.Sts2.Core.Entities.Players.Player"/> / creature HP before
-/// <see cref="HealRestSiteOption.ExecuteRestSiteHeal"/> so each machine’s <see cref="MegaCrit.Sts2.Core.Commands.CreatureCmd.Heal"/>
-/// clamp matches.
-/// </summary>
-[HarmonyPatch(typeof(HealRestSiteOption), nameof(HealRestSiteOption.ExecuteRestSiteHeal))]
-internal static class YgoHealRestSiteExecutePreSyncPatch
-{
-    [HarmonyPrefix]
-    public static void Prefix(Player player, bool isMimicked)
-    {
-        _ = isMimicked;
-        RunManager? rm = RunManager.Instance;
-        if (rm == null || player == null)
-            return;
-        YgoRestSiteMpHealSync.RunRoundTripBlocking(rm, "PreHeal", player);
     }
 }

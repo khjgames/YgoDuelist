@@ -1,4 +1,3 @@
-using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
@@ -8,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
 /// Builds random coin / d6 <see cref="MonsterCommandCard"/> instances for the option pile (display-only).
+/// Uses <see cref="YgoDeterministicRng"/> (run seed, floor, round, side, NetCombatCard index) — not <see cref="Godot.GD"/> RNG.
 /// </summary>
 public static class YgoRandomOutcomeCommandCards
 {
@@ -18,7 +18,8 @@ public static class YgoRandomOutcomeCommandCards
         if (combatState == null)
             throw new System.InvalidOperationException("Creature.CombatState required.");
 
-        bool heads = GD.Randf() < 0.5f;
+        ulong mix = YgoDeterministicRng.MixNetCombatCard(source);
+        bool heads = YgoDeterministicRng.CoinFlip(combatState, "YGO_CMD_DISPLAY_COIN", mix);
         MonsterCommandCard card = heads
             ? combatState.CreateCard<Heads>(player)
             : combatState.CreateCard<Tails>(player);
@@ -33,7 +34,8 @@ public static class YgoRandomOutcomeCommandCards
         if (combatState == null)
             throw new System.InvalidOperationException("Creature.CombatState required.");
 
-        int face = GD.RandRange(1, 6);
+        ulong mix = YgoDeterministicRng.MixNetCombatCard(source);
+        int face = YgoDeterministicRng.RollDie(combatState, 6, "YGO_CMD_DISPLAY_D6", mix);
         MonsterCommandCard card = face switch
         {
             1 => combatState.CreateCard<Rolled_1>(player),

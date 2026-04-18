@@ -48,9 +48,14 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
             return;
 
         var pcs = player.PlayerCombatState;
+        // MP: Pets collection order is not guaranteed to match across peers; death hooks / GY ordering must be deterministic.
         List<Creature> duelPets = pcs.Pets
             .Where(p => p.Monster is DuelMonsterModel && p.IsAlive)
+            .OrderBy(p => p.CombatId)
             .ToList();
+        YgoMpDiagnostics.VerbosePrint(
+            "CyberJar",
+            $"OnFlippedFaceUp kill order ownerNet={player.NetId} combatIds=[{string.Join(",", duelPets.Select(p => p.CombatId))}]");
         foreach (Creature pet in duelPets)
             await CreatureCmd.Kill(pet, force: true);
 
