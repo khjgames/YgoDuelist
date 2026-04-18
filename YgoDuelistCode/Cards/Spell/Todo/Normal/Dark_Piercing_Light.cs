@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -29,12 +28,6 @@ public sealed class Dark_Piercing_Light : BaseSpellCard
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Concat(IsUpgraded ? new[] { CardKeyword.Innate } : Enumerable.Empty<CardKeyword>());
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        base.ExtraHoverTips.Concat(
-            IsUpgraded
-                ? new[] { HoverTipFactory.FromKeyword(CardKeyword.Innate) }
-                : Enumerable.Empty<IHoverTip>());
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

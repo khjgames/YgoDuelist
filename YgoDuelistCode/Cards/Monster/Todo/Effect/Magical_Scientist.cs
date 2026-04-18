@@ -23,8 +23,6 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Magical_Scientist : EffectMonsterCard, IMonsterActivatedEffect
 {
-    private static readonly CardKeyword DoomedKeyword = (CardKeyword)20048;
-
     private static readonly LocString PickFusionPrompt =
         new("combat_messages", "FUSION_SUMMON_PICK_TARGET");
 
@@ -48,16 +46,12 @@ public sealed class Magical_Scientist : EffectMonsterCard, IMonsterActivatedEffe
 
     public override Type[] RelatedCards => new[] { typeof(Magical_Scientist) };
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Append(DoomedKeyword);
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
-            yield return HoverTipFactory.FromKeyword(DoomedKeyword);
             yield return HoverTipFactory.FromPower<DoomPower>();
         }
     }

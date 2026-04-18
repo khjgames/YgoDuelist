@@ -7,7 +7,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -48,12 +47,6 @@ public sealed class The_Wicked_Worm_Beast : EffectMonsterCard, IYgoOwnerBeforeTu
             IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
                 ? new[] { CardKeyword.Retain }
                 : Enumerable.Empty<CardKeyword>());
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        base.ExtraHoverTips.Concat(
-            IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
-                ? new[] { HoverTipFactory.FromKeyword(CardKeyword.Retain) }
-                : Enumerable.Empty<IHoverTip>());
 
     public bool IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(Creature pet) =>
         !FaceDown && pet.IsAlive;

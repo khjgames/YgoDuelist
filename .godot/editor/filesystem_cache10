@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1776239515::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1776485747
-YgoDuelist.deps.json::JSON::-1::1776485746::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1776488893
+YgoDuelist.deps.json::JSON::-1::1776488893::0::1::::<><><>0<>0<><>::
 ::res://docs/::1775731862
 card_database_import.schema.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
@@ -2547,7 +2547,7 @@ character_icon_ygoduelist-ygo_duelist_outline.png::CompressedTexture2D::11381576
 ::res://YgoDuelist/localization/eng/::1776224169
 ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
 cards.json::JSON::-1::1776485412::0::1::::<><><>0<>0<><>::
-card_keywords.json::JSON::-1::1776485406::0::1::::<><><>0<>0<><>::
+card_keywords.json::JSON::-1::1776488309::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 combat_messages.json::JSON::-1::1775767359::0::1::::<><><>0<>0<><>::
 monsters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
@@ -2607,7 +2607,7 @@ Fairy_Box_Upkeep_Destroy.cs::CSharpScript::8029756479973422833::1776401931::0::1
 Fairy_Box_Upkeep_Take_Damage.cs::CSharpScript::5570090850532447196::1776408475::0::1::::<><><>0<>0<><>::
 Heads.cs::CSharpScript::2992648253818663301::1775731858::0::1::::<><><>0<>0<><>::
 Mausoleum_Lose_HP.cs::CSharpScript::3079376527180731719::1776383494::0::1::::<><><>0<>0<><>::
-MonsterCommandCard.cs::CSharpScript::2141012884981456081::1776465329::0::1::::<><><>0<>0<><>::
+MonsterCommandCard.cs::CSharpScript::2141012884981456081::1776486725::0::1::::<><><>0<>0<><>::
 PreviewEffect.cs::CSharpScript::122015455412382147::1775731858::0::1::::<><><>0<>0<><>::
 Rolled_1.cs::CSharpScript::7891993440196870918::1775731858::0::1::::<><><>0<>0<><>::
 Rolled_2.cs::CSharpScript::402956575904732474::1775731858::0::1::::<><><>0<>0<><>::
@@ -2620,14 +2620,14 @@ Tails.cs::CSharpScript::335047493382914911::1775731858::0::1::::<><><>0<>0<><>::
 Toggle_Die_For_You.cs::CSharpScript::777169850227679302::1776382752::0::1::::<><><>0<>0<><>::
 YgoTransientSpellOptionCommandCard.cs::CSharpScript::6331117203489362983::1775731858::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Core/::1776447998
-AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1776214363::0::1::::<><><>0<>0<><>::
+AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1776488299::0::1::::<><><>0<>0<><>::
 BaseContinuousSpellCard.cs::CSharpScript::5725153647441206473::1776209837::0::1::::<><><>0<>0<><>::
 BaseContinuousTrapCard.cs::CSharpScript::6316315533953657295::1776209843::0::1::::<><><>0<>0<><>::
 BaseEquipSpellCard.cs::CSharpScript::2961052010747773401::1776209843::0::1::::<><><>0<>0<><>::
 BaseFieldSpellCard.cs::CSharpScript::530343933978467938::1776209836::0::1::::<><><>0<>0<><>::
 BaseMonsterCard.cs::CSharpScript::9102026597318480692::1776484048::0::1::::<><><>0<>0<><>::
-BaseSpellCard.cs::CSharpScript::4032814977770574970::1776383474::0::1::::<><><>0<>0<><>::
-BaseTrapCard.cs::CSharpScript::3408567566577426753::1776210119::0::1::::<><><>0<>0<><>::
+BaseSpellCard.cs::CSharpScript::4032814977770574970::1776486699::0::1::::<><><>0<>0<><>::
+BaseTrapCard.cs::CSharpScript::3408567566577426753::1776486715::0::1::::<><><>0<>0<><>::
 BaseYgoPowerCard.cs::CSharpScript::7697499028762716680::1775731858::0::1::::<><><>0<>0<><>::
 DuelMonsterPetDeathContext.cs::CSharpScript::1809752915396171841::1776207446::0::1::::<><><>0<>0<><>::
 EffectMonsterCard.cs::CSharpScript::77330584343275516::1775731858::0::1::::<><><>0<>0<><>::
@@ -2747,7 +2747,7 @@ Caius_the_Shadow_Monarch.cs::CSharpScript::795580699128966417::1775731858::0::1:
 Cannonball_Spear_Shellfish.cs::CSharpScript::2285727247435632907::1775731858::0::1::::<><><>0<>0<><>::
 Cannon_Soldier.cs::CSharpScript::4977816465419055348::1776198803::0::1::::<><><>0<>0<><>::
 Card_Trooper.cs::CSharpScript::8008041906072590623::1775731858::0::1::::<><><>0<>0<><>::
-Castle_of_Dark_Illusions.cs::CSharpScript::1990728915687895426::1776485611::0::1::::<><><>0<>0<><>::
+Castle_of_Dark_Illusions.cs::CSharpScript::1990728915687895426::1776488613::0::1::::<><><>0<>0<><>::
 Catapult_Turtle.cs::CSharpScript::7881772641493843629::1776199530::0::1::::<><><>0<>0<><>::
 Cat_s_Ear_Tribe.cs::CSharpScript::504880655901713918::1776482597::0::1::::<><><>0<>0<><>::
 Cave_Dragon.cs::CSharpScript::5414909908153172671::1775731858::0::1::::<><><>0<>0<><>::
@@ -2770,7 +2770,7 @@ Crass_Clown.cs::CSharpScript::2984049066379765295::1775731858::0::1::::<><><>0<>
 Cure_Mermaid.cs::CSharpScript::2303449892718236167::1776382678::0::1::::<><><>0<>0<><>::
 Cyber_Harpie_Lady.cs::CSharpScript::1763026552015443576::1775731858::0::1::::<><><>0<>0<><>::
 Cyber_Jar.cs::CSharpScript::6770452435418364032::1775731858::0::1::::<><><>0<>0<><>::
-Cyber_Stein.cs::CSharpScript::1255499620890752586::1776151116::0::1::::<><><>0<>0<><>::
+Cyber_Stein.cs::CSharpScript::1255499620890752586::1776488808::0::1::::<><><>0<>0<><>::
 Dancing_Fairy.cs::CSharpScript::6899728717881291547::1776222194::0::1::::<><><>0<>0<><>::
 Darklord_Marie.cs::CSharpScript::1346750193012606059::1776208748::0::1::::<><><>0<>0<><>::
 Dark_Artist.cs::CSharpScript::3064637828617624654::1775731858::0::1::::<><><>0<>0<><>::
@@ -2834,10 +2834,10 @@ Frontier_Wiseman.cs::CSharpScript::3892070823105830396::1775731858::0::1::::<><>
 Fushioh_Richie.cs::CSharpScript::1092905709570039002::1775731858::0::1::::<><><>0<>0<><>::
 Fushi_No_Tori.cs::CSharpScript::4255673279341120281::1775731858::0::1::::<><><>0<>0<><>::
 Gaia_The_Fierce_Knight_Origin.cs::CSharpScript::164697699683509424::1775731858::0::1::::<><><>0<>0<><>::
-Gale_Dogra.cs::CSharpScript::5715863469806825432::1776151278::0::1::::<><><>0<>0<><>::
+Gale_Dogra.cs::CSharpScript::5715863469806825432::1776488809::0::1::::<><><>0<>0<><>::
 Gale_Lizard.cs::CSharpScript::6969967574871944686::1775731858::0::1::::<><><>0<>0<><>::
 Garuda_the_Wind_Spirit.cs::CSharpScript::1904190151643141141::1775731858::0::1::::<><><>0<>0<><>::
-Gate_Guardian.cs::CSharpScript::2437346832427541335::1776383486::0::1::::<><><>0<>0<><>::
+Gate_Guardian.cs::CSharpScript::2437346832427541335::1776486817::0::1::::<><><>0<>0<><>::
 Gearfried_the_Iron_Knight.cs::CSharpScript::7242881475741464005::1776382885::0::1::::<><><>0<>0<><>::
 Gear_Golem_the_Moving_Fortress.cs::CSharpScript::2206729145923381877::1775731858::0::1::::<><><>0<>0<><>::
 Gellenduo.cs::CSharpScript::8898289796678131456::1775731858::0::1::::<><><>0<>0<><>::
@@ -2949,7 +2949,7 @@ Mad_Sword_Beast.cs::CSharpScript::6716262631148476526::1775731858::0::1::::<><><
 Magical_Marionette.cs::CSharpScript::4717070537463909114::1776236909::0::1::::<><><>0<>0<><>::
 Magical_Merchant.cs::CSharpScript::8477768441675890165::1775731858::0::1::::<><><>0<>0<><>::
 Magical_Plant_Mandragola.cs::CSharpScript::3916053295675137062::1776046575::0::1::::<><><>0<>0<><>::
-Magical_Scientist.cs::CSharpScript::3367270485861504176::1776151126::0::1::::<><><>0<>0<><>::
+Magical_Scientist.cs::CSharpScript::3367270485861504176::1776488811::0::1::::<><><>0<>0<><>::
 Magician_of_Faith.cs::CSharpScript::7037497169631145302::1775731858::0::1::::<><><>0<>0<><>::
 Maharaghi.cs::CSharpScript::6114526406005636406::1775731858::0::1::::<><><>0<>0<><>::
 Maha_Vailo.cs::CSharpScript::8447606439547409370::1776194636::0::1::::<><><>0<>0<><>::
@@ -2976,7 +2976,7 @@ Mirage_Knight.cs::CSharpScript::6522659586335068628::1775731858::0::1::::<><><>0
 Mobius_the_Frost_Monarch.cs::CSharpScript::5812947015759658536::1775731858::0::1::::<><><>0<>0<><>::
 Moisture_Creature.cs::CSharpScript::9104559037022136167::1775731858::0::1::::<><><>0<>0<><>::
 Molten_Zombie.cs::CSharpScript::4248714890495824851::1775731858::0::1::::<><><>0<>0<><>::
-Monster_Eye.cs::CSharpScript::4698558580189647401::1776151133::0::1::::<><><>0<>0<><>::
+Monster_Eye.cs::CSharpScript::4698558580189647401::1776488808::0::1::::<><><>0<>0<><>::
 Morphing_Jar.cs::CSharpScript::689819980952412691::1775731858::0::1::::<><><>0<>0<><>::
 Morphing_Jar_2.cs::CSharpScript::7732106564678395745::1775731858::0::1::::<><><>0<>0<><>::
 Mother_Grizzly.cs::CSharpScript::7002963756360164539::1776207131::0::1::::<><><>0<>0<><>::
@@ -3019,7 +3019,7 @@ Poison_Mummy.cs::CSharpScript::7868040239548526420::1775731858::0::1::::<><><>0<
 Possessed_Dark_Soul.cs::CSharpScript::1980933010897482182::1775731858::0::1::::<><><>0<>0<><>::
 Prickle_Fairy.cs::CSharpScript::7982877867551774706::1775731858::0::1::::<><><>0<>0<><>::
 Protector_of_the_Sanctuary.cs::CSharpScript::2709535827514068407::1775731858::0::1::::<><><>0<>0<><>::
-Pumpking_the_King_of_Ghosts.cs::CSharpScript::5256327608649048648::1776485614::0::1::::<><><>0<>0<><>::
+Pumpking_the_King_of_Ghosts.cs::CSharpScript::5256327608649048648::1776488312::0::1::::<><><>0<>0<><>::
 Pyramid_Turtle.cs::CSharpScript::9151129278369816424::1776207131::0::1::::<><><>0<>0<><>::
 Queen_s_Double.cs::CSharpScript::4408278136338884803::1775731858::0::1::::<><><>0<>0<><>::
 Rainbow_Flower.cs::CSharpScript::5676366447321291699::1775731858::0::1::::<><><>0<>0<><>::
@@ -3064,7 +3064,7 @@ Skull_Archfiend_of_Lightning.cs::CSharpScript::5590366513075675879::1775731858::
 Skull_Knight_2.cs::CSharpScript::6754469176017860665::1775731858::0::1::::<><><>0<>0<><>::
 Skull_Mark_Ladybug.cs::CSharpScript::829791540865336901::1775731858::0::1::::<><><>0<>0<><>::
 Slate_Warrior.cs::CSharpScript::4081894786308303777::1776239395::0::1::::<><><>0<>0<><>::
-Slifer_the_Sky_Dragon.cs::CSharpScript::5413566064541584968::1776415344::0::1::::<><><>0<>0<><>::
+Slifer_the_Sky_Dragon.cs::CSharpScript::5413566064541584968::1776488845::0::1::::<><><>0<>0<><>::
 Solar_Flare_Dragon.cs::CSharpScript::1513315703687828497::1776414131::0::1::::<><><>0<>0<><>::
 Sonic_Bird.cs::CSharpScript::8629703773934322894::1776205051::0::1::::<><><>0<>0<><>::
 Sonic_Jammer.cs::CSharpScript::2886208837592587279::1775731858::0::1::::<><><>0<>0<><>::
@@ -3116,8 +3116,8 @@ The_Stern_Mystic.cs::CSharpScript::401811245885276462::1775731858::0::1::::<><><
 The_Thing_in_the_Crater.cs::CSharpScript::4412127239878163691::1775731858::0::1::::<><><>0<>0<><>::
 The_Trojan_Horse.cs::CSharpScript::5036787698300633338::1775731858::0::1::::<><><>0<>0<><>::
 The_Unfriendly_Amazon.cs::CSharpScript::1966656046216239516::1775731858::0::1::::<><><>0<>0<><>::
-The_Wicked_Worm_Beast.cs::CSharpScript::7223666885685517224::1776413873::0::1::::<><><>0<>0<><>::
-The_Winged_Dragon_of_Ra.cs::CSharpScript::4603465841413500731::1776208201::0::1::::<><><>0<>0<><>::
+The_Wicked_Worm_Beast.cs::CSharpScript::7223666885685517224::1776486819::0::1::::<><><>0<>0<><>::
+The_Winged_Dragon_of_Ra.cs::CSharpScript::4603465841413500731::1776488823::0::1::::<><><>0<>0<><>::
 Thousand_Needles.cs::CSharpScript::2780212422982146099::1775731858::0::1::::<><><>0<>0<><>::
 Throwstone_Unit.cs::CSharpScript::5302443090056214113::1775731858::0::1::::<><><>0<>0<><>::
 Thunder_Dragon.cs::CSharpScript::2529922267960032512::1775731858::0::1::::<><><>0<>0<><>::
@@ -3864,7 +3864,7 @@ Chain_Summoning.cs::CSharpScript::8505628740920120788::1775731860::0::1::::<><><
 Fallen_Insights.cs::CSharpScript::5926155829018266281::1775731860::0::1::::<><><>0<>0<><>::
 Fortified_Beasts.cs::CSharpScript::5396252859079640820::1775731860::0::1::::<><><>0<>0<><>::
 Guardian_Spirit.cs::CSharpScript::5971542816476093770::1775731860::0::1::::<><><>0<>0<><>::
-Harnessed_Energy.cs::CSharpScript::7727928144254727009::1775731860::0::1::::<><><>0<>0<><>::
+Harnessed_Energy.cs::CSharpScript::7727928144254727009::1776486819::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Spell/::1776449321
 Foolish_Burial.cs::CSharpScript::7923725435869500112::1776116822::0::1::::<><><>0<>0<><>::
 Monster_Reborn.cs::CSharpScript::7394684593523850141::1775930327::0::1::::<><><>0<>0<><>::
@@ -3986,7 +3986,7 @@ Cost_Down.cs::CSharpScript::6905754642005326004::1775948561::0::1::::<><><>0<>0<
 Dark_Hole.cs::CSharpScript::7208566926921493563::1776026746::0::1::::<><><>0<>0<><>::
 Dark_Magic_Attack.cs::CSharpScript::8819840717644883762::1776383685::0::1::::<><><>0<>0<><>::
 Dark_Magic_Curtain.cs::CSharpScript::973246192819625726::1775731860::0::1::::<><><>0<>0<><>::
-Dark_Piercing_Light.cs::CSharpScript::6557727878515578470::1776482615::0::1::::<><><>0<>0<><>::
+Dark_Piercing_Light.cs::CSharpScript::6557727878515578470::1776486816::0::1::::<><><>0<>0<><>::
 Dedication_through_Light_and_Darkness.cs::CSharpScript::6846557318280025320::1775731860::0::1::::<><><>0<>0<><>::
 De_Fusion.cs::CSharpScript::6353412987588543694::1775731860::0::1::::<><><>0<>0<><>::
 De_Spell.cs::CSharpScript::4757623609798200452::1776057480::0::1::::<><><>0<>0<><>::
@@ -4135,7 +4135,7 @@ Anti_Spell_Fragrance.cs::CSharpScript::3669667371908350178::1775731861::0::1::::
 Appropriate.cs::CSharpScript::6176384560185311569::1775731861::0::1::::<><><>0<>0<><>::
 Aqua_Chorus.cs::CSharpScript::2964807967554638147::1775731861::0::1::::<><><>0<>0<><>::
 Backfire.cs::CSharpScript::6379594126357796641::1775731861::0::1::::<><><>0<>0<><>::
-Bad_Reaction_to_Simochi.cs::CSharpScript::680330017625020490::1776407752::0::1::::<><><>0<>0<><>::
+Bad_Reaction_to_Simochi.cs::CSharpScript::680330017625020490::1776486816::0::1::::<><><>0<>0<><>::
 Battle_Scarred.cs::CSharpScript::6159468967628415641::1775731861::0::1::::<><><>0<>0<><>::
 Begone_Knave.cs::CSharpScript::8085427736269013415::1775731861::0::1::::<><><>0<>0<><>::
 Blind_Destruction.cs::CSharpScript::5723612448889223365::1776414366::0::1::::<><><>0<>0<><>::
@@ -4335,7 +4335,7 @@ YgoCardLibrarySidebarPatch.cs::CSharpScript::6211306507989716566::1775996847::0:
 YgoCompendiumPackWeightDescriptionPatch.cs::CSharpScript::8944697912693276314::1776000213::0::1::::<><><>0<>0<><>::
 YgoMinimumDeckHarmonyPatches.cs::CSharpScript::3831963834334087557::1775731861::0::1::::<><><>0<>0<><>::
 YgoNCardRarityTickboxTriStatePatch.cs::CSharpScript::8561131144883943831::1775731861::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Patches/PatchesForCards/::1776414009
+::res://YgoDuelistCode/Patches/PatchesForCards/::1776487740
 ActivateEffectCardTextPatch.cs::CSharpScript::7058823448135582154::1776402087::0::1::::<><><>0<>0<><>::
 CardModelFromSerializableMonsterPermanentStatsPatch.cs::CSharpScript::3276483790573619604::1776382685::0::1::::<><><>0<>0<><>::
 CardModelIsValidTargetYgoRefinePatch.cs::CSharpScript::7020957779184525139::1776406513::0::1::::<><><>0<>0<><>::
@@ -4345,6 +4345,7 @@ CardModelUpgradePreviewEnergyCachePatch.cs::CSharpScript::2473632006372933784::1
 CardPileAddInternalMoveFusionToRunExtraDeckPatch.cs::CSharpScript::8766713974538913472::1775731861::0::1::::<><><>0<>0<><>::
 CardPileAddInternalSkullInvitationPatch.cs::CSharpScript::203220133829160318::1776414006::0::1::::<><><>0<>0<><>::
 CommandChangeBattlePositionTitlePatch.cs::CSharpScript::5182391780525547839::1776408731::0::1::::<><><>0<>0<><>::
+DoomedKeywordRaDoomedPowerHoverTipPatch.cs::CSharpScript::1019620246646384240::1776487358::0::1::::<><><>0<>0<><>::
 HookAfterCardPlayedEffectMonsterPatch.cs::CSharpScript::1422734535185141788::1776404037::0::1::::<><><>0<>0<><>::
 MonsterCardRightClickPatch.cs::CSharpScript::669769566589866861::1776209956::0::1::::<><><>0<>0<><>::
 MonsterCommandHolderClickPatch.cs::CSharpScript::7053841009714087622::1773590146::0::1::::<><><>0<>0<><>::
@@ -4525,7 +4526,7 @@ MonsterPile.cs::CSharpScript::8859254023266794220::1773590953::0::1::::<><><>0<>
 SpellTrapZonePile.cs::CSharpScript::8528764836177003569::1775731861::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Potions/::1773606321
 YgoDuelistPotion.cs::CSharpScript::8746247100384225587::1773513087::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Powers/::1776485386
+::res://YgoDuelistCode/Powers/::1776485766
 AccumulatedSpiritsPower.cs::CSharpScript::6823473984447703216::1775731861::0::1::::<><><>0<>0<><>::
 ActiveShacklesPlusPower.cs::CSharpScript::4593200190000154715::1776143954::0::1::::<><><>0<>0<><>::
 ActiveShacklesPower.cs::CSharpScript::232779839669866314::1776143953::0::1::::<><><>0<>0<><>::
@@ -4623,7 +4624,7 @@ YgoDuelistRelic.cs::CSharpScript::1362123596858446735::1773589494::0::1::::<><><
 ::res://YgoDuelistCode/RestSite/::1775703349
 ::res://YgoDuelistCode/Rewards/::1775731861
 YgoCampfireDeckEditUiReward.cs::CSharpScript::6724651277447641421::1775731861::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Services/::1776476958
+::res://YgoDuelistCode/Services/::1776488419
 ActivatedEffectTributeSelectionPayload.cs::CSharpScript::8872545235464063281::1775731861::0::1::::<><><>0<>0<><>::
 CardModelEnergyCache.cs::CSharpScript::6082268261041224344::1775920010::0::1::::<><><>0<>0<><>::
 ColdWaveSpellTrapLockGate.cs::CSharpScript::4441843039876981339::1776063803::0::1::::<><><>0<>0<><>::
@@ -4746,6 +4747,7 @@ YgoPlayerCombatTurnStamp.cs::CSharpScript::6320798349451190696::1776190065::0::1
 YgoPlayerMinimumDeck.cs::CSharpScript::8086441463176602491::1775892820::0::1::::<><><>0<>0<><>::
 YgoPlayPayloadNetKey.cs::CSharpScript::8427240970019389733::1775835816::0::1::::<><><>0<>0<><>::
 YgoPortraitMaskResolver.cs::CSharpScript::8223602694789815965::1775731862::0::1::::<><><>0<>0<><>::
+YgoPowerOnlyMechanicKeywords.cs::CSharpScript::3875449825902710406::1776488804::0::1::::<><><>0<>0<><>::
 YgoPrePlayOptionIdPayload.cs::CSharpScript::4023898847990497428::1775731862::0::1::::<><><>0<>0<><>::
 YgoPrePlaySelectedCardPayload.cs::CSharpScript::318940891312607605::1775731862::0::1::::<><><>0<>0<><>::
 YgoPreviewReferencedCardTypes.cs::CSharpScript::8365450399615022493::1776449368::0::1::::<><><>0<>0<><>::

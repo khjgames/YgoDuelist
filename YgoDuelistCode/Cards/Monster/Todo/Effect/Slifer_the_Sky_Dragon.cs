@@ -22,9 +22,6 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDragonFieldMonster, IYgoOwnerTurnStartFieldMonsterEffect, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
 {
-    private static readonly CardKeyword SlifersPressureKeyword = (CardKeyword)20049;
-    private static readonly CardKeyword SlifersPressurePlusKeyword = (CardKeyword)20050;
-
     private bool ShowSlifersPressurePlus =>
         IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
 
@@ -58,17 +55,16 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDrag
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", 5m) });
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Append(ShowSlifersPressurePlus ? SlifersPressurePlusKeyword : SlifersPressureKeyword);
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
-            yield return HoverTipFactory.FromKeyword(
-                ShowSlifersPressurePlus ? SlifersPressurePlusKeyword : SlifersPressureKeyword);
+            if (ShowSlifersPressurePlus)
+                yield return HoverTipFactory.FromPower<SlifersPressureTemporaryStrengthPowerPlus>();
+            else
+                yield return HoverTipFactory.FromPower<SlifersPressureTemporaryStrengthPower>();
         }
     }
 

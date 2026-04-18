@@ -22,8 +22,6 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Monster_Eye : EffectMonsterCard, IMonsterActivatedEffect
 {
-    private static readonly CardKeyword DoomedKeyword = (CardKeyword)20048;
-
     public Monster_Eye()
         : base(
             cost: 1,
@@ -48,16 +46,12 @@ public sealed class Monster_Eye : EffectMonsterCard, IMonsterActivatedEffect
         typeof(Polymerization),
     };
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Append(DoomedKeyword);
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
-            yield return HoverTipFactory.FromKeyword(DoomedKeyword);
             yield return HoverTipFactory.FromPower<DoomPower>();
         }
     }

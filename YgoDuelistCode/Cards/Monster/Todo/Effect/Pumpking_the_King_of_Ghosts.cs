@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -21,9 +20,6 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// </summary>
 public sealed class Pumpking_the_King_of_Ghosts : EffectMonsterCard
 {
-    private static readonly CardKeyword PumpkingRitualKeyword = (CardKeyword)20056;
-    private static readonly CardKeyword NecroticEvolutionKeyword = (CardKeyword)20057;
-
     public Pumpking_the_King_of_Ghosts()
         : base(
             cost: 1,
@@ -46,17 +42,12 @@ public sealed class Pumpking_the_King_of_Ghosts : EffectMonsterCard
 
     public override Type[] RelatedCards => GetRelatedCards();
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Append(PumpkingRitualKeyword).Append(NecroticEvolutionKeyword);
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
-            yield return HoverTipFactory.FromKeyword(PumpkingRitualKeyword);
-            yield return HoverTipFactory.FromKeyword(NecroticEvolutionKeyword);
             yield return HoverTipFactory.FromPower<PumpkingRitualPower>();
             yield return HoverTipFactory.FromPower<NecroticEvolutionPower>();
         }

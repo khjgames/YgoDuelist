@@ -251,22 +251,16 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
         }
     }
 
+    /// <remarks>Keywords already produce tips via <see cref="CardModel.HoverTips"/>; only reference-card previews belong here.</remarks>
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
             TryResolveSourceMonsterFromStoredPetId();
-            var source = SourceMonster;
-            if (source == null)
+            if (SourceMonster == null)
                 return base.ExtraHoverTips;
 
-            var tips = new List<IHoverTip>(4);
-            foreach (var kw in CanonicalKeywords)
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (IHoverTip tip in YgoPreviewReferencedCardTypes.EnumerateHoverTips(GetType()))
-                tips.Add(tip);
-
-            return tips;
+            return YgoPreviewReferencedCardTypes.EnumerateHoverTips(GetType());
         }
     }
 

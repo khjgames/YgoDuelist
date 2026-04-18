@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -66,12 +65,6 @@ public sealed class Gate_Guardian : EffectMonsterCard, IYgoNamedTripleTributeSum
             IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
                 ? new[] { CardKeyword.Retain }
                 : Enumerable.Empty<CardKeyword>());
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        base.ExtraHoverTips.Concat(
-            IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
-                ? new[] { HoverTipFactory.FromKeyword(CardKeyword.Retain) }
-                : Enumerable.Empty<IHoverTip>());
 
     public static bool CanMeetNamedTributeRequirement(Player? player)
     {

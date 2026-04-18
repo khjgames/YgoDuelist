@@ -179,24 +179,13 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             yield return CycleSpellKeyword;
     }
 
+    /// <remarks>Keyword tips come from <see cref="CardModel.HoverTips"/> via <see cref="CanonicalKeywords"/>; only add non-keyword extras here.</remarks>
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
-            var tips = new List<IHoverTip>
-            {
-                HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)),
-                HoverTipFactory.FromKeyword(SetKeyword),
-            };
-            if (WasSetIntoSpellTrapZone)
-                tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
-            foreach (CardKeyword kw in GetCycleSpellKeywordWhenEligible())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (CardKeyword kw in GetSplinterBlightKeywords())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
-                tips.Add(tip);
-            return tips;
+                yield return tip;
         }
     }
 

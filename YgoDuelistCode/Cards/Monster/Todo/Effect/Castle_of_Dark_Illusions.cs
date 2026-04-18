@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -18,14 +17,11 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Castle_of_Dark_Illusions : EffectMonsterCard, IMonsterFlipEffect
 {
-    private static readonly CardKeyword PumpkingRitualKeyword = (CardKeyword)20056;
-    private static readonly CardKeyword NecroticEvolutionKeyword = (CardKeyword)20057;
-
     public Castle_of_Dark_Illusions()
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Uncommon,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
@@ -44,18 +40,13 @@ public sealed class Castle_of_Dark_Illusions : EffectMonsterCard, IMonsterFlipEf
 
     public override Type[] BundledCards => new[] { typeof(Pumpking_the_King_of_Ghosts) };
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        base.CanonicalKeywords.Append(PumpkingRitualKeyword).Append(NecroticEvolutionKeyword);
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
-            yield return HoverTipFactory.FromKeyword(PumpkingRitualKeyword);
-            yield return HoverTipFactory.FromKeyword(NecroticEvolutionKeyword);
-            yield return HoverTipFactory.FromPower<PumpkingRitualPower>();
+            yield return HoverTipFactory.FromPower<NecroticRitualPower>();
             yield return HoverTipFactory.FromPower<NecroticEvolutionPower>();
         }
     }

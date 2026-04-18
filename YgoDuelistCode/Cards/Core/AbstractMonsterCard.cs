@@ -533,27 +533,18 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         }
     }
 
+    /// <remarks>
+    /// Do not add <see cref="HoverTipFactory.FromKeyword"/> for entries already in <see cref="CanonicalKeywords"/>:
+    /// <see cref="CardModel.HoverTips"/> appends <c>FromKeyword</c> for every <see cref="CardModel.Keywords"/> chip.
+    /// Duplicating here produced two identical keyword tips (and mixed portrait vs non-portrait rendering).
+    /// Mechanics with a dedicated power tip use <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPowerOnlyMechanicKeywords"/> ids
+    /// in <c>card_keywords.json</c> but must not be added to keyword chips — only <see cref="HoverTipFactory.FromPower{T}"/> in
+    /// <see cref="ExtraHoverTips"/>.
+    /// </remarks>
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
-            List<IHoverTip> tips = new List<IHoverTip>(capacity: 2);
-            tips.Add(HoverTipFactory.FromKeyword(AttributeToKeyword(DuelMonsterAttribute)));
-            tips.Add(HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)));
-            foreach (CardKeyword kw in GetFusionAndRitualKeywords())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (CardKeyword kw in GetHandEffectMonsterKeywords())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (CardKeyword kw in GetCycleMonsterKeywordWhenEligible())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            if (this is IMonsterFlipEffect)
-            {
-                var title = new LocString("card_keywords", "20041.title");
-                var description = new LocString("cards", Id.Entry + ".flip_effect.description");
-                DynamicVars.AddTo(description);
-                tips.Add(new HoverTip(title, description));
-            }
-
             if (this is IMonsterActivatedEffect ia)
             {
                 var activateTitle = new LocString("card_keywords", "20051.title");
@@ -563,7 +554,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                     ? UpgradeDisplay.Upgraded
                     : UpgradeDisplay.Normal;
                 activateDesc.Add(new IfUpgradedVar(ifUpgradedDisplay));
-                tips.Add(new HoverTip(activateTitle, activateDesc));
+                yield return new HoverTip(activateTitle, activateDesc);
             }
 
             if (this is IMonsterSecondActivatedEffect ia2)
@@ -575,24 +566,11 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                     ? UpgradeDisplay.Upgraded
                     : UpgradeDisplay.Normal;
                 activate2Desc.Add(new IfUpgradedVar(ifUpgradedDisplay2));
-                tips.Add(new HoverTip(activate2Title, activate2Desc));
+                yield return new HoverTip(activate2Title, activate2Desc);
             }
 
-            foreach (CardKeyword kw in GetRecklessBlockerKeywords())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (CardKeyword kw in GetRecklessKeywords())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (CardKeyword kw in GetFaceDownKeywordsFromBool())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (CardKeyword kw in GetSplinterBlightKeywordsFromMonster())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
-            foreach (CardKeyword kw in GetYgoArchetypeKeywords())
-                tips.Add(HoverTipFactory.FromKeyword(kw));
             foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
-                tips.Add(tip);
-            return tips;
+                yield return tip;
         }
     }
 

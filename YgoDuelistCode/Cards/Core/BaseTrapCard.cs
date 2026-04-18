@@ -271,39 +271,13 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             yield return BlightKeyword;
     }
 
+    /// <remarks>Keyword tips come from <see cref="CardModel.HoverTips"/> via <see cref="CanonicalKeywords"/>.</remarks>
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
         {
-            if (ShouldShowRaceKeyword)
-            {
-                var tips = new List<IHoverTip>
-                {
-                    HoverTipFactory.FromKeyword(RaceToKeyword(DuelMonsterRace)),
-                    HoverTipFactory.FromKeyword(SetKeyword),
-                    HoverTipFactory.FromKeyword(TrapKeyword),
-                };
-                if (ShouldUseFaceDownPresentation())
-                    tips.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
-                foreach (CardKeyword kw in GetSplinterBlightKeywords())
-                    tips.Add(HoverTipFactory.FromKeyword(kw));
-                foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
-                    tips.Add(tip);
-                return tips;
-            }
-
-            var fallback = new List<IHoverTip>
-            {
-                HoverTipFactory.FromKeyword(SetKeyword),
-                HoverTipFactory.FromKeyword(TrapKeyword),
-            };
-            if (ShouldUseFaceDownPresentation())
-                fallback.Add(HoverTipFactory.FromKeyword(FaceDownKeyword));
-            foreach (CardKeyword kw in GetSplinterBlightKeywords())
-                fallback.Add(HoverTipFactory.FromKeyword(kw));
             foreach (IHoverTip tip in EnumerateReferencedCardPreviewHoverTips())
-                fallback.Add(tip);
-            return fallback;
+                yield return tip;
         }
     }
 
