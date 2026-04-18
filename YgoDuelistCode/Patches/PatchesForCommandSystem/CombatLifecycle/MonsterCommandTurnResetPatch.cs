@@ -59,6 +59,8 @@ public static class MonsterCommandTurnResetPatch
 
         BaseTrapCard.ClearSetThisTurnForFacedownSetTrapsInZone(combatPlayer);
 
+        MonsterCommandRegistry.ResetHasAttackedThisTurnForPlayerTurnStart(combatPlayer);
+
         Ominous_Fortunetelling.RefillAllInSpellTrapZoneForPlayer(combatPlayer);
         await YgoTotalDefenseShogunDeferredBlock.ResolveAtTurnStartAsync(choiceContext, combatPlayer);
         await ResolveTurnStartFieldMonsterAtkGrowthAsync(combatPlayer);

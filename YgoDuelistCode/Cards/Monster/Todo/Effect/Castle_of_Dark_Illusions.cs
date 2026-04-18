@@ -1,14 +1,26 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Castle_of_Dark_Illusions : EffectMonsterCard
+public sealed class Castle_of_Dark_Illusions : EffectMonsterCard, IMonsterFlipEffect
 {
+    private static readonly CardKeyword PumpkingRitualKeyword = (CardKeyword)20056;
+    private static readonly CardKeyword NecroticEvolutionKeyword = (CardKeyword)20057;
+
     public Castle_of_Dark_Illusions()
         : base(
             cost: 1,
@@ -32,10 +44,44 @@ public sealed class Castle_of_Dark_Illusions : EffectMonsterCard
 
     public override Type[] BundledCards => new[] { typeof(Pumpking_the_King_of_Ghosts) };
 
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        base.CanonicalKeywords.Append(PumpkingRitualKeyword).Append(NecroticEvolutionKeyword);
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromKeyword(PumpkingRitualKeyword);
+            yield return HoverTipFactory.FromKeyword(NecroticEvolutionKeyword);
+            yield return HoverTipFactory.FromPower<PumpkingRitualPower>();
+            yield return HoverTipFactory.FromPower<NecroticEvolutionPower>();
+        }
+    }
+
+    public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
+    {
+        if (self is not Castle_of_Dark_Illusions || Owner?.Creature == null)
+            return;
+
+        Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this);
+        if (pet == null)
+            return;
+
+        decimal add = DynamicVars["Mgc"].BaseValue;
+        if (add <= 0m)
+            return;
+
+        if (pet.GetPower<NecroticRitualPower>() is { } existing)
+            await PowerCmd.ModifyAmount(existing, add, Owner.Creature, this);
+        else
+            await PowerCmd.Apply<NecroticRitualPower>(pet, add, Owner.Creature, this);
+    }
+
     protected override void OnUpgrade()
     {
         base.OnUpgrade();
-        DynamicVars["Mgc"].BaseValue = 5;
+        DynamicVars["Mgc"].BaseValue = 6;
     }
-
 }

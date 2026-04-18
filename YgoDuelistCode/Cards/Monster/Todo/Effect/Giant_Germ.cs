@@ -32,6 +32,10 @@ public sealed class Giant_Germ : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Giant_Germ) };
 
+    public override bool BundleGrantsExtraCopyOfSelf => true;
+
+    public override Type[] BundledCards => new[] { typeof(Giant_Germ) };
+
     protected override void OnUpgrade()
     {
         base.OnUpgrade();

@@ -279,6 +279,13 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (!_splinterChainRunning)
             await ProcessMonsterExecuteKillEffectsAsync(command, monster, cs);
 
+        if (!_splinterChainRunning && monster is D_D_Warrior or D_D_Warrior_Lady && monster is NormalMonsterCard nmc)
+        {
+            Creature? ddPet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(nmc);
+            if (ddPet != null)
+                MonsterCommandRegistry.GetOrCreate(ddPet).HasAttackedThisTurn = true;
+        }
+
         // Splinter nested attacks: on-damage heal/draw once per unique enemy per chain (see _onDamageEffectSeenEnemyIds).
         if (_splinterChainRunning)
             await ProcessMonsterUnblockedOnDamageEffectsAsync(command, monster, atkPlayer, ctx);

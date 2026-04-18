@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -30,15 +32,16 @@ public sealed class Cat_s_Ear_Tribe : EffectMonsterCard
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
 
-    protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override async Task OnCommandAttackAfterStanceSyncedAsync(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        Creature? pet,
+        CardPlay cardPlay,
+        bool stealthBirdWasFaceDownDefenseBeforeCommandAttack)
     {
-        if (Owner?.Creature == null)
+        if (cardPlay.Target == null || pet == null)
             return;
-        if (Type != CardType.Attack || cardPlay.Target == null)
-            return;
-
-        // "Temp strength -1" implemented as a temporary strength loss debuff.
-        await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(cardPlay.Target, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(cardPlay.Target, DynamicVars["Mgc"].BaseValue, pet, this);
     }
 
     protected override void OnUpgrade()

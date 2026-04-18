@@ -251,5 +251,14 @@
   "YGODUELIST-ACTIVE_SHACKLES_POWER.smartDescription": "Lose [red]{Amount}[/red] Strength until end of turn.",
   "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.title": "Active Shackles +",
   "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.description": "Lose Strength until end of turn (shackles +).",
-  "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.smartDescription": "Lose [red]{Amount}[/red] Strength until end of turn."
+  "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.smartDescription": "Lose [red]{Amount}[/red] Strength until end of turn.",
+  "YGODUELIST-PUMPKING_RITUAL_POWER.title": "Pumpking Ritual",
+  "YGODUELIST-PUMPKING_RITUAL_POWER.description": "At the start of each of your turns, if you control a face-up Castle of Dark Illusions, this duel monster gains 1 Necrotic Evolution, then loses 1 stack.",
+  "YGODUELIST-PUMPKING_RITUAL_POWER.smartDescription": "At the start of each of your turns, if you control a face-up Castle of Dark Illusions, this duel monster gains [blue]1[/blue] Necrotic Evolution, then loses [blue]1[/blue] stack ([blue]{Amount}[/blue] remaining).",
+  "YGODUELIST-NECROTIC_RITUAL_POWER.title": "Necrotic Ritual",
+  "YGODUELIST-NECROTIC_RITUAL_POWER.description": "At the start of each of your turns, apply 2 Necrotic Evolution to each face-up Zombie-Type monster you control, then lose 1 stack.",
+  "YGODUELIST-NECROTIC_RITUAL_POWER.smartDescription": "At the start of each of your turns, apply [blue]2[/blue] Necrotic Evolution to each face-up Zombie-Type monster you control, then lose [blue]1[/blue] stack ([blue]{Amount}[/blue] remaining).",
+  "YGODUELIST-NECROTIC_EVOLUTION_POWER.title": "Necrotic Evolution",
+  "YGODUELIST-NECROTIC_EVOLUTION_POWER.description": "This duel monster gains +1 ATK and +1 DEF per stack.",
+  "YGODUELIST-NECROTIC_EVOLUTION_POWER.smartDescription": "This duel monster gains [blue]{Amount}[/blue] ATK and [blue]{Amount}[/blue] DEF."
 }

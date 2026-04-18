@@ -168,6 +168,12 @@
   "20054.description": "Part of the Dark Magician archetype.",
 
   "20055.title": "Blue-Eyes White Dragon",
-  "20055.description": "Part of the Blue-Eyes White Dragon archetype."
+  "20055.description": "Part of the Blue-Eyes White Dragon archetype.",
+
+  "20056.title": "Pumpking Ritual",
+  "20056.description": "At the start of each turn, if you control a face-up Castle of Dark Illusions, this card gains 1 Necrotic Evolution, then loses 1 stack of Pumpking Ritual.",
+
+  "20057.title": "Necrotic Evolution",
+  "20057.description": "This monster gains +1 ATK and +1 DEF per stack."
 
 }

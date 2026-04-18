@@ -41,6 +41,9 @@ public partial class MainFile : Node
         // MP: set true while debugging NetCombatCard index desync (very verbose — every combat pile add).
         // YgoMpNetCardAssignLog.Verbose = true;
 
+        // MP: extra GD.Print lines from YgoMpDiagnostics.VerbosePrint (pre-play grid pile membership, etc.).
+        // YgoMpDiagnostics.Verbose = true;
+
         YgoMerchantShopBundlePurchasePatch.ApplyMerchantCardEntryPatches(harmony);
 
         MethodInfo? ancientSetInitial = AccessTools.DeclaredMethod(typeof(MegaCrit.Sts2.Core.Models.AncientEventModel), "SetInitialEventState");

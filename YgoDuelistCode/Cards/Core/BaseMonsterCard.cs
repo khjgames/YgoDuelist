@@ -484,6 +484,14 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             def += b;
         }
 
+        NecroticEvolutionPower? necroticEvolution = GetSourcePetNecroticEvolutionPower();
+        if (necroticEvolution != null)
+        {
+            int n = (int)necroticEvolution.Amount;
+            atk += n;
+            def += n;
+        }
+
         GearfriedIronKnightPower? gearfriedPow = GetSourcePetGearfriedIronKnightPower();
         if (gearfriedPow != null)
         {
@@ -806,6 +814,21 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         return null;
     }
 
+    private NecroticEvolutionPower? GetSourcePetNecroticEvolutionPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<NecroticEvolutionPower>();
+        }
+
+        return null;
+    }
+
     private GearfriedIronKnightPower? GetSourcePetGearfriedIronKnightPower()
     {
         if (IsCanonical || Owner?.PlayerCombatState == null)
@@ -950,7 +973,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Enemy execute kills from this monster's attack (GraveyardRelic + splinter chain).</summary>
     public virtual Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs) => Task.CompletedTask;
 
-    /// <summary>Top-level GraveyardRelic AfterAttack before splinter / on-damage (Spirit of the Breeze, D.D. Warrior Lady).</summary>
+    /// <summary>Top-level GraveyardRelic AfterAttack before splinter / on-damage (Spirit of the Breeze).</summary>
     public virtual Task OnGraveyardRelicAfterAttackOpeningAsync(
         AttackCommand command,
         Player? attackingPlayer,

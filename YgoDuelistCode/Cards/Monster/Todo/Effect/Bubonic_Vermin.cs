@@ -34,6 +34,10 @@ public sealed class Bubonic_Vermin : EffectMonsterCard, IMonsterFlipEffect
 
     public override Type[] RelatedCards => new[] { typeof(Bubonic_Vermin) };
 
+    public override bool BundleGrantsExtraCopyOfSelf => true;
+
+    public override Type[] BundledCards => new[] { typeof(Bubonic_Vermin) };
+    
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {
         if (self is not Bubonic_Vermin || Owner == null)

@@ -29,11 +29,8 @@ public sealed class MonsterCommandState
     /// <summary>Cyber Jar: Command Attack/Defend cost 0 for this pet until end of turn.</summary>
     public bool ZeroEnergyMonsterCommandsThisTurn;
 
-    /// <summary>D.D. Warrior Lady: Activate Effect usable after this pet resolved an attack this turn.</summary>
-    public bool WarriorLadyBanishWindowActive;
-
-    /// <summary>D.D. Warrior: Activate Effect usable after this pet resolved an attack this turn.</summary>
-    public bool WarriorBanishWindowActive;
+    /// <summary>D.D. Warrior / D.D. Warrior Lady: set true after this pet&apos;s attack damage resolves (hand or command attack); cleared at your turn start.</summary>
+    public bool HasAttackedThisTurn;
 
     /// <summary>Exarion Universe: activated effect — Splinter on attacks and -4 ATK until end of turn.</summary>
     public bool ExarionUniversePiercingStanceThisTurn;
@@ -284,6 +281,19 @@ public static class MonsterCommandRegistry
         _states.Remove(pet);
     }
 
+    /// <summary>D.D. Warrior / D.D. Warrior Lady: cleared at the start of your turn (with trap <c>SetThisTurn</c> bookkeeping).</summary>
+    public static void ResetHasAttackedThisTurnForPlayerTurnStart(Player player)
+    {
+        if (player.PlayerCombatState == null)
+            return;
+
+        foreach (Creature pet in player.PlayerCombatState.Pets)
+        {
+            if (TryGet(pet, out MonsterCommandState s))
+                s.HasAttackedThisTurn = false;
+        }
+    }
+
     /// <summary>End of controlling player turn: per-field-monster cleanup (Karate Man, Guardian Slime) before <see cref="ClearPerTurnExtrasForPlayer"/>.</summary>
     public static async Task ResolveOwnerTurnEndFieldCleanupAsync(PlayerChoiceContext ctx, Player? player)
     {
@@ -299,7 +309,7 @@ public static class MonsterCommandRegistry
         }
     }
 
-    /// <summary>End of player turn: Cyber Jar free commands and D.D. Warrior Lady attack-gated window.</summary>
+    /// <summary>End of player turn: Cyber Jar free commands and per-turn extras.</summary>
     public static void ClearPerTurnExtrasForPlayer(Player? player)
     {
         if (player?.PlayerCombatState == null)
@@ -310,8 +320,6 @@ public static class MonsterCommandRegistry
             if (!TryGet(pet, out MonsterCommandState s))
                 continue;
             s.ZeroEnergyMonsterCommandsThisTurn = false;
-            s.WarriorLadyBanishWindowActive = false;
-            s.WarriorBanishWindowActive = false;
             s.ExarionUniversePiercingStanceThisTurn = false;
             s.KarateManBurstAtkThisTurn = false;
             s.KarateManDestroyAtEndOfOwnerTurn = false;

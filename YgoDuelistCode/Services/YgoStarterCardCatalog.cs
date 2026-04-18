@@ -47,6 +47,8 @@ public enum StarterCategory
 /// may be retargeted to match the dominant monster races/attributes in the grid.
 /// Finally, if the unique most common monster race is <see cref="DuelMonsterRace.Insect"/> or <see cref="DuelMonsterRace.Machine"/>,
 /// the lowest-StS-rarity level 5–6 monster (if any) becomes <see cref="Insect_Queen"/> or <see cref="Machine_King"/> respectively when that card is not already in the grid.
+/// After that, if the grid contains <see cref="Castle_of_Dark_Illusions"/> or the unique modal race is <see cref="DuelMonsterRace.Zombie"/>,
+/// the lowest-StS-rarity level 5–6 monster (if any) becomes <see cref="Pumpking_the_King_of_Ghosts"/> when not already present.
 /// </summary>
 public static class YgoStarterCardCatalog
 {
@@ -222,6 +224,7 @@ public static class YgoStarterCardCatalog
         ApplyNeowSignatureMonsterSubstitutions(grid, rng);
         ApplyNeowStarterGridSubstitutions(grid, rng);
         TryReplaceLowestRarityLevel56MonsterForDominantRace(grid, rng);
+        TryReplaceLowestRarityLevel56MonsterWithPumpkingIfEligible(grid, rng);
 
         GD.Print(
             $"[YgoDuelist NeowDraft] CreateRandomGrid: structured fill categoryOrder=[{string.Join(",", categoryOrder)}] " +
@@ -451,6 +454,24 @@ public static class YgoStarterCardCatalog
             return;
 
         TryReplaceLowestRarityLevel56MonsterWith(grid, rng, replacement);
+    }
+
+    /// <summary>
+    /// After dominant-race Insect/Machine: if <see cref="Castle_of_Dark_Illusions"/> is in the grid or the unique modal race is Zombie,
+    /// swaps the lowest-StS-rarity level 5–6 monster for <see cref="Pumpking_the_King_of_Ghosts"/> (same slot rules as other level 5–6 swaps).
+    /// </summary>
+    private static void TryReplaceLowestRarityLevel56MonsterWithPumpkingIfEligible(List<CardModel> grid, Rng rng)
+    {
+        if (StarterGridContainsCardType(grid, typeof(Pumpking_the_King_of_Ghosts)))
+            return;
+
+        bool hasCastle = grid.Any(c => c is Castle_of_Dark_Illusions);
+        bool zombieDominant = TryGetUniqueModalMonsterRace(grid, out DuelMonsterRace race) && race == DuelMonsterRace.Zombie;
+
+        if (!hasCastle && !zombieDominant)
+            return;
+
+        TryReplaceLowestRarityLevel56MonsterWith(grid, rng, typeof(Pumpking_the_King_of_Ghosts));
     }
 
     /// <summary>Returns true when exactly one <see cref="DuelMonsterRace"/> has the maximum count among <see cref="BaseMonsterCard"/> in <paramref name="grid"/>.</summary>

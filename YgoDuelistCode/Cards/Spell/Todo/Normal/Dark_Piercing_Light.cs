@@ -53,6 +53,8 @@ public sealed class Dark_Piercing_Light : BaseSpellCard
     protected override void OnUpgrade()
     {
         EnergyCost.UpgradeBy(-1);
-        DynamicVars["Mgc"].UpgradeValueBy(2m); 
+        DynamicVars["Mgc"].UpgradeValueBy(2m);
+        if (!Keywords.Contains(CardKeyword.Innate))
+            AddKeyword(CardKeyword.Innate);
     }
 }

@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -16,7 +15,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class D_D_Warrior : EffectMonsterCard
+public sealed class D_D_Warrior : EffectMonsterCard, IMonsterActivatedEffect
 {
     public D_D_Warrior()
         : base(
@@ -48,19 +47,8 @@ public sealed class D_D_Warrior : EffectMonsterCard
             Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this);
             return pet != null
                 && MonsterCommandRegistry.TryGet(pet, out MonsterCommandState s)
-                && s.WarriorBanishWindowActive;
+                && s.HasAttackedThisTurn;
         }
-    }
-
-    public override Task OnGraveyardRelicAfterAttackOpeningAsync(
-        AttackCommand command,
-        Player? attackingPlayer,
-        BlockingPlayerChoiceContext ctx)
-    {
-        Creature? wlPet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this);
-        if (wlPet != null)
-            MonsterCommandRegistry.GetOrCreate(wlPet).WarriorBanishWindowActive = true;
-        return Task.CompletedTask;
     }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
@@ -75,7 +63,6 @@ public sealed class D_D_Warrior : EffectMonsterCard
             return;
 
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
-        MonsterCommandRegistry.GetOrCreate(pet).WarriorBanishWindowActive = false;
 
         await CreatureCmd.Kill(pet, force: true);
         await YgoBanishedService.BanishCard(player, source);

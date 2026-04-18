@@ -41,7 +41,16 @@ public static class PlayCardActionPrePlayCancelableGridPatch
             return true;
 
         if (!TryResolveAllowedPrePlayPlaySource(__instance.Player, card, out string sourceTag))
+        {
+            if (__instance.Player != null && YgoMpDiagnostics.IsMultiplayer)
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][PrePlayGrid] PREFIX_SKIP_DESYNC_RISK owner={__instance.Player.NetId} card={card.Id?.Entry} " +
+                    $"{YgoMpDiagnostics.FormatPileMembership(__instance.Player, card)} " +
+                    "(IYgoPrePlayCancelableGridSelection: vanilla PlayCardAction only; lockstep may break)");
+            }
             return true;
+        }
 
         if (sourceTag.EndsWith("_infer", StringComparison.Ordinal))
             GD.PrintErr(
@@ -122,6 +131,9 @@ public static class PlayCardActionPrePlayCancelableGridPatch
 
         GD.Print(
             $"[YgoDuelist][MP][PrePlayGrid] begin owner={action.Player.NetId} localOwner={localOwner} card={card.Id?.Entry}");
+        YgoMpDiagnostics.VerbosePrint(
+            "PrePlayGrid",
+            $"begin {YgoMpDiagnostics.FormatPileMembership(action.Player, card)} localOwner={localOwner}");
         try
         {
             if (!await preplay.TryPreparePrePlayCancelableGridAsync(action.Player, card))
@@ -155,8 +167,10 @@ public static class PlayCardActionPrePlayCancelableGridPatch
         bool pileOk = TryResolveAllowedPrePlayPlaySource(action.Player, card, out string sourceTagBody);
         if (!pileOk)
         {
+            Player? p = action.Player;
+            string membership = p != null ? YgoMpDiagnostics.FormatPileMembership(p, card) : "player=null";
             GD.PrintErr(
-                $"[YgoDuelist][MP][PrePlayGrid] execute_abort_no_pile owner={action.Player?.NetId} card={card.Id?.Entry} pileNull={card.Pile == null}");
+                $"[YgoDuelist][MP][PrePlayGrid] execute_abort_no_pile owner={p?.NetId} card={card.Id?.Entry} pileNull={card.Pile == null} {membership}");
             NCardPlayQueue.Instance?.RemoveCardFromQueueForCancellation(action);
             return;
         }
