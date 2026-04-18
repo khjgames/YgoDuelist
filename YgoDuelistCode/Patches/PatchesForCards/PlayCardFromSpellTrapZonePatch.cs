@@ -39,6 +39,20 @@ public static class PlayCardFromSpellTrapZonePatch
         if (YgoPlayCardQueueDeferral.SpellTrapZonePlayRequiresVanillaExecuteAction(card))
             return true;
 
+        // Priority 900 runs before PlayCardActionPrePlayCancelableGridPatch (790). For IYgoPrePlayCancelableGridSelection,
+        // this path can complete on observers without OnPlay (ResolveSpellTrapPlayCard null / early exit) while the host
+        // falls through to PrePlayGrid — checksum ID divergence (e.g. Raigeki Break). Let PrePlayGrid own the full flow.
+        if (card is IYgoPrePlayCancelableGridSelection)
+        {
+            if (YgoMpDiagnostics.IsMultiplayer)
+            {
+                GD.Print(
+                    $"[YgoDuelist][MP][SpellTrapPlay] defer to PrePlayGrid owner={player.NetId} card={card.Id?.Entry}");
+            }
+
+            return true;
+        }
+
         CardPile? pile = card.Pile;
         CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
         if (pile == null || zonePile == null || !ReferenceEquals(pile, zonePile))
