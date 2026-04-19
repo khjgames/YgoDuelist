@@ -11,7 +11,7 @@ public sealed class Chimera_the_Flying_Mythical_Beast : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,

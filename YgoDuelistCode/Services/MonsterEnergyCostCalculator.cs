@@ -67,7 +67,13 @@ public static class MonsterEnergyCostCalculator
         {
             if (normalOrEffect)
                 return NormalEffectLevel1To4(z, isAttackStat, upgradeAnnotations: false);
-            if (ritual || fusion)
+            if (fusion)
+            {
+                if (z < 14)
+                    return FusionMonsterUnifiedZBandLow14(z);
+                return RitualFusionLevel1To4(z, isAttackStat, upgradeAnnotations: false);
+            }
+            if (ritual)
                 return RitualFusionLevel1To4(z, isAttackStat, upgradeAnnotations: false);
         }
 
@@ -75,7 +81,13 @@ public static class MonsterEnergyCostCalculator
         {
             if (normalOrEffect)
                 return NormalEffectLevel5To6(z, isAttackStat, upgradeAnnotations: false);
-            if (ritual || fusion)
+            if (fusion)
+            {
+                if (z < 14)
+                    return FusionMonsterUnifiedZBandLow14(z);
+                return RitualFusionLevel5To6(z, isAttackStat, upgradeAnnotations: false);
+            }
+            if (ritual)
                 return RitualFusionLevel5To6(z, isAttackStat, upgradeAnnotations: false);
         }
 
@@ -118,6 +130,14 @@ public static class MonsterEnergyCostCalculator
         if (z <= 12) return up ? 1 : 2;
         if (z <= 20) return 2;
         return 3;
+    }
+
+    /// <summary>Fusion monsters level 1–6, printed Z &lt; 14: same ATK/DEF Z-bands (0 / 1 / 2 energy).</summary>
+    private static int FusionMonsterUnifiedZBandLow14(int z)
+    {
+        if (z <= 10) return 0;
+        if (z <= 13) return 1;
+        return 2;
     }
 
     private static int RitualFusionLevel1To4(int z, bool isAttackStat, bool upgradeAnnotations)

@@ -31,8 +31,11 @@ public static class YgoStatUpgradeScaling
             level, ygoType, constructorBaseStatLine, isAttackStat, statsUnknown);
 
         int costCol = unupgradedE <= 1 ? 1 : 2;
-        int matchStat = isDefenseLine ? constructorBaseStatLine + 1 : constructorBaseStatLine;
-        if (ygoType == YgoCardType.Monster && level <= 4 && isDefenseLine && constructorBaseStatLine == 4)
+        bool fusionLow = ygoType == YgoCardType.FusionMonster && level <= 8;
+        int matchStat = fusionLow
+            ? constructorBaseStatLine
+            : (isDefenseLine ? constructorBaseStatLine + 1 : constructorBaseStatLine);
+        if (!fusionLow && ygoType == YgoCardType.Monster && level <= 4 && isDefenseLine && constructorBaseStatLine == 4)
             matchStat = 4;
 
         int? cost = LookupSmithUpgradedPlayEnergyCost(level, ygoType, costCol, matchStat);
@@ -54,6 +57,8 @@ public static class YgoStatUpgradeScaling
                 return UpgradedCostNormalLow4(costCol, matchStat);
             if (ygoType == YgoCardType.EffectMonster)
                 return null;
+            if (fusion && matchStat < 19)
+                return UpgradedCostFusionUnifiedLow19(costCol, matchStat);
             if (ritual || fusion)
                 return UpgradedCostRitualFusionLow4(costCol, matchStat);
         }
@@ -62,12 +67,16 @@ public static class YgoStatUpgradeScaling
         {
             if (normalOrEffect)
                 return UpgradedCostNormalEffect56(costCol, matchStat);
+            if (fusion && matchStat < 19)
+                return UpgradedCostFusionUnifiedMid19(costCol, matchStat);
             if (ritual || fusion)
                 return UpgradedCostRitualFusion56(costCol, matchStat);
         }
 
         if (level <= 8)
         {
+            if (fusion && matchStat < 19)
+                return UpgradedCostFusionUnifiedHigh19(costCol, matchStat);
             if (fusion)
                 return UpgradedCostFusion78(costCol, matchStat);
             if (normalOrEffect || ritual)
@@ -93,6 +102,16 @@ public static class YgoStatUpgradeScaling
         if (costCol == 2 && s == 17) return 2;
         if (costCol == 2 && s >= 18 && s <= 21) return 2;
         if (costCol == 2 && s >= 22) return 2;
+        return null;
+    }
+
+    /// <summary>Fusion monsters L1–8, printed Z &lt; 19: upgraded play energy (smith) per Fusion_Monster_Balancing / user spec.</summary>
+    private static int? UpgradedCostFusionUnifiedLow19(int costCol, int s)
+    {
+        if (costCol == 1 && s <= 10) return 0;
+        if (costCol == 1 && s >= 11 && s <= 12) return 0;
+        if (costCol == 2 && s >= 13 && s <= 16) return 1;
+        if (costCol == 2 && s >= 17 && s <= 18) return 2;
         return null;
     }
 
@@ -124,6 +143,15 @@ public static class YgoStatUpgradeScaling
         return null;
     }
 
+    /// <summary>Fusion monsters L1–8, printed Z &lt; 19: upgraded play energy (smith) per Fusion_Monster_Balancing / user spec.</summary>
+    private static int? UpgradedCostFusionUnifiedMid19(int costCol, int s)
+    {
+        if (costCol == 1 && s <= 10) return 0;
+        if (costCol == 1 && s >= 11 && s <= 12) return 0;
+        if (costCol == 2 && s >= 13 && s <= 18) return 1;
+        return null;
+    }
+
     private static int? UpgradedCostRitualFusion56(int costCol, int s)
     {
         if (costCol == 1 && s == 13) return 1;
@@ -149,6 +177,15 @@ public static class YgoStatUpgradeScaling
         if (costCol == 2 && s == 26) return 2;
         if (costCol == 2 && s >= 27 && s <= 30) return 2;
         if (costCol == 2 && s >= 31) return 2;
+        return null;
+    }
+
+    /// <summary>Fusion monsters L1–8, printed Z &lt; 19: upgraded play energy (smith) per Fusion_Monster_Balancing / user spec.</summary>
+    private static int? UpgradedCostFusionUnifiedHigh19(int costCol, int s)
+    {
+        if (costCol == 1 && s <= 10) return 0;
+        if (costCol == 1 && s >= 11 && s <= 12) return 0;
+        if (costCol == 2 && s >= 13 && s <= 18) return 1;
         return null;
     }
 
@@ -236,6 +273,8 @@ public static class YgoStatUpgradeScaling
         {
             if (normalOrEffect)
                 return SmithNormalLow4(costCol, matchStat);
+            if (fusion && matchStat < 19)
+                return SmithFusionStatLow19(costCol, matchStat);
             if (ritual || fusion)
                 return SmithRitualFusionLow4(costCol, matchStat);
         }
@@ -297,6 +336,20 @@ public static class YgoStatUpgradeScaling
         if (costCol == 2 && s >= 26) return 5;
         return GetLegacyMonsterSmithDelta(s);
     }
+    
+    /// <summary>Fusion L1–8 first-upgrade ATK/DEF deltas for printed stat &lt; 19 (same row for ATK and DEF).</summary>
+    private static int SmithFusionStatLow19(int costCol, int s)
+    {
+        if (costCol == 1 && s == 11) return 3;
+        if (costCol == 1 && s == 12) return 2;
+        if (costCol == 1 && s == 13) return 4;
+        if (costCol == 2 && s == 14) return 5;
+        if (costCol == 2 && s == 15) return 4;
+        if (costCol == 2 && s == 16) return 4;
+        if (costCol == 2 && s == 17) return 4;
+        if (costCol == 2 && s == 18) return 3;
+        return SmithRitualFusionLow4(costCol,s);
+    }
 
     private static int SmithNormalEffect56(int costCol, int s)
     {
@@ -314,6 +367,8 @@ public static class YgoStatUpgradeScaling
 
     private static int SmithRitualFusion56(int costCol, int s)
     {
+        if (costCol == 1 && s == 11) return 3;
+        if (costCol == 1 && s == 12) return 2;
         if (costCol == 1 && s == 13) return 4;
         if (costCol == 1 && s == 14) return 4;
         if (costCol == 2 && s == 15) return 7;
@@ -337,7 +392,7 @@ public static class YgoStatUpgradeScaling
         if (costCol == 2 && s == 26) return 5;
         if (costCol == 2 && s >= 27 && s <= 30) return 5;
         if (costCol == 2 && s >= 31) return 6;
-        return GetLegacyMonsterSmithDelta(s);
+        return GetLegacyMonsterSmithDelta(s) + 1;
     }
 
     private static int SmithFusion78(int costCol, int s)
@@ -351,7 +406,7 @@ public static class YgoStatUpgradeScaling
         if (costCol == 2 && s == 28) return 6;
         if (costCol == 2 && s >= 29 && s <= 32) return 6;
         if (costCol == 2 && s >= 33) return 7;
-        return GetLegacyMonsterSmithDelta(s);
+        return SmithRitualFusion56(costCol, s) + 1;
     }
 
     private static int SmithAll910(int costCol, int s)
@@ -365,7 +420,7 @@ public static class YgoStatUpgradeScaling
         if (costCol == 2 && s == 35) return 6;
         if (costCol == 2 && s >= 36 && s <= 39) return 6;
         if (costCol == 2 && s >= 40) return 7;
-        return GetLegacyMonsterSmithDelta(s);
+        return GetLegacyMonsterSmithDelta(s) + 1;
     }
 
     private static int SmithAll11Plus(int costCol, int s)
@@ -379,7 +434,7 @@ public static class YgoStatUpgradeScaling
         if (costCol == 2 && s == 39) return 6;
         if (costCol == 2 && s >= 40 && s <= 43) return 6;
         if (costCol == 2 && s >= 44) return 7;
-        return GetLegacyMonsterSmithDelta(s);
+        return GetLegacyMonsterSmithDelta(s) + 1;
     }
 
     /// <summary>

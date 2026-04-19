@@ -11,7 +11,7 @@ public sealed class Master_of_Oz : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 9,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,

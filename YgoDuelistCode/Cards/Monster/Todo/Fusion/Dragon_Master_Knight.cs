@@ -11,7 +11,7 @@ public sealed class Dragon_Master_Knight : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 12,
             duelMonsterAttribute: DuelMonsterAttribute.Light,

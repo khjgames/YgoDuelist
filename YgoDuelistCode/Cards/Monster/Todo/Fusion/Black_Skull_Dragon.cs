@@ -11,7 +11,7 @@ public sealed class Black_Skull_Dragon : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 9,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
