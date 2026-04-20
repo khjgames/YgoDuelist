@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Rabid_Horseman : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Rabid_Horseman()
         : base(
             cost: 1,
@@ -19,8 +21,15 @@ public sealed class Rabid_Horseman : FusionMonsterCard
             baseDef: 17,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.BeastWarrior,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Battle_Ox),
+        typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Battle_Ox),
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Mystic_Horseman))
     {
     }
+    
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 0.96f * 0.7f;
+
 }

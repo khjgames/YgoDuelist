@@ -4,6 +4,7 @@ using System.Linq;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Merchant;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
@@ -12,7 +13,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Stacked <see cref="NCard"/> previews behind the main merchant offer for <see cref="YgoDuelistCard.BundledCards"/>.
+/// Stacked <see cref="NCard"/> previews behind the main merchant offer for <see cref="YgoDuelistCard.BundledCards"/> and <see cref="YgoDuelistCard.BulkBundled"/>.
 /// </summary>
 public static class YgoMerchantShopBundleVisual
 {
@@ -51,28 +52,15 @@ public static class YgoMerchantShopBundleVisual
             return;
         }
 
-        if (bundling.BundledCards.Length == 0)
+        Player? shopPlayer = YgoMerchantShopBundleShared.GetMerchantEntryPlayer(entry);
+        bool willTryBulk = bundling.BulkBundled && shopPlayer != null;
+        if (bundling.BundledCards.Length == 0 && !willTryBulk)
         {
             if (diag)
-                YgoMerchantShopBundleDiag.Log("MountOrRefresh: no bundle UI (BundledCards length 0 on template)");
+                YgoMerchantShopBundleDiag.Log("MountOrRefresh: no bundle UI (no BundledCards and no BulkBundled/player)");
             existing?.QueueFree();
             return;
         }
-
-        string sig = BuildSig(offerCard, bundling);
-        if (existing != null && existing.HasMeta(SigMetaKey) && existing.GetMeta(SigMetaKey).AsString() == sig)
-        {
-            if (diag)
-                YgoMerchantShopBundleDiag.Log($"MountOrRefresh: sig unchanged skip rebuild sig={sig}");
-            if (existing.GetIndex() != 0)
-                holder.MoveChild(existing, 0);
-            return;
-        }
-
-        if (diag)
-            YgoMerchantShopBundleDiag.Log($"MountOrRefresh: rebuilding stack sig={sig}");
-
-        existing?.QueueFree();
 
         ModelId mainId = offerCard.CanonicalInstance.Id;
         List<CardModel> previews = new();
@@ -94,8 +82,35 @@ public static class YgoMerchantShopBundleVisual
             previews.Add(template);
         }
 
+        ModelId? bulkSigId = null;
+        if (bundling.BulkBundled && shopPlayer != null
+            && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, shopPlayer, bundling, out CardModel? bulkMate)
+            && bulkMate != null)
+        {
+            previews.Add(bulkMate);
+            bulkSigId = bulkMate.Id;
+        }
+
         if (previews.Count == 0)
+        {
+            existing?.QueueFree();
             return;
+        }
+
+        string sig = BuildSig(offerCard, bundling, bulkSigId);
+        if (existing != null && existing.HasMeta(SigMetaKey) && existing.GetMeta(SigMetaKey).AsString() == sig)
+        {
+            if (diag)
+                YgoMerchantShopBundleDiag.Log($"MountOrRefresh: sig unchanged skip rebuild sig={sig}");
+            if (existing.GetIndex() != 0)
+                holder.MoveChild(existing, 0);
+            return;
+        }
+
+        if (diag)
+            YgoMerchantShopBundleDiag.Log($"MountOrRefresh: rebuilding stack sig={sig}");
+
+        existing?.QueueFree();
 
         var stack = new Control
         {
@@ -203,6 +218,6 @@ public static class YgoMerchantShopBundleVisual
         return fallback;
     }
 
-    private static string BuildSig(CardModel main, YgoDuelistCard y) =>
-        $"{main.CanonicalInstance.Id}:{string.Join(",", y.BundledCards.Select(t => t.FullName))}";
+    private static string BuildSig(CardModel main, YgoDuelistCard y, ModelId? bulkMateId) =>
+        $"{main.CanonicalInstance.Id}:{string.Join(",", y.BundledCards.Select(t => t.FullName))}:bulk={bulkMateId?.Entry ?? ""}";
 }

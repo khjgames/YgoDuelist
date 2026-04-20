@@ -66,8 +66,10 @@ public static class YgoCardPackRewardFlow
         foreach (PackTemplateRoll roll in rolls)
         {
             packTagMasks.Add(roll.TagMask);
-            var row = new List<CardModel>(roll.Templates.Count);
+            var row = new List<CardModel>(roll.Templates.Count + roll.BonusBulkTemplates.Count);
             foreach (CardModel template in roll.Templates)
+                row.Add(player.RunState.CreateCard(template, player));
+            foreach (CardModel template in roll.BonusBulkTemplates)
                 row.Add(player.RunState.CreateCard(template, player));
             bundles.Add(row);
         }
@@ -146,6 +148,7 @@ public static class YgoCardPackRewardFlow
             };
             PackOfferRollsCache.Remove(reward);
             PackOfferRollsCache.Add(reward, cached);
+            LogPackFlowPhase(player, "pack_rolls_fresh", SummarizeRollsForLog(rolls));
         }
 
         MaterializeBundlesFromRolls(player, cached.Rolls, bundles, packTagMasks);
@@ -347,6 +350,20 @@ public static class YgoCardPackRewardFlow
         {
             IReadOnlyList<CardModel> b = bundles[i];
             parts.Add($"[{i}] size={b.Count} {SummarizeRarities(b)}");
+        }
+
+        return string.Join("; ", parts);
+    }
+
+    /// <summary>Template counts before clone (main slots + bonus bulk).</summary>
+    private static string SummarizeRollsForLog(IReadOnlyList<PackTemplateRoll> rolls)
+    {
+        var parts = new List<string>(rolls.Count);
+        for (int i = 0; i < rolls.Count; i++)
+        {
+            PackTemplateRoll r = rolls[i];
+            parts.Add(
+                $"[{i}] main={r.Templates.Count} bonusBulk={r.BonusBulkTemplates.Count} tagMask={r.TagMask}");
         }
 
         return string.Join("; ", parts);

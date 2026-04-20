@@ -19,9 +19,21 @@ public sealed class Ojama_King : FusionMonsterCard
             baseDef: 30,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Beast,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Green),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Yellow),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Black))
+            fusionMaterialTypes: new[]
+            {
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Green),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Yellow),
+                typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Ojama_Black)
+            },
+            duelMonsterDefensePlayEnergyOverride: 2
+            )
     {
     }
+
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 1.13f;
+    
 }

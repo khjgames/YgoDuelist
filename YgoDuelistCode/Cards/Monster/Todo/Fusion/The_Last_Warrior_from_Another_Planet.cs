@@ -58,7 +58,8 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
             YgoCardType,
             MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
                 DuelMonsterLevel, YgoCardType, BaseDef, false, false, DuelMonsterStatsAreUnknown),
-            BaseDef);
+            BaseDef,
+            isDefenseLine: true);
         DynamicVars.Damage.UpgradeValueBy(atkBonus);
         DynamicVars["Def"].UpgradeValueBy(defBonus);
         if (DynamicVars.Block != null)

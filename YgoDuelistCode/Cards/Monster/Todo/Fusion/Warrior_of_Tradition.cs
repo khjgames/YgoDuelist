@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Warrior_of_Tradition : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Warrior_of_Tradition()
         : base(
             cost: 1,
@@ -23,4 +25,11 @@ public sealed class Warrior_of_Tradition : FusionMonsterCard
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Beautiful_Headhuntress))
     {
     }
+    
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 0.97f * 0.7f;
+
 }

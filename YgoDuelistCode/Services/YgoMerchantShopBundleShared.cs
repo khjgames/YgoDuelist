@@ -1,3 +1,7 @@
+using System.Reflection;
+using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Merchant;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 
@@ -8,6 +12,12 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoMerchantShopBundleShared
 {
+    private static readonly FieldInfo? MerchantEntryPlayerField =
+        AccessTools.DeclaredField(typeof(MerchantEntry), "_player");
+
+    public static Player? GetMerchantEntryPlayer(MerchantEntry entry) =>
+        MerchantEntryPlayerField?.GetValue(entry) as Player;
+
     public static bool TryGetBundlingTemplate(CardModel? card, out YgoDuelistCard ygo)
     {
         ygo = null!;

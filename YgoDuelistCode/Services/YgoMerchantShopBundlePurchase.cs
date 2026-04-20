@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using Godot;
-using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Merchant;
@@ -15,15 +13,12 @@ using YgoDuelist.YgoDuelistCode.Cards;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// When a YGO merchant slot sells a <see cref="YgoDuelistCard"/> with <see cref="YgoDuelistCard.BundledCards"/>,
-/// the listed templates are added to the deck after the main purchase succeeds. Entries matching the purchased card
-/// are skipped unless <see cref="YgoDuelistCard.BundleGrantsExtraCopyOfSelf"/> is true (2-of-self bundles).
+/// When a YGO merchant slot sells a <see cref="YgoDuelistCard"/> with <see cref="YgoDuelistCard.BundledCards"/> and/or
+/// <see cref="YgoDuelistCard.BulkBundled"/>, the matching templates are added to the deck after the main purchase succeeds.
+/// Bundled entries matching the purchased card are skipped unless <see cref="YgoDuelistCard.BundleGrantsExtraCopyOfSelf"/> is true (2-of-self bundles).
 /// </summary>
 public static class YgoMerchantShopBundlePurchase
 {
-    private static readonly FieldInfo? MerchantEntryPlayerField =
-        AccessTools.DeclaredField(typeof(MerchantEntry), "_player");
-
     /// <summary>Runs before <see cref="MerchantCardEntry.ClearAfterPurchase"/> or <see cref="MerchantCardEntry.RestockAfterPurchase"/> clears the sold card from the entry.</summary>
     public static void ScheduleGrantFromEntry(MerchantCardEntry entry)
     {
@@ -47,14 +42,16 @@ public static class YgoMerchantShopBundlePurchase
             return;
         }
 
-        if (y.BundledCards.Length == 0)
+        bool grantExplicitBundle = y.BundledCards.Length > 0;
+        bool grantBulk = y.BulkBundled;
+        if (!grantExplicitBundle && !grantBulk)
         {
             if (diag)
-                YgoMerchantShopBundleDiag.Log("ScheduleGrantFromEntry: abort BundledCards empty on template");
+                YgoMerchantShopBundleDiag.Log("ScheduleGrantFromEntry: abort no BundledCards and not BulkBundled");
             return;
         }
 
-        Player? player = MerchantEntryPlayerField?.GetValue(entry) as Player;
+        Player? player = YgoMerchantShopBundleShared.GetMerchantEntryPlayer(entry);
         if (player == null)
         {
             YgoMerchantShopBundleDiag.Log($"ScheduleGrantFromEntry: abort _player null offer={offerId}");
@@ -65,7 +62,7 @@ public static class YgoMerchantShopBundlePurchase
         Type[] types = y.BundledCards.ToArray();
         bool extraSelf = y.BundleGrantsExtraCopyOfSelf;
         YgoMerchantShopBundleDiag.Log(
-            $"ScheduleGrantFromEntry: deferred GrantNow offer={offerId} mainCanon={mainId.Entry} bundleTypes={string.Join(",", types.Select(t => t.Name))} extraSelf={extraSelf}");
+            $"ScheduleGrantFromEntry: deferred GrantNow offer={offerId} mainCanon={mainId.Entry} bundleTypes={string.Join(",", types.Select(t => t.Name))} extraSelf={extraSelf} grantBulk={grantBulk}");
 
         NGame? root = NGame.Instance;
         if (root == null || !GodotObject.IsInstanceValid(root))
@@ -78,8 +75,34 @@ public static class YgoMerchantShopBundlePurchase
         {
             if (!GodotObject.IsInstanceValid(NGame.Instance))
                 return;
-            GrantBundledCardsBlocking(player, types, mainId, extraSelf, offerId);
+            if (grantExplicitBundle)
+                GrantBundledCardsBlocking(player, types, mainId, extraSelf, offerId);
+            if (grantBulk
+                && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, player, y, out CardModel? bulkTemplate)
+                && bulkTemplate != null)
+                GrantSingleTemplateBlocking(player, bulkTemplate, offerId, "bulkBundled");
         }).CallDeferred();
+    }
+
+    private static void GrantSingleTemplateBlocking(Player player, CardModel template, string offerIdForLog, string reason)
+    {
+        try
+        {
+            YgoMerchantShopBundleDiag.Log($"GrantNow: {reason} template={template.Id.Entry} offer={offerIdForLog}");
+            CardModel instance = player.RunState.CreateCard(template, player);
+            CardPileAddResult result = CardPileCmd.Add(instance, PileType.Deck).GetAwaiter().GetResult();
+            if (!result.success)
+            {
+                MainFile.Logger.Warn(
+                    $"[YgoDuelist][ShopBundle] {reason} card not added offer={offerIdForLog} template={template.Id.Entry}");
+            }
+            else
+                RunManager.Instance?.RewardSynchronizer?.SyncLocalObtainedCard(instance);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"[YgoDuelist][ShopBundle] GrantSingleTemplateBlocking FATAL offer={offerIdForLog} {ex}");
+        }
     }
 
     /// <summary>

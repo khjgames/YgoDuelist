@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Flame_Ghost : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Flame_Ghost()
         : base(
             cost: 1,
@@ -23,9 +25,15 @@ public sealed class Flame_Ghost : FusionMonsterCard
             {
                 typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Skull_Servant),
                 typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Dissolverock)
-            },
-            duelMonsterDefensePlayEnergyOverride: 0,
-            duelMonsterAttackPlayEnergyOverride: 0)
+            }
+            )
     {
     }
+        
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 1.10f * 0.7f;
+
 }

@@ -24,10 +24,16 @@ public sealed class Reaper_on_the_Nightmare : FusionMonsterCard
             {
                 typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Spirit_Reaper),
                 typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Nightmare_Horse)
-            },
-            duelMonsterDefensePlayEnergyOverride: 0)
+            }
+            )
     {
     }
+
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 1.10f;
 
     public override bool CardShowsBlightKeyword => true;
 

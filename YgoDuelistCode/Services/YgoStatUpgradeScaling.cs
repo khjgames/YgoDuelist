@@ -252,12 +252,14 @@ public static class YgoStatUpgradeScaling
     /// First smith upgrade on a printed ATK, DEF, or MGC line. <paramref name="baseStatLine"/> is the unupgraded printed value on that line.
     /// Uses the same smith stat row for ATK and DEF at the same number (e.g. 3/3 → +2/+2). The DEF−1 band shift applies to
     /// play-energy / cost lookups (<see cref="TryGetSmithUpgradedPlayEnergy"/>), not to this stat delta.
+    /// Normal L≤4: set <paramref name="isDefenseLine"/> true for DEF so 2-cost printed DEF 8/9 upgrade by +5/+4 to 13 (paired with 1-cost upgraded play energy).
     /// </summary>
     public static int GetMonsterPrintedLineUpgradeDelta(
         int level,
         YgoCardType ygoType,
         int unupgradedPlayEnergyForLine,
-        int baseStatLine)
+        int baseStatLine,
+        bool isDefenseLine = false)
     {
         if (ygoType == YgoCardType.EffectMonster && level <= 4)
             return GetLegacyMonsterSmithDelta(baseStatLine);
@@ -272,7 +274,11 @@ public static class YgoStatUpgradeScaling
         if (level <= 4)
         {
             if (normalOrEffect)
+            {
+                if (ygoType == YgoCardType.Monster && isDefenseLine && costCol == 2 && (baseStatLine == 8 || baseStatLine == 9))
+                    return baseStatLine == 8 ? 5 : 4;
                 return SmithNormalLow4(costCol, matchStat);
+            }
             if (fusion && matchStat < 19)
                 return SmithFusionStatLow19(costCol, matchStat);
             if (ritual || fusion)

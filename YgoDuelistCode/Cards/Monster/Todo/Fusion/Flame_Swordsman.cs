@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Flame_Swordsman : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Flame_Swordsman()
         : base(
             cost: 1,
@@ -23,4 +25,11 @@ public sealed class Flame_Swordsman : FusionMonsterCard
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Masaki_the_Legendary_Swordsman))
     {
     }
+    
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 1.05f * 0.7f;
+
 }

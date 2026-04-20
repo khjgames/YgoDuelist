@@ -58,6 +58,6 @@ public sealed class Buster_Blader : EffectMonsterCard
     protected override void OnUpgrade()
     {
         base.OnUpgrade();
-        DynamicVars["Mgc"].BaseValue = 5m;
+        DynamicVars["Mgc"].BaseValue = 4m;
     }
 }

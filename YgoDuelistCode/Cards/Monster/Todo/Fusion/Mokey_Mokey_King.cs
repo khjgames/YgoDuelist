@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Mokey_Mokey_King : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Mokey_Mokey_King()
         : base(
             cost: 1,

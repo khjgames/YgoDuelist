@@ -29,6 +29,13 @@ public sealed class Dark_Flare_Knight : FusionMonsterCard
             typeof(Flame_Swordsman))
     {
     }
+    
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 1.10f;
 
-    public override Type[] BundledCards => new[] { typeof(Mirage_Knight)};
+
+    public override Type[] BundledCards => new[] { typeof(Mirage_Knight) };
 }

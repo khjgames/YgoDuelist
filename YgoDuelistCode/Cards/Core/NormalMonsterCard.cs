@@ -361,7 +361,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             YgoCardType,
             MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
                 DuelMonsterLevel, YgoCardType, BaseDef, false, false, DuelMonsterStatsAreUnknown),
-            BaseDef);
+            BaseDef,
+            isDefenseLine: true);
         int mgcBonus = YgoStatUpgradeScaling.GetMonsterMgcUpgradeDelta(
             DuelMonsterLevel, YgoCardType, BaseMgc, DuelMonsterStatsAreUnknown);
         DynamicVars.Damage.UpgradeValueBy(atkBonus);

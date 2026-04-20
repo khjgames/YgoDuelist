@@ -68,6 +68,12 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual bool BundleGrantsExtraCopyOfSelf => false;
 
     /// <summary>
+    /// When true, pack rewards may add tag-matched same-rarity bonus cards (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoBulkBundledResolver"/>),
+    /// and the YGO merchant shows a stacked preview + extra grant like explicit <see cref="BundledCards"/>.
+    /// </summary>
+    public virtual bool BulkBundled => false;
+
+    /// <summary>
     /// When true, upgraded cards (and upgrade preview) use <c>cards.json</c> key <c>.description_upgraded</c> instead of <c>.description</c>.
     /// </summary>
     public virtual bool UseAlternateUpgradedDescription => false;

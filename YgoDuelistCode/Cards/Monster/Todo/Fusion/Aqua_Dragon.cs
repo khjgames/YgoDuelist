@@ -8,6 +8,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Aqua_Dragon : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Aqua_Dragon()
         : base(
             cost: 1,
@@ -25,9 +27,8 @@ public sealed class Aqua_Dragon : FusionMonsterCard
                 typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Fairy_Dragon),
                 typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Amazon_of_the_Seas),
                 typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Zone_Eater)
-            },
-            duelMonsterAttackPlayEnergyOverride: 1,
-            duelMonsterDefensePlayEnergyOverride: 1)
+            }
+            )
     {
     }
 }

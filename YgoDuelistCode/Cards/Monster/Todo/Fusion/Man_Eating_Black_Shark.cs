@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Man_Eating_Black_Shark : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Man_Eating_Black_Shark()
         : base(
             cost: 1,

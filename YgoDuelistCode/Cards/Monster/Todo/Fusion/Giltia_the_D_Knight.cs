@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Giltia_the_D_Knight : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Giltia_the_D_Knight()
         : base(
             cost: 1,
@@ -23,4 +25,11 @@ public sealed class Giltia_the_D_Knight : FusionMonsterCard
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Protector_of_the_Throne))
     {
     }
+    
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 1.04f * 0.7f;
+
 }

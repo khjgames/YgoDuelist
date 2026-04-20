@@ -13,7 +13,10 @@ using YgoDuelist.YgoDuelistCode.Cards;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>One generated pack before instances are cloned for the reward UI.</summary>
-public sealed record PackTemplateRoll(YgoCardPackTags TagMask, List<CardModel> Templates);
+public sealed record PackTemplateRoll(
+    YgoCardPackTags TagMask,
+    List<CardModel> Templates,
+    IReadOnlyList<CardModel> BonusBulkTemplates);
 
 /// <summary>
 /// Builds three YGO card packs for a reward: shared rarity column, per-pack tag masks, weighted tag picks (fatigue + desire),
@@ -93,14 +96,14 @@ public static class YgoCardPackGenerator
         for (int p = 0; p < 3; p++)
         {
             YgoCardPackTags tagMask = RollPackTagMask(rng, workingMain, workingCombined, progress);
-            List<CardModel> onePack = FillOnePack(
+            (List<CardModel> onePack, IReadOnlyList<CardModel> bonusBulk) = FillOnePack(
                 player,
                 rng,
                 tagMask,
                 rolledRarities,
                 slotCount,
                 progress);
-            packs.Add(new PackTemplateRoll(tagMask, onePack));
+            packs.Add(new PackTemplateRoll(tagMask, onePack, bonusBulk));
             Log.Info(
                 $"[YgoDuelist][PackGen] phase=after_pack_{p}_filled | tagMask={tagMask} | {SummarizePackRarities(onePack)} | cards={onePack.Count} | owedRareVouchers={progress.OwedRareCardVouchers}");
         }
@@ -193,7 +196,7 @@ public static class YgoCardPackGenerator
         return Math.Max(1e-6f, f * (w / 10f));
     }
 
-    private static List<CardModel> FillOnePack(
+    private static (List<CardModel> Cards, IReadOnlyList<CardModel> BonusBulk) FillOnePack(
         Player player,
         Rng rng,
         YgoCardPackTags tagMask,
@@ -243,7 +246,20 @@ public static class YgoCardPackGenerator
                 $"[YgoDuelist][PackGen] bundle_trim_removed_rares | +{trimOwed} owedRareVoucher(s) | owedRareVouchers={progress.OwedRareCardVouchers}");
         }
 
-        return cards;
+        var bulkScratch = new List<CardModel>();
+        foreach (CardModel c in cards)
+        {
+            if (c is not YgoDuelistCard y || !y.BulkBundled)
+                continue;
+            List<CardModel> pool = YgoBulkBundledResolver.GetEligibleBulkTemplates(player, y);
+            CardModel? mate = YgoBulkBundledResolver.PickOneUniform(rng, pool);
+            if (mate != null)
+                bulkScratch.Add(mate);
+        }
+
+        int maxBonus = packSlots <= 4 ? 2 : 3;
+        IReadOnlyList<CardModel> bonusBulk = YgoBulkBundledResolver.ApplyBonusBulkCap(bulkScratch, maxBonus, rng);
+        return (cards, bonusBulk);
     }
 
     /// <summary>

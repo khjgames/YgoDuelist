@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Rare_Fish : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Rare_Fish()
         : base(
             cost: 1,

@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Cyber_Saurus : FusionMonsterCard
 {
+    public override bool BulkBundled => true;
+
     public Cyber_Saurus()
         : base(
             cost: 1,
@@ -23,4 +25,11 @@ public sealed class Cyber_Saurus : FusionMonsterCard
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Two_Headed_King_Rex))
     {
     }
+
+    /// <summary>
+    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// </summary>
+    public override float PackWeightMultiplier => 1.03f * 0.7f;
+
 }

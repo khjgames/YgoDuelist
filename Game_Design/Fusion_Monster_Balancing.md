@@ -4,7 +4,7 @@ Tweak PackWeights so substitute fusion mat monsters / fusion spells etc appear m
 Buff shit ones
 
 
-Make these Fusion Monsters CardRarity.Uncommon - Black Skull Dragon, Dark Flare Knight, Dark Paladin, Ojama King, 
+Make these Fusion Monsters CardRarity.Uncommon - Black Skull Dragon, Dark Flare Knight, Dark Paladin, Gatling Dragon, Ojama King, 
 
 Make these Fusion Monsters CardRarity.Rare - Dragon Master Knight, Five-Headed Dragon, Meteor Black Dragon, Master of Oz
 
@@ -27,13 +27,15 @@ You would get the 2 Rares + a deterministic RNG chosen one of the Uncommons.
 
 
 Cards with public override BulkBundled = true
+
 Mokey Mokey King, Amphibious Bugroth, Aqua Dragon, Dragoness the Wicked Knight, Kamionwizard, Man-Eating Black Shark, Mavelus, Barox, Bickuribox, Bracchio-raidus,
 Crimson Sunbird, Cyber Saurus, Darkfire Dragon, Deepsea Shark, Empress Judge, Flame Swordsman, Flower Wolf, Giltia the D Knight, Great Mammoth of Goldfine, Humanoid Worm Drake, Kaiser Dragon, Kaminari Attack,
 Karbonala Warrior, KWagar Hercules, Marine Beast, Metal Dragon, Musician King, Mystical Sand, Pragtical, Punished Eagle, Rabid Horseman, Rare Fish, Roaring Ocean Snake, Rose Spectre of Dunn, Sanwitch,
 Skelgon, Skull Knight, Skullbird, Soul Hunter, Thousand Dragon, Vermillion Sparrow, Warrior of Tradition. 
 
 Uncommon Cards with public override BulkBundled = true
-Gaia the Dragon Champion, Skull Knight, Chimera the Flying Mythical Beast, Dark Blade the Dragon Knight, King Dragun, Gatling Dragon, Aligator's Sword Dragon, Labyrinth Tank, St Joan, Fusionist, Charubin the Fire Knight, Flame Ghost, Zombie Warrior.
+
+Gaia the Dragon Champion, Skull Knight, Chimera the Flying Mythical Beast, Dark Blade the Dragon Knight, King Dragun, Aligator's Sword Dragon, Labyrinth Tank, St Joan, Fusionist, Charubin the Fire Knight, Flame Ghost, Zombie Warrior.
 
 
 
