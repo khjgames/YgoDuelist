@@ -34,7 +34,7 @@ public sealed class Gilford_the_Lightning : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Warrior | YgoCardPackTags.Burn;
+        YgoCardPackTags.Light | YgoCardPackTags.Warrior | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Gilford_the_Lightning) };
 

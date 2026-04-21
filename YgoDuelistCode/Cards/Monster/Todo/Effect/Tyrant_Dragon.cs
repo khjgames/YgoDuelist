@@ -30,7 +30,7 @@ public sealed class Tyrant_Dragon : EffectMonsterCard, IMonsterActivatedEffect
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
+        YgoCardPackTags.Fire | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Tyrant_Dragon) };
 

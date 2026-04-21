@@ -26,7 +26,7 @@ public sealed class Black_Tyranno : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+        YgoCardPackTags.Earth | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Black_Tyranno) };
 

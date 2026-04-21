@@ -1,16 +1,16 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1776311886
+::res://::1776758791
 export_presets.cfg::TextFile::-1::1773513087::0::1::::<><><>0<>0<><>::
 MainFile.cs::CSharpScript::4205972269297282253::1776474881::0::1::::<><><>0<>0<><>::
 monster_no_packtags.txt::TextFile::-1::1775731862::0::1::::<><><>0<>0<><>::
 README.md::TextFile::-1::1773577795::0::1::::<><><>0<>0<><>::
 t.txt::TextFile::-1::1775731862::0::1::::<><><>0<>0<><>::
-YgoDuelist.json::JSON::-1::1776239515::0::1::::<><><>0<>0<><>::
+YgoDuelist.json::JSON::-1::1776758747::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1776757396
-YgoDuelist.deps.json::JSON::-1::1776757396::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1776759225
+YgoDuelist.deps.json::JSON::-1::1776759225::0::1::::<><><>0<>0<><>::
 ::res://docs/::1775731862
 card_database_import.schema.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
@@ -29,7 +29,7 @@ Deck_Trunk_Side_System.md::TextFile::-1::1776106979::0::1::::<><><>0<>0<><>::
 Development_Roadmap_Timeline.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
 Double_Summoners.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
 Duelist_Power_Cards.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
-Effect_Monsters_TODO.md::TextFile::-1::1776234955::0::1::::<><><>0<>0<><>::
+Effect_Monsters_TODO.md::TextFile::-1::1776758343::0::1::::<><><>0<>0<><>::
 equip_spell_survey_filled.md::TextFile::-1::1775731851::0::1::::<><><>0<>0<><>::
 Fusion_Monster_Balancing.md::TextFile::-1::1776655443::0::1::::<><><>0<>0<><>::
 GraveyardRelic_CardHooks.md::TextFile::-1::1776206682::0::1::::<><><>0<>0<><>::
@@ -66,7 +66,7 @@ godot.log::TextFile::-1::1776241685::0::1::::<><><>0<>0<><>::
 project.assets.json::JSON::-1::1775024285::0::1::::<><><>0<>0<><>::
 YgoDuelist.csproj.nuget.dgspec.json::JSON::-1::1775024286::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
-::res://packages/alchyr.sts2.baselib/::1776106386
+::res://packages/alchyr.sts2.baselib/::1776758794
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
 README.md::TextFile::-1::1773438254::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.baselib/0.1.2/Content/::1773513134
@@ -130,6 +130,13 @@ BaseLib.json::JSON::-1::1776019952::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.baselib/3.0.2/lib/::1776106386
 ::res://packages/alchyr.sts2.baselib/3.0.2/lib/net9.0/::1776106386
 BaseLib.xml::TextFile::-1::1776070084::0::1::::<><><>0<>0<><>::
+::res://packages/alchyr.sts2.baselib/3.0.7/::1776758794
+README.md::TextFile::-1::1775288080::0::1::::<><><>0<>0<><>::
+::res://packages/alchyr.sts2.baselib/3.0.7/Content/::1776758794
+BaseLib.json::JSON::-1::1776580832::0::1::::<><><>0<>0<><>::
+::res://packages/alchyr.sts2.baselib/3.0.7/lib/::1776758794
+::res://packages/alchyr.sts2.baselib/3.0.7/lib/net9.0/::1776758794
+BaseLib.xml::TextFile::-1::1776580844::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.modanalyzers/::1776066409
 ::res://packages/alchyr.sts2.modanalyzers/0.0.9/::1773513134
 README.md::TextFile::-1::1773084058::0::1::::<><><>0<>0<><>::
@@ -2732,7 +2739,7 @@ Big_Shield_Gardna.cs::CSharpScript::4010391731480313816::1775731858::0::1::::<><
 Birdface.cs::CSharpScript::3392777286488321410::1775731858::0::1::::<><><>0<>0<><>::
 Bite_Shoes.cs::CSharpScript::9184696489200664292::1775731858::0::1::::<><><>0<>0<><>::
 Black_Luster_Soldier_Envoy_of_the_Beginning.cs::CSharpScript::7267128672462044720::1775731858::0::1::::<><><>0<>0<><>::
-Black_Tyranno.cs::CSharpScript::419653719879471135::1776155077::0::1::::<><><>0<>0<><>::
+Black_Tyranno.cs::CSharpScript::419653719879471135::1776759086::0::1::::<><><>0<>0<><>::
 Blast_Juggler.cs::CSharpScript::8421005180298303144::1776237740::0::1::::<><><>0<>0<><>::
 Blast_Sphere.cs::CSharpScript::6041971409441648291::1775731858::0::1::::<><><>0<>0<><>::
 Blindly_Loyal_Goblin.cs::CSharpScript::6257049782682529541::1775731858::0::1::::<><><>0<>0<><>::
@@ -2743,7 +2750,7 @@ Bowganian.cs::CSharpScript::1034276394654814945::1775776343::0::1::::<><><>0<>0<
 Breaker_the_Magical_Warrior.cs::CSharpScript::8946663567723866914::1775731858::0::1::::<><><>0<>0<><>::
 Bubonic_Vermin.cs::CSharpScript::8250746745794658553::1776482694::0::1::::<><><>0<>0<><>::
 Burning_Algae.cs::CSharpScript::6403887454212572601::1776207653::0::1::::<><><>0<>0<><>::
-Buster_Blader.cs::CSharpScript::1557601426544482075::1776655443::0::1::::<><><>0<>0<><>::
+Buster_Blader.cs::CSharpScript::1557601426544482075::1776759144::0::1::::<><><>0<>0<><>::
 Caius_the_Shadow_Monarch.cs::CSharpScript::795580699128966417::1775731858::0::1::::<><><>0<>0<><>::
 Cannonball_Spear_Shellfish.cs::CSharpScript::2285727247435632907::1775731858::0::1::::<><><>0<>0<><>::
 Cannon_Soldier.cs::CSharpScript::4977816465419055348::1776750020::0::1::::<><><>0<>0<><>::
@@ -2783,7 +2790,7 @@ Dark_Elf.cs::CSharpScript::4239567105879624609::1776194925::0::1::::<><><>0<>0<>
 Dark_Eyes_Illusionist.cs::CSharpScript::8674457540300182956::1775731858::0::1::::<><><>0<>0<><>::
 Dark_Jeroid.cs::CSharpScript::880215734219689712::1775776340::0::1::::<><><>0<>0<><>::
 Dark_Magician_Girl.cs::CSharpScript::4286129936792028495::1776196885::0::1::::<><><>0<>0<><>::
-Dark_Magician_of_Chaos.cs::CSharpScript::5076222625680030214::1776196778::0::1::::<><><>0<>0<><>::
+Dark_Magician_of_Chaos.cs::CSharpScript::5076222625680030214::1776759100::0::1::::<><><>0<>0<><>::
 Dark_Necrofear.cs::CSharpScript::2643272764072801813::1775731858::0::1::::<><><>0<>0<><>::
 Dark_Ruler_Ha_Des.cs::CSharpScript::965173516921103334::1775731858::0::1::::<><><>0<>0<><>::
 Dark_Sage.cs::CSharpScript::2129334065951294961::1775731858::0::1::::<><><>0<>0<><>::
@@ -2850,7 +2857,7 @@ Giant_Orc.cs::CSharpScript::5364356701044336405::1776155029::0::1::::<><><>0<>0<
 Giant_Rat.cs::CSharpScript::4786951109538591087::1776207130::0::1::::<><><>0<>0<><>::
 Gigantes.cs::CSharpScript::6168609662194572790::1775731858::0::1::::<><><>0<>0<><>::
 Gilasaurus.cs::CSharpScript::7072078924214700626::1776156675::0::1::::<><><>0<>0<><>::
-Gilford_the_Lightning.cs::CSharpScript::3592192419953795161::1776198969::0::1::::<><><>0<>0<><>::
+Gilford_the_Lightning.cs::CSharpScript::3592192419953795161::1776759110::0::1::::<><><>0<>0<><>::
 Goblin_Attack_Force.cs::CSharpScript::15831138338990758::1776155051::0::1::::<><><>0<>0<><>::
 Goblin_King.cs::CSharpScript::7216284726331315176::1775731858::0::1::::<><><>0<>0<><>::
 Goddess_of_Whim.cs::CSharpScript::4359542251376100923::1776203870::0::1::::<><><>0<>0<><>::
@@ -2873,7 +2880,7 @@ Great_Maju_Garzett.cs::CSharpScript::814424874613229709::1775844980::0::1::::<><
 Great_Moth.cs::CSharpScript::6455214924352651717::1775731858::0::1::::<><><>0<>0<><>::
 Greenkappa.cs::CSharpScript::1043185776664473150::1775731858::0::1::::<><><>0<>0<><>::
 Gren_Maju_Da_Eiza.cs::CSharpScript::1065332376807623967::1775731858::0::1::::<><><>0<>0<><>::
-Guardian_Angel_Joan.cs::CSharpScript::4029211721638938785::1776208201::0::1::::<><><>0<>0<><>::
+Guardian_Angel_Joan.cs::CSharpScript::4029211721638938785::1776759127::0::1::::<><><>0<>0<><>::
 Guardian_Baou.cs::CSharpScript::4286762261668938677::1775731858::0::1::::<><><>0<>0<><>::
 Guardian_Ceal.cs::CSharpScript::1788100143220172076::1775731858::0::1::::<><><>0<>0<><>::
 Guardian_Elma.cs::CSharpScript::1099630270331033907::1775731858::0::1::::<><><>0<>0<><>::
@@ -2924,7 +2931,7 @@ Kiseitai.cs::CSharpScript::870915618045544690::1775731858::0::1::::<><><>0<>0<><
 Kotodama.cs::CSharpScript::5219344605546789150::1775731858::0::1::::<><><>0<>0<><>::
 Kryuel.cs::CSharpScript::6936178180687689811::1775731858::0::1::::<><><>0<>0<><>::
 Kuraz_the_Light_Monarch.cs::CSharpScript::4804351827235428709::1775731858::0::1::::<><><>0<>0<><>::
-Kuriboh.cs::CSharpScript::2745258918079108719::1776749596::0::1::::<><><>0<>0<><>::
+Kuriboh.cs::CSharpScript::2745258918079108719::1776758310::0::1::::<><><>0<>0<><>::
 Kycoo_the_Ghost_Destroyer.cs::CSharpScript::8401913389626015049::1775731858::0::1::::<><><>0<>0<><>::
 Lady_Assailant_of_Flames.cs::CSharpScript::4112650833481679046::1776749968::0::1::::<><><>0<>0<><>::
 Lady_Ninja_Yae.cs::CSharpScript::6383230185836504356::1775731858::0::1::::<><><>0<>0<><>::
@@ -2938,7 +2945,7 @@ Leghul.cs::CSharpScript::4612506037348356911::1775731858::0::1::::<><><>0<>0<><>
 Legion_the_Fiend_Jester.cs::CSharpScript::8621643986675101906::1776383618::0::1::::<><><>0<>0<><>::
 Lekunga.cs::CSharpScript::5821175126125987814::1776106836::0::1::::<><><>0<>0<><>::
 Lesser_Fiend.cs::CSharpScript::9110373179382953797::1775731858::0::1::::<><><>0<>0<><>::
-Levia_Dragon_Daedalus.cs::CSharpScript::2809764642985445075::1776749924::0::1::::<><><>0<>0<><>::
+Levia_Dragon_Daedalus.cs::CSharpScript::2809764642985445075::1776759168::0::1::::<><><>0<>0<><>::
 Lightray_Daedalus.cs::CSharpScript::6286914058724046619::1775731858::0::1::::<><><>0<>0<><>::
 Light_Effigy.cs::CSharpScript::4007300202046109361::1775731858::0::1::::<><><>0<>0<><>::
 Little_Winguard.cs::CSharpScript::5548920779183732356::1776059021::0::1::::<><><>0<>0<><>::
@@ -2955,7 +2962,7 @@ Magician_of_Faith.cs::CSharpScript::7037497169631145302::1775731858::0::1::::<><
 Maharaghi.cs::CSharpScript::6114526406005636406::1775731858::0::1::::<><><>0<>0<><>::
 Maha_Vailo.cs::CSharpScript::8447606439547409370::1776194636::0::1::::<><><>0<>0<><>::
 Maiden_of_the_Aqua.cs::CSharpScript::7004587247682268078::1775731858::0::1::::<><><>0<>0<><>::
-Maju_Garzett.cs::CSharpScript::3926190335815505513::1776198936::0::1::::<><><>0<>0<><>::
+Maju_Garzett.cs::CSharpScript::3926190335815505513::1776759203::0::1::::<><><>0<>0<><>::
 Makyura_the_Destructor.cs::CSharpScript::7213909038020311139::1775731858::0::1::::<><><>0<>0<><>::
 Manga_Ryu_Ran.cs::CSharpScript::4566657687845339820::1775731858::0::1::::<><><>0<>0<><>::
 Manju_of_the_Ten_Thousand_Hands.cs::CSharpScript::4070008117164827604::1776205049::0::1::::<><><>0<>0<><>::
@@ -3091,7 +3098,7 @@ Supply.cs::CSharpScript::5811927145184438368::1776155704::0::1::::<><><>0<>0<><>
 Swarm_of_Locusts.cs::CSharpScript::6302357038810693568::1775731858::0::1::::<><><>0<>0<><>::
 Swarm_of_Scarabs.cs::CSharpScript::7671162522120845435::1775731858::0::1::::<><><>0<>0<><>::
 Swordsman_from_a_Distant_Land.cs::CSharpScript::6523408474255861906::1775731858::0::1::::<><><>0<>0<><>::
-Sword_Hunter.cs::CSharpScript::2237712292701418278::1776130727::0::1::::<><><>0<>0<><>::
+Sword_Hunter.cs::CSharpScript::2237712292701418278::1776759155::0::1::::<><><>0<>0<><>::
 Tainted_Wisdom.cs::CSharpScript::5948601492427396782::1775731858::0::1::::<><><>0<>0<><>::
 Talons_of_Shurilane.cs::CSharpScript::2789784186087483499::1775731858::0::1::::<><><>0<>0<><>::
 Terrorking_Archfiend.cs::CSharpScript::877160853430411472::1775920000::0::1::::<><><>0<>0<><>::
@@ -3139,7 +3146,7 @@ Tsukuyomi.cs::CSharpScript::9129417139747934744::1775731858::0::1::::<><><>0<>0<
 Twin_Headed_Behemoth.cs::CSharpScript::5664418433102066009::1776414109::0::1::::<><><>0<>0<><>::
 Twin_Headed_Wolf.cs::CSharpScript::3789833415739581735::1776213542::0::1::::<><><>0<>0<><>::
 Two_Thousand_Needles.cs::CSharpScript::7792170468440768577::1775731858::0::1::::<><><>0<>0<><>::
-Tyrant_Dragon.cs::CSharpScript::4222561420220540639::1776199147::0::1::::<><><>0<>0<><>::
+Tyrant_Dragon.cs::CSharpScript::4222561420220540639::1776759186::0::1::::<><><>0<>0<><>::
 UFO_Turtle.cs::CSharpScript::5138074590949625086::1775731858::0::1::::<><><>0<>0<><>::
 Ultimate_Obedient_Fiend.cs::CSharpScript::6254291188417228427::1776209270::0::1::::<><><>0<>0<><>::
 Unshaven_Angler.cs::CSharpScript::2231247529985468668::1775731859::0::1::::<><><>0<>0<><>::

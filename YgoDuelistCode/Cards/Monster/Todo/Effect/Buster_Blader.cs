@@ -28,7 +28,7 @@ public sealed class Buster_Blader : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Dragon;
+        YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Dragon;
 
     protected override (int atk, int def) GetSecondaryStats()
     {

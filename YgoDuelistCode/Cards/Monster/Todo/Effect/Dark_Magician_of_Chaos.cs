@@ -40,7 +40,7 @@ public sealed class Dark_Magician_of_Chaos : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
+        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
 
     public override YgoCardArchetype CardArchetypes => YgoCardArchetype.DarkMagician;
 

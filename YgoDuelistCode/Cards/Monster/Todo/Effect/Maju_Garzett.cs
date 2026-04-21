@@ -32,7 +32,7 @@ public sealed class Maju_Garzett : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+        YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override Type[] RelatedCards => new[] { typeof(Maju_Garzett) };
 
