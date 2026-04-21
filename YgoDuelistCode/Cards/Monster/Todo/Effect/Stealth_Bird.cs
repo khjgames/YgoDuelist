@@ -10,10 +10,11 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Stealth_Bird : EffectMonsterCard
+public sealed class Stealth_Bird : EffectMonsterCard, IMonsterActivatedEffect
 {
     public Stealth_Bird()
         : base(
@@ -79,6 +80,25 @@ public sealed class Stealth_Bird : EffectMonsterCard
             stealthBirdWasFaceDownDefenseBeforeCommandAttack,
             cardPlay.Target,
             player.Creature);
+    }
+
+    public int ActivatedEffectEnergyCost => 0;
+    public CardType ActivatedEffectCardType => CardType.Skill;
+    public TargetType ActivatedEffectTarget => TargetType.Self;
+    public string ActivatedEffectDescriptionLocKey => "YGODUELIST-STEALTH_BIRD.activated_effect.description";
+    public bool IsActivatedEffectAvailable => Owner != null && !FaceDown;
+
+    public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
+    {
+        if (Owner == null)
+            return;
+        var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source, Owner);
+        if (pet == null)
+            return;
+
+        FaceDown = true;
+        await ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync(choiceContext, Owner, attackPosition: false);
+        MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
     }
 
     protected override void OnUpgrade()

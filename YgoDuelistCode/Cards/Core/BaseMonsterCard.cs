@@ -500,6 +500,14 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             def += g;
         }
 
+        SlateWarriorPower? slateWarriorPow = GetSourcePetSlateWarriorPower();
+        if (slateWarriorPow != null)
+        {
+            int s = (int)slateWarriorPow.Amount;
+            atk += s;
+            def += s;
+        }
+
         atk += GetSourcePetSevenWeaponsAtkBonus();
         if (SourcePetHasPower<ReliableDefenderPower>())
             def += ReliableDefenderPower.DefBonus;
@@ -839,6 +847,21 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
             return pet.GetPower<GearfriedIronKnightPower>();
+        }
+
+        return null;
+    }
+
+    private SlateWarriorPower? GetSourcePetSlateWarriorPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+                continue;
+            return pet.GetPower<SlateWarriorPower>();
         }
 
         return null;

@@ -260,5 +260,8 @@
   "YGODUELIST-NECROTIC_RITUAL_POWER.smartDescription": "At the start of each of your turns, apply [blue]2[/blue] Necrotic Evolution to each face-up Zombie-Type monster you control, then lose [blue]1[/blue] stack ([blue]{Amount}[/blue] remaining).",
   "YGODUELIST-NECROTIC_EVOLUTION_POWER.title": "Necrotic Evolution",
   "YGODUELIST-NECROTIC_EVOLUTION_POWER.description": "This duel monster gains +1 ATK and +1 DEF per stack.",
-  "YGODUELIST-NECROTIC_EVOLUTION_POWER.smartDescription": "This duel monster gains [blue]{Amount}[/blue] ATK and [blue]{Amount}[/blue] DEF."
+  "YGODUELIST-NECROTIC_EVOLUTION_POWER.smartDescription": "This duel monster gains [blue]{Amount}[/blue] ATK and [blue]{Amount}[/blue] DEF.",
+  "YGODUELIST-SLATE_WARRIOR_POWER.title": "Slate Warrior",
+  "YGODUELIST-SLATE_WARRIOR_POWER.description": "This duel monster gains +1 ATK and +1 DEF per stack.",
+  "YGODUELIST-SLATE_WARRIOR_POWER.smartDescription": "This duel monster gains [blue]{Amount}[/blue] ATK and [blue]{Amount}[/blue] DEF."
 }
