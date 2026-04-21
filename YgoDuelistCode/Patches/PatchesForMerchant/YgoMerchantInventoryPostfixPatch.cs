@@ -43,6 +43,7 @@ public static class YgoMerchantInventoryPostfixPatch
             YgoMerchantOfferGenerator.ShopSlot slot = offer.Slots[i];
             var entry = new MerchantCardEntry(player, __result, new[] { slot.Template }, slot.Rarity);
             YgoMerchantCardEntryPopulateFixedTemplate.Populate(entry, player, slot.Template);
+            YgoMerchantShopBundleShared.RegisterEntryTagMask(entry, slot.RowTagMask);
             if (saleIdx == i)
                 entry.SetOnSale();
             entry.PurchaseCompleted += onUpdate;

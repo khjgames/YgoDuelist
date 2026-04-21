@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -49,6 +50,16 @@ public sealed class Rigorous_Reaver : EffectMonsterCard
     {
         typeof(Rigorous_Reaver),
     };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<RigorousReaverPower>();
+        }
+    }
 
     /// <summary>
     /// If there are 2+ enemies, pick uniformly at random among the two with the highest MaxHp.

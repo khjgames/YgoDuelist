@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -24,6 +25,16 @@ public sealed class D_D_Designator : BaseSpellCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Banish;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip tip in base.ExtraHoverTips)
+                yield return tip;
+            yield return HoverTipFactory.FromPower<DdDesignatorBonusDrawPower>();
+        }
+    }
 
     protected override bool IsPlayable =>
         base.IsPlayable

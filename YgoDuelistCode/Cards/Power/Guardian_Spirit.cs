@@ -8,7 +8,7 @@ using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Power;
 
-public sealed class Guardian_Spirit : BaseYgoPowerCard
+public sealed class Guardian_Spirit : BaseYgoPowerCard<GuardianSpiritPower>
 {
     public override bool UseAlternateUpgradedDescription => true;
 

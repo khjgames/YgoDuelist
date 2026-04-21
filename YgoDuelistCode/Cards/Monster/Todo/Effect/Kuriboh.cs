@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -24,7 +26,7 @@ public sealed class Kuriboh : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 3,
             baseDef: 2,
-            baseMgc: 0,
+            baseMgc: 3,
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
@@ -33,6 +35,16 @@ public sealed class Kuriboh : EffectMonsterCard
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Kuriboh) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<BufferPower>();
+        }
+    }
 
     protected override bool SupportsHandEffectForm => true;
     public override bool CanSummonDuelMonster => !IsHandEffectFormActive;

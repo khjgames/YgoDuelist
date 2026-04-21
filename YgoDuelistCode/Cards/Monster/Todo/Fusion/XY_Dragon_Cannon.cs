@@ -20,7 +20,10 @@ public sealed class Xy_Dragon_Cannon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Machine,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.X_Head_Cannon),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Y_Dragon_Head))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Y_Dragon_Head))
     {
     }
+    
+    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+
 }

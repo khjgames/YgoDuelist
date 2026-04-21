@@ -8,7 +8,7 @@ using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Power;
 
-public sealed class Fallen_Insights : BaseYgoPowerCard
+public sealed class Fallen_Insights : BaseYgoPowerCard<FallenInsightsPower>
 {
     public override bool UseAlternateUpgradedDescription => true;
 

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -30,6 +31,16 @@ public sealed class Secret_Pass_to_the_Treasures : BaseSpellCard, IYgoPlayCardAc
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip tip in base.ExtraHoverTips)
+                yield return tip;
+            yield return HoverTipFactory.FromPower<SecretPassTreasuresBlightPower>();
+        }
+    }
 
     /// <summary>Used by <see cref="IYgoPlayCardActionPreSpendResourceFlow"/> pre-play to filter field monsters.</summary>
     public decimal AtkThresholdForSelection => DynamicVars["Mgc"].BaseValue;

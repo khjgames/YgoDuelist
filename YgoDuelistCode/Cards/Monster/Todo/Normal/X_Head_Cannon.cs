@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
@@ -29,11 +30,10 @@ public sealed class X_Head_Cannon : NormalMonsterCard
         YgoCardPackTags.Normal;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
-    //public override Type[] BundledCards => new[]
-    //{
-    //    typeof(This_Card),
-    //    typeof(Another_Bundled_Card)
-    //};
+    public override Type[] BundledCards => new[]
+    {
+        typeof(Y_Dragon_Head), typeof(Z_Metal_Tank)
+    };
 
 
     // You will see these related cards more often with this card in your deck or side deck.

@@ -3,11 +3,11 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
-namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
-public sealed class Z_Metal_Tank : EffectMonsterCard
+public sealed class Y_Dragon_Head : NormalMonsterCard
 {
-    public Z_Metal_Tank()
+    public Y_Dragon_Head()
         : base(
             cost: 1,
             type: CardType.Attack,
@@ -16,10 +16,12 @@ public sealed class Z_Metal_Tank : EffectMonsterCard
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
             baseAtk: 15,
-            baseDef: 13,
+            baseDef: 16,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
 
 }

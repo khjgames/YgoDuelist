@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -7,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -25,6 +27,17 @@ public sealed class Riryoku : BaseSpellCard, IYgoPlayCardActionPreSpendResourceF
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip tip in base.ExtraHoverTips)
+                yield return tip;
+            yield return HoverTipFactory.FromPower<RiryokuAtkShiftDonorPower>();
+            yield return HoverTipFactory.FromPower<RiryokuAtkShiftReceiverPower>();
+        }
+    }
 
     protected override bool IsPlayable =>
         base.IsPlayable

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -46,6 +47,16 @@ public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard, IMonsterActiva
         YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Warrior | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Freed_the_Brave_Wanderer) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<BlightPower>();
+        }
+    }
 
     public int ActivatedEffectEnergyCost => 1;
     public CardType ActivatedEffectCardType => CardType.Skill;

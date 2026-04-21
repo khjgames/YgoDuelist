@@ -12,7 +12,8 @@ using YgoDuelist.YgoDuelistCode.Cards;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Same-rarity, tag-overlap bulk mates for <see cref="YgoDuelistCard.BulkBundled"/> (pack bonus list + merchant stack).
+/// Same-rarity bulk mates for <see cref="YgoDuelistCard.BulkBundled"/> constrained by the exact discovery tag context
+/// (pack/shop row mask bit that produced the anchor card).
 /// </summary>
 public static class YgoBulkBundledResolver
 {
@@ -20,11 +21,15 @@ public static class YgoBulkBundledResolver
 
     private static readonly ConditionalWeakTable<MerchantCardEntry, object> MerchantBulkMateByEntry = new();
 
-    /// <summary>Unlocked YGO templates with the anchor's rarity and non-empty <see cref="YgoPackCardCatalog.GetEffectivePackTags"/> intersection.</summary>
-    public static List<CardModel> GetEligibleBulkTemplates(Player player, YgoDuelistCard anchor)
+    /// <summary>
+    /// Unlocked YGO templates with the anchor's rarity, <see cref="YgoDuelistCard.BulkBundled"/> enabled, and matching the
+    /// effective tag context that discovered the anchor (<paramref name="discoveryTagMask"/>).
+    /// </summary>
+    public static List<CardModel> GetEligibleBulkTemplates(Player player, YgoDuelistCard anchor, YgoCardPackTags discoveryTagMask)
     {
         YgoCardPackTags anchorTags = YgoPackCardCatalog.GetEffectivePackTags(anchor);
-        if (anchorTags == YgoCardPackTags.None)
+        YgoCardPackTags activeContextTags = anchorTags & discoveryTagMask;
+        if (activeContextTags == YgoCardPackTags.None)
             return [];
 
         HashSet<ModelId> unlocked = player.Character.CardPool
@@ -41,7 +46,8 @@ public static class YgoBulkBundledResolver
                 && c.Id != anchorId
                 && unlocked.Contains(c.Id)
                 && c is YgoDuelistCard y
-                && (YgoPackCardCatalog.GetEffectivePackTags(y) & anchorTags) != 0)
+                && y.BulkBundled
+                && (YgoPackCardCatalog.GetEffectivePackTags(y) & activeContextTags) != 0)
             .ToList();
     }
 
@@ -129,6 +135,7 @@ public static class YgoBulkBundledResolver
         MerchantCardEntry entry,
         Player player,
         YgoDuelistCard ygoTemplate,
+        YgoCardPackTags discoveryTagMask,
         out CardModel? mateTemplate)
     {
         mateTemplate = null;
@@ -140,7 +147,7 @@ public static class YgoBulkBundledResolver
             return true;
         }
 
-        List<CardModel> pool = GetEligibleBulkTemplates(player, ygoTemplate);
+        List<CardModel> pool = GetEligibleBulkTemplates(player, ygoTemplate, discoveryTagMask);
         if (pool.Count == 0)
         {
             MerchantBulkMateByEntry.Add(entry, NoBulkMateSentinel);

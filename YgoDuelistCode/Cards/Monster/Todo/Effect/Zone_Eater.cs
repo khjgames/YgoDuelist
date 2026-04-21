@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -48,6 +49,16 @@ public sealed class Zone_Eater : EffectMonsterCard
     {
         typeof(Zone_Eater),
     };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<ZoneEaterMarkPower>();
+        }
+    }
 
     /// <inheritdoc cref="BaseMonsterCard.NonAttackPlayTargetType" />
     /// Summon marks an enemy (chosen or deterministic).

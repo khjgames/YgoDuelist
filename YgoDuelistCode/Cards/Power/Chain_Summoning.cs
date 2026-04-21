@@ -9,7 +9,7 @@ using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Power;
 
-public sealed class Chain_Summoning : BaseYgoPowerCard
+public sealed class Chain_Summoning : BaseYgoPowerCard<ChainSummoningPower>
 {
     private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
 

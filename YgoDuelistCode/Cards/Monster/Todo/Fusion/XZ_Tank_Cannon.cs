@@ -20,7 +20,10 @@ public sealed class Xz_Tank_Cannon : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Machine,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.X_Head_Cannon),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Z_Metal_Tank))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Z_Metal_Tank))
     {
     }
+    
+    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+
 }

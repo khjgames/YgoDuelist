@@ -5662,7 +5662,7 @@
   "YGODUELIST-SUMMONER_OF_ILLUSIONS.description_skill_combat": "Gain [blue]{CalculatedDEF}[/blue] block.\\nFLIP: Tribute [blue]1[/blue] other monster, and if you do, Special Summon [blue]1[/blue] Fusion Monster from your Extra deck, but destroy it during the End Phase of this turn.\\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
   "YGODUELIST-SUMMONER_OF_ILLUSIONS.title": "Summoner of Illusions",
   "YGODUELIST-SUPER_REJUVENATION.description": "Next turn, draw additional cards equal to the number of Dragon monsters on the field destroyed this turn.",
-  "YGODUELIST-SUPER_REJUVENATION.description_upgraded": "Next turn, gain gold]Energy[/gold] and draw additional cards equal to the number of Dragon monsters on the field destroyed this turn.",
+  "YGODUELIST-SUPER_REJUVENATION.description_upgraded": "Next turn, gain [gold]Energy[/gold] and draw additional cards equal to the number of Dragon monsters on the field destroyed this turn.",
   "YGODUELIST-SUPER_REJUVENATION.title": "Super Rejuvenation",
   "YGODUELIST-SUPER_WAR_LION.description": "Deal [blue]{Damage}[/blue] damage.\nYou can Ritual Summon this card with \"War-Lion Ritual\".\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-SUPER_WAR_LION.description_combat": "Deal [blue]{CalculatedATK}[/blue] damage.\nYou can Ritual Summon this card with \"War-Lion Ritual\".\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",

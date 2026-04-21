@@ -57,6 +57,9 @@ public static class YgoMerchantShopBundlePurchase
             YgoMerchantShopBundleDiag.Log($"ScheduleGrantFromEntry: abort _player null offer={offerId}");
             return;
         }
+        YgoCardPackTags rowTagMask = YgoMerchantShopBundleShared.TryGetEntryTagMask(entry, out YgoCardPackTags mask)
+            ? mask
+            : YgoCardPackTags.None;
 
         ModelId mainId = cr.Card.CanonicalInstance.Id;
         Type[] types = y.BundledCards.ToArray();
@@ -78,7 +81,7 @@ public static class YgoMerchantShopBundlePurchase
             if (grantExplicitBundle)
                 GrantBundledCardsBlocking(player, types, mainId, extraSelf, offerId);
             if (grantBulk
-                && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, player, y, out CardModel? bulkTemplate)
+                && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, player, y, rowTagMask, out CardModel? bulkTemplate)
                 && bulkTemplate != null)
                 GrantSingleTemplateBlocking(player, bulkTemplate, offerId, "bulkBundled");
         }).CallDeferred();

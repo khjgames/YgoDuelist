@@ -66,6 +66,11 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         return YgoNormalMonsterPackTier.ComputeCombinedTier(DuelMonsterLevel, atk, def);
     }
 
+    /// <summary>
+    /// Auto-enable bulk bundling for low pack-weight true normal monsters.
+    /// </summary>
+    public override bool BulkBundled => YgoCardType == YgoCardType.Monster && PackWeightMultiplier <= 0.64f;
+
     protected override IEnumerable<DynamicVar> CanonicalVars
     {
         get

@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Piles;
 
@@ -55,5 +56,32 @@ public abstract class BaseYgoPowerCard : YgoDuelistCard
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [];
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip tip in EnumerateGrantedPowerHoverTips())
+                yield return tip;
+        }
+    }
+
+    /// <summary>Tooltip for the power this card applies; override via <see cref="BaseYgoPowerCard{TPower}"/>.</summary>
+    protected virtual IEnumerable<IHoverTip> EnumerateGrantedPowerHoverTips()
+    {
+        yield break;
+    }
+}
+
+/// <summary>Power card whose effect applies <typeparamref name="TGrantedPower"/> — shows <see cref="HoverTipFactory.FromPower{T}"/> on hover.</summary>
+public abstract class BaseYgoPowerCard<TGrantedPower> : BaseYgoPowerCard where TGrantedPower : PowerModel
+{
+    protected BaseYgoPowerCard(int cost, CardRarity rarity, TargetType target)
+        : base(cost, rarity, target)
+    {
+    }
+
+    protected sealed override IEnumerable<IHoverTip> EnumerateGrantedPowerHoverTips()
+    {
+        yield return HoverTipFactory.FromPower<TGrantedPower>();
+    }
 }

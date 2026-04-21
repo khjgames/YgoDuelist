@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -37,6 +38,16 @@ public sealed class Lady_Assailant_of_Flames : EffectMonsterCard, IMonsterFlipEf
         YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Banish | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Lady_Assailant_of_Flames) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<BlightPower>();
+        }
+    }
 
     /// <summary>FLIP banish count uses <c>Mgc</c>; Blight stacks use <c>Mgc2</c> (see <c>OnUpgrade</c>).</summary>
     protected override IEnumerable<DynamicVar> CanonicalVars =>

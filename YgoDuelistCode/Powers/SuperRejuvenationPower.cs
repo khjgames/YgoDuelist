@@ -44,6 +44,10 @@ public sealed class SuperRejuvenationPower : YgoDuelistPower
     private bool _latchedDrawCount;
     private bool _awaitingDrawOnTurnStart;
 
+    /// <summary>Card hover only: <see cref="MegaCrit.Sts2.Core.Models.Cards.CardUpgradePreviewType"/> / upgraded spell preview uses upgraded loc keys.</summary>
+    internal void SetCardTooltipUpgradePreview(bool upgradedSpellSource) =>
+        _grantEnergyNextTurn = upgradedSpellSource;
+
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
         if (cardSource is { IsUpgraded: true })

@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -50,6 +51,16 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
     public override YgoCardPackTags PackTags => YgoCardPackTags.God;
 
     public override Type[] RelatedCards => new[] { typeof(Obelisk_the_Tormentor) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<BlightPower>();
+        }
+    }
 
     public override int ShopPriceModifier => 40;
 

@@ -19,8 +19,11 @@ public sealed class Yz_Tank_Dragon : FusionMonsterCard
             baseDef: 22,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Machine,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Y_Dragon_Head),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Z_Metal_Tank))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Y_Dragon_Head),
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Z_Metal_Tank))
     {
     }
+    
+    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+
 }

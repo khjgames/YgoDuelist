@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -18,6 +20,16 @@ public sealed class Limiter_Removal : BaseSpellCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Spell | YgoCardPackTags.Machine;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip tip in base.ExtraHoverTips)
+                yield return tip;
+            yield return HoverTipFactory.FromPower<LimiterRemovalPower>();
+        }
+    }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

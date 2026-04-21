@@ -3,9 +3,9 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
-namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
-public sealed class W_Wing_Catapult : EffectMonsterCard
+public sealed class W_Wing_Catapult : NormalMonsterCard
 {
     public W_Wing_Catapult()
         : base(
@@ -21,5 +21,6 @@ public sealed class W_Wing_Catapult : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
+    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
 
 }

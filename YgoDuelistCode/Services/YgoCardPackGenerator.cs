@@ -102,7 +102,8 @@ public static class YgoCardPackGenerator
                 tagMask,
                 rolledRarities,
                 slotCount,
-                progress);
+                progress,
+                packIndex: p);
             packs.Add(new PackTemplateRoll(tagMask, onePack, bonusBulk));
             Log.Info(
                 $"[YgoDuelist][PackGen] phase=after_pack_{p}_filled | tagMask={tagMask} | {SummarizePackRarities(onePack)} | cards={onePack.Count} | owedRareVouchers={progress.OwedRareCardVouchers}");
@@ -196,13 +197,26 @@ public static class YgoCardPackGenerator
         return Math.Max(1e-6f, f * (w / 10f));
     }
 
+    private static string BulkDbgFormatCard(CardModel c) => $"{c.Id.Entry}[{c.Rarity}]";
+
+    private static string BulkDbgFormatPool(IReadOnlyList<CardModel> pool, int maxEntries = 80)
+    {
+        if (pool.Count == 0)
+            return "(empty)";
+        if (pool.Count <= maxEntries)
+            return string.Join(", ", pool.Select(BulkDbgFormatCard));
+        return string.Join(", ", pool.Take(maxEntries).Select(BulkDbgFormatCard))
+               + $" …(+{pool.Count - maxEntries} more)";
+    }
+
     private static (List<CardModel> Cards, IReadOnlyList<CardModel> BonusBulk) FillOnePack(
         Player player,
         Rng rng,
         YgoCardPackTags tagMask,
         CardRarity[] rolledRarities,
         int packSlots,
-        YgoPackRewardProgressState progress)
+        YgoPackRewardProgressState progress,
+        int packIndex)
     {
         var cards = new List<CardModel>();
         bool excludeBundledTagFromPool = false;
@@ -246,19 +260,39 @@ public static class YgoCardPackGenerator
                 $"[YgoDuelist][PackGen] bundle_trim_removed_rares | +{trimOwed} owedRareVoucher(s) | owedRareVouchers={progress.OwedRareCardVouchers}");
         }
 
+        int maxBonus = packSlots <= 4 ? 2 : 3;
+        Log.Info(
+            $"[YgoDuelist][PackGen][BulkDbg] packIndex={packIndex} tagMask={tagMask} packSlots={packSlots} maxBonusAfterCap={maxBonus}");
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            CardModel c = cards[i];
+            bool isBulk = c is YgoDuelistCard yb && yb.BulkBundled;
+            Log.Info(
+                $"[YgoDuelist][PackGen][BulkDbg] packIndex={packIndex} mainSlot={i} card={BulkDbgFormatCard(c)} BulkBundled={isBulk}");
+        }
+
         var bulkScratch = new List<CardModel>();
         foreach (CardModel c in cards)
         {
             if (c is not YgoDuelistCard y || !y.BulkBundled)
                 continue;
-            List<CardModel> pool = YgoBulkBundledResolver.GetEligibleBulkTemplates(player, y);
+            List<CardModel> pool = YgoBulkBundledResolver.GetEligibleBulkTemplates(player, y, tagMask);
+            Log.Info(
+                $"[YgoDuelist][PackGen][BulkDbg] packIndex={packIndex} anchor={BulkDbgFormatCard(c)} eligibleSameRarityTagOverlapCount={pool.Count} eligiblePool=[{BulkDbgFormatPool(pool)}]");
             CardModel? mate = YgoBulkBundledResolver.PickOneUniform(rng, pool);
+            Log.Info(
+                $"[YgoDuelist][PackGen][BulkDbg] packIndex={packIndex} anchor={c.Id.Entry} uniformPick={(mate == null ? "(none)" : BulkDbgFormatCard(mate))}");
             if (mate != null)
                 bulkScratch.Add(mate);
         }
 
-        int maxBonus = packSlots <= 4 ? 2 : 3;
+        Log.Info(
+            $"[YgoDuelist][PackGen][BulkDbg] packIndex={packIndex} scratchWorkingListCount={bulkScratch.Count} scratchWorkingList=[{string.Join(", ", bulkScratch.Select(BulkDbgFormatCard))}]");
+
         IReadOnlyList<CardModel> bonusBulk = YgoBulkBundledResolver.ApplyBonusBulkCap(bulkScratch, maxBonus, rng);
+        Log.Info(
+            $"[YgoDuelist][PackGen][BulkDbg] packIndex={packIndex} afterCapKeptCount={bonusBulk.Count} (cap={maxBonus}) finalBonusBulkList=[{string.Join(", ", bonusBulk.Select(BulkDbgFormatCard))}]");
         return (cards, bonusBulk);
     }
 

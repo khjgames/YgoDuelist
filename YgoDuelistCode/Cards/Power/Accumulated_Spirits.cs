@@ -8,7 +8,7 @@ using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Power;
 
-public sealed class Accumulated_Spirits : BaseYgoPowerCard
+public sealed class Accumulated_Spirits : BaseYgoPowerCard<AccumulatedSpiritsPower>
 {
     public override bool UseAlternateUpgradedDescription => true;
 

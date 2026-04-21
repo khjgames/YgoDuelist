@@ -63,15 +63,33 @@ public static class YgoCardPackRewardFlow
     {
         bundles.Clear();
         packTagMasks.Clear();
-        foreach (PackTemplateRoll roll in rolls)
+        for (int bundleIdx = 0; bundleIdx < rolls.Count; bundleIdx++)
         {
+            PackTemplateRoll roll = rolls[bundleIdx];
             packTagMasks.Add(roll.TagMask);
-            var row = new List<CardModel>(roll.Templates.Count + roll.BonusBulkTemplates.Count);
+            int mainN = roll.Templates.Count;
+            int bonusN = roll.BonusBulkTemplates.Count;
+            string bonusTemplateIds = string.Join(
+                ", ",
+                roll.BonusBulkTemplates.Select(c => $"{c.Id.Entry}[{c.Rarity}]"));
+            var row = new List<CardModel>(mainN + bonusN);
             foreach (CardModel template in roll.Templates)
                 row.Add(player.RunState.CreateCard(template, player));
             foreach (CardModel template in roll.BonusBulkTemplates)
                 row.Add(player.RunState.CreateCard(template, player));
             bundles.Add(row);
+            int expected = mainN + bonusN;
+            bool countOk = row.Count == expected;
+            string bonusCloneTail = bonusN == 0
+                ? "(no bonus clones)"
+                : string.Join(
+                    ", ",
+                    row.Skip(mainN).Take(bonusN).Select(c => $"{c.Id.Entry}[{c.Rarity}]"));
+            Log.Info(
+                $"[YgoDuelist][PackFlow][BulkDbg] materialize bundleIdx={bundleIdx} mainTemplateCount={mainN} bonusTemplateCount={bonusN} bonusTemplates=[{bonusTemplateIds}] rowCloneCount={row.Count} expected={expected} countMatches={countOk} bonusCloneTail=[{bonusCloneTail}]");
+            if (!countOk)
+                Log.Error(
+                    $"[YgoDuelist][PackFlow][BulkDbg] bundleIdx={bundleIdx} MATERIALIZE_COUNT_MISMATCH row={row.Count} expected main+bonus={expected}");
         }
     }
 
@@ -187,6 +205,23 @@ public static class YgoCardPackRewardFlow
             "choose_pack_phase_end",
             $"chosenBundleIndex={chosenBundleIndex} | chosenSize={chosenPack.Count} | {SummarizeRarities(chosenPack)}");
 
+        if (chosenBundleIndex >= 0 && chosenBundleIndex < cached.Rolls.Count)
+        {
+            PackTemplateRoll chosenRoll = cached.Rolls[chosenBundleIndex];
+            int mainCount = chosenRoll.Templates.Count;
+            int bonusT = chosenRoll.BonusBulkTemplates.Count;
+            int expectedTotal = mainCount + bonusT;
+            bool sizeMatch = chosenPack.Count == expectedTotal;
+            string expectedBonusStr = bonusT == 0
+                ? "(none)"
+                : string.Join(", ", chosenRoll.BonusBulkTemplates.Select(c => $"{c.Id.Entry}[{c.Rarity}]"));
+            string chosenTailStr = bonusT == 0
+                ? "(no bonus tail)"
+                : string.Join(", ", chosenPack.Skip(mainCount).Take(bonusT).Select(c => $"{c.Id.Entry}[{c.Rarity}]"));
+            Log.Info(
+                $"[YgoDuelist][PackFlow][BulkDbg] chosenPackVerify chosenBundleIndex={chosenBundleIndex} chosenCount={chosenPack.Count} expectedMain+bonus={mainCount}+{bonusT}={expectedTotal} sizeMatchesExpected={sizeMatch} expectedBonusTemplates=[{expectedBonusStr}] chosenPackBonusTailClones=[{chosenTailStr}]");
+        }
+
         if (chosenBundleIndex >= 0 && chosenBundleIndex < packTagMasks.Count)
             YgoCardPackGenerator.ApplyChosenPackFatigueRelief(player, packTagMasks[chosenBundleIndex]);
 
@@ -271,6 +306,15 @@ public static class YgoCardPackRewardFlow
             $"deck={deckPicks.Count} side={sidePicks.Count} trunkFromPack={chosenPack.Count - deckPicks.Count - sidePicks.Count}");
         UnsubscribeRelicHandler(reward, player);
 
+        var bonusCanonIds = new HashSet<ModelId>();
+        int expectedBonusFromRoll = 0;
+        if (chosenBundleIndex >= 0 && chosenBundleIndex < cached.Rolls.Count)
+        {
+            foreach (CardModel t in cached.Rolls[chosenBundleIndex].BonusBulkTemplates)
+                bonusCanonIds.Add(t.Id);
+            expectedBonusFromRoll = bonusCanonIds.Count;
+        }
+
         var history = player.RunState.CurrentMapPointHistoryEntry!.GetEntry(LocalContext.NetId!.Value);
         var deckSetFinal = new HashSet<CardModel>(deckPicks);
 
@@ -305,6 +349,25 @@ public static class YgoCardPackRewardFlow
             trunk.AddInternal(c, -1, silent: true);
             history.CardChoices.Add(new CardChoiceHistoryEntry(c, wasPicked: false));
             RunManager.Instance!.RewardSynchronizer.SyncLocalSkippedCard(c);
+        }
+
+        if (expectedBonusFromRoll > 0)
+        {
+            bool IsBonusCard(CardModel c) => bonusCanonIds.Contains(c.CanonicalInstance.Id);
+            int bonusInDeck = deckPicks.Count(IsBonusCard);
+            int bonusInSide = sidePicks.Count(IsBonusCard);
+            int bonusInTrunk = 0;
+            foreach (CardModel c in chosenPack)
+            {
+                if (deckSetFinal.Contains(c) || sideSet.Contains(c))
+                    continue;
+                if (IsBonusCard(c))
+                    bonusInTrunk++;
+            }
+
+            int bonusSum = bonusInDeck + bonusInSide + bonusInTrunk;
+            Log.Info(
+                $"[YgoDuelist][PackFlow][BulkDbg] applyRewardCommitted bonusTemplatesExpected={expectedBonusFromRoll} bonusInDeck={bonusInDeck} bonusInSide={bonusInSide} bonusInTrunk={bonusInTrunk} bonusSum={bonusSum} allBonusCardsAccountedFor={bonusSum == expectedBonusFromRoll}");
         }
 
         if (chosenBundleIndex >= 0)

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -42,6 +43,16 @@ public sealed class Levia_Dragon_Daedalus : EffectMonsterCard, IMonsterActivated
     public override Type[] BundledCards => new[] { typeof(Ocean_Dragon_Lord_Neo_Daedalus) };
 
     public override Type[] RelatedCards => new[] { typeof(Levia_Dragon_Daedalus), typeof(Umi), typeof(A_Legendary_Ocean) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<BlightPower>();
+        }
+    }
 
     /// <summary>Blight multiplier for the activated effect (<c>ATK × Mgc2</c>).</summary>
     protected override IEnumerable<DynamicVar> CanonicalVars =>

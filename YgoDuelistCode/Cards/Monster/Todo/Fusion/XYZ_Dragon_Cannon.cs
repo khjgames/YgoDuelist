@@ -2,6 +2,9 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
@@ -11,7 +14,7 @@ public sealed class Xyz_Dragon_Cannon : FusionMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
@@ -19,9 +22,12 @@ public sealed class Xyz_Dragon_Cannon : FusionMonsterCard
             baseDef: 26,
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Machine,
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.X_Head_Cannon),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Y_Dragon_Head),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Z_Metal_Tank))
+            typeof(X_Head_Cannon),
+            typeof(Y_Dragon_Head),
+            typeof(Z_Metal_Tank))
     {
     }
+
+    public override Type[] BundledCards => new[] { typeof(Xy_Dragon_Cannon), typeof(Xz_Tank_Cannon), typeof(Yz_Tank_Dragon) };
+
 }

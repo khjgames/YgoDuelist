@@ -11,7 +11,7 @@ using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Power;
 
-public sealed class Harnessed_Energy : BaseYgoPowerCard
+public sealed class Harnessed_Energy : BaseYgoPowerCard<HarnessedEnergyPower>
 {
     public Harnessed_Energy()
         : base(cost: 3, rarity: CardRarity.Rare, target: TargetType.Self)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -6,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -38,6 +40,16 @@ public sealed class Zaborg_the_Thunder_Monarch : EffectMonsterCard
         YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Burn | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards => new[] { typeof(Zaborg_the_Thunder_Monarch) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<BlightPower>();
+        }
+    }
 
     /// <inheritdoc cref="BaseMonsterCard.NonAttackPlayTargetType" />
     /// <remarks>Tribute summon from skill (defense) stance still needs an enemy target for the optional blight.</remarks>

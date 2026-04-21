@@ -10,7 +10,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Power;
 
-public sealed class Fortified_Beasts : BaseYgoPowerCard
+public sealed class Fortified_Beasts : BaseYgoPowerCard<FortifiedBeastsPower>
 {
     public override bool UseAlternateUpgradedDescription => true;
 

@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -14,9 +15,33 @@ public static class YgoMerchantShopBundleShared
 {
     private static readonly FieldInfo? MerchantEntryPlayerField =
         AccessTools.DeclaredField(typeof(MerchantEntry), "_player");
+    private static readonly ConditionalWeakTable<MerchantCardEntry, BoxedTagMask> EntryTagMaskTable = new();
+
+    private sealed class BoxedTagMask
+    {
+        public required YgoCardPackTags Value { get; init; }
+    }
 
     public static Player? GetMerchantEntryPlayer(MerchantEntry entry) =>
         MerchantEntryPlayerField?.GetValue(entry) as Player;
+
+    public static void RegisterEntryTagMask(MerchantCardEntry entry, YgoCardPackTags tagMask)
+    {
+        EntryTagMaskTable.Remove(entry);
+        EntryTagMaskTable.Add(entry, new BoxedTagMask { Value = tagMask });
+    }
+
+    public static bool TryGetEntryTagMask(MerchantCardEntry entry, out YgoCardPackTags tagMask)
+    {
+        if (EntryTagMaskTable.TryGetValue(entry, out BoxedTagMask? boxed))
+        {
+            tagMask = boxed.Value;
+            return true;
+        }
+
+        tagMask = YgoCardPackTags.None;
+        return false;
+    }
 
     public static bool TryGetBundlingTemplate(CardModel? card, out YgoDuelistCard ygo)
     {

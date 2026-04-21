@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -40,6 +41,16 @@ public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerBeforeTurnE
         YgoCardPackTags.Starter | YgoCardPackTags.Fire;
 
     public override Type[] RelatedCards => new[] { typeof(Solar_Flare_Dragon) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<BlightPower>();
+        }
+    }
 
     protected override IEnumerable<DynamicVar> CanonicalVars
     {

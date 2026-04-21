@@ -65,6 +65,7 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDrag
                 yield return HoverTipFactory.FromPower<SlifersPressureTemporaryStrengthPowerPlus>();
             else
                 yield return HoverTipFactory.FromPower<SlifersPressureTemporaryStrengthPower>();
+            yield return HoverTipFactory.FromPower<BlightPower>();
         }
     }
 

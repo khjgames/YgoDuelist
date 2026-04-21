@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -36,10 +37,19 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Ocean | YgoCardPackTags.Water;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
 
     public override Type[] RelatedCards => new[] { typeof(Ocean_Dragon_Lord_Neo_Daedalus), typeof(Levia_Dragon_Daedalus) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<BlightPower>();
+        }
+    }
 
     /// <summary>Blight multiplier for the activated effect (<c>ATK × Mgc2</c>).</summary>
     protected override IEnumerable<DynamicVar> CanonicalVars =>

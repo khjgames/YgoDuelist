@@ -83,8 +83,11 @@ public static class YgoMerchantShopBundleVisual
         }
 
         ModelId? bulkSigId = null;
+        YgoCardPackTags rowTagMask = YgoMerchantShopBundleShared.TryGetEntryTagMask(entry, out YgoCardPackTags mask)
+            ? mask
+            : YgoCardPackTags.None;
         if (bundling.BulkBundled && shopPlayer != null
-            && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, shopPlayer, bundling, out CardModel? bulkMate)
+            && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, shopPlayer, bundling, rowTagMask, out CardModel? bulkMate)
             && bulkMate != null)
         {
             previews.Add(bulkMate);
