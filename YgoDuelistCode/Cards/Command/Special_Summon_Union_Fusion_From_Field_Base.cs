@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -11,6 +10,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -35,6 +35,25 @@ public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterComma
     protected abstract bool IsValidSourceMaterial(BaseMonsterCard source);
 
     protected abstract bool TryGetSummonData(Player player, out FusionMonsterCard fusionTarget, out List<BaseMonsterCard> materials);
+
+    /// <summary>Portrait for canonical instances during asset preload (no <see cref="CardModel.Owner"/>).</summary>
+    protected abstract string CanonicalUnionFusionPortraitPath { get; }
+
+    /// <summary>Show the extra-deck fusion monster’s art, not the field material’s.</summary>
+    public override string PortraitPath
+    {
+        get
+        {
+            if (IsCanonical)
+                return CanonicalUnionFusionPortraitPath;
+
+            TryResolveSourceMonsterFromStoredPetId();
+            Player? owner = Owner;
+            if (owner != null && TryGetSummonData(owner, out FusionMonsterCard fusion, out _) && fusion != null && !string.IsNullOrEmpty(fusion.PortraitPath))
+                return fusion.PortraitPath;
+            return "card.png".CardImagePath();
+        }
+    }
 
     public Color? GetNHandPlayPhaseHighlightModulateOverride(
         NHandCardHolder holder,
@@ -92,25 +111,39 @@ public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterComma
         if (!materials.Any(m => ReferenceEquals(m, source)))
             return;
 
+        GD.Print(
+            $"[YgoDuelist][MP][UnionFusion] OnPlay START ownerNet={player.NetId} fusion={fusionTarget.Id?.Entry} materials={materials.Count} cmd={GetType().Name}");
+
+        int idx = 0;
         foreach (BaseMonsterCard m in materials)
         {
             Creature? pet = TributeSummonSelection.ResolvePetForFieldCard(player, m);
             if (pet == null || !pet.IsAlive)
+            {
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][UnionFusion] material pet missing/dead idx={idx} card={m.Id?.Entry} ownerNet={player.NetId}");
                 return;
-            await CreatureCmd.Kill(pet, force: true);
+            }
+
+            GD.Print(
+                $"[YgoDuelist][MP][UnionFusion] release material to banish idx={idx} card={m.Id?.Entry} petCombatId={pet.CombatId} ownerNet={player.NetId}");
+            await DuelMonsterPetDeathPatch.ReleaseLiveFieldMonsterToBanishedAsync(player, pet, m);
+            idx++;
         }
 
-        foreach (BaseMonsterCard m in materials)
-            await YgoBanishedService.BanishCard(player, m);
+        int liveDuelPets = DuelMonsterSummon.CountLiveDuelMonsters(player);
+        GD.Print(
+            $"[YgoDuelist][MP][UnionFusion] TrySummon fusion={fusionTarget.Id?.Entry} ownerNet={player.NetId} liveDuelPets={liveDuelPets}/{DuelMonsterSummon.MaxDuelMonstersPerPlayer} creatureNull={player.Creature == null}");
 
         if (!await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, fusionTarget, choiceContext))
+        {
+            GD.PrintErr(
+                $"[YgoDuelist][MP][UnionFusion] TrySummon FAILED fusion={fusionTarget.Id?.Entry} ownerNet={player.NetId} liveDuelPets={DuelMonsterSummon.CountLiveDuelMonsters(player)}/{DuelMonsterSummon.MaxDuelMonstersPerPlayer} canSummonGate={fusionTarget.CanSummonDuelMonster || fusionTarget.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate}");
             return;
+        }
 
         Creature? summonedPet = TributeSummonSelection.ResolvePetForFieldCard(player, fusionTarget);
-        if (summonedPet == null || !summonedPet.IsAlive || player.Creature == null)
-            return;
-
-        if (!YgoStumblingField.IsActive(player))
-            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(summonedPet, true, player.Creature, fusionTarget);
+        GD.Print(
+            $"[YgoDuelist][MP][UnionFusion] OnPlay END ownerNet={player.NetId} fusion={fusionTarget.Id?.Entry} summonedPet={summonedPet?.CombatId}");
     }
 }

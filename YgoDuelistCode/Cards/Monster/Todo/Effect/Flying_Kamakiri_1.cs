@@ -13,6 +13,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>Graveyard optional summon — <see cref="YgoGraveyardOptionalDeckSpecialSummon"/>.</summary>
 public sealed class Flying_Kamakiri_1 : EffectMonsterCard, IGraveyardOptionalDeckSpecialSummon
 {
+    public override int AttackPortionCount => 2;
     private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-FLYING_KAMAKIRI_1.activate_effect");
     private static readonly LocString SummonPrompt = new("cards", "YGODUELIST-FLYING_KAMAKIRI_1.summon_wind");
 

@@ -10,6 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Rose_Witch : EffectMonsterCard, IDoubleTributeMaterial
 {
+    public override int AttackPortionCount => 2;
     public Rose_Witch()
         : base(
             cost: 1,

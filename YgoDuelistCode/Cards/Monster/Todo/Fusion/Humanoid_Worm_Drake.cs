@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Humanoid_Worm_Drake : FusionMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public override bool BulkBundled => true;
 
     public Humanoid_Worm_Drake()

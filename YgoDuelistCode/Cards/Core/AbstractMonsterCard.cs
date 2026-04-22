@@ -57,6 +57,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword RecklessKeyword => (CardKeyword)20043;
     private static CardKeyword SplinterKeyword => (CardKeyword)20044;
     private static CardKeyword BlightKeyword => (CardKeyword)20045;
+    private static CardKeyword PortionKeyword => (CardKeyword)20059;
 
     public abstract YgoCardType YgoCardType { get; }
     public bool FaceDown { get; set; } = false;
@@ -136,7 +137,11 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     /// Sets whether this monster starts in attack position (Attack card) or defense position (Skill card).
     /// Called by derived classes once their stats (e.g. base ATK/DEF) are known.
     /// </summary>
-    protected void SetDisplayAttackSkill(bool displayAsAttack)
+    /// <param name="requestStanceSyncAfterKeywords">
+    /// When false, skips <see cref="DuelMonsterStancePowerSync.RequestSyncIfSummoned"/> from keyword refresh (used by
+    /// <see cref="ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync"/>, which awaits a single pet sync after hooks).
+    /// </param>
+    protected void SetDisplayAttackSkill(bool displayAsAttack, bool requestStanceSyncAfterKeywords = true)
     {
         _displayForm = displayAsAttack ? MonsterDisplayForm.Attack : MonsterDisplayForm.Defense;
         if (_displayForm == MonsterDisplayForm.Attack && FaceDown)
@@ -147,7 +152,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         }
         else if (_displayForm == MonsterDisplayForm.Defense && !FaceDown && WillSet && CanUseSetVisualStateInCurrentForm())
             FaceDown = true;
-        UpdateFaceDownKeywordFromBool();
+        UpdateFaceDownKeywordFromBool(requestStanceSyncAfterKeywords);
         CardModelEnergyCache.Invalidate(this);
     }
 
@@ -204,11 +209,14 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         bool attackPosition)
     {
         bool wasAttack = IsAttackBattlePosition;
-        SetBattlePositionFromDuelCommand(attackPosition);
+        // Avoid RequestSyncIfSummoned racing SyncForPetAsync (double AttackPositionPower stacks on one peer).
+        SetDisplayAttackSkill(attackPosition, requestStanceSyncAfterKeywords: false);
         if (wasAttack && !attackPosition)
             await OnSwitchedFromAttackToDefenseFromCommandAsync(choiceContext, player);
         else if (!wasAttack && attackPosition)
             await OnSwitchedFromDefenseToAttackFromCommandAsync(choiceContext, player);
+
+        await DuelMonsterStancePowerSync.SyncSummonedPetIfPresentAsync(this, player.Creature);
     }
 
     /// <summary>
@@ -508,6 +516,15 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             yield return BlightKeyword;
     }
 
+    private IEnumerable<CardKeyword> GetPortionKeywordsFromMonster()
+    {
+        if (this is not BaseMonsterCard monster)
+            yield break;
+        if (monster.AttackPortionCount < 2)
+            yield break;
+        yield return PortionKeyword;
+    }
+
     private IEnumerable<CardKeyword> GetYgoArchetypeKeywords() =>
         YgoMonsterArchetypeKeywords.KeywordsForMonsterType(GetType());
 
@@ -528,6 +545,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
             foreach (CardKeyword kw in GetSummonKeywordsByMonsterLevel())
                 keywords.Add(kw);
             keywords.AddRange(GetSplinterBlightKeywordsFromMonster());
+            keywords.AddRange(GetPortionKeywordsFromMonster());
             keywords.AddRange(GetYgoArchetypeKeywords());
             return keywords;
         }

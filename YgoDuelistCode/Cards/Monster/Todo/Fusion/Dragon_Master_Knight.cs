@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Dragon_Master_Knight : FusionMonsterCard
 {
+    public override int AttackPortionCount => 4;
     public Dragon_Master_Knight()
         : base(
             cost: 1,

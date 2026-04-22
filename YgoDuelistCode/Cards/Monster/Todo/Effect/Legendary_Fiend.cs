@@ -17,6 +17,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Legendary_Fiend : EffectMonsterCard, IYgoTurnStartAtkGrowthFromFieldMonsterAfterCommandReset
 {
+    public override int AttackPortionCount => 3;
     public Legendary_Fiend()
         : base(
             cost: 1,

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Melchid_the_Four_Face_Beast : NormalMonsterCard
 {
+    public override int AttackPortionCount => 4;
     public Melchid_the_Four_Face_Beast()
         : base(
             cost: 1,

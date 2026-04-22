@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Cyber_Soldier_of_Darkworld : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Cyber_Soldier_of_Darkworld()
         : base(
             cost: 1,

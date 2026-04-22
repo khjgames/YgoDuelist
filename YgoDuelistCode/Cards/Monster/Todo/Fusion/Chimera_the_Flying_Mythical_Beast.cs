@@ -9,6 +9,8 @@ public sealed class Chimera_the_Flying_Mythical_Beast : FusionMonsterCard
 {
     public override bool BulkBundled => true;
 
+    public override int AttackPortionCount => 2;
+
     public Chimera_the_Flying_Mythical_Beast()
         : base(
             cost: 1,

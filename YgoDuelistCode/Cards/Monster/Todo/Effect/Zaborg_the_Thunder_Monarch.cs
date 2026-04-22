@@ -18,6 +18,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Zaborg_the_Thunder_Monarch : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
     private Creature? _handPlayEnemyTarget;
     private bool _hadTributeMaterialsForSummon;
 

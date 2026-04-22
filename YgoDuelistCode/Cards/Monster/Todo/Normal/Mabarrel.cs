@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Mabarrel : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Mabarrel()
         : base(
             cost: 1,

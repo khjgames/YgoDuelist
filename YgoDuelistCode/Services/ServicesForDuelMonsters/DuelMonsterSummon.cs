@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -62,14 +63,41 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         TrySummonDuelMonster(player, card, ctx, canAttackThisTurn: true);
 
     /// <summary>
+    /// In co-op, <see cref="Creature.CombatState"/> on a remote peer’s <see cref="Player.Creature"/> can be unset while
+    /// that player’s duel pets still hold the live <see cref="CombatState"/>. Summon must use that state so option-pile
+    /// special summons (e.g. union fusion) do not fail after materials are already gone on whichever client runs first.
+    /// </summary>
+    private static CombatState? ResolveCombatStateForPlayerSummon(Player player)
+    {
+        CombatState? cs = player.Creature?.CombatState;
+        if (cs != null)
+            return cs;
+
+        if (player.PlayerCombatState != null)
+        {
+            foreach (Creature pet in player.PlayerCombatState.Pets)
+            {
+                if (pet?.CombatState != null)
+                    return pet.CombatState;
+            }
+        }
+
+        return CombatManager.Instance?.DebugOnlyGetState();
+    }
+
+    /// <summary>
     /// If the player has fewer than 5 duel monster summons, creates a summon from the card's DuelMonsterData
     /// and adds it as a pet. Returns true if a summon was added.
     /// </summary>
     /// <param name="canAttackThisTurn">If <c>true</c>, Command Attack/Defend may be used this turn. If <c>false</c> (normal/tribute default), they are exhausted (stiff/fatigued) this turn.</param>
     public static async Task<bool> TrySummonDuelMonster(Player player, BaseMonsterCard card, PlayerChoiceContext _, bool canAttackThisTurn = false)
     {
-        if (player?.Creature?.CombatState == null
+        if (player?.Creature == null
             || (!card.CanSummonDuelMonster && !card.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
+            return false;
+
+        CombatState? combatState = ResolveCombatStateForPlayerSummon(player);
+        if (combatState == null)
             return false;
 
         if (!ReactorSlimeSummonGate.AllowsSummon(player, card))
@@ -86,7 +114,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         monster.SetTitleLoc(data.LocTable, data.LocKey);
         monster.SetPortraitPath(data.PortraitPath);
 
-        Creature petCreature = player.Creature.CombatState.CreateCreature(monster, player.Creature.Side, null);
+        Creature petCreature = combatState.CreateCreature(monster, player.Creature.Side, null);
         player.PlayerCombatState.AddPetInternal(petCreature);
         await CreatureCmd.Add(petCreature);
         // Track this card as an active field monster for aura/stat calculations and menu commands.

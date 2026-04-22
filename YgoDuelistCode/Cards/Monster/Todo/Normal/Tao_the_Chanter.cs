@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Tao_the_Chanter : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Tao_the_Chanter()
         : base(
             cost: 1,

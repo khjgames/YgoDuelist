@@ -103,6 +103,28 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual bool CardShowsRecklessKeyword => false;
 
     /// <summary>
+    /// 2–5: damage from this card's attack command is dealt in that many hits (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPortionDamage"/>).
+    /// One logical attack for relic aggregation. 0 = off.
+    /// </summary>
+    public virtual int CardDamagePortionCount => 0;
+
+    /// <summary>Keyword chip when <see cref="CardDamagePortionCount"/> is 2–5.</summary>
+    public virtual bool CardShowsPortionKeyword => CardDamagePortionCount >= 2;
+
+    /// <summary>
+    /// Value for <c>{NumPortions}</c> in <c>cards.json</c>: monsters use <see cref="BaseMonsterCard.AttackPortionCount"/>;
+    /// other YGO cards use <see cref="CardDamagePortionCount"/> (spell/trap opt-in).
+    /// </summary>
+    public static decimal GetNumPortionsDisplayValue(CardModel card)
+    {
+        if (card is BaseMonsterCard monster)
+            return monster.AttackPortionCount;
+        if (card is YgoDuelistCard ygo)
+            return ygo.CardDamagePortionCount;
+        return 0m;
+    }
+
+    /// <summary>
     /// When non-null in the Spell/Trap zone (face-up), energy UI uses this texture for the orb overlay
     /// (<see cref="Patches.YgoMonsterCommandEnergyCostVisualPatch"/>).
     /// </summary>

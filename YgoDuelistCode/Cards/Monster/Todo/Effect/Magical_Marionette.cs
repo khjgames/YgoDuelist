@@ -11,6 +11,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>Spell counters from spell resolution (HookAfterCardPlayedEffectMonsterPatch).</summary>
 public sealed class Magical_Marionette : EffectMonsterCard, IYgoSpellCounterMonster
 {
+    public override int AttackPortionCount => 2;
     [SavedProperty]
     public int SpellCounters { get; set; }
 

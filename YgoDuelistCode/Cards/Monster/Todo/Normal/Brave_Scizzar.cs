@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Brave_Scizzar : NormalMonsterCard
 {
+    public override int AttackPortionCount => 4;
     public Brave_Scizzar()
         : base(
             cost: 1,

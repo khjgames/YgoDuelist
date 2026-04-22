@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Rose_Spectre_of_Dunn : FusionMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public override bool BulkBundled => true;
 
     public Rose_Spectre_of_Dunn()

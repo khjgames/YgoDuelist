@@ -20,6 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Fairy_Guardian : EffectMonsterCard, IMonsterActivatedEffect
 {
+    public override int AttackPortionCount => 2;
     private static readonly LocString SpellPickPrompt =
         new LocString("cards", "YGODUELIST-FAIRY_GUARDIAN.activated_effect.selection");
 

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Necrolancer_the_Time_Lord : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Necrolancer_the_Time_Lord()
         : base(
             cost: 1,

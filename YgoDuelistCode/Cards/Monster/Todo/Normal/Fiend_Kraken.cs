@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Fiend_Kraken : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Fiend_Kraken()
         : base(
             cost: 1,

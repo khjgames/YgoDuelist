@@ -11,6 +11,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Dancing_Fairy : EffectMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Dancing_Fairy()
         : base(
             cost: 2,

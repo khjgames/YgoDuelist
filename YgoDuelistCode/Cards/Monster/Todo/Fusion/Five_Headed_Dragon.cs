@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Five_Headed_Dragon : FusionMonsterCard
 {
+    public override int AttackPortionCount => 5;
     /// <summary>YGO: 5 Dragon monsters — requirement-based slots (any Dragon normal/effect that satisfies race).</summary>
     public Five_Headed_Dragon()
         : base(

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Lord_Poison : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Lord_Poison()
         : base(
             cost: 1,

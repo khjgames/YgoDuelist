@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Spirit_of_the_Winds : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Spirit_of_the_Winds()
         : base(
             cost: 1,

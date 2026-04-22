@@ -11,6 +11,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Drillago : EffectMonsterCard
 {
+    public override int AttackPortionCount => 4;
     public Drillago()
         : base(
             cost: 1,

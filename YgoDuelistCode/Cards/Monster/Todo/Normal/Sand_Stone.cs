@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Sand_Stone : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Sand_Stone()
         : base(
             cost: 1,

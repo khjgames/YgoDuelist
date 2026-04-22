@@ -20,6 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// </summary>
 public sealed class Pumpking_the_King_of_Ghosts : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Pumpking_the_King_of_Ghosts()
         : base(
             cost: 1,

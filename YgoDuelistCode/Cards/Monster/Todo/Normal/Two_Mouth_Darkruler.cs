@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Two_Mouth_Darkruler : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Two_Mouth_Darkruler()
         : base(
             cost: 1,

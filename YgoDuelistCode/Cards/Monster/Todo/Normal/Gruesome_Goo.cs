@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Gruesome_Goo : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Gruesome_Goo()
         : base(
             cost: 1,

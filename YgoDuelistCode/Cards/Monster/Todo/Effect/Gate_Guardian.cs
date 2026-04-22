@@ -18,6 +18,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Gate_Guardian : EffectMonsterCard, IYgoNamedTripleTributeSummon
 {
+    public override int AttackPortionCount => 3;
     /// <summary>Printed DEF added by summon effect; reapplied after full save load (see <c>CardModelFromSerializableMonsterPermanentStatsPatch</c>).</summary>
     [SavedProperty]
     public int GateGuardianSummonPrintedDefBonus { get; set; }

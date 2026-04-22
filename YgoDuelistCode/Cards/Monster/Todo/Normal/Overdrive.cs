@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Overdrive : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Overdrive()
         : base(
             cost: 1,

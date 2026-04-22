@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Amphibious_Bugroth : FusionMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public override bool BulkBundled => true;
 
     public Amphibious_Bugroth()

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Darkfire_Soldier_2 : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Darkfire_Soldier_2()
         : base(
             cost: 1,

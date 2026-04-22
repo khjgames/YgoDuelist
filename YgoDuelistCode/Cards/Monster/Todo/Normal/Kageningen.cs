@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Kageningen : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Kageningen()
         : base(
             cost: 1,

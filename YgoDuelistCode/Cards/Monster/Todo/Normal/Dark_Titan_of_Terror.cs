@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Dark_Titan_of_Terror : NormalMonsterCard
 {
+    public override int AttackPortionCount => 4;
     public Dark_Titan_of_Terror()
         : base(
             cost: 1,

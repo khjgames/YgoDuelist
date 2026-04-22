@@ -7,6 +7,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Gatling_Dragon : FusionMonsterCard
 {
+    public override int AttackPortionCount => 5;
+
     public Gatling_Dragon()
         : base(
             cost: 1,

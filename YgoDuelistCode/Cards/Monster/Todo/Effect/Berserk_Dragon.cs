@@ -14,6 +14,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Berserk_Dragon : EffectMonsterCard, IYgoOwnerTurnStartFieldMonsterEffect
 {
+    public override int AttackPortionCount => 2;
+
     public Berserk_Dragon()
         : base(
             cost: 2,

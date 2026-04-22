@@ -10,6 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 
 public sealed class Garma_Sword : RitualMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Garma_Sword()
         : base(
             cost: 1,

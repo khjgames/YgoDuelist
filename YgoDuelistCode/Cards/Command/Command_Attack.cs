@@ -128,11 +128,6 @@ public sealed class Command_Attack : MonsterCommandCard
 
         await SourceMonster.ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync(choiceContext, player, attackPosition: true);
 
-        // MP: RequestSyncIfSummoned from SetDisplayAttackSkill is fire-and-forget; checksum can run before it finishes.
-        // Await full stance sync so pet Attack/Defense/FaceDown powers match host before the action ends.
-        if (pet != null && SourceMonster is AbstractMonsterCard amcStance)
-            await DuelMonsterStancePowerSync.SyncForPetAsync(pet, amcStance, player.Creature, SourceMonster);
-
         await SourceMonster.OnCommandAttackAfterStanceSyncedAsync(
             choiceContext,
             player,

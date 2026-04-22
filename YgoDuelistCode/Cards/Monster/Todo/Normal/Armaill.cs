@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Armaill : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Armaill()
         : base(
             cost: 1,

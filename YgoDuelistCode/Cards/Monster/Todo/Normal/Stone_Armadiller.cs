@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Stone_Armadiller : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Stone_Armadiller()
         : base(
             cost: 1,

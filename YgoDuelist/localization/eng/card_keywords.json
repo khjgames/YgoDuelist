@@ -111,7 +111,7 @@
   "20035.description": "requires 2 monsters to be [red]sacrificed[/red] to be played.",
 
   "20036.title": "Fusion Monster",  
-  "20036.description": "This card resides in the [purple]Fusion[/purple] Deck.",
+  "20036.description": "This card resides in the [purple]Extra[/purple] Deck.",
 
   "20037.title": "Ritual Monster",  
   "20037.description": "This card must be [gold]Special Summoned[/gold] with a [blue]Ritual[/blue] Spell Card.",
@@ -177,6 +177,12 @@
   "20057.description": "This monster gains +1 ATK and +1 DEF per stack.",
 
   "20058.title": "Necrotic Ritual",
-  "20058.description": "At the start of each of your turns, apply 2 Necrotic Evolution to each face-up Zombie-Type monster you control, then lose 1 stack."
+  "20058.description": "At the start of each of your turns, apply 2 Necrotic Evolution to each face-up Zombie-Type monster you control, then lose 1 stack.",
+
+  "20059.title": "Portion",
+  "20059.description": "This card's attack damage is dealt across multiple hits that sum to the full amount.",
+
+  "20060.title": "Union-Fusion Monster",
+  "20060.description": "Cannot be Fusion Summoned. Must be Special Summoned by banishing exact field materials."
 
 }

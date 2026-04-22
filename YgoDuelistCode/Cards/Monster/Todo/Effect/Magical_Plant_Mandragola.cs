@@ -9,6 +9,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Magical_Plant_Mandragola : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Magical_Plant_Mandragola()
         : base(
             cost: 1,

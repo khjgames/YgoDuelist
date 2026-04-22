@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Grand_Tiki_Elder : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Grand_Tiki_Elder()
         : base(
             cost: 1,

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Dark_Chimera : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Dark_Chimera()
         : base(
             cost: 1,

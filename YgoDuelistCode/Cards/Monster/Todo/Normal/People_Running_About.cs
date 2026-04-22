@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class People_Running_About : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public People_Running_About()
         : base(
             cost: 1,

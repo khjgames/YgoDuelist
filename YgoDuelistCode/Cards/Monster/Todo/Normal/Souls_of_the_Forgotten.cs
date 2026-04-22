@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Souls_of_the_Forgotten : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Souls_of_the_Forgotten()
         : base(
             cost: 1,

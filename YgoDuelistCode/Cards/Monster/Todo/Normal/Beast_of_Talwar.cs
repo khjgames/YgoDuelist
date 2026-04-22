@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Beast_of_Talwar : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Beast_of_Talwar()
         : base(
             cost: 1,

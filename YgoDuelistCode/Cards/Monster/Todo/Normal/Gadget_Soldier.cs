@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Gadget_Soldier : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Gadget_Soldier()
         : base(
             cost: 1,

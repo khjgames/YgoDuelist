@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Crawling_Dragon_2 : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Crawling_Dragon_2()
         : base(
             cost: 1,

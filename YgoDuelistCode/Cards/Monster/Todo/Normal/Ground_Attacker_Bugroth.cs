@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Ground_Attacker_Bugroth : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Ground_Attacker_Bugroth()
         : base(
             cost: 1,

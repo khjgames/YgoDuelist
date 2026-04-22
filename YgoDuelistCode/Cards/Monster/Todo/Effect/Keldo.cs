@@ -21,6 +21,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// </summary>
 public sealed class Keldo : EffectMonsterCard, IYgoCustomFieldMonsterDeathGraveyardRelocation
 {
+    public override int AttackPortionCount => 2;
     private static readonly LocString GraveyardToDiscardPrompt =
         new("cards", "YGODUELIST-KELDO.destroy.graveyard_select");
 

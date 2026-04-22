@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Tripwire_Beast : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Tripwire_Beast()
         : base(
             cost: 1,

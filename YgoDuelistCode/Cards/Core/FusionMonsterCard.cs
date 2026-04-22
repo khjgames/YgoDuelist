@@ -168,6 +168,21 @@ public abstract class FusionMonsterCard : EffectMonsterCard
     /// </summary>
     public virtual bool CanBeFusionSummoned => true;
 
+    /// <summary><c>card_keywords.json</c> <c>20060</c> (Union-Fusion Monster).</summary>
+    private static CardKeyword UnionFusionMonsterKeyword => (CardKeyword)20060;
+
+    /// <inheritdoc />
+    public override IEnumerable<CardKeyword> CanonicalKeywords
+    {
+        get
+        {
+            foreach (CardKeyword kw in base.CanonicalKeywords)
+                yield return kw;
+            if (!CanBeFusionSummoned)
+                yield return UnionFusionMonsterKeyword;
+        }
+    }
+
     /// <summary>Pack filtering: fusion frame plus attribute and race-derived tags (see <see cref="PackTagsForFusionProfile"/>).</summary>
     public override YgoCardPackTags PackTags => YgoCardPackTags.Fusion | PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
 

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Ancient_Tool : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Ancient_Tool()
         : base(
             cost: 1,

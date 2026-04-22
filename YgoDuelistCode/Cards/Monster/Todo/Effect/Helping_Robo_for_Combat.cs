@@ -20,6 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>When this attacks: draw <c>Mgc</c>, then discard <c>Mgc</c> cards from your hand.</summary>
 public sealed class Helping_Robo_for_Combat : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
     private static readonly LocString DiscardPrompt = new("cards", "YGODUELIST-HELPING_ROBO_FOR_COMBAT.hand_select");
 
     public Helping_Robo_for_Combat()

@@ -14,6 +14,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Exiled_Force : EffectMonsterCard, IMonsterActivatedEffect
 {
+    public override int AttackPortionCount => 4;
     public Exiled_Force()
         : base(
             cost: 1,

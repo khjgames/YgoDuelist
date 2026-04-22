@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Illusionist_Faceless_Mage : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Illusionist_Faceless_Mage()
         : base(
             cost: 1,

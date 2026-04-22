@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Empress_Mantis : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Empress_Mantis()
         : base(
             cost: 1,

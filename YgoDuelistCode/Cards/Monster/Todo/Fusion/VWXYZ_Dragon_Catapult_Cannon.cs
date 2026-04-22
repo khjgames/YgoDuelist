@@ -17,6 +17,8 @@ public sealed class Vwxyz_Dragon_Catapult_Cannon : FusionMonsterCard
         typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Xyz_Dragon_Cannon)
     };
 
+    public override int AttackPortionCount => 3;
+
     public Vwxyz_Dragon_Catapult_Cannon()
         : base(
             cost: 1,

@@ -20,6 +20,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>0-cost Activate: take <c>Mgc</c> blockable damage; inflict <c>Mgc2</c> Blight on target enemy.</summary>
 public sealed class Needle_Ball : EffectMonsterCard, IMonsterActivatedEffect
 {
+    public override int AttackPortionCount => 4;
+
     public Needle_Ball()
         : base(
             cost: 1,

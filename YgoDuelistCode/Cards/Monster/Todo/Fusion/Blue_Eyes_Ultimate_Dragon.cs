@@ -9,6 +9,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Blue_Eyes_Ultimate_Dragon : FusionMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Blue_Eyes_Ultimate_Dragon()
         : base(
             cost: 1,

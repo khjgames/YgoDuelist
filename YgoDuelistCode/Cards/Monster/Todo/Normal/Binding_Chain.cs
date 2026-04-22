@@ -8,6 +8,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Binding_Chain : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
+
     public Binding_Chain()
         : base(
             cost: 1,

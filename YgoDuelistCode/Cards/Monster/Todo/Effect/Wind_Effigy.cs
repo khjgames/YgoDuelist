@@ -10,6 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Wind_Effigy : EffectMonsterCard, IDoubleTributeMaterial
 {
+    public override int AttackPortionCount => 3;
     public Wind_Effigy()
         : base(
             cost: 1,

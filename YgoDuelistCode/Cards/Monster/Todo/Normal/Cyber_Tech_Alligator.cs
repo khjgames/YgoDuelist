@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Cyber_Tech_Alligator : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Cyber_Tech_Alligator()
         : base(
             cost: 1,

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Three_Legged_Zombies : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Three_Legged_Zombies()
         : base(
             cost: 1,

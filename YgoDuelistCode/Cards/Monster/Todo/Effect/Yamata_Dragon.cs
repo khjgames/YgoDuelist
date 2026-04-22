@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Yamata_Dragon : EffectMonsterCard
 {
+    public override int AttackPortionCount => 5;
     public Yamata_Dragon()
         : base(
             cost: 1,

@@ -17,6 +17,7 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using MonsterActivatedEffectRuntime = YgoDuelist.YgoDuelistCode.Cards.Core.MonsterActivatedEffectRuntime;
 using YgoDuelist.YgoDuelistCode.Extensions;
@@ -68,6 +69,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         UnsubscribeFromGraveyardPile();
         _sanctuaryHalveNextSpillToPlayer = false;
+        YgoPortionedSalvo.ClearAll();
         return Task.CompletedTask;
     }
 
@@ -189,18 +191,33 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (Owner == null || command.Attacker?.Player != Owner)
             return;
 
-        if (!command.IsSingleTargeted || command.ModelSource is not BaseMonsterCard monster)
+        if (!command.IsSingleTargeted)
             return;
 
+        if (command.ModelSource is BaseMonsterCard monster)
+        {
+            await AfterAttack_FromDuelMonsterAsync(command, monster);
+            return;
+        }
+
+        if (command.ModelSource is YgoDuelistCard ygo && ygo.CardDamagePortionCount >= 2)
+            await AfterAttack_FromPortionedYgoCardAsync(command, ygo);
+    }
+
+    private async Task AfterAttack_FromDuelMonsterAsync(AttackCommand command, BaseMonsterCard monster)
+    {
         var ctx = new BlockingPlayerChoiceContext();
-        var cs = command.Attacker.CombatState;
+        CombatState? cs = command.Attacker.CombatState;
         if (cs == null)
             return;
 
         Player? atkOwner = command.Attacker.Player;
         Player? atkPlayer = atkOwner;
 
-        if (!_splinterChainRunning)
+        bool portionSalvo = monster.AttackPortionCount >= 2 && YgoPortionedSalvo.IsMonsterSalvoFor(monster);
+        bool skipClearAndOpening = portionSalvo && YgoPortionedSalvo.IsMidMonsterSalvoPastFirstChunk(monster);
+
+        if (!_splinterChainRunning && !skipClearAndOpening)
         {
             _onDamageEffectSeenEnemyIds.Clear();
 
@@ -208,6 +225,25 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
             // Main hit before splinter so "first damage" order matches combat; shared set dedupes splinter bounces per enemy per chain.
             await ProcessMonsterUnblockedOnDamageEffectsAsync(command, monster, atkPlayer, ctx);
+        }
+        else if (!_splinterChainRunning)
+            await ProcessMonsterUnblockedOnDamageEffectsAsync(command, monster, atkPlayer, ctx);
+
+        bool morePortionRemain = false;
+        if (portionSalvo && !_splinterChainRunning)
+            morePortionRemain = YgoPortionedSalvo.RecordMonsterChunkAndReturnIfMoreRemain(monster, command.Results);
+
+        bool consumedPortionFinal = false;
+        int aggregatedPastBlockOnPrimary = 0;
+        Dictionary<uint, int> aggregatedBlightByEnemyId = new();
+        Creature? portionPrimaryReceiver = null;
+        if (portionSalvo && !_splinterChainRunning && !morePortionRemain)
+        {
+            consumedPortionFinal = YgoPortionedSalvo.TryConsumeMonsterSalvoFinal(
+                monster,
+                out aggregatedPastBlockOnPrimary,
+                out aggregatedBlightByEnemyId,
+                out portionPrimaryReceiver);
         }
 
         bool splinter = monster.AttackDealsSplinterDamage;
@@ -227,14 +263,30 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
         if (splinter && !_splinterChainRunning)
         {
-            _splinterChainRunning = true;
-            try
+            if (!morePortionRemain)
             {
-                await ResolveSplinterChainAsync(ctx, command, monster, cs);
-            }
-            finally
-            {
-                _splinterChainRunning = false;
+                _splinterChainRunning = true;
+                try
+                {
+                    if (consumedPortionFinal && portionPrimaryReceiver != null && aggregatedPastBlockOnPrimary > 0)
+                    {
+                        await ResolveSplinterChainAsync(
+                            ctx,
+                            command,
+                            monster,
+                            cs,
+                            aggregatedPastBlockOnPrimary,
+                            portionPrimaryReceiver);
+                    }
+                    else if (!portionSalvo)
+                        await ResolveSplinterChainAsync(ctx, command, monster, cs);
+                    else if (!consumedPortionFinal)
+                        await ResolveSplinterChainAsync(ctx, command, monster, cs);
+                }
+                finally
+                {
+                    _splinterChainRunning = false;
+                }
             }
         }
 
@@ -254,24 +306,44 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (!blighted && command.Attacker?.GetPower<SecretPassTreasuresBlightPower>() != null)
             blighted = true;
 
-        if (blighted)
+        if (blighted && !morePortionRemain)
         {
             decimal blightMultiplier = 0.5m;
             if (command.Attacker?.GetPower<SecretPassTreasuresBlightPower>() is { Amount: var secretPassPct })
                 blightMultiplier = secretPassPct / 100m;
             else if (monster.AttackDealsFullBlightedDamage)
                 blightMultiplier = 1m;
-            foreach (DamageResult r in command.Results)
+
+            if (consumedPortionFinal)
             {
-                int hitDamage = YgoExecuteKillShared.FullIncomingDamage(r);
-                if (r.Receiver.Side != CombatSide.Enemy || hitDamage <= 0)
-                    continue;
+                foreach (Creature victim in cs.GetOpponentsOf(command.Attacker))
+                {
+                    if (!victim.IsAlive || victim.CombatId is not uint cid)
+                        continue;
+                    if (!aggregatedBlightByEnemyId.TryGetValue(cid, out int hitDamage) || hitDamage <= 0)
+                        continue;
 
-                int blight = (int)decimal.Floor(hitDamage * blightMultiplier);
-                if (blight <= 0)
-                    continue;
+                    int blight = (int)decimal.Floor(hitDamage * blightMultiplier);
+                    if (blight <= 0)
+                        continue;
 
-                await PowerCmd.Apply<BlightPower>(r.Receiver, blight, command.Attacker, monster);
+                    await PowerCmd.Apply<BlightPower>(victim, blight, command.Attacker, monster);
+                }
+            }
+            else
+            {
+                foreach (DamageResult r in command.Results)
+                {
+                    int hitDamage = YgoExecuteKillShared.FullIncomingDamage(r);
+                    if (r.Receiver.Side != CombatSide.Enemy || hitDamage <= 0)
+                        continue;
+
+                    int blight = (int)decimal.Floor(hitDamage * blightMultiplier);
+                    if (blight <= 0)
+                        continue;
+
+                    await PowerCmd.Apply<BlightPower>(r.Receiver, blight, command.Attacker, monster);
+                }
             }
         }
 
@@ -289,6 +361,66 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         // Splinter nested attacks: on-damage heal/draw once per unique enemy per chain (see _onDamageEffectSeenEnemyIds).
         if (_splinterChainRunning)
             await ProcessMonsterUnblockedOnDamageEffectsAsync(command, monster, atkPlayer, ctx);
+    }
+
+    private async Task AfterAttack_FromPortionedYgoCardAsync(AttackCommand command, YgoDuelistCard card)
+    {
+        CombatState? cs = command.Attacker.CombatState;
+        if (cs == null)
+            return;
+
+        bool portionSalvo = YgoPortionedSalvo.IsCardSalvoFor(card);
+        bool morePortionRemain = false;
+        if (portionSalvo)
+            morePortionRemain = YgoPortionedSalvo.RecordCardChunkAndReturnIfMoreRemain(card, command.Results);
+
+        bool consumedFinal = false;
+        Dictionary<uint, int> aggBlight = new();
+        if (portionSalvo && !morePortionRemain)
+            consumedFinal = YgoPortionedSalvo.TryConsumeCardSalvoFinal(card, out _, out aggBlight, out _);
+
+        bool blighted = card.CardShowsBlightKeyword;
+        if (!blighted && command.Attacker?.GetPower<SecretPassTreasuresBlightPower>() != null)
+            blighted = true;
+
+        if (blighted && !morePortionRemain)
+        {
+            decimal blightMultiplier = 0.5m;
+            if (command.Attacker?.GetPower<SecretPassTreasuresBlightPower>() is { Amount: var secretPassPct })
+                blightMultiplier = secretPassPct / 100m;
+
+            if (consumedFinal)
+            {
+                foreach (Creature victim in cs.GetOpponentsOf(command.Attacker))
+                {
+                    if (!victim.IsAlive || victim.CombatId is not uint cid)
+                        continue;
+                    if (!aggBlight.TryGetValue(cid, out int hitDamage) || hitDamage <= 0)
+                        continue;
+
+                    int blight = (int)decimal.Floor(hitDamage * blightMultiplier);
+                    if (blight <= 0)
+                        continue;
+
+                    await PowerCmd.Apply<BlightPower>(victim, blight, command.Attacker, card);
+                }
+            }
+            else
+            {
+                foreach (DamageResult r in command.Results)
+                {
+                    int hitDamage = YgoExecuteKillShared.FullIncomingDamage(r);
+                    if (r.Receiver.Side != CombatSide.Enemy || hitDamage <= 0)
+                        continue;
+
+                    int blight = (int)decimal.Floor(hitDamage * blightMultiplier);
+                    if (blight <= 0)
+                        continue;
+
+                    await PowerCmd.Apply<BlightPower>(r.Receiver, blight, command.Attacker, card);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -380,9 +512,31 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         BlockingPlayerChoiceContext ctx,
         AttackCommand command,
         BaseMonsterCard monster,
-        CombatState cs)
+        CombatState cs,
+        int? aggregatedPastBlockOnPrimary = null,
+        Creature? aggregatedMainReceiver = null)
     {
         Creature attacker = command.Attacker;
+        if (aggregatedPastBlockOnPrimary is int pbAgg
+            && aggregatedMainReceiver != null
+            && aggregatedMainReceiver.Side == CombatSide.Enemy
+            && pbAgg > 0)
+        {
+            int firstBase = (int)decimal.Floor(pbAgg * 0.5m);
+            if (firstBase > 0)
+            {
+                Creature mainReceiver = aggregatedMainReceiver;
+                List<Creature> initialOthers = cs.GetOpponentsOf(attacker)
+                    .Where(c => c.IsAlive && !ReferenceEquals(c, mainReceiver))
+                    .ToList();
+
+                foreach (Creature initialOther in initialOthers)
+                    await ResolveSplinterBranchAsync(ctx, attacker, monster, cs, firstBase, initialOther);
+            }
+
+            return;
+        }
+
         foreach (DamageResult r in command.Results)
         {
             int pastBlock = DamagePastBlock(r);

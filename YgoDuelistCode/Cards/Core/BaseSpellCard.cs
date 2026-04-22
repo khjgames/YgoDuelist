@@ -25,6 +25,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
     private static CardKeyword SplinterKeyword => (CardKeyword)20044;
     private static CardKeyword BlightKeyword => (CardKeyword)20045;
     private static CardKeyword RecklessKeyword => (CardKeyword)20043;
+    private static CardKeyword PortionKeyword => (CardKeyword)20059;
 
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);
@@ -155,7 +156,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         {
             RaceToKeyword(DuelMonsterRace),
             SetKeyword,
-        }.Concat(GetFaceDownKeyword()).Concat(GetCycleSpellKeywordWhenEligible()).Concat(GetSplinterBlightKeywords());
+        }.Concat(GetFaceDownKeyword()).Concat(GetCycleSpellKeywordWhenEligible()).Concat(GetSplinterBlightKeywords()).Concat(GetPortionKeywords());
 
     private IEnumerable<CardKeyword> GetSplinterBlightKeywords()
     {
@@ -165,6 +166,13 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
             yield return BlightKeyword;
         if (CardShowsRecklessKeyword)
             yield return RecklessKeyword;
+    }
+
+    private IEnumerable<CardKeyword> GetPortionKeywords()
+    {
+        if (CardDamagePortionCount < 2)
+            yield break;
+        yield return PortionKeyword;
     }
 
     private IEnumerable<CardKeyword> GetFaceDownKeyword()

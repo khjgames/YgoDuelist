@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Fungi_of_the_Musk : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Fungi_of_the_Musk()
         : base(
             cost: 1,

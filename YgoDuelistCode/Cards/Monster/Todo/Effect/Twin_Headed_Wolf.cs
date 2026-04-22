@@ -15,6 +15,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Twin_Headed_Wolf : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
+
     public Twin_Headed_Wolf()
         : base(
             cost: 1,

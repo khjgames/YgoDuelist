@@ -13,6 +13,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Senju_of_the_Thousand_Hands : EffectMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Senju_of_the_Thousand_Hands()
         : base(
             cost: 1,

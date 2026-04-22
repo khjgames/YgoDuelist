@@ -20,6 +20,7 @@ using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -350,9 +351,10 @@ public static class FusionSummonSelection
             Creature? pet = TributeSummonSelection.ResolvePetForFieldCard(player, m);
             if (pet != null)
             {
-                await CreatureCmd.Kill(pet, force: true);
                 if (banish)
-                    await YgoBanishedService.BanishCard(player, m);
+                    await DuelMonsterPetDeathPatch.ReleaseLiveFieldMonsterToBanishedAsync(player, pet, m);
+                else
+                    await CreatureCmd.Kill(pet, force: true);
                 continue;
             }
 

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Dark_Assailant : NormalMonsterCard
 {
+    public override int AttackPortionCount => 4;
     public Dark_Assailant()
         : base(
             cost: 1,

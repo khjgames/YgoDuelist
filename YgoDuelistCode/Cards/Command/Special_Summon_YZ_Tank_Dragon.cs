@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -10,6 +11,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
 public sealed class Special_Summon_YZ_Tank_Dragon : Special_Summon_Union_Fusion_From_Field_Base
 {
+    protected override string CanonicalUnionFusionPortraitPath => ModelDb.Card<Yz_Tank_Dragon>().PortraitPath;
+
     protected override bool IsValidSourceMaterial(BaseMonsterCard source) =>
         source.GetType() == Yz_Tank_Dragon.RequiredMaterialTypes[0]
         || source.GetType() == Yz_Tank_Dragon.RequiredMaterialTypes[1];

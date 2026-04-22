@@ -10,6 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Light_Effigy : EffectMonsterCard, IDoubleTributeMaterial
 {
+    public override int AttackPortionCount => 2;
     public Light_Effigy()
         : base(
             cost: 1,

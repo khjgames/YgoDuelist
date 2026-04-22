@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class D_D_Trainer : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public D_D_Trainer()
         : base(
             cost: 1,

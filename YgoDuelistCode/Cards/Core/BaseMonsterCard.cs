@@ -193,6 +193,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Duel monster race / type for the card frame icon.</summary>
     public override DuelMonsterRace DuelMonsterRace { get; }
 
+    /// <summary>
+    /// 2–5: this monster's attack damage is dealt in that many hits that sum to its ATK (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPortionMath"/>).
+    /// Still <b>one logical attack</b> for Splinter/Blight aggregation and for <see cref="NormalMonsterCard.OnAfterMonsterAttackHitAsync"/> (fires once after the final chunk).
+    /// Default <c>0</c> (off). Override on specific monster types when you want Portion.
+    /// </summary>
+    public virtual int AttackPortionCount => 0;
+
     /// <summary>Splinter (YGO piercing): after unblocked damage on an enemy, a decaying chain splashes other enemies (see <see cref="Relics.GraveyardRelic"/>).</summary>
     public virtual bool AttackDealsSplinterDamage => false;
 
@@ -215,6 +222,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     /// <inheritdoc cref="YgoDuelistCard.CardShowsBlightKeyword" />
     public override bool CardShowsBlightKeyword => AttackDealsBlightedDamage;
+
+    /// <inheritdoc cref="YgoDuelistCard.CardShowsPortionKeyword" />
+    public override bool CardShowsPortionKeyword => AttackPortionCount >= 2;
 
     /// <summary>
     /// When true, Command Attack and Command Defend each use a separate once-per-turn allowance; stiff/fatigue applies after both are used.

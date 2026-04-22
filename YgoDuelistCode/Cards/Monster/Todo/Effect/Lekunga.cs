@@ -21,6 +21,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
 {
+    public override int AttackPortionCount => 4;
     private static readonly LocString BanishSelectionPrompt =
         new("cards", "YGODUELIST-LEKUNGA.banish_selection");
 

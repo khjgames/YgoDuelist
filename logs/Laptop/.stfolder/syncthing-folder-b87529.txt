@@ -1,5 +1,0 @@
-# This directory is a Syncthing folder marker.
-# Do not delete.
-
-folderID: raf4i-axhmk
-created: 2026-04-09T17:14:49-04:00

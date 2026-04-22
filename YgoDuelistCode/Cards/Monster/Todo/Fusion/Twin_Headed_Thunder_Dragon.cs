@@ -9,6 +9,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Twin_Headed_Thunder_Dragon : FusionMonsterCard
 {
+    public override int AttackPortionCount => 2;
+
     public Twin_Headed_Thunder_Dragon()
         : base(
             cost: 1,

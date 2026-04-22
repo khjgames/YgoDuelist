@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Claw_Reacher : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Claw_Reacher()
         : base(
             cost: 1,

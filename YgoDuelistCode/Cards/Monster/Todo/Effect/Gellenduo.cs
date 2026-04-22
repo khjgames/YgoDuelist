@@ -10,6 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Gellenduo : EffectMonsterCard, IDoubleTributeMaterial
 {
+    public override int AttackPortionCount => 2;
     public Gellenduo()
         : base(
             cost: 1,

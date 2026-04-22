@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
@@ -105,7 +106,35 @@ public static class PlayCardActionRemoteHandDuelMonsterFixPatch
             : "no target";
         Log.Info($"Player {card.Owner.NetId} playing card {card.Id?.Entry} ({targetPart}) [YgoDuelist remote mirror, skipped CanPlay]");
 
-        (int energySpent, int starsSpent) = await card.SpendResources();
+        bool isDefenseOrSet = card is AbstractMonsterCard monsterCard && !monsterCard.IsAttackBattlePosition;
+        int energyBefore = action.Player.PlayerCombatState?.Energy ?? -1;
+        if (!YgoNetPlayCardResourceSpendStash.TryTake(action.NetCombatCard.CombatCardIndex, out int energySpent, out int starsSpent))
+        {
+            GD.PrintErr(
+                $"[YgoDuelist][MP][PlayCard] Remote mirror missing authoritative spend snapshot owner={action.Player.NetId} netIdx={action.NetCombatCard.CombatCardIndex} card={card.Id?.Entry}");
+            NCardPlayQueue.Instance?.RemoveCardFromQueueForCancellation(action);
+            return;
+        }
+
+        if (!card.IsDupe && card.EnergyCost.CostsX)
+            card.EnergyCost.CapturedXValue = energySpent;
+        if (energySpent > 0)
+        {
+            CombatManager.Instance.History.EnergySpent(action.Player.Creature.CombatState, energySpent, action.Player);
+            action.Player.PlayerCombatState?.LoseEnergy(System.Math.Max(0, energySpent));
+        }
+        await Hook.AfterEnergySpent(action.Player.Creature.CombatState, card, energySpent);
+        if (!card.IsDupe)
+            card.LastStarsSpent = starsSpent;
+        if (starsSpent > 0)
+        {
+            action.Player.PlayerCombatState?.LoseStars(starsSpent);
+            await Hook.AfterStarsSpent(action.Player.Creature.CombatState, starsSpent, action.Player);
+        }
+        int energyAfter = action.Player.PlayerCombatState?.Energy ?? -1;
+        GD.Print(
+            $"[YgoDuelist][MP][PlayCard] Remote mirror apply authoritative spend owner={action.Player.NetId} card={card.Id?.Entry} spendEnergy={energySpent} spendStars={starsSpent} energy={energyBefore}->{energyAfter} defenseOrSet={isDefenseOrSet}");
+
         var resources = new ResourceInfo
         {
             EnergySpent = energySpent,

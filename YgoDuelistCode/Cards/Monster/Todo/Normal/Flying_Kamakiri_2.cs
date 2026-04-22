@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Flying_Kamakiri_2 : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Flying_Kamakiri_2()
         : base(
             cost: 1,

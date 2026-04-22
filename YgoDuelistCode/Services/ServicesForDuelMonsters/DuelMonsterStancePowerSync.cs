@@ -26,6 +26,22 @@ public static class DuelMonsterStancePowerSync
         TaskHelper.RunSafely(SyncIfSummonedAsync(card));
     }
 
+    /// <summary>
+    /// Await pet stance powers after <see cref="AbstractMonsterCard.ApplyBattlePositionFromDuelCommandWithSwitchEffectsAsync"/>
+    /// (replaces fire-and-forget <see cref="RequestSyncIfSummoned"/> for that path).
+    /// </summary>
+    public static async Task SyncSummonedPetIfPresentAsync(AbstractMonsterCard card, Creature? applier)
+    {
+        if (card is not BaseMonsterCard bmc || card.Owner == null)
+            return;
+
+        Creature? pet = FindLivePetForCard(card.Owner, bmc);
+        if (pet == null)
+            return;
+
+        await SyncForPetAsync(pet, card, applier ?? card.Owner.Creature, card);
+    }
+
     private static async Task SyncIfSummonedAsync(AbstractMonsterCard card)
     {
         if (card is not BaseMonsterCard bmc || card.Owner == null)

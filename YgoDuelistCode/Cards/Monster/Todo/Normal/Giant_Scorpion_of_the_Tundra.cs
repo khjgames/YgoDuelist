@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Giant_Scorpion_of_the_Tundra : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Giant_Scorpion_of_the_Tundra()
         : base(
             cost: 1,

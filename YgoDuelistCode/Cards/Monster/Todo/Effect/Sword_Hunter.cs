@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Sword_Hunter : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Sword_Hunter()
         : base(
             cost: 1,

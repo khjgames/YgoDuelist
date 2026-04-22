@@ -9,6 +9,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Burglar : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Burglar()
         : base(
             cost: 1,

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Humanoid_Slime : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Humanoid_Slime()
         : base(
             cost: 1,

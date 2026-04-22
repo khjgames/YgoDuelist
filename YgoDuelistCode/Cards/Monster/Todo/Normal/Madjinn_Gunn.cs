@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Madjinn_Gunn : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Madjinn_Gunn()
         : base(
             cost: 1,

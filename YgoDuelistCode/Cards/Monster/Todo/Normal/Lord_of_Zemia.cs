@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Lord_of_Zemia : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Lord_of_Zemia()
         : base(
             cost: 1,

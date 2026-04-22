@@ -22,6 +22,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>With another Pyro on the field: +<c>Mgc</c> ATK/DEF. End of turn: <c>Mgc2</c> Blight on a random enemy (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoSolarFlareDragonEndPhase"/>).</summary>
 public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
 {
+    public override int AttackPortionCount => 2;
     public Solar_Flare_Dragon()
         : base(
             cost: 1,

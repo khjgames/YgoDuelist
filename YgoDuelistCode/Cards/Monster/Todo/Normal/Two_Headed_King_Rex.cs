@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Two_Headed_King_Rex : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Two_Headed_King_Rex()
         : base(
             cost: 1,

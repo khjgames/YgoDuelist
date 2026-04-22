@@ -14,6 +14,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Goblin_Attack_Force : EffectMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Goblin_Attack_Force()
         : base(
             cost: 1,

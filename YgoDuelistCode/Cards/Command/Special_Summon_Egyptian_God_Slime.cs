@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
+using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -35,6 +36,27 @@ public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard, IYgo
     public override CardType Type => CardType.Skill;
 
     public override TargetType TargetType => TargetType.Self;
+
+    /// <summary>Show <see cref="Egyptian_God_Slime"/> from the Extra Deck, not the tribute material.</summary>
+    public override string PortraitPath
+    {
+        get
+        {
+            // ModelDb preload calls PortraitPath on the canonical instance; Owner asserts mutable.
+            if (IsCanonical)
+                return ModelDb.Card<Egyptian_God_Slime>().PortraitPath;
+
+            TryResolveSourceMonsterFromStoredPetId();
+            Player? p = Owner;
+            if (p == null)
+                return "card.png".CardImagePath();
+            CardPile? extra = ExtraDeckPile.CustomType.GetPile(p);
+            Egyptian_God_Slime? slime = extra?.Cards.OfType<Egyptian_God_Slime>().FirstOrDefault();
+            if (slime != null && !string.IsNullOrEmpty(slime.PortraitPath))
+                return slime.PortraitPath;
+            return "card.png".CardImagePath();
+        }
+    }
 
     public Color? GetNHandPlayPhaseHighlightModulateOverride(
         NHandCardHolder holder,

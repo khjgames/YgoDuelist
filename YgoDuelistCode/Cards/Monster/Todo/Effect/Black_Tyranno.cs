@@ -10,6 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Black_Tyranno : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Black_Tyranno()
         : base(
             cost: 1,

@@ -24,7 +24,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 /// </summary>
 /// <remarks>
 /// <b>cards.json</b> placeholders (match <see cref="CanonicalVars"/>):
-/// <c>Damage</c> (printed ATK), <c>Block</c> / <c>Def</c> (printed DEF), <c>Mgc</c>, <c>CalculatedATK</c>, <c>CalculatedDEF</c>, <c>Stars</c>, <c>Increase</c> (execute ATK delta per kill, cf. <c>TheScythe</c>).
+/// <c>Damage</c> (printed ATK), <c>Block</c> / <c>Def</c> (printed DEF), <c>Mgc</c>, <c>CalculatedATK</c>, <c>CalculatedDEF</c>, <c>Stars</c>, <c>Increase</c> (execute ATK delta per kill, cf. <c>TheScythe</c>), <c>NumPortions</c> (<see cref="BaseMonsterCard.AttackPortionCount"/> for Portion text).
 /// Use four keys: <c>description</c>, <c>description_combat</c>, <c>description_skill</c>, <c>description_skill_combat</c> (hand-effect monsters also use <c>description_hand_effect</c> / <c>_combat</c>).
 /// When <see cref="YgoDuelistCard.UseAlternateUpgradedDescription"/> is true, optional <c>_upgraded</c> variants of each active suffix are resolved when upgraded or in upgrade preview (e.g. <c>description_combat_upgraded</c>).
 /// Effect monsters add extra <see cref="DynamicVar"/> names via <c>protected override IEnumerable&lt;DynamicVar&gt; CanonicalVars</c> (often <c>base.CanonicalVars.Concat(...)</c>).
@@ -94,6 +94,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         yield return new DynamicVar("Mgc", (decimal)BaseMgc);
         yield return new ComputedDecimalVar("CalculatedATK", GetTotalAtkForPreview, (decimal)BaseAtk);
         yield return new ComputedDecimalVar("CalculatedDEF", GetTotalDefForPreview, (decimal)BaseDef);
+        yield return new ComputedDecimalVar("NumPortions", YgoDuelistCard.GetNumPortionsDisplayValue, 0m);
     }
 
     protected override void AfterDowngraded()
@@ -216,12 +217,14 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 await ApplyRecklessSelfDamageIfAnyAsync();
                 foreach (Creature t in attackTargets)
                 {
-                    AttackCommand attackCommand = await DamageCmd.Attack((decimal)atk)
-                        .FromCard(this)
-                        .Targeting(t)
-                        .WithHitFx("vfx/vfx_attack_slash")
-                        .Execute(choiceContext);
-                    await OnAfterMonsterAttackHitAsync(choiceContext, cardPlay, attackCommand);
+                    AttackCommand? attackCommand = await YgoPortionDamage.DealMonsterAttackToTargetAsync(
+                        choiceContext,
+                        this,
+                        t,
+                        atk,
+                        "vfx/vfx_attack_slash");
+                    if (attackCommand != null && !YgoPortionedSalvo.ShouldSkipMonsterPerHitCardHook(this))
+                        await OnAfterMonsterAttackHitAsync(choiceContext, cardPlay, attackCommand);
                 }
             }
         }
@@ -248,7 +251,10 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     protected virtual Task BeforeAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
-    /// <summary>After each <see cref="DamageCmd.Attack"/> hit from <see cref="CombatAction"/> (same resolution loop).</summary>
+    /// <summary>
+    /// After a logical attack from <see cref="CombatAction"/> (once per target per outer resolution when not Portioned;
+    /// when <see cref="BaseMonsterCard.AttackPortionCount"/> is 2–5, once after all portion chunks to that target — not once per chunk).
+    /// </summary>
     protected virtual Task OnAfterMonsterAttackHitAsync(
         PlayerChoiceContext choiceContext,
         CardPlay cardPlay,

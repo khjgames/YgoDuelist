@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Hurricail : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Hurricail()
         : base(
             cost: 1,

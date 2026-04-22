@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Three_Headed_Geedo : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Three_Headed_Geedo()
         : base(
             cost: 1,

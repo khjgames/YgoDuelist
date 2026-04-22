@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Twin_Long_Rods_1 : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Twin_Long_Rods_1()
         : base(
             cost: 1,

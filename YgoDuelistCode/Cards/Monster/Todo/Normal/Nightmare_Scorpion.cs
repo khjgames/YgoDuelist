@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Nightmare_Scorpion : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Nightmare_Scorpion()
         : base(
             cost: 1,

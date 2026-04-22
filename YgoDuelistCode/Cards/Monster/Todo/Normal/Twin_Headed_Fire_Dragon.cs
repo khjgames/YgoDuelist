@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Twin_Headed_Fire_Dragon : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Twin_Headed_Fire_Dragon()
         : base(
             cost: 1,

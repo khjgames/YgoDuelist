@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Molten_Behemoth : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Molten_Behemoth()
         : base(
             cost: 1,

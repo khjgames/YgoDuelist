@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Kaminari_Attack : FusionMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public override bool BulkBundled => true;
 
     public Kaminari_Attack()

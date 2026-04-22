@@ -19,6 +19,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>End-phase GY revive — <see cref="YgoTwinHeadedBehemothEndPhase"/>; field→GY tracking — <see cref="Patches.CardPileCmdFieldMonsterGraveyardEffectsPatch"/>.</summary>
 public sealed class Twin_Headed_Behemoth : EffectMonsterCard, IYgoOwnerBeforeTurnEndFlushGraveyardEffect
 {
+    public override int AttackPortionCount => 2;
+
     private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-TWIN_HEADED_BEHEMOTH.activate_revive");
     private int _gyReviveEligibleStamp = -1;
 

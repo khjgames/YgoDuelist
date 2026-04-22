@@ -7,6 +7,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Cyber_Saurus : FusionMonsterCard
 {
+    public override int AttackPortionCount => 5;
     public override bool BulkBundled => true;
 
     public Cyber_Saurus()

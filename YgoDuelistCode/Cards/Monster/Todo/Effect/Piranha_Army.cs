@@ -9,6 +9,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Piranha_Army : EffectMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Piranha_Army()
         : base(
             cost: 1,

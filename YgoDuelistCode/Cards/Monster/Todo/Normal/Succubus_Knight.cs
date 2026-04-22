@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Succubus_Knight : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Succubus_Knight()
         : base(
             cost: 1,

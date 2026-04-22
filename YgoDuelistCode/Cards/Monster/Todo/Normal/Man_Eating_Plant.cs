@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Man_Eating_Plant : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Man_Eating_Plant()
         : base(
             cost: 1,

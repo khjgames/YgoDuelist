@@ -12,6 +12,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Gaia_The_Fierce_Knight : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Gaia_The_Fierce_Knight()
         : base(
             cost: 1,

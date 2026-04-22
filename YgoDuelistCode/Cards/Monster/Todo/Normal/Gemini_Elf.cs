@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Gemini_Elf : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Gemini_Elf()
         : base(
             cost: 1,

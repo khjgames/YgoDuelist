@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Shovel_Crusher : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Shovel_Crusher()
         : base(
             cost: 1,

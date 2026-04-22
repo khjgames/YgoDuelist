@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Phantom_Ghost : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Phantom_Ghost()
         : base(
             cost: 1,

@@ -10,6 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Gaia_The_Fierce_Knight_Origin : EffectMonsterCard, IDoubleTributeMaterial
 {
+    public override int AttackPortionCount => 2;
     public Gaia_The_Fierce_Knight_Origin()
         : base(
             cost: 1,

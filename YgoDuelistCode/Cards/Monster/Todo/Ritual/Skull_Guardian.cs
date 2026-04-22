@@ -10,6 +10,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
 
 public sealed class Skull_Guardian : RitualMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Skull_Guardian()
         : base(
             cost: 1,

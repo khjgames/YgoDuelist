@@ -88,74 +88,10 @@ public static class DuelMonsterPetDeathPatch
             if (player.Creature?.HasPower<AccumulatedSpiritsPower>() == true)
                 YgoDuelistPassivePowerState.RegisterAccumulatedSpiritsFieldLoss(player);
 
-            // MP: fire-and-forget async could finish after PlayCardAction / checksum; keep block+heal before pile moves.
-            RunRelocationBlocking(async () => await GuardianSpiritPower.OnPlayerDuelMonsterDestroyedAsync(
-                new BlockingPlayerChoiceContext(),
-                player,
-                pet));
-
-            var graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
-            bool bounceToHand = YgoDuelMonsterBounceToHand.TryConsume(pet);
-
-            if (bounceToHand)
-            {
-                CardPile? hand = PileType.Hand.GetPile(player);
-                if (hand != null && graveyard != null && card.Pile != hand)
-                {
-                    GD.Print($"[ZGO] DuelMonsterPetDeathPatch: bounce {card.Id.Entry} to hand (equips to GY).");
-                    RunRelocationBlocking(() => MoveEquipsToGraveyardThenMonsterToPileAsync(player, card, hand, graveyard));
-                }
-            }
-            else if (graveyard != null && card.Pile != graveyard)
-            {
-                if (card is IYgoCustomFieldMonsterDeathGraveyardRelocation customGy)
-                {
-                    GD.Print($"[ZGO] DuelMonsterPetDeathPatch: custom GY relocation {card.Id.Entry}");
-                    RunRelocationBlocking(() => customGy.RunCustomFieldMonsterDeathGraveyardRelocationAsync(player, graveyard));
-                }
-                else if (card is BaseMonsterCard bmToGy)
-                {
-                    GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
-                    RunRelocationBlocking(() => MoveEquipsToGraveyardThenMonsterToPileAsync(player, bmToGy, graveyard, graveyard));
-                }
-            }
-
-            // Remove from field/command registries so it no longer affects stats or menus.
-            DuelMonsterFieldRegistry.UnregisterPet(pet);
-            MonsterCommandRegistry.Clear(pet);
-
-            NotifyZoneCardsAfterDuelMonsterDied(player, ctx);
-
-            if (card is BaseMonsterCard bmDeathHook)
-                TaskHelper.RunSafely(bmDeathHook.OnAfterDuelMonsterPetDeathBeforeUnregisterAsync(player));
-            if (player?.Creature != null)
-                RunRelocationBlocking(() => FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player));
-            GD.Print("[ZGO] DuelMonsterPetDeathPatch: unregistered pet and cleared command state.");
-
-            // Manually remove the dead duel monster's visuals and creature from combat,
-            // since DieForYouPower normally prevents removal of its owner.
-            var combatState = pet.CombatState;
-            if (combatState != null)
-            {
-                var nCreature = NCombatRoom.Instance?.GetCreatureNode(pet);
-                if (nCreature != null)
-                {
-                    GD.Print("[ZGO] DuelMonsterPetDeathPatch: removing NCreature node for dead duel monster.");
-                    // Hide and free the visual immediately so the slot looks empty.
-                    nCreature.Visible = false;
-                    nCreature.Hitbox.Visible = false;
-                    nCreature.Visuals.Bounds.Visible = false;
-                    NCombatRoom.Instance.RemoveCreatureNode(nCreature);
-                    nCreature.QueueFree();
-                }
-
-                if (combatState.Enemies.Contains(pet) || combatState.PlayerCreatures.Contains(pet))
-                {
-                    GD.Print("[ZGO] DuelMonsterPetDeathPatch: removing dead duel monster from CombatManager/CombatState.");
-                    CombatManager.Instance.RemoveCreature(pet);
-                    combatState.RemoveCreature(pet);
-                }
-            }
+            // GuardianSpirit / CardPileCmd use Cmd.Wait + SceneTreeTimer + tweens. Sync .GetResult() on the main
+            // thread while still inside OnPetDied (invoked from CreatureCmd.Kill) deadlocks: timers never tick
+            // (e.g. Special Summon XYZ kills first material → freeze). Run the whole tail on the next idle tick.
+            ScheduleDeferredPetDeathRelocationChain(() => RunDeferredPetDeathTailAsync(player, pet, card, ctx));
         }
         catch (Exception e)
         {
@@ -163,7 +99,7 @@ public static class DuelMonsterPetDeathPatch
         }
     }
 
-    private static void NotifyZoneCardsAfterDuelMonsterDied(Player player, DuelMonsterPetDeathContext ctx)
+    private static async Task NotifyZoneCardsAfterDuelMonsterDiedAsync(Player player, DuelMonsterPetDeathContext ctx)
     {
         CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
         if (zone == null)
@@ -172,14 +108,106 @@ public static class DuelMonsterPetDeathPatch
         foreach (CardModel c in zone.Cards.ToList())
         {
             if (c is IYgoAfterDuelMonsterDiedZoneCard hook)
-                RunRelocationBlocking(() => hook.AfterDuelMonsterDiedAsync(ctx));
+                await hook.AfterDuelMonsterDiedAsync(ctx);
         }
     }
 
+    private static void ScheduleDeferredPetDeathRelocationChain(Func<Task> tailAsync)
+    {
+        try
+        {
+            if (Engine.GetMainLoop() is SceneTree tree && tree.Root != null)
+            {
+                GD.Print("[YgoDuelist][MP][DuelDeath] scheduling deferred pet-death relocation tail (SceneTreeTimer / tween safe)");
+                // Callable return values are marshaled to Variant; Task is not supported — fire-and-forget via void body.
+                Callable.From(() => { TaskHelper.RunSafely(tailAsync()); }).CallDeferred();
+                return;
+            }
+
+            GD.PrintErr("[YgoDuelist][MP][DuelDeath] SceneTree missing; running relocation tail inline (timer deadlock risk).");
+            RunRelocationBlockingSync(tailAsync);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Error($"ScheduleDeferredPetDeathRelocationChain: {ex}");
+        }
+    }
+
+    private static async Task RunDeferredPetDeathTailAsync(Player player, Creature pet, CardModel card, DuelMonsterPetDeathContext ctx)
+    {
+        GD.Print(
+            $"[YgoDuelist][MP][DuelDeath] deferred tail BEGIN pet={pet.Name} card={card.Id?.Entry} ownerNet={player.NetId} petCombatId={pet.CombatId}");
+
+        await GuardianSpiritPower.OnPlayerDuelMonsterDestroyedAsync(
+            new BlockingPlayerChoiceContext(),
+            player,
+            pet);
+
+        CardPile? graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
+        bool bounceToHand = YgoDuelMonsterBounceToHand.TryConsume(pet);
+
+        if (bounceToHand)
+        {
+            CardPile? hand = PileType.Hand.GetPile(player);
+            if (hand != null && graveyard != null && card.Pile != hand && card is BaseMonsterCard bmBounce)
+            {
+                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: bounce {card.Id.Entry} to hand (equips to GY).");
+                await MoveEquipsToGraveyardThenMonsterToPileAsync(player, bmBounce, hand, graveyard);
+            }
+        }
+        else if (graveyard != null && card.Pile != graveyard)
+        {
+            if (card is IYgoCustomFieldMonsterDeathGraveyardRelocation customGy)
+            {
+                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: custom GY relocation {card.Id.Entry}");
+                await customGy.RunCustomFieldMonsterDeathGraveyardRelocationAsync(player, graveyard);
+            }
+            else if (card is BaseMonsterCard bmToGy)
+            {
+                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
+                await MoveEquipsToGraveyardThenMonsterToPileAsync(player, bmToGy, graveyard, graveyard);
+            }
+        }
+
+        DuelMonsterFieldRegistry.UnregisterPet(pet);
+        MonsterCommandRegistry.Clear(pet);
+
+        await NotifyZoneCardsAfterDuelMonsterDiedAsync(player, ctx);
+
+        if (card is BaseMonsterCard bmDeathHook)
+            TaskHelper.RunSafely(bmDeathHook.OnAfterDuelMonsterPetDeathBeforeUnregisterAsync(player));
+        if (player.Creature != null)
+            await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
+        GD.Print("[ZGO] DuelMonsterPetDeathPatch: unregistered pet and cleared command state.");
+
+        CombatState? combatState = pet.CombatState;
+        if (combatState != null)
+        {
+            var nCreature = NCombatRoom.Instance?.GetCreatureNode(pet);
+            if (nCreature != null)
+            {
+                GD.Print("[ZGO] DuelMonsterPetDeathPatch: removing NCreature node for dead duel monster.");
+                nCreature.Visible = false;
+                nCreature.Hitbox.Visible = false;
+                nCreature.Visuals.Bounds.Visible = false;
+                NCombatRoom.Instance.RemoveCreatureNode(nCreature);
+                nCreature.QueueFree();
+            }
+
+            // Duel pets are ally monsters with PetOwner set and Player == null, so they are not in PlayerCreatures.
+            if (combatState.ContainsCreature(pet))
+            {
+                GD.Print("[ZGO] DuelMonsterPetDeathPatch: removing dead duel monster from CombatManager/CombatState.");
+                CombatManager.Instance.RemoveCreature(pet);
+                combatState.RemoveCreature(pet);
+            }
+        }
+
+        GD.Print(
+            $"[YgoDuelist][MP][DuelDeath] deferred tail END pet={pet.Name} card={card.Id?.Entry} ownerNet={player.NetId}");
+    }
+
     /// <summary>
-    /// Card pile moves must finish before <see cref="DuelMonsterFieldRegistry.UnregisterPet"/> / RemoveCreature.
-    /// Fire-and-forget <see cref="TaskHelper.RunSafely"/> let those run first; <see cref="CardPileCmd.Add"/> could then
-    /// leave the source card in no pile (vanished from GY/hand/deck UI).
     /// MP: <see cref="MonsterCommandCard.SourceMonster"/> is not replicated; host may have a reference match while client does not.
     /// Use <see cref="MonsterCommandCard.SourcePetCombatId"/> vs the dying pet's <see cref="Creature.CombatId"/>, and resolve source when possible.
     /// </summary>
@@ -192,7 +220,7 @@ public static class DuelMonsterPetDeathPatch
         return pid != 0 && mcc.SourcePetCombatId == pid;
     }
 
-    private static void RunRelocationBlocking(Func<Task> work)
+    private static void RunRelocationBlockingSync(Func<Task> work)
     {
         try
         {
@@ -253,6 +281,47 @@ public static class DuelMonsterPetDeathPatch
     }
 
     /// <summary>
+    /// Removes a live duel monster from the field by moving its source card to the banished pile. Equips and
+    /// equip-link traps go to the graveyard. Does not run pet-death hooks or <see cref="CreatureCmd.Kill"/> (no
+    /// graveyard hop for the monster card).
+    /// </summary>
+    public static async Task ReleaseLiveFieldMonsterToBanishedAsync(Player player, Creature pet, BaseMonsterCard fieldCard)
+    {
+        if (player?.PlayerCombatState == null || pet == null || fieldCard == null)
+            return;
+        if (!pet.IsAlive)
+            return;
+        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != fieldCard)
+            return;
+
+        TryClearOptionPileForFieldMonster(player, fieldCard, pet);
+
+        CardPile? banished = BanishedPile.CustomType.GetPile(player);
+        CardPile? graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
+        if (banished == null || graveyard == null)
+            return;
+
+        await MoveEquipsToGraveyardThenMonsterToPileAsync(player, fieldCard, banished, graveyard);
+
+        DuelMonsterFieldRegistry.UnregisterPet(pet);
+        MonsterCommandRegistry.Clear(pet);
+
+        if (player.Creature != null)
+            await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
+
+        // Banish path: card is already off the field; kill the pet so it leaves PlayerCombatState.Pets (CountLiveDuelMonsters).
+        // Unregister first so DuelMonsterPetDeathPatch does not try to move the card to the graveyard again.
+        await CreatureCmd.Kill(pet, force: true);
+
+        CombatState? combatState = pet.CombatState;
+        if (combatState != null && combatState.ContainsCreature(pet))
+        {
+            CombatManager.Instance.RemoveCreature(pet);
+            combatState.RemoveCreature(pet);
+        }
+    }
+
+    /// <summary>
     /// Removes a live duel monster from the field by moving its source card to hand. Equips and equip-link traps on that
     /// monster are sent to the graveyard (same pile moves as bounce-to-hand on death). Does not run pet-death hooks
     /// (<see cref="AbstractMonsterCard.OnPetDiedBeforeOptionPileHandlingAsync"/>, destruction powers, etc.).
@@ -281,24 +350,13 @@ public static class DuelMonsterPetDeathPatch
         if (player.Creature != null)
             await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
 
-        CombatState? combatState = pet.CombatState;
-        if (combatState != null)
-        {
-            var nCreature = NCombatRoom.Instance?.GetCreatureNode(pet);
-            if (nCreature != null)
-            {
-                nCreature.Visible = false;
-                nCreature.Hitbox.Visible = false;
-                nCreature.Visuals.Bounds.Visible = false;
-                NCombatRoom.Instance.RemoveCreatureNode(nCreature);
-                nCreature.QueueFree();
-            }
+        await CreatureCmd.Kill(pet, force: true);
 
-            if (combatState.Enemies.Contains(pet) || combatState.PlayerCreatures.Contains(pet))
-            {
-                CombatManager.Instance.RemoveCreature(pet);
-                combatState.RemoveCreature(pet);
-            }
+        CombatState? combatState = pet.CombatState;
+        if (combatState != null && combatState.ContainsCreature(pet))
+        {
+            CombatManager.Instance.RemoveCreature(pet);
+            combatState.RemoveCreature(pet);
         }
     }
 

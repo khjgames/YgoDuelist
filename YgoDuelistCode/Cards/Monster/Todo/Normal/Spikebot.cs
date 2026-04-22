@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Spikebot : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Spikebot()
         : base(
             cost: 1,

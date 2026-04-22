@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Wicked_Dragon_with_the_Ersatz_Head : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Wicked_Dragon_with_the_Ersatz_Head()
         : base(
             cost: 1,

@@ -21,6 +21,8 @@ public sealed class Xyz_Dragon_Cannon : FusionMonsterCard
         typeof(Z_Metal_Tank)
     };
 
+    public override int AttackPortionCount => 3;
+
     public Xyz_Dragon_Cannon()
         : base(
             cost: 1,

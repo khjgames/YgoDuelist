@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Cyber_Commander : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Cyber_Commander()
         : base(
             cost: 1,

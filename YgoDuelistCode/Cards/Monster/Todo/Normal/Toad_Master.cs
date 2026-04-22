@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Toad_Master : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Toad_Master()
         : base(
             cost: 1,

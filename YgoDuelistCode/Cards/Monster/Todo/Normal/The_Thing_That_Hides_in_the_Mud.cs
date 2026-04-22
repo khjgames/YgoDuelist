@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class The_Thing_That_Hides_in_the_Mud : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public The_Thing_That_Hides_in_the_Mud()
         : base(
             cost: 1,

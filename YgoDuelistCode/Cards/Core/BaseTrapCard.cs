@@ -22,6 +22,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     private static CardKeyword FaceDownKeyword => (CardKeyword)10012;
     private static CardKeyword SplinterKeyword => (CardKeyword)20044;
     private static CardKeyword BlightKeyword => (CardKeyword)20045;
+    private static CardKeyword PortionKeyword => (CardKeyword)20059;
 
     /// <summary>
     /// <see cref="CardModel.Keywords"/> only unions <see cref="CanonicalKeywords"/> once; trap presentation depends on pile,
@@ -248,6 +249,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 if (ShouldUseFaceDownPresentation())
                     keywords.Add(FaceDownKeyword);
                 keywords.AddRange(GetSplinterBlightKeywords());
+                keywords.AddRange(GetPortionKeywords());
                 return keywords;
             }
 
@@ -259,6 +261,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             if (ShouldUseFaceDownPresentation())
                 fallback.Add(FaceDownKeyword);
             fallback.AddRange(GetSplinterBlightKeywords());
+            fallback.AddRange(GetPortionKeywords());
             return fallback;
         }
     }
@@ -269,6 +272,13 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
             yield return SplinterKeyword;
         if (CardShowsBlightKeyword)
             yield return BlightKeyword;
+    }
+
+    private IEnumerable<CardKeyword> GetPortionKeywords()
+    {
+        if (CardDamagePortionCount < 2)
+            yield break;
+        yield return PortionKeyword;
     }
 
     /// <remarks>Keyword tips come from <see cref="CardModel.HoverTips"/> via <see cref="CanonicalKeywords"/>.</remarks>

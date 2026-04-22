@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Gate_Deeg : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Gate_Deeg()
         : base(
             cost: 1,

@@ -12,6 +12,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 /// <summary>While you control another face-up Wind monster, gains printed <c>Mgc</c> ATK.</summary>
 public sealed class Insect_Soldiers_of_the_Sky : EffectMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public Insect_Soldiers_of_the_Sky()
         : base(
             cost: 1,

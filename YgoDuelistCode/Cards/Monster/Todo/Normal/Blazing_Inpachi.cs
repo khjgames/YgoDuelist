@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Blazing_Inpachi : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Blazing_Inpachi()
         : base(
             cost: 1,

@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class United_Resistance : NormalMonsterCard
 {
+    public override int AttackPortionCount => 3;
     public United_Resistance()
         : base(
             cost: 1,

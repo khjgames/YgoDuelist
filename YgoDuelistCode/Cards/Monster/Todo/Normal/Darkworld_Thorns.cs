@@ -8,6 +8,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
 
 public sealed class Darkworld_Thorns : NormalMonsterCard
 {
+    public override int AttackPortionCount => 2;
     public Darkworld_Thorns()
         : base(
             cost: 1,
