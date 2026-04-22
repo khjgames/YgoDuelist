@@ -48,6 +48,7 @@ public static class MonsterActivatedEffectRuntime
             return null;
 
         return player.PlayerCombatState.Pets
+            .OrderBy(p => p.CombatId)
             .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == source && p.IsAlive);
     }
 }

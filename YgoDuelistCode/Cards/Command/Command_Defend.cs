@@ -112,6 +112,7 @@ public sealed class Command_Defend : MonsterCommandCard, IYgoDefendMonsterComman
             return null;
 
         return player.PlayerCombatState.Pets
+            .OrderBy(p => p.CombatId)
             .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == source);
     }
 

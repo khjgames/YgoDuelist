@@ -20,8 +20,9 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 /// yields different 3-card grids (e.g. <see cref="MegaCrit.Sts2.Core.Models.Potions.SkillPotion"/>). Choice sync then
 /// maps the same UI index to different <see cref="CardModel.Id"/> and combat checksums diverge.
 /// <para/>
-/// In multiplayer combat only, mirror vanilla filters then sort by <see cref="CardId.Entry"/> before shuffling so
-/// every peer builds the same list; RNG consumption (Fisher–Yates) matches vanilla.
+/// In multiplayer combat only, mirror vanilla filters then sort by <see cref="CardId.Entry"/> before drawing picks so
+/// every peer agrees on ordering. YGO skill/attack potions use <see cref="YgoSkillAttackPotionPackWeightedPick"/>; other callers keep
+/// <see cref="MegaCrit.Sts2.Core.Extensions.ListExtensions.UnstableShuffle{T}"/> then <c>Take</c> (Fisher–Yates).
 /// </summary>
 [HarmonyPatch(typeof(CardFactory), nameof(CardFactory.GetDistinctForCombat))]
 public static class CardFactoryGetDistinctForCombatMpStableOrderPatch
@@ -40,8 +41,9 @@ public static class CardFactoryGetDistinctForCombatMpStableOrderPatch
         IEnumerable<CardModel> afterPlayerCount = FilterForPlayerCount(player.RunState, cards);
         List<CardModel> list = CardFactory.FilterForCombat(afterPlayerCount).ToList();
         list.Sort((a, b) => string.CompareOrdinal(a.Id.Entry, b.Id.Entry));
-        list.UnstableShuffle(rng);
-        IEnumerable<CardModel> picked = list.Take(count);
+        IEnumerable<CardModel> picked = YgoSkillAttackPotionCardPoolFilter.IsYgoSkillOrAttackPotionContext(player)
+            ? YgoSkillAttackPotionPackWeightedPick.TakeDistinctWeighted(list, count, rng)
+            : list.UnstableShuffle(rng).Take(count);
         __result = picked.Select(c => cs.CreateCard(c, player));
 
         YgoMpDiagnostics.VerbosePrint(

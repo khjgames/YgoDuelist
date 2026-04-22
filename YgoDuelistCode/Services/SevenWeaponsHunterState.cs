@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -52,7 +53,7 @@ public static class SevenWeaponsHunterState
 
         int stack = GetStackAmount(player);
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;

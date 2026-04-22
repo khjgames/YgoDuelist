@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -139,7 +140,7 @@ public static class DuelMonsterStancePowerSync
         if (owner.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in owner.PlayerCombatState.Pets)
+        foreach (Creature pet in owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (pet.IsAlive && DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == card)
                 return pet;

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HarmonyLib;
 using Godot;
@@ -33,7 +35,10 @@ public static class MonsterCommandTurnResetPatch
         if (combatPlayer.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in combatPlayer.PlayerCombatState.Pets)
+        // Snapshot: SetHasUsedCommandThisTurn / registry hooks can add or remove pets while we run;
+        // iterating Pets directly uses the underlying List enumerator and throws InvalidOperationException.
+        List<Creature> petsAtTurnStart = combatPlayer.PlayerCombatState.Pets.ToList();
+        foreach (Creature pet in petsAtTurnStart)
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard bm)
                 bm.FlippedThisTurn = false;
@@ -77,7 +82,8 @@ public static class MonsterCommandTurnResetPatch
         if (player.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        List<Creature> petsSnapshot = player.PlayerCombatState.Pets.ToList();
+        foreach (Creature pet in petsSnapshot)
         {
             if (!pet.IsAlive)
                 continue;

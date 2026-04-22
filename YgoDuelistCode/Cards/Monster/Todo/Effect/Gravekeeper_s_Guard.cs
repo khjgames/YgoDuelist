@@ -37,7 +37,8 @@ public sealed class Gravekeeper_s_Guard : EffectMonsterCard, IMonsterFlipEffect
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
 
-    public override Type[] RelatedCards => new[] { typeof(Gravekeeper_s_Guard) };
+    /// <summary>Do not include self — duplicate model id breaks MP pool registration.</summary>
+    public override Type[] RelatedCards => System.Array.Empty<Type>();
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new[] { new EnergyVar(0) }.Concat(base.CanonicalVars);

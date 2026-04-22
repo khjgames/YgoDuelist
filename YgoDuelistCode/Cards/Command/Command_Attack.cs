@@ -145,6 +145,7 @@ public sealed class Command_Attack : MonsterCommandCard
             return null;
 
         return player.PlayerCombatState.Pets
+            .OrderBy(p => p.CombatId)
             .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == source);
     }
 }

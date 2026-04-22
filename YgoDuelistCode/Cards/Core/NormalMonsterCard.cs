@@ -179,16 +179,24 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         // HasRecklessBlockerKeyword only affects which keyword chips render (see BaseMonsterCard.RecklessKeywordStackCountForDisplay); it must not skip gameplay self-damage.
         int recklessSelf = GetTotalRecklessCombatSelfDamage();
 
-        async Task ApplyRecklessSelfDamageIfAnyAsync()
+        async Task ApplyRecklessSelfDamageIfAnyAsync(int resolutionIndex, int totalResolutions)
         {
             if (recklessSelf <= 0
                 || Owner?.Creature == null
                 || Owner.PlayerCombatState == null)
                 return;
             Creature? selfPet = Owner.PlayerCombatState.Pets
+                .OrderBy(p => p.CombatId)
                 .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
             if (selfPet == null || !selfPet.IsAlive)
                 return;
+            if (YgoMpDiagnostics.IsMultiplayer)
+            {
+                YgoMpDiagnostics.VerbosePrint(
+                    "RecklessCombat",
+                    $"{Id?.Entry} res={resolutionIndex + 1}/{totalResolutions} petCombatId={selfPet.CombatId} dmg={recklessSelf} hp={selfPet.CurrentHp}/{selfPet.MaxHp}");
+            }
+
             await CreatureCmd.Damage(
                 choiceContext,
                 selfPet,
@@ -214,7 +222,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             WillSet = false;
             for (int i = 0; i < resolutionCount; i++)
             {
-                await ApplyRecklessSelfDamageIfAnyAsync();
+                await ApplyRecklessSelfDamageIfAnyAsync(i, resolutionCount);
                 foreach (Creature t in attackTargets)
                 {
                     AttackCommand? attackCommand = await YgoPortionDamage.DealMonsterAttackToTargetAsync(
@@ -235,7 +243,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 WillSet = false;
                 for (int i = 0; i < resolutionCount; i++)
                 {
-                    await ApplyRecklessSelfDamageIfAnyAsync();
+                    await ApplyRecklessSelfDamageIfAnyAsync(i, resolutionCount);
                     await CreatureCmd.GainBlock(
                         Owner.Creature,
                         (decimal)def,
@@ -332,6 +340,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         if (Owner?.PlayerCombatState == null)
             return;
         Creature? pet = Owner.PlayerCombatState.Pets
+            .OrderBy(p => p.CombatId)
             .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
         await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
     }

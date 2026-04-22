@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -105,8 +106,9 @@ public static class YgoNarrowPassField
         if (zone == null)
             return null;
 
-        return zone.Cards.FirstOrDefault(c =>
-            c is IYgoMonsterCommandFieldTaxContributor hook
-            && hook.IsMonsterCommandFieldTaxActive());
+        return zone.Cards
+            .Where(c => c is IYgoMonsterCommandFieldTaxContributor hook && hook.IsMonsterCommandFieldTaxActive())
+            .OrderBy(c => c.Id?.Entry ?? string.Empty, StringComparer.Ordinal)
+            .FirstOrDefault();
     }
 }

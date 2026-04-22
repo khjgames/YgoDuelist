@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Combat;
@@ -698,7 +699,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (this is not EffectMonsterCard || IsCanonical || Owner?.PlayerCombatState == null)
             return false;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this && pet.HasPower<YgoCurseOfAnubisEffectMonsterPower>())
                 return true;
@@ -712,7 +713,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return false;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this && pet.HasPower<TPower>())
                 return true;
@@ -726,7 +727,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -741,7 +742,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -756,7 +757,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -771,7 +772,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -786,7 +787,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -801,7 +802,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -816,7 +817,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -831,7 +832,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -846,7 +847,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -861,7 +862,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -876,7 +877,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;
@@ -892,7 +893,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return 0;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
         {
             if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
                 continue;

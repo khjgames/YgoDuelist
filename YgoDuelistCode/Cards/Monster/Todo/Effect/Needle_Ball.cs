@@ -78,11 +78,14 @@ public sealed class Needle_Ball : EffectMonsterCard, IMonsterActivatedEffect
         decimal selfDmg = source.DynamicVars["Mgc"].BaseValue;
         if (selfDmg > 0m)
         {
+            // Move|Unpowered: life cost is still blockable as a move, but not a "powered attack", so
+            // DieForYouPower does not redirect it. Redirected powered hits use Hook listener order (allies/pets),
+            // which can differ between host and client and desync checksums (e.g. co-op Needle Ball + multiple pets).
             await CreatureCmd.Damage(
                 choiceContext,
                 player.Creature,
                 selfDmg,
-                ValueProp.Move,
+                ValueProp.Move | ValueProp.Unpowered,
                 dealer: null,
                 cardSource: source);
         }

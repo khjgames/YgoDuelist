@@ -14,11 +14,13 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoSkillAttackPotionCardPoolFilter
 {
+    /// <summary>Ygo Duelist combat card grid from skill or attack potion (vanilla <c>OnUse</c> stack).</summary>
+    public static bool IsYgoSkillOrAttackPotionContext(Player? player) =>
+        player?.Character is Character.YgoDuelist && CallerIsSkillOrAttackPotionOnUse();
+
     public static IEnumerable<CardModel> FilterIfSkillOrAttackPotion(Player player, IEnumerable<CardModel> cards)
     {
-        if (player?.Character is not Character.YgoDuelist)
-            return cards;
-        if (!CallerIsSkillOrAttackPotionOnUse())
+        if (!IsYgoSkillOrAttackPotionContext(player))
             return cards;
         return cards.Where(PassesYgoSkillAttackPotionRules);
     }

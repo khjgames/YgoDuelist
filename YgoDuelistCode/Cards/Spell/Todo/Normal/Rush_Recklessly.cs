@@ -68,6 +68,7 @@ public sealed class Rush_Recklessly : BaseSpellCard, IYgoPlayCardActionPreSpendR
             return;
 
         Creature? targetPet = Owner.PlayerCombatState.Pets
+            .OrderBy(p => p.CombatId)
             .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), targetMonster));
         if (targetPet == null)
             return;

@@ -64,6 +64,7 @@ public sealed class The_Reliable_Guardian : BaseSpellCard, IYgoPlayCardActionPre
             return;
 
         Creature? targetPet = Owner.PlayerCombatState.Pets
+            .OrderBy(p => p.CombatId)
             .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), targetMonster));
         if (targetPet == null)
             return;
