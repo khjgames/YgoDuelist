@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Potions;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Character;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -17,7 +16,7 @@ public static class YgoSkillAttackPotionCardPoolFilter
 {
     public static IEnumerable<CardModel> FilterIfSkillOrAttackPotion(Player player, IEnumerable<CardModel> cards)
     {
-        if (player?.Character is not YgoDuelist)
+        if (player?.Character is not Character.YgoDuelist)
             return cards;
         if (!CallerIsSkillOrAttackPotionOnUse())
             return cards;
