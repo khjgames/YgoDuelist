@@ -1,12 +1,22 @@
+using System;
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Vwxyz_Dragon_Catapult_Cannon : FusionMonsterCard
 {
+    public static readonly Type[] RequiredMaterialTypes =
+    {
+        typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Vw_Tiger_Catapult),
+        typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion.Xyz_Dragon_Cannon)
+    };
+
     public Vwxyz_Dragon_Catapult_Cannon()
         : base(
             cost: 1,
@@ -25,5 +35,13 @@ public sealed class Vwxyz_Dragon_Catapult_Cannon : FusionMonsterCard
     }
     
     public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+
+    public override bool CanBeFusionSummoned => false;
+
+    public static bool PlayerHasInExtraDeck(Player player) =>
+        UnionFusionSpecialSummonRules.PlayerHasFusionInExtraDeck<Vwxyz_Dragon_Catapult_Cannon>(player);
+
+    public static bool TryGetExactFieldMaterials(Player player, out List<BaseMonsterCard> materials) =>
+        UnionFusionSpecialSummonRules.TryGetExactFieldMaterials(player, RequiredMaterialTypes, out materials);
 
 }

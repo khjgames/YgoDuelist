@@ -45,6 +45,8 @@ public sealed class Stealth_Bird : EffectMonsterCard, IMonsterActivatedEffect
         typeof(Stealth_Bird),
     };
 
+    public override bool AskSelectFlip => false;
+
     public override bool UsesFaceDownFlipDamageOnCommandAttack => true;
 
     /// <summary>Flip Summon / flip-to-attack from face-down defense: magic damage — <see cref="OnCommandAttackAfterStanceSyncedAsync"/>.</summary>

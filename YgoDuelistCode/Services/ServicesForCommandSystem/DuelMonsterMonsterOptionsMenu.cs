@@ -108,6 +108,66 @@ public static class DuelMonsterMonsterOptionsMenu
             commands.Add(slimeCmd);
         }
 
+        if (monsterCard is BaseMonsterCard material
+            && Xy_Dragon_Cannon.PlayerHasInExtraDeck(player)
+            && Xy_Dragon_Cannon.TryGetExactFieldMaterials(player, out var xyMats)
+            && xyMats.Any(m => ReferenceEquals(m, material)))
+        {
+            Special_Summon_XY_Dragon_Cannon cmd = combatState.CreateCard<Special_Summon_XY_Dragon_Cannon>(player);
+            cmd.InitializeSource(monsterCard, pet);
+            commands.Add(cmd);
+        }
+
+        if (monsterCard is BaseMonsterCard materialXz
+            && Xz_Tank_Cannon.PlayerHasInExtraDeck(player)
+            && Xz_Tank_Cannon.TryGetExactFieldMaterials(player, out var xzMats)
+            && xzMats.Any(m => ReferenceEquals(m, materialXz)))
+        {
+            Special_Summon_XZ_Tank_Cannon cmd = combatState.CreateCard<Special_Summon_XZ_Tank_Cannon>(player);
+            cmd.InitializeSource(monsterCard, pet);
+            commands.Add(cmd);
+        }
+
+        if (monsterCard is BaseMonsterCard materialYz
+            && Yz_Tank_Dragon.PlayerHasInExtraDeck(player)
+            && Yz_Tank_Dragon.TryGetExactFieldMaterials(player, out var yzMats)
+            && yzMats.Any(m => ReferenceEquals(m, materialYz)))
+        {
+            Special_Summon_YZ_Tank_Dragon cmd = combatState.CreateCard<Special_Summon_YZ_Tank_Dragon>(player);
+            cmd.InitializeSource(monsterCard, pet);
+            commands.Add(cmd);
+        }
+
+        if (monsterCard is BaseMonsterCard materialVw
+            && Vw_Tiger_Catapult.PlayerHasInExtraDeck(player)
+            && Vw_Tiger_Catapult.TryGetExactFieldMaterials(player, out var vwMats)
+            && vwMats.Any(m => ReferenceEquals(m, materialVw)))
+        {
+            Special_Summon_VW_Tiger_Catapult cmd = combatState.CreateCard<Special_Summon_VW_Tiger_Catapult>(player);
+            cmd.InitializeSource(monsterCard, pet);
+            commands.Add(cmd);
+        }
+
+        if (monsterCard is BaseMonsterCard materialXyz
+            && Xyz_Dragon_Cannon.PlayerHasInExtraDeck(player)
+            && Xyz_Dragon_Cannon.TryGetExactFieldMaterials(player, out var xyzMats)
+            && xyzMats.Any(m => ReferenceEquals(m, materialXyz)))
+        {
+            Special_Summon_XYZ_Dragon_Cannon cmd = combatState.CreateCard<Special_Summon_XYZ_Dragon_Cannon>(player);
+            cmd.InitializeSource(monsterCard, pet);
+            commands.Add(cmd);
+        }
+
+        if (monsterCard is BaseMonsterCard materialVwxyz
+            && Vwxyz_Dragon_Catapult_Cannon.PlayerHasInExtraDeck(player)
+            && Vwxyz_Dragon_Catapult_Cannon.TryGetExactFieldMaterials(player, out var vwxyzMats)
+            && vwxyzMats.Any(m => ReferenceEquals(m, materialVwxyz)))
+        {
+            Special_Summon_VWXYZ_Dragon_Catapult_Cannon cmd = combatState.CreateCard<Special_Summon_VWXYZ_Dragon_Catapult_Cannon>(player);
+            cmd.InitializeSource(monsterCard, pet);
+            commands.Add(cmd);
+        }
+
         if (monsterCard is IMonsterOptionCommandProvider provider)
         {
             foreach (var extra in provider.BuildExtraMonsterOptionCommands(combatState, player, pet))

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -18,6 +19,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Des_Feral_Imp : EffectMonsterCard, IMonsterFlipEffect
 {
+    private static readonly LocString FlipEffectHoverTitle = new("card_keywords", "20041.title");
     private static readonly LocString FlipActivationPrompt =
         new("cards", "YGODUELIST-DES_FERAL_IMP.flip_preview.activation");
 
@@ -54,6 +56,18 @@ public sealed class Des_Feral_Imp : EffectMonsterCard, IMonsterFlipEffect
     {
         typeof(Des_Feral_Imp),
     };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            LocString flipDesc = new("cards", "YGODUELIST-DES_FERAL_IMP.flip_effect.description");
+            flipDesc.Add("Mgc", DynamicVars["Mgc"].BaseValue);
+            yield return new HoverTip(FlipEffectHoverTitle, flipDesc);
+        }
+    }
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {

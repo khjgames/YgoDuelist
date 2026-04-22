@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -19,6 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Dark_Cat_with_White_Tail : EffectMonsterCard, IMonsterFlipEffect
 {
+    private static readonly LocString FlipEffectHoverTitle = new("card_keywords", "20041.title");
     private static readonly LocString BouncePickPrompt =
         new LocString("cards", "YGODUELIST-DARK_CAT_WITH_WHITE_TAIL.flip.selection");
 
@@ -39,6 +41,17 @@ public sealed class Dark_Cat_with_White_Tail : EffectMonsterCard, IMonsterFlipEf
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            LocString flipDesc = new("cards", "YGODUELIST-DARK_CAT_WITH_WHITE_TAIL.flip_effect.description");
+            yield return new HoverTip(FlipEffectHoverTitle, flipDesc);
+        }
+    }
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {

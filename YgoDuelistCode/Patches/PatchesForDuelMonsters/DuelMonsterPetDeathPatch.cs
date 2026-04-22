@@ -80,36 +80,7 @@ public static class DuelMonsterPetDeathPatch
             if (abstractMonster != null)
                 TaskHelper.RunSafely(abstractMonster.OnPetDiedBeforeOptionPileHandlingAsync(ctx));
 
-            // If the current option pile is for this monster, clear it so the player can't use options pointing at a dead monster.
-            var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
-            if (optionPile != null && optionPile.Cards.Count > 0)
-            {
-                bool pileIsForThisMonster = optionPile.Cards.Any(c =>
-                    c is MonsterCommandCard mcc && MonsterCommandCardMatchesDeadFieldMonster(mcc, card, pet));
-                if (TributeSummonGridSelect.VerboseMpLog
-                    && RunManager.Instance.NetService.Type != NetGameType.Singleplayer)
-                {
-                    uint deadId = pet.CombatId ?? 0;
-                    GD.Print(
-                        $"[YgoDuelist][MP][OptionPileDeath] ownerNet={player.NetId} deadPetCombatId={deadId} deadCard={card.Id?.Entry} pileCount={optionPile.Cards.Count} pileForDeadMonster={pileIsForThisMonster}");
-                    foreach (CardModel opt in optionPile.Cards)
-                    {
-                        if (opt is MonsterCommandCard mcc)
-                        {
-                            GD.Print(
-                                $"[YgoDuelist][MP][OptionPileDeath]   mcc srcPetId={mcc.SourcePetCombatId} srcMonsterNull={mcc.SourceMonster == null} matches={MonsterCommandCardMatchesDeadFieldMonster(mcc, card, pet)}");
-                        }
-                    }
-                }
-
-                if (pileIsForThisMonster)
-                {
-                    YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.MonsterOptions);
-                    optionPile.Clear();
-                    YgoOptionHandBridge.SyncFromOptionPile(player);
-                    GD.Print("[ZGO] DuelMonsterPetDeathPatch: cleared option pile (was for dead monster).");
-                }
-            }
+            TryClearOptionPileForFieldMonster(player, card, pet);
 
             if (abstractMonster != null)
                 TaskHelper.RunSafely(abstractMonster.OnPetDiedAfterOptionPileHandlingAsync(ctx));
@@ -279,5 +250,88 @@ public static class DuelMonsterPetDeathPatch
                 card,
                 false);
         }
+    }
+
+    /// <summary>
+    /// Removes a live duel monster from the field by moving its source card to hand. Equips and equip-link traps on that
+    /// monster are sent to the graveyard (same pile moves as bounce-to-hand on death). Does not run pet-death hooks
+    /// (<see cref="AbstractMonsterCard.OnPetDiedBeforeOptionPileHandlingAsync"/>, destruction powers, etc.).
+    /// </summary>
+    public static async Task ReleaseLiveFieldMonsterToHandAsync(Player player, Creature pet, BaseMonsterCard fieldCard)
+    {
+        if (player?.PlayerCombatState == null || pet == null || fieldCard == null)
+            return;
+        if (!pet.IsAlive)
+            return;
+        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != fieldCard)
+            return;
+
+        TryClearOptionPileForFieldMonster(player, fieldCard, pet);
+
+        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
+        if (hand == null || graveyard == null)
+            return;
+
+        await MoveEquipsToGraveyardThenMonsterToPileAsync(player, fieldCard, hand, graveyard);
+
+        DuelMonsterFieldRegistry.UnregisterPet(pet);
+        MonsterCommandRegistry.Clear(pet);
+
+        if (player.Creature != null)
+            await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
+
+        CombatState? combatState = pet.CombatState;
+        if (combatState != null)
+        {
+            var nCreature = NCombatRoom.Instance?.GetCreatureNode(pet);
+            if (nCreature != null)
+            {
+                nCreature.Visible = false;
+                nCreature.Hitbox.Visible = false;
+                nCreature.Visuals.Bounds.Visible = false;
+                NCombatRoom.Instance.RemoveCreatureNode(nCreature);
+                nCreature.QueueFree();
+            }
+
+            if (combatState.Enemies.Contains(pet) || combatState.PlayerCreatures.Contains(pet))
+            {
+                CombatManager.Instance.RemoveCreature(pet);
+                combatState.RemoveCreature(pet);
+            }
+        }
+    }
+
+    private static void TryClearOptionPileForFieldMonster(Player player, CardModel fieldMonsterCard, Creature pet)
+    {
+        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        if (optionPile == null || optionPile.Cards.Count == 0)
+            return;
+
+        bool pileIsForThisMonster = optionPile.Cards.Any(c =>
+            c is MonsterCommandCard mcc && MonsterCommandCardMatchesDeadFieldMonster(mcc, fieldMonsterCard, pet));
+        if (TributeSummonGridSelect.VerboseMpLog
+            && RunManager.Instance.NetService.Type != NetGameType.Singleplayer)
+        {
+            uint deadId = pet.CombatId ?? 0;
+            GD.Print(
+                $"[YgoDuelist][MP][OptionPileDeath] ownerNet={player.NetId} deadPetCombatId={deadId} deadCard={fieldMonsterCard.Id?.Entry} pileCount={optionPile.Cards.Count} pileForDeadMonster={pileIsForThisMonster}");
+            foreach (CardModel opt in optionPile.Cards)
+            {
+                if (opt is MonsterCommandCard mcc)
+                {
+                    GD.Print(
+                        $"[YgoDuelist][MP][OptionPileDeath]   mcc srcPetId={mcc.SourcePetCombatId} srcMonsterNull={mcc.SourceMonster == null} matches={MonsterCommandCardMatchesDeadFieldMonster(mcc, fieldMonsterCard, pet)}");
+                }
+            }
+        }
+
+        if (!pileIsForThisMonster)
+            return;
+
+        YgoSecondHandSourceBridge.SetSource(player, YgoSecondHandSource.MonsterOptions);
+        optionPile.Clear();
+        YgoOptionHandBridge.SyncFromOptionPile(player);
+        GD.Print("[ZGO] DuelMonsterPetDeathPatch: cleared option pile (was for dead monster).");
     }
 }

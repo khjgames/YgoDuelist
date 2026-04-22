@@ -85,7 +85,7 @@ public static class FusionSummonSelection
         {
             if (ReferenceEquals(c, spellCard))
                 continue;
-            if (c is FusionMonsterCard fm && filter.IsInstanceOfType(fm))
+            if (c is FusionMonsterCard fm && fm.CanBeFusionSummoned && filter.IsInstanceOfType(fm))
                 list.Add(fm);
         }
 

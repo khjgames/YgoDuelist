@@ -6,8 +6,10 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
@@ -18,6 +20,7 @@ public sealed class Jigen_Bakudan : EffectMonsterCard, IMonsterFlipEffect
 {
     private static readonly LocString FlipActivationPrompt =
         new("cards", "YGODUELIST-JIGEN_BAKUDAN.flip_preview.activation");
+    private static readonly LocString FlipEffectHoverTitle = new("card_keywords", "20041.title");
 
     public override bool UseAlternateUpgradedDescription => true;
 
@@ -49,6 +52,19 @@ public sealed class Jigen_Bakudan : EffectMonsterCard, IMonsterFlipEffect
     {
         typeof(Jigen_Bakudan),
     };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            LocString flipDesc = IsUpgraded
+                ? new("cards", "YGODUELIST-JIGEN_BAKUDAN.flip_effect.description_upgraded")
+                : new("cards", "YGODUELIST-JIGEN_BAKUDAN.flip_effect.description");
+            yield return new HoverTip(FlipEffectHoverTitle, flipDesc);
+        }
+    }
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {

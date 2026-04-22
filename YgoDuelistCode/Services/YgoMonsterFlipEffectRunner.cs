@@ -27,6 +27,7 @@ public static class YgoMonsterFlipEffectRunner
         if (!DuelMonsterFieldRegistry.GetFieldMonsters(bm.Owner).Contains(bm))
             return;
         bm.ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline();
+        bm.FlippedThisTurn = true;
         if (card is not IMonsterFlipEffect flip)
             return;
 

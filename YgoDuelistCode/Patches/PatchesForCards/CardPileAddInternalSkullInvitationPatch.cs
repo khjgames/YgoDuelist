@@ -19,5 +19,6 @@ public static class CardPileAddInternalSkullInvitationPatch
         YgoOutstandingDogMarronGraveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoGiantGermGraveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoLordPoisonGraveyard.OnCardAddedToGraveyardPile(__instance, card);
+        YgoSpearCretinGraveyard.OnCardAddedToGraveyardPile(__instance, card);
     }
 }

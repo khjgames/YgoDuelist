@@ -35,6 +35,8 @@ public static class MonsterCommandTurnResetPatch
 
         foreach (Creature pet in combatPlayer.PlayerCombatState.Pets)
         {
+            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard bm)
+                bm.FlippedThisTurn = false;
             if (!MonsterCommandRegistry.TryGet(pet, out MonsterCommandState state))
                 continue;
             if (state.KeepCommandLockOnNextTurnStart)

@@ -1,12 +1,22 @@
+using System;
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 
 public sealed class Yz_Tank_Dragon : FusionMonsterCard
 {
+    public static readonly Type[] RequiredMaterialTypes =
+    {
+        typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Y_Dragon_Head),
+        typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal.Z_Metal_Tank)
+    };
+
     public Yz_Tank_Dragon()
         : base(
             cost: 1,
@@ -25,5 +35,13 @@ public sealed class Yz_Tank_Dragon : FusionMonsterCard
     }
     
     public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+
+    public override bool CanBeFusionSummoned => false;
+
+    public static bool PlayerHasInExtraDeck(Player player) =>
+        UnionFusionSpecialSummonRules.PlayerHasFusionInExtraDeck<Yz_Tank_Dragon>(player);
+
+    public static bool TryGetExactFieldMaterials(Player player, out List<BaseMonsterCard> materials) =>
+        UnionFusionSpecialSummonRules.TryGetExactFieldMaterials(player, RequiredMaterialTypes, out materials);
 
 }

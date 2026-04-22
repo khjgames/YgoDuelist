@@ -86,7 +86,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public int DuelMonsterDefensePlayEnergy => GetDuelMonsterDefensePlayEnergy(DuelMonsterPlayEnergyUpgradedOrPreview);
 
     /// <summary>Attack-stance play energy for a given upgraded/preview state (e.g. compendium without preview).</summary>
-    public int GetDuelMonsterAttackPlayEnergy(bool upgradedOrPreview)
+    public virtual int GetDuelMonsterAttackPlayEnergy(bool upgradedOrPreview)
     {
         if (_duelMonsterAttackPlayEnergyOverride.HasValue)
             return _duelMonsterAttackPlayEnergyOverride.Value;
@@ -105,7 +105,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     }
 
     /// <summary>Defense-stance play energy for a given upgraded/preview state.</summary>
-    public int GetDuelMonsterDefensePlayEnergy(bool upgradedOrPreview)
+    public virtual int GetDuelMonsterDefensePlayEnergy(bool upgradedOrPreview)
     {
         if (_duelMonsterDefensePlayEnergyOverride.HasValue)
             return _duelMonsterDefensePlayEnergyOverride.Value;
@@ -183,6 +183,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     /// <summary>Level (star count) for the duel monster this card summons.</summary>
     public override int DuelMonsterLevel => _duelMonsterLevel;
+
+    /// <summary>Set when this card resolves while face-down on the field (flip); cleared at the start of your turn.</summary>
+    public bool FlippedThisTurn { get; set; }
 
     /// <summary>Duel monster attribute (EARTH/WATER/FIRE/WIND/LIGHT/DARK) from the original YgoDuelist card.</summary>
     public override DuelMonsterAttribute DuelMonsterAttribute { get; }
@@ -355,6 +358,12 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public virtual void ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline()
     {
     }
+
+    /// <summary>
+    /// If true, this face-down <see cref="IMonsterFlipEffect"/> can appear in the "Activate Flip Effects" selection prompt
+    /// when player-block hit flip checks run. If false, it flips immediately and is never listed in that prompt.
+    /// </summary>
+    public virtual bool AskSelectFlip => true;
 
     /// <summary>
     /// Keeps the <c>Increase</c> dynamic var aligned with <see cref="PermanentAtkDeltaOnEnemyExecute"/> after upgrade (cf. <c>TheScythe</c>).

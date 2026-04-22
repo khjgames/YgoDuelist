@@ -28,7 +28,7 @@ public sealed class Fake_Trap : BaseTrapCard
         {
             foreach (IHoverTip tip in base.ExtraHoverTips)
                 yield return tip;
-            yield return HoverTipFactory.FromPower<FakeTrapNextTrapDiscountPower>();
+            yield return HoverTipFactory.FromPower<NextTrapDiscountPower>();
         }
     }
 
@@ -37,7 +37,7 @@ public sealed class Fake_Trap : BaseTrapCard
         if (Owner?.Creature == null)
             return;
 
-        await PowerCmd.Apply<FakeTrapNextTrapDiscountPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<NextTrapDiscountPower>(Owner.Creature, 1m, Owner.Creature, this);
         YgoSpellTrapDiscountEnergyRefresh.ForPlayer(Owner);
     }
 

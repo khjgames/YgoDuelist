@@ -62,7 +62,7 @@ public sealed class Dice_Jar : EffectMonsterCard
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
             var flipDesc = new LocString("cards", "YGODUELIST-DICE_JAR.flip_effect.description");
-            flipDesc.Add("Mgc", (decimal)BaseMgc);
+            flipDesc.Add("Mgc", DynamicVars["Mgc"].BaseValue);
             yield return new HoverTip(FlipEffectHoverTitle, flipDesc);
             yield return YgoDeterministicRngResultDisplay.Rolled6SampleHoverTip();
         }

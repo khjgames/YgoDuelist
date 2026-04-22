@@ -28,7 +28,7 @@ public sealed class De_Spell : BaseSpellCard
         {
             foreach (IHoverTip tip in base.ExtraHoverTips)
                 yield return tip;
-            yield return HoverTipFactory.FromPower<DeSpellNextSpellDiscountPower>();
+            yield return HoverTipFactory.FromPower<NextSpellDiscountPower>();
         }
     }
 
@@ -37,7 +37,7 @@ public sealed class De_Spell : BaseSpellCard
         if (Owner?.Creature == null)
             return;
 
-        await PowerCmd.Apply<DeSpellNextSpellDiscountPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<NextSpellDiscountPower>(Owner.Creature, 1m, Owner.Creature, this);
         YgoSpellTrapDiscountEnergyRefresh.ForPlayer(Owner);
     }
 

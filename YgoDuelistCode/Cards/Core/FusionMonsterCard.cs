@@ -162,6 +162,12 @@ public abstract class FusionMonsterCard : EffectMonsterCard
 
     public override YgoCardType YgoCardType => YgoCardType.FusionMonster;
 
+    /// <summary>
+    /// When false, this fusion monster cannot be selected by fusion-spell summon flows.
+    /// (e.g. cards that are summoned by exact-material banish procedures from the field.)
+    /// </summary>
+    public virtual bool CanBeFusionSummoned => true;
+
     /// <summary>Pack filtering: fusion frame plus attribute and race-derived tags (see <see cref="PackTagsForFusionProfile"/>).</summary>
     public override YgoCardPackTags PackTags => YgoCardPackTags.Fusion | PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
 
