@@ -64,11 +64,11 @@ public sealed class Spirit_Ryu : EffectMonsterCard, IMonsterActivatedEffect
 
     private static List<BaseMonsterCard> GetDragonMonstersInHand(Player player)
     {
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return new List<BaseMonsterCard>();
 
-        return hand.Cards
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards)
             .OfType<BaseMonsterCard>()
             .Where(m => m.DuelMonsterRace == DuelMonsterRace.Dragon)
             .ToList();
@@ -84,27 +84,15 @@ public sealed class Spirit_Ryu : EffectMonsterCard, IMonsterActivatedEffect
         if (pool.Count == 0)
             return;
 
-        List<CardModel> candidates = TributeSummonGridSelect.StabilizeHandPileCandidates(pool.Cast<CardModel>());
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                choiceContext,
-                candidates,
-                player,
-                new CardSelectorPrefs(HandPrompt, 1, 1) { Cancelable = true },
-                rebuildCanonicalForRemoteApply: () =>
-                    TributeSummonGridSelect.StabilizeHandPileCandidates(GetDragonMonstersInHand(player).Cast<CardModel>()));
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        if (pick.FirstOrDefault() is not BaseMonsterCard chosen)
+        BaseMonsterCard? chosen = await YgoHandCardSelection.TryChooseSingleHandCardAsync<BaseMonsterCard>(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(HandPrompt, 1, 1) { Cancelable = true },
+            predicate: c => c is BaseMonsterCard m && m.DuelMonsterRace == DuelMonsterRace.Dragon);
+        if (chosen == null)
             return;
 
-        CardPile? discard = PileType.Discard.GetPile(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         if (discard == null)
             return;
 

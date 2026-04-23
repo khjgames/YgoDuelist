@@ -52,7 +52,7 @@ public sealed class Deal_of_Phantom : BaseTrapCard
     {
         if (CombatManager.Instance?.IsInProgress != true || card.Owner == null)
             return 0m;
-        return GraveyardRelic.GetGraveyardCards(card.Owner).Count(c => c is BaseMonsterCard);
+        return YgoPlayerPiles.GraveyardCards(card.Owner).Count(c => c is BaseMonsterCard);
     }
 
     protected override void OnUpgrade() => DynamicVars.CalculationExtra.UpgradeValueBy(1m);

@@ -27,7 +27,7 @@ public sealed class Dust_Barrier : BaseContinuousSpellCard
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).OfType<NormalMonsterCard>().Any();
+        && DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner).OfType<NormalMonsterCard>().Any();
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

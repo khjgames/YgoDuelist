@@ -63,9 +63,9 @@ public sealed class Crass_Clown : EffectMonsterCard
             return;
 
         Creature? pet = null;
-        foreach (Creature p in player.PlayerCombatState!.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
-            if (p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this)
+            if (p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.HasSourceCard(p, this))
             {
                 pet = p;
                 break;
@@ -76,9 +76,7 @@ public sealed class Crass_Clown : EffectMonsterCard
             return;
 
         CombatState cs = player.Creature.CombatState;
-        List<Creature> enemies = YgoDeterministicRng
-            .StableOrder(cs.HittableEnemies.Where(c => c.IsAlive), c => c.CombatId)
-            .ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
         if (enemies.Count == 0)
             return;
 

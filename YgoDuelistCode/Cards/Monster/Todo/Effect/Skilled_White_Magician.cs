@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -71,7 +70,7 @@ public sealed class Skilled_White_Magician : EffectMonsterCard, IMonsterActivate
     public CardType ActivatedEffectCardType => CardType.Skill;
     public TargetType ActivatedEffectTarget => TargetType.Self;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-SKILLED_WHITE_MAGICIAN.activated_effect.description";
-    public bool IsActivatedEffectAvailable => Owner != null && CurrentSpellCounters >= 3 && BuildTargets(Owner).Count > 0;
+    public bool IsActivatedEffectAvailable => Owner != null && CurrentSpellCounters >= 3 && BuildSummonTargets(Owner).Count > 0;
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -83,35 +82,22 @@ public sealed class Skilled_White_Magician : EffectMonsterCard, IMonsterActivate
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 1))
             return;
 
-        List<Buster_Blader> targets = BuildTargets(player);
-        if (targets.Count == 0)
+        if (BuildSummonTargets(player).Count == 0)
             return;
 
-        Buster_Blader summon = targets[0];
-        if (targets.Count > 1)
-        {
-            IEnumerable<CardModel> pick;
-            try
-            {
-                pick = await CardSelectCmd.FromSimpleGrid(
-                    choiceContext,
-                    targets.Cast<CardModel>().ToList(),
-                    player,
-                    new CardSelectorPrefs(SelectPrompt, 1, 1) { Cancelable = true });
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            Buster_Blader? chosen = pick.OfType<Buster_Blader>().FirstOrDefault();
-            if (chosen == null)
-                return;
-            summon = chosen;
-        }
+        List<Buster_Blader> targets = BuildSummonTargets(player);
+        Buster_Blader? summon = targets.Count == 1
+            ? targets[0]
+            : await YgoOrderedCardSelection.TryChooseSingleAsync(
+                choiceContext,
+                player,
+                new CardSelectorPrefs(SelectPrompt, 1, 1) { Cancelable = true },
+                () => BuildSummonTargets(player));
+        if (summon == null)
+            return;
 
         await CreatureCmd.Kill(pet, force: true);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy != null)
             await CardPileCmd.Add(new[] { source }, gy, CardPilePosition.Top, source, false);
 
@@ -121,24 +107,13 @@ public sealed class Skilled_White_Magician : EffectMonsterCard, IMonsterActivate
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
     }
 
-    private static List<Buster_Blader> BuildTargets(Player player)
+    private static List<Buster_Blader> BuildSummonTargets(Player player)
     {
-        var list = new List<Buster_Blader>();
-        Append(PileType.Hand.GetPile(player), list);
-        Append(PileType.Draw.GetPile(player), list);
-        Append(PileType.Discard.GetPile(player), list);
-        Append(GraveyardRelic.GetGraveyardPile(player), list);
-        return list;
-    }
-
-    private static void Append(CardPile? pile, List<Buster_Blader> outList)
-    {
-        if (pile == null)
-            return;
-        foreach (CardModel c in pile.Cards)
-        {
-            if (c is Buster_Blader bb)
-                outList.Add(bb);
-        }
+        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Buster_Blader>(
+            player,
+            YgoPlayerPiles.Hand,
+            YgoPlayerPiles.Draw,
+            YgoPlayerPiles.Discard,
+            GraveyardRelic.GetGraveyardPile);
     }
 }

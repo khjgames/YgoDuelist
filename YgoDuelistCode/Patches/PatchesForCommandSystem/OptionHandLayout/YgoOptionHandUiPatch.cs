@@ -58,7 +58,7 @@ public static class YgoOptionHandUiPatch
     {
         var card = holder.CardModel;
         if (card == null || player == null) return false;
-        var pile = YgoCardOptionPile.CustomType.GetPile(player);
+        var pile = YgoPlayerPiles.OptionPile(player);
         return pile != null && pile.Cards.Contains(card);
     }
 
@@ -379,7 +379,7 @@ public static class YgoOptionHandUiPatch
             return false;
 
         var card = optionHolder.CardModel;
-        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        var optionPile = YgoPlayerPiles.OptionPile(player);
         bool cardStillInOptionPile = card != null && optionPile != null && optionPile.Cards.Contains(card);
         bool shouldScrap = !cardStillInOptionPile;
         LogLifecycle("O3_ShouldScrap_Decision", optionHolder, $"playerNull={player == null} cardInOptionPile={cardStillInOptionPile} shouldScrap={shouldScrap}");

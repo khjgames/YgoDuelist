@@ -38,7 +38,7 @@ public sealed class Archfiend_s_Oath_FieldPower : YgoDuelistPower
         if (player != Owner.Player)
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
         var activeOaths = zone?.Cards.OfType<Archfiend_s_Oath>().Where(c => !c.FaceDown).ToList() ?? [];
         if (activeOaths.Count == 0)
         {
@@ -58,7 +58,7 @@ public sealed class Archfiend_s_Oath_FieldPower : YgoDuelistPower
             ModelDb.Card<Blast_Juggler>(), // Monster
         };
 
-        CardModel? sourceCard = activeOaths.FirstOrDefault();
+        CardModel? sourceCard = YgoMpCombatOrder.FirstCardWhereStable(activeOaths, _ => true);
         for (int i = 0; i < resolves; i++)
         {
             await CreatureCmd.Damage(choiceContext, Owner, 5m, ValueProp.Unpowered, Owner, sourceCard);
@@ -98,7 +98,7 @@ public sealed class Archfiend_s_Oath_FieldPower : YgoDuelistPower
             }
 
             CardPile handPile = player.PlayerCombatState.Hand;
-            CardPile? gyPile = GraveyardPile.CustomType.GetPile(player);
+            CardPile? gyPile = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.Graveyard(player);
             if (gyPile == null)
                 continue;
 
@@ -109,4 +109,3 @@ public sealed class Archfiend_s_Oath_FieldPower : YgoDuelistPower
         }
     }
 }
-

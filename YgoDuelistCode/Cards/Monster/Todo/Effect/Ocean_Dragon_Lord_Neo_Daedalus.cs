@@ -71,8 +71,9 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
         {
             if (Owner == null || Owner.PlayerCombatState == null)
                 return;
-            Creature? leviaPet = Owner.PlayerCombatState.Pets
-                .FirstOrDefault(p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is Levia_Dragon_Daedalus);
+            Creature? leviaPet = YgoMpCombatOrder.FirstPetWhere(
+                Owner.PlayerCombatState,
+                p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceMonster<Levia_Dragon_Daedalus>(p) != null);
             if (leviaPet == null)
                 return;
             await CreatureCmd.Kill(leviaPet, force: true);
@@ -100,24 +101,24 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
         int blight = (int)(atk * DynamicVars["Mgc2"].BaseValue);
         if (blight > 0)
         {
-            foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive))
+            foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
                 await PowerCmd.Apply<BlightPower>(enemy, blight, Owner.Creature, this);
         }
 
-        foreach (Creature pet in Owner.PlayerCombatState?.Pets?.ToList() ?? Enumerable.Empty<Creature>())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (!pet.IsAlive || DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this)
+            if (!pet.IsAlive || DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             await CreatureCmd.Kill(pet, force: true);
         }
 
-        CardPile? gy = GraveyardPile.CustomType.GetPile(Owner);
-        CardPile? hand = PileType.Hand.GetPile(Owner);
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(Owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(Owner);
+        CardPile? hand = YgoPlayerPiles.Hand(Owner);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(Owner);
         if (gy != null && hand != null && hand.Cards.Count > 0)
-            await CardPileCmd.Add(hand.Cards.ToList(), gy, CardPilePosition.Top, this, false);
+            await CardPileCmd.Add(YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards), gy, CardPilePosition.Top, this, false);
         if (gy != null && zone != null && zone.Cards.Count > 0)
-            await CardPileCmd.Add(zone.Cards.ToList(), gy, CardPilePosition.Top, this, false);
+            await CardPileCmd.Add(YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards), gy, CardPilePosition.Top, this, false);
     }
 
     protected override void OnUpgrade()
@@ -130,7 +131,9 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
     {
         if (Owner?.PlayerCombatState == null || !DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
             return false;
-        return Owner.PlayerCombatState.Pets.Any(p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is Levia_Dragon_Daedalus);
+        return YgoMpCombatOrder.PetsAny(
+            Owner.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceMonster<Levia_Dragon_Daedalus>(p) != null);
     }
 
     private static bool HasUmiLikeFieldSpell(MegaCrit.Sts2.Core.Entities.Players.Player player) =>
@@ -139,11 +142,11 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
 
     private static async Task<bool> TrySendUmiLikeFieldSpellToGraveyardAsync(MegaCrit.Sts2.Core.Entities.Players.Player player)
     {
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (zone == null || gy == null)
             return false;
-        CardModel? card = zone.Cards.FirstOrDefault(c => c is Umi or A_Legendary_Ocean);
+        CardModel? card = YgoMpCombatOrder.FirstCardWhereStable(zone.Cards, c => c is Umi or A_Legendary_Ocean);
         if (card == null)
             return false;
         await CardPileCmd.Add(new[] { card }, gy, CardPilePosition.Top, card, false);

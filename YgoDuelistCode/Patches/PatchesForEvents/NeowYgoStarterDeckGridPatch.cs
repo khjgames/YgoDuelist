@@ -45,7 +45,7 @@ public static class NeowYgoStarterDeckGridPatch
             return true;
         }
 
-        bool isYgo = PlayerRunExtraDeck.IsYgoDuelistPlayer(owner);
+        bool isYgo = YgoPlayerRunPiles.IsYgoRunPlayer(owner);
         string charName = owner.Character?.GetType().Name ?? "null";
         NeowDraftLog($"characterType={charName} isYgoDuelistPlayer={isYgo}");
         if (!isYgo)

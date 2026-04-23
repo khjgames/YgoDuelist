@@ -16,10 +16,10 @@ public static class PlayerToSerializableAppendYgoExtraDeckPatch
 {
     public static void Postfix(Player __instance, ref SerializablePlayer __result)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(__instance))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(__instance))
             return;
 
-        CardPile? extra = PlayerRunExtraDeck.GetPileIfExists(__instance);
+        CardPile? extra = YgoPlayerRunPiles.RunExtraDeckIfExists(__instance);
         if (extra == null || extra.Cards.Count == 0)
             return;
 

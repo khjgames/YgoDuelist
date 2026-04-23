@@ -25,11 +25,13 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
         if (__instance.Character is not YgoChar)
             return;
 
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(__instance);
-        CardPile side = PlayerRunSideDeck.GetOrCreatePile(__instance);
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(__instance);
+        CardPile? side = YgoPlayerRunPiles.SideDeck(__instance);
+        if (trunk == null || side == null)
+            return;
         int tc = trunk.Cards.Count;
         int sc = side.Cards.Count;
-        int ec = PlayerRunExtraDeck.GetPileIfExists(__instance)?.Cards.Count ?? 0;
+        int ec = YgoPlayerRunPiles.RunExtraDeckIfExists(__instance)?.Cards.Count ?? 0;
         ec = Math.Clamp(ec, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount);
         int minDeck = YgoPlayerMinimumDeck.Get(__instance);
         YgoPackRewardProgressState packProgress = YgoPackRewardProgress.For(__instance);

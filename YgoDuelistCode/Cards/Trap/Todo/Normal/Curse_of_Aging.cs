@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -67,7 +69,7 @@ public sealed class Curse_of_Aging : BaseTrapCard
 
         decimal stacks = DynamicVars["Mgc"].BaseValue;
 
-        foreach (var enemy in Owner.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
         {
             if (!enemy.IsAlive)
                 continue;
@@ -83,7 +85,7 @@ public sealed class Curse_of_Aging : BaseTrapCard
         if (Owner == null)
             return;
 
-        var hand = PileType.Hand.GetPile(Owner);
+        var hand = YgoPlayerPiles.Hand(Owner);
         if (hand == null || hand.Cards.Count == 0)
             return;
 
@@ -93,21 +95,15 @@ public sealed class Curse_of_Aging : BaseTrapCard
             Cancelable = false
         };
 
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, null);
-
-        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
+        CardModel? card = await YgoHandCardSelection.TryChooseSingleHandCardAsync<CardModel>(
             choiceContext,
-            candidates,
             Owner,
             prefs,
-            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, null),
-            PlayerChoiceOptions.CancelPlayCardActions);
-
-        var card = selected.FirstOrDefault();
+            choiceBegunOptions: PlayerChoiceOptions.CancelPlayCardActions);
         if (card == null)
             return;
 
-        var grave = GraveyardPile.CustomType.GetPile(Owner);
+        var grave = YgoPlayerPiles.Graveyard(Owner);
         if (grave == null)
             return;
 

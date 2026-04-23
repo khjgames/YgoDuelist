@@ -25,14 +25,15 @@ public static class YgoGearfriedEquipReaction
         if (player.PlayerCombatState == null)
             return;
 
-        Creature? pet = player.PlayerCombatState.Pets
-            .FirstOrDefault(p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceCardForPet(p) == gearfried);
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, gearfried));
         if (pet == null)
             return;
 
         YgoEquipSpellRegistry.Detach(equip);
 
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy != null)
             await CardPileCmd.Add(new[] { equip }, gy, CardPilePosition.Top, equip, false);
 

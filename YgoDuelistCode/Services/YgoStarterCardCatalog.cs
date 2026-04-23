@@ -194,6 +194,7 @@ public static class YgoStarterCardCatalog
         Dictionary<(StarterCategory, CardRarity), List<Type>> buckets = CloneBuckets(sStarterBuckets!);
         var remainingByCategory = new Dictionary<StarterCategory, int>(CategorySlotTotals);
         List<StarterCategory> categoryOrder = CategoryPrecedenceBase.ToList();
+        categoryOrder = categoryOrder.OrderBy(c => (int)c).ToList();
         categoryOrder.UnstableShuffle(rng);
 
         int cpCursor = -1;
@@ -400,7 +401,7 @@ public static class YgoStarterCardCatalog
                 break;
 
             int minRank = pool.Min(i => StarterRarityRank(grid[i]));
-            List<int> tied = pool.Where(i => StarterRarityRank(grid[i]) == minRank).ToList();
+            List<int> tied = pool.Where(i => StarterRarityRank(grid[i]) == minRank).OrderBy(i => i).ToList();
             int pick = tied[rng.NextInt(0, tied.Count)];
             result.Add(pick);
             pool.Remove(pick);
@@ -429,7 +430,7 @@ public static class YgoStarterCardCatalog
             return;
 
         int minRank = candidateIndices.Min(i => StarterRarityRank(grid[i]));
-        List<int> tied = candidateIndices.Where(i => StarterRarityRank(grid[i]) == minRank).ToList();
+        List<int> tied = candidateIndices.Where(i => StarterRarityRank(grid[i]) == minRank).OrderBy(i => i).ToList();
         int pick = tied[rng.NextInt(0, tied.Count)];
         ReplaceStarterGridSlot(grid, pick, replacementMonsterType);
     }
@@ -518,7 +519,7 @@ public static class YgoStarterCardCatalog
             return;
 
         int minRank = candidateIndices.Min(i => StarterRarityRank(grid[i]));
-        List<int> tied = candidateIndices.Where(i => StarterRarityRank(grid[i]) == minRank).ToList();
+        List<int> tied = candidateIndices.Where(i => StarterRarityRank(grid[i]) == minRank).OrderBy(i => i).ToList();
         int pick = tied[rng.NextInt(0, tied.Count)];
         ReplaceStarterGridSlot(grid, pick, replacementMonsterType);
     }
@@ -590,7 +591,7 @@ public static class YgoStarterCardCatalog
 
         foreach (var tier in tiers)
         {
-            List<DuelMonsterRace> racesInTier = tier.Select(kv => kv.Key).ToList();
+            List<DuelMonsterRace> racesInTier = tier.Select(kv => kv.Key).OrderBy(r => (int)r).ToList();
             racesInTier.UnstableShuffle(rng);
             foreach (DuelMonsterRace race in racesInTier)
             {
@@ -634,7 +635,7 @@ public static class YgoStarterCardCatalog
 
         foreach (IGrouping<int, (Type FieldType, int Count)> tier in scores.GroupBy(s => s.Count).OrderByDescending(g => g.Key))
         {
-            List<Type> fieldsInTier = tier.Select(s => s.FieldType).ToList();
+            List<Type> fieldsInTier = tier.Select(s => s.FieldType).OrderBy(t => t.FullName, StringComparer.Ordinal).ToList();
             fieldsInTier.UnstableShuffle(rng);
             foreach (Type fieldType in fieldsInTier)
             {
@@ -676,6 +677,7 @@ public static class YgoStarterCardCatalog
             List<DuelMonsterAttribute> attrsInTier = tier
                 .Select(kv => kv.Key)
                 .Where(a => FlatAttributeFieldTypeByAttribute.ContainsKey(a))
+                .OrderBy(a => (int)a)
                 .ToList();
             if (attrsInTier.Count == 0)
                 continue;
@@ -767,7 +769,7 @@ public static class YgoStarterCardCatalog
     {
         var copy = new Dictionary<(StarterCategory, CardRarity), List<Type>>();
         foreach (KeyValuePair<(StarterCategory, CardRarity), List<Type>> kv in source)
-            copy[kv.Key] = new List<Type>(kv.Value);
+            copy[kv.Key] = kv.Value.OrderBy(t => t.FullName, StringComparer.Ordinal).ToList();
         return copy;
     }
 

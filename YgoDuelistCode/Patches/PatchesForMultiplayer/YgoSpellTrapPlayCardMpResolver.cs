@@ -48,7 +48,7 @@ public static class YgoSpellTrapPlayCardMpResolver
         if (player == null)
             return null;
 
-        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
         ModelId expectedId = action.CardModelId;
 
         CardModel? byIndex = action.NetCombatCard.ToCardModelOrNull();
@@ -101,7 +101,7 @@ public static class YgoSpellTrapPlayCardMpResolver
         }
 
         CardModel? resolved = ResolveSpellTrapPlayCard(action);
-        CardPile? zonePile = action.Player != null ? SpellTrapZonePile.CustomType.GetPile(action.Player) : null;
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(action.Player);
         if (resolved == null || zonePile == null || !ReferenceEquals(resolved.Pile, zonePile))
             return false;
 

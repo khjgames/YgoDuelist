@@ -51,7 +51,7 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
             return;
 
         var cs = player.Creature.CombatState;
-        var enemies = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
+        var enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
         int combined = 0;
         foreach (Creature e in enemies)
             combined += YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, player.Creature);
@@ -68,21 +68,21 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
             }
         }
 
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy == null)
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone != null && zone.Cards.Count > 0)
         {
-            List<CardModel> zoneCards = zone.Cards.ToList();
+            List<CardModel> zoneCards = YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards);
             await CardPileCmd.Add(zoneCards, gy, CardPilePosition.Top, this, false);
             YgoSpellTrapZoneBridge.SyncFromZonePile(player);
             YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
             YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(player);
         }
 
-        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.GetFieldMonsters(player).ToList())
+        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (m.YgoCardType == YgoCardType.Monster)
                 continue;
@@ -91,10 +91,10 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
                 await CreatureCmd.Kill(pet, force: true);
         }
 
-        CardPile? monsterPile = MonsterPile.CustomType.GetPile(player);
+        CardPile? monsterPile = YgoPlayerPiles.MonsterZone(player);
         if (monsterPile != null)
         {
-            foreach (CardModel c in monsterPile.Cards.ToList())
+            foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(monsterPile.Cards))
             {
                 if (c is not BaseMonsterCard bm || bm.YgoCardType == YgoCardType.Monster)
                     continue;
@@ -104,10 +104,10 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
             }
         }
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand != null)
         {
-            foreach (CardModel c in hand.Cards.ToList())
+            foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards))
             {
                 if (ReferenceEquals(c, this))
                     continue;

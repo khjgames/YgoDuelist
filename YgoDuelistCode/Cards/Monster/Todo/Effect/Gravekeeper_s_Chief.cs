@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -51,7 +50,7 @@ public sealed class Gravekeeper_s_Chief : EffectMonsterCard, IMonsterActivatedEf
     public bool IsActivatedEffectAvailable =>
         Owner != null
         && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0)
-        && BuildGyCandidates(Owner).Count > 0;
+        && BuildGraveyardTargets(Owner).Count > 0;
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -63,32 +62,19 @@ public sealed class Gravekeeper_s_Chief : EffectMonsterCard, IMonsterActivatedEf
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        List<BaseMonsterCard> candidates = BuildGyCandidates(player);
+        List<BaseMonsterCard> candidates = BuildGraveyardTargets(player);
         if (candidates.Count == 0)
             return;
 
-        BaseMonsterCard summon = candidates[0];
-        if (candidates.Count > 1)
-        {
-            IEnumerable<CardModel> pick;
-            try
-            {
-                pick = await CardSelectCmd.FromSimpleGrid(
-                    choiceContext,
-                    candidates.Cast<CardModel>().ToList(),
-                    player,
-                    new CardSelectorPrefs(GyPrompt, 1, 1) { Cancelable = true });
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            BaseMonsterCard? chosen = pick.OfType<BaseMonsterCard>().FirstOrDefault();
-            if (chosen == null)
-                return;
-            summon = chosen;
-        }
+        BaseMonsterCard? summon = candidates.Count == 1
+            ? candidates[0]
+            : await YgoOrderedCardSelection.TryChooseSingleAsync(
+                choiceContext,
+                player,
+                new CardSelectorPrefs(GyPrompt, 1, 1) { Cancelable = true },
+                () => BuildGraveyardTargets(player));
+        if (summon == null)
+            return;
 
         if (!await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, summon, choiceContext))
             return;
@@ -106,14 +92,14 @@ public sealed class Gravekeeper_s_Chief : EffectMonsterCard, IMonsterActivatedEf
         DynamicVars["Mgc"].BaseValue = 5m;
     }
 
-    private static List<BaseMonsterCard> BuildGyCandidates(Player player)
+    private static List<BaseMonsterCard> BuildGraveyardTargets(Player player)
     {
         var list = new List<BaseMonsterCard>();
-        CardPile? gy = GraveyardRelic.GetGraveyardPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy == null)
             return list;
 
-        foreach (CardModel c in gy.Cards)
+        foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(gy.Cards))
         {
             if (c is not BaseMonsterCard bm)
                 continue;

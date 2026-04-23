@@ -22,13 +22,15 @@ public static class CardPileAddInternalMoveFusionToRunExtraDeckPatch
             return;
 
         Player? owner = card.Owner;
-        if (owner == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(owner))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(owner))
             return;
 
         if (!ReferenceEquals(__instance, owner.Deck))
             return;
 
-        CardPile runExtra = PlayerRunExtraDeck.GetOrCreatePile(owner);
+        CardPile? runExtra = YgoPlayerRunPiles.RunExtraDeck(owner);
+        if (runExtra == null)
+            return;
         if (ReferenceEquals(__instance, runExtra))
             return;
 

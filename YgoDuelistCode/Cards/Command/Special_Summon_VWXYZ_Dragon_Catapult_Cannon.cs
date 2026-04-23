@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
@@ -18,16 +19,21 @@ public sealed class Special_Summon_VWXYZ_Dragon_Catapult_Cannon : Special_Summon
         source.GetType() == Vwxyz_Dragon_Catapult_Cannon.RequiredMaterialTypes[0]
         || source.GetType() == Vwxyz_Dragon_Catapult_Cannon.RequiredMaterialTypes[1];
 
-    protected override bool TryGetSummonData(Player player, out FusionMonsterCard fusionTarget, out List<BaseMonsterCard> materials)
+    protected override bool TryGetSummonData(Player player, out List<FusionMonsterCard> fusionTargets, out List<BaseMonsterCard> materials)
     {
-        fusionTarget = null!;
+        fusionTargets = new List<FusionMonsterCard>();
         materials = new List<BaseMonsterCard>();
         if (!Vwxyz_Dragon_Catapult_Cannon.PlayerHasInExtraDeck(player))
             return false;
         if (!Vwxyz_Dragon_Catapult_Cannon.TryGetExactFieldMaterials(player, out materials))
             return false;
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        fusionTarget = extra?.Cards.OfType<Vwxyz_Dragon_Catapult_Cannon>().FirstOrDefault()!;
-        return fusionTarget != null;
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
+        if (extra == null)
+            return false;
+        fusionTargets = YgoMpCombatOrder.CardsOrderedForMp(extra.Cards)
+            .OfType<Vwxyz_Dragon_Catapult_Cannon>()
+            .Cast<FusionMonsterCard>()
+            .ToList();
+        return fusionTargets.Count > 0;
     }
 }

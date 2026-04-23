@@ -44,7 +44,7 @@ public sealed class The_Wicked_Worm_Beast : EffectMonsterCard, IYgoOwnerBeforeTu
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Concat(
-            IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
+            IsUpgradedOrPreviewActive
                 ? new[] { CardKeyword.Retain }
                 : Enumerable.Empty<CardKeyword>());
 

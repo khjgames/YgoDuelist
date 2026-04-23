@@ -20,7 +20,7 @@ public static class YgoMerchantShopUiPatch
     [HarmonyPrefix]
     public static void Prefix(NMerchantInventory __instance, MerchantInventory inventory, MerchantDialogueSet dialogue)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(inventory.Player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(inventory.Player))
             return;
 
         if (__instance.HasMeta(ChromeMetaKey))
@@ -50,7 +50,7 @@ public static class YgoMerchantShopUiPatch
     [HarmonyPostfix]
     public static void Postfix(NMerchantInventory __instance, MerchantInventory inventory, MerchantDialogueSet dialogue)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(inventory.Player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(inventory.Player))
             return;
         if (!__instance.HasMeta(ChromeMetaKey))
             return;

@@ -64,7 +64,7 @@ public static class YgoEquipPortraitOverlayPatch
         if (pet == null || pet.PetOwner != player)
             return false;
 
-        var sourceMonster = DuelMonsterFieldRegistry.GetSourceCardForPet(pet) as BaseMonsterCard;
+        var sourceMonster = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
         if (sourceMonster == null)
             return false;
 
@@ -77,7 +77,7 @@ public static class YgoEquipPortraitOverlayPatch
         if (pet == null || pet.PetOwner != player)
             return false;
 
-        var sourceMonster = DuelMonsterFieldRegistry.GetSourceCardForPet(pet) as BaseMonsterCard;
+        var sourceMonster = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
         if (sourceMonster == null)
             return false;
 

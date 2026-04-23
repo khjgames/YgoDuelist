@@ -50,7 +50,7 @@ public sealed class Burning_Land : BaseContinuousSpellCard
 
         var cs = Owner.Creature.CombatState;
         var toGy = new List<BaseFieldSpellCard>();
-        foreach (Player pl in cs.Players)
+        foreach (Player pl in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(cs.Players))
             toGy.AddRange(YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(pl));
 
         var distinct = toGy.Distinct().ToList();
@@ -58,7 +58,7 @@ public sealed class Burning_Land : BaseContinuousSpellCard
         foreach (BaseFieldSpellCard fs in distinct)
         {
             Player? p = fs.Owner;
-            CardPile? gy = p == null ? null : GraveyardPile.CustomType.GetPile(p);
+            CardPile? gy = YgoPlayerPiles.Graveyard(p);
             if (gy == null)
                 continue;
 
@@ -67,7 +67,7 @@ public sealed class Burning_Land : BaseContinuousSpellCard
                 ownersTouched.Add(p);
         }
 
-        foreach (Player p in ownersTouched)
+        foreach (Player p in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(ownersTouched))
         {
             YgoSpellTrapZoneBridge.SyncFromZonePile(p);
             YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(p);

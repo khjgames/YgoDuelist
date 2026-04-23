@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -61,21 +60,17 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
             return;
 
         var pcs = player.PlayerCombatState;
-        // MP: Pets collection order is not guaranteed to match across peers; death hooks / GY ordering must be deterministic.
-        List<Creature> duelPets = pcs.Pets
-            .Where(p => p.Monster is DuelMonsterModel && p.IsAlive)
-            .OrderBy(p => p.CombatId)
-            .ToList();
+        List<Creature> duelPets = YgoMpCombatOrder.PetsSnapshotAliveDuelMonstersOrderedByCombatId(pcs);
         YgoMpDiagnostics.VerbosePrint(
             "CyberJar",
-            $"OnFlippedFaceUp kill order ownerNet={player.NetId} combatIds=[{string.Join(",", duelPets.Select(p => p.CombatId))}]");
+            $"OnFlippedFaceUp kill order ownerNet={player.NetId} combatIds=[{string.Join(",", duelPets.ConvertAll(p => p.CombatId.ToString()))}]");
         foreach (Creature pet in duelPets)
             await CreatureCmd.Kill(pet, force: true);
 
         int revealCount = IsUpgraded ? 6 : 5;
         CardPile draw = pcs.DrawPile;
         CardPile discard = pcs.DiscardPile;
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
 
         var revealed = new List<CardModel>();
         for (int i = 0; i < revealCount; i++)
@@ -83,7 +78,7 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
             await CardPileCmd.ShuffleIfNecessary(choiceContext, player);
             if (draw.IsEmpty)
                 break;
-            CardModel? top = draw.Cards.FirstOrDefault();
+            CardModel? top = draw.Cards.Count > 0 ? draw.Cards[0] : null;
             if (top == null)
                 break;
             revealed.Add(top);
@@ -100,7 +95,7 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
             try
             {
                 YgoMonsterFormPreviewContext.RestrictMonsterToggleToAttackDefenseOnly = true;
-                await CardSelectCmd.FromSimpleGrid(choiceContext, revealed, player, prefs);
+                await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, revealed, player, prefs);
             }
             finally
             {
@@ -118,8 +113,9 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
                 bool summoned = await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, bm, choiceContext);
                 if (summoned)
                 {
-                    Creature? pet = pcs.Pets
-                        .FirstOrDefault(p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceCardForPet(p) == bm);
+                    Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+                        pcs,
+                        p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, bm));
                     if (pet != null)
                         MonsterCommandRegistry.GetOrCreate(pet).ZeroEnergyMonsterCommandsThisTurn = true;
                 }

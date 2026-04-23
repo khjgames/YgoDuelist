@@ -12,6 +12,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Relics;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -43,24 +44,31 @@ public sealed class Supply : EffectMonsterCard, IMonsterFlipEffect
     {
         if (self is not Supply || Owner == null)
             return;
-        CardPile? gy = GraveyardRelic.GetGraveyardPile(Owner);
-        CardPile? hand = PileType.Hand.GetPile(Owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(Owner);
+        CardPile? hand = YgoPlayerPiles.Hand(Owner);
         if (gy == null || hand == null)
             return;
 
-        List<BaseMonsterCard> candidates = gy.Cards.OfType<BaseMonsterCard>().Take(10).ToList();
+        List<BaseMonsterCard> candidates = BuildTopGraveyardMonsterCandidates(gy);
         if (candidates.Count == 0)
             return;
 
-        IEnumerable<CardModel> selected = await CardSelectCmd.FromSimpleGrid(
+        List<BaseMonsterCard> selected = await YgoOrderedCardSelection.TryChooseManyAsync(
             choiceContext,
-            candidates.Cast<CardModel>().ToList(),
             Owner,
-            new CardSelectorPrefs(SelectionPrompt, 1, Math.Min(2, candidates.Count)) { Cancelable = true });
-
-        List<CardModel> chosen = selected.Take(2).ToList();
+            new CardSelectorPrefs(SelectionPrompt, 1, Math.Min(2, candidates.Count)) { Cancelable = true },
+            () => BuildTopGraveyardMonsterCandidates(YgoPlayerPiles.Graveyard(Owner)),
+            maxResults: 2);
+        List<CardModel> chosen = selected.Cast<CardModel>().ToList();
         if (chosen.Count == 0)
             return;
         await CardPileCmd.Add(chosen, hand, CardPilePosition.Top, this, false);
     }
+
+    private static List<BaseMonsterCard> BuildTopGraveyardMonsterCandidates(CardPile? graveyard) => graveyard == null
+        ? []
+        : YgoMpCombatOrder.CardsSnapshotOrderedForMp(graveyard.Cards)
+            .OfType<BaseMonsterCard>()
+            .Take(10)
+            .ToList();
 }

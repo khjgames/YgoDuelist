@@ -95,7 +95,7 @@ public static class YgoCardPackRewardFlow
 
     public static bool ShouldReplaceCardRewardSelection(CardReward reward)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(reward.Player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(reward.Player))
             return false;
         CardCreationOptions options = GetCardCreationOptions(reward);
         if (options.Source == CardCreationSource.Encounter)
@@ -139,7 +139,7 @@ public static class YgoCardPackRewardFlow
         CardCreationOptions options = GetCardCreationOptions(reward);
         int slotCount = GetPackSlotCount(options, reward);
         Rng rng = player.PlayerRng.Rewards;
-        var choiceContext = new BlockingPlayerChoiceContext();
+        var choiceContext = YgoChoiceContexts.Blocking();
 
         LogPackFlowPhase(
             player,
@@ -247,7 +247,7 @@ public static class YgoCardPackRewardFlow
             $"poolSize={chosenPack.Count} | {SummarizeRarities(chosenPack)}");
         try
         {
-            deckPicks = (await CardSelectCmd.FromSimpleGrid(choiceContext, chosenPack, player, deckPrefs)).ToList();
+            deckPicks = await YgoSimpleGridSelection.SelectAsync(player, chosenPack, deckPrefs);
         }
         catch (OperationCanceledException)
         {
@@ -286,7 +286,7 @@ public static class YgoCardPackRewardFlow
             $"remainderSize={remainder.Count} | {SummarizeRarities(remainder)}");
         try
         {
-            sidePicks = (await CardSelectCmd.FromSimpleGrid(choiceContext, remainder, player, sidePrefs)).ToList();
+            sidePicks = await YgoSimpleGridSelection.SelectAsync(player, remainder, sidePrefs);
         }
         catch (OperationCanceledException)
         {
@@ -329,7 +329,9 @@ public static class YgoCardPackRewardFlow
             history.CardChoices.Add(new CardChoiceHistoryEntry(added, wasPicked: true));
         }
 
-        CardPile sidePile = PlayerRunSideDeck.GetOrCreatePile(player);
+        CardPile? sidePile = YgoPlayerRunPiles.SideDeck(player);
+        if (sidePile == null)
+            return false;
         foreach (CardModel c in sidePicks)
         {
             c.FloorAddedToDeck = player.RunState.TotalFloor;
@@ -340,7 +342,9 @@ public static class YgoCardPackRewardFlow
         }
 
         var sideSet = new HashSet<CardModel>(sidePicks);
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(player);
+        if (trunk == null)
+            return false;
         foreach (CardModel c in chosenPack)
         {
             if (deckSetFinal.Contains(c) || sideSet.Contains(c))

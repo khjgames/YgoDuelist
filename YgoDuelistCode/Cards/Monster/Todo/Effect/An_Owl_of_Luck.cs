@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -42,28 +44,34 @@ public sealed class An_Owl_of_Luck : EffectMonsterCard, IMonsterFlipEffect
     {
         if (self is not An_Owl_of_Luck || Owner == null)
             return;
-        CardPile? draw = PileType.Draw.GetPile(Owner);
-        if (draw == null)
-            return;
-
-        List<BaseFieldSpellCard> fieldSpells = draw.Cards.OfType<BaseFieldSpellCard>().ToList();
+        List<BaseFieldSpellCard> fieldSpells = BuildFieldSpellTargets(Owner);
         if (fieldSpells.Count == 0)
             return;
 
-        BaseFieldSpellCard chosen = fieldSpells[0];
-        if (fieldSpells.Count > 1)
-        {
-            var selected = await CardSelectCmd.FromSimpleGrid(
+        BaseFieldSpellCard? chosen = fieldSpells.Count == 1
+            ? fieldSpells[0]
+            : await YgoOrderedCardSelection.TryChooseSingleAsync(
                 choiceContext,
-                fieldSpells.Cast<CardModel>().ToList(),
                 Owner,
-                new CardSelectorPrefs(SelectionPrompt, 1, 1) { Cancelable = true });
-            BaseFieldSpellCard? pick = selected.OfType<BaseFieldSpellCard>().FirstOrDefault();
-            if (pick == null)
-                return;
-            chosen = pick;
-        }
+                new CardSelectorPrefs(SelectionPrompt, 1, 1) { Cancelable = true },
+                () => BuildFieldSpellTargets(Owner));
+        if (chosen == null)
+            return;
+
+        CardPile? draw = YgoPlayerPiles.Draw(Owner);
+        if (draw == null)
+            return;
 
         await CardPileCmd.Add(new[] { chosen }, draw, CardPilePosition.Top, chosen, false);
+    }
+
+    private static List<BaseFieldSpellCard> BuildFieldSpellTargets(Player player)
+    {
+        CardPile? draw = YgoPlayerPiles.Draw(player);
+        return draw == null
+            ? []
+            : YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards)
+                .OfType<BaseFieldSpellCard>()
+                .ToList();
     }
 }

@@ -243,9 +243,9 @@ public static class MonsterCommandRegistry
         if (player?.PlayerCombatState == null || sourceCard == null)
             return false;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != sourceCard)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, sourceCard))
                 continue;
             return TryGet(pet, out var s) && s.DieForYouForced;
         }
@@ -287,7 +287,7 @@ public static class MonsterCommandRegistry
         if (player.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (TryGet(pet, out MonsterCommandState s))
                 s.HasAttackedThisTurn = false;
@@ -300,11 +300,11 @@ public static class MonsterCommandRegistry
         if (player?.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard card)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard card)
                 await card.OnOwnerTurnEndFieldCleanupAsync(ctx, player, pet);
         }
     }
@@ -315,7 +315,7 @@ public static class MonsterCommandRegistry
         if (player?.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!TryGet(pet, out MonsterCommandState s))
                 continue;
@@ -332,7 +332,7 @@ public static class MonsterCommandRegistry
             s.GoddessOfWhimAtkMultiplierThisTurn = 1m;
         }
 
-        foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
             c.ClearTurnEndFieldBuffsFromMonsterCommandRegistry();
     }
 

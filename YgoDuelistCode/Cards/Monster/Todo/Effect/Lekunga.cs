@@ -52,7 +52,7 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
 
     public bool IsActivatedEffectAvailable =>
         Owner != null
-        && CountWaterMonstersInGraveyard(Owner) >= 2
+        && BuildWaterGraveyardCandidates(Owner).Count >= 2
         && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0);
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
@@ -61,27 +61,16 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
             return;
 
         Player player = Owner;
-        List<BaseMonsterCard> candidates = GraveyardRelic
-            .GetGraveyardCards(player)
-            .OfType<BaseMonsterCard>()
-            .Where(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Water)
-            .ToList();
-
-        if (candidates.Count < 2)
+        if (BuildWaterGraveyardCandidates(player).Count < 2)
             return;
 
         var prefs = new CardSelectorPrefs(BanishSelectionPrompt, 2, 2) { Cancelable = true };
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(choiceContext, candidates, player, prefs);
-        }
-        catch (System.OperationCanceledException)
-        {
-            return;
-        }
-
-        List<BaseMonsterCard> toBanish = selected.OfType<BaseMonsterCard>().Take(2).ToList();
+        List<BaseMonsterCard> toBanish = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            player,
+            prefs,
+            () => BuildWaterGraveyardCandidates(player),
+            maxResults: 2);
         if (toBanish.Count < 2)
             return;
 
@@ -98,6 +87,9 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
     }
 
-    private static int CountWaterMonstersInGraveyard(Player player) =>
-        GraveyardRelic.GetGraveyardCards(player).OfType<BaseMonsterCard>().Count(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Water);
+    private static List<BaseMonsterCard> BuildWaterGraveyardCandidates(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseMonsterCard>()
+        .Where(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Water)
+        .ToList();
 }

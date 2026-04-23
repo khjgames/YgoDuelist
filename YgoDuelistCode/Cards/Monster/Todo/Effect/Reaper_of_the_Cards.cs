@@ -43,8 +43,7 @@ public sealed class Reaper_of_the_Cards : EffectMonsterCard, IMonsterFlipEffect
 
     public override Type[] RelatedCards => new[] { typeof(Reaper_of_the_Cards) };
 
-    private bool ShowNextTrapDiscountPlus =>
-        IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
+    private bool ShowNextTrapDiscountPlus => IsUpgradedOrPreviewActive;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
@@ -65,30 +64,20 @@ public sealed class Reaper_of_the_Cards : EffectMonsterCard, IMonsterFlipEffect
             return;
 
         CombatState cs = Owner.Creature.CombatState;
-        var candidates = new List<BaseTrapCard>();
-        YgoFlipSpellTrapFieldEffects.CollectTrapsInAllSpellTrapZones(cs, candidates);
+        List<BaseTrapCard> candidates = BuildTargets(cs);
         if (candidates.Count == 0)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates.Cast<CardModel>().ToList(),
-                Owner,
-                new CardSelectorPrefs(FlipTargetPrompt, 1, 1)
-                {
-                    RequireManualConfirmation = true,
-                    Cancelable = true
-                });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        if (pick.FirstOrDefault() is not BaseTrapCard victim)
+        BaseTrapCard? victim = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(FlipTargetPrompt, 1, 1)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true
+            },
+            () => BuildTargets(cs));
+        if (victim == null)
             return;
 
         bool destroyed = await YgoFlipSpellTrapFieldEffects.TrySendSpellTrapOnFieldToGraveyardAsync(victim, this);
@@ -105,5 +94,12 @@ public sealed class Reaper_of_the_Cards : EffectMonsterCard, IMonsterFlipEffect
     protected override void OnUpgrade()
     {
         DynamicVars["Mgc"].BaseValue = 2m;
+    }
+
+    private static List<BaseTrapCard> BuildTargets(CombatState combatState)
+    {
+        var candidates = new List<BaseTrapCard>();
+        YgoFlipSpellTrapFieldEffects.CollectTrapsInAllSpellTrapZones(combatState, candidates);
+        return candidates;
     }
 }

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Hooks;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -14,10 +15,15 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForCommandSystem;
 public static class SevenWeaponsAfterCardPlayedPatch
 {
     [HarmonyPostfix]
-    public static async void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public static void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         _ = combatState;
         _ = choiceContext;
+        _ = TaskHelper.RunSafely(PostfixAsync(cardPlay));
+    }
+
+    private static async Task PostfixAsync(CardPlay cardPlay)
+    {
         if (cardPlay.Card?.Owner is not Player player)
             return;
 

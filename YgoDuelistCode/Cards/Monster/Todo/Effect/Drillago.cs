@@ -42,7 +42,7 @@ public sealed class Drillago : EffectMonsterCard
     {
         if (Owner?.Creature?.CombatState == null)
             return false;
-        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(Owner.Creature.CombatState.HittableEnemies))
         {
             if (!enemy.IsAlive)
                 continue;

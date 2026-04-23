@@ -26,10 +26,12 @@ public static class YgoSmithRestSiteOptionEnabledPatch
     [HarmonyPostfix]
     public static void Postfix(Player owner, SmithRestSiteOption __instance)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(owner))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(owner))
             return;
 
-        CardPile extra = PlayerRunExtraDeck.GetOrCreatePile(owner);
+        CardPile? extra = YgoPlayerRunPiles.RunExtraDeck(owner);
+        if (extra == null)
+            return;
         if (extra.Cards.Any(c => c is FusionMonsterCard && c.IsUpgradable))
             __instance.IsEnabled = true;
     }
@@ -42,7 +44,7 @@ public static class YgoSmithRestSiteOptionOnSelectPatch
     public static bool Prefix(SmithRestSiteOption __instance, ref Task<bool> __result)
     {
         Player? owner = Traverse.Create(__instance).Property<Player>("Owner").Value;
-        if (owner == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(owner))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(owner))
             return true;
 
         __result = RunYgoSmithAsync(__instance, owner);
@@ -101,7 +103,9 @@ public static class YgoSmithRestSiteOptionOnSelectPatch
         };
 
         List<CardModel> candidates = owner.Deck.Cards.Where(c => c.IsUpgradable).ToList();
-        CardPile extra = PlayerRunExtraDeck.GetOrCreatePile(owner);
+        CardPile? extra = YgoPlayerRunPiles.RunExtraDeck(owner);
+        if (extra == null)
+            return false;
         candidates.AddRange(extra.Cards.Where(c => c is FusionMonsterCard && c.IsUpgradable));
 
         if (candidates.Count == 0)

@@ -11,6 +11,8 @@ using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 public static class SliferSkyDragonService
@@ -20,11 +22,11 @@ public static class SliferSkyDragonService
         if (player?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive)
                 continue;
-            BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
             if (src is IYgoSliferSkyDragonFieldMonster)
                 return (Slifer_the_Sky_Dragon)src;
         }
@@ -56,10 +58,8 @@ public static class SliferSkyDragonService
         if (slifer == null || player.Creature?.CombatState == null)
             return;
 
-        foreach (Creature enemy in player.Creature.CombatState.HittableEnemies.ToList())
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(player.Creature.CombatState))
         {
-            if (!enemy.IsAlive)
-                continue;
             await ApplySliferPressureToEnemyAsync(ctx, player, enemy, slifer);
         }
     }

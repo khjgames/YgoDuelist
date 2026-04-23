@@ -38,7 +38,7 @@ public sealed class Wodan_the_Resident_of_the_Forest : EffectMonsterCard
             return base.GetSecondaryStats();
 
         int plantCount = 0;
-        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner);
+        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         foreach (BaseMonsterCard? m in field)
         {
             if (m == null || m.FaceDown)

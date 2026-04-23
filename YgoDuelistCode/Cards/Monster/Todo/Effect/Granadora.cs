@@ -31,17 +31,20 @@ public sealed class Granadora : EffectMonsterCard
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Heal;
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            async () =>
+            {
+                if (player.Creature == null)
+                    return;
 
-        if (player.Creature == null)
-            return;
-
-        decimal heal = DynamicVars["Mgc"].BaseValue;
-        if (heal > 0m)
-            await CreatureCmd.Heal(player.Creature, heal);
-    }
+                decimal heal = DynamicVars["Mgc"].BaseValue;
+                if (heal > 0m)
+                    await CreatureCmd.Heal(player.Creature, heal);
+            });
 
     protected override void OnUpgrade()
     {

@@ -34,10 +34,9 @@ public sealed class ExtraDeckRelic : YgoDuelistRelic
     {
         if (player == null)
             return;
-        foreach (RelicModel r in player.Relics)
+        foreach (ExtraDeckRelic ed in YgoPlayerRelicAccess.GetRelics<ExtraDeckRelic>(player))
         {
-            if (r is ExtraDeckRelic ed)
-                ed.InvokeDisplayAmountChanged();
+            ed.InvokeDisplayAmountChanged();
         }
     }
 
@@ -74,7 +73,7 @@ public sealed class ExtraDeckRelic : YgoDuelistRelic
             return combat?.Cards.Count ?? 0;
         }
 
-        return PlayerRunExtraDeck.GetOrCreatePile(player).Cards.Count;
+        return YgoPlayerRunPiles.RunExtraDeck(player)?.Cards.Count ?? 0;
     }
 
     private void SubscribeToCombatExtraDeckPile()
@@ -98,10 +97,9 @@ public sealed class ExtraDeckRelic : YgoDuelistRelic
         if (player == null)
             return;
 
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        CardPile? pile = YgoPlayerRunPiles.RunExtraDeck(player);
+        if (pile == null)
             return;
-
-        CardPile pile = PlayerRunExtraDeck.GetOrCreatePile(player);
         _subscribedPile = pile;
         _subscribedPile.ContentsChanged += OnExtraDeckContentsChanged;
         InvokeDisplayAmountChanged();
@@ -135,10 +133,7 @@ public sealed class ExtraDeckRelic : YgoDuelistRelic
             return combat.Cards.ToList();
         }
 
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
-            return [];
-
-        return PlayerRunExtraDeck.GetOrCreatePile(player).Cards.ToList();
+        return YgoPlayerRunPiles.RunExtraDeckCards(player);
     }
 
     public static bool IsExtraDeckRelic(RelicModel? model) => model is ExtraDeckRelic;

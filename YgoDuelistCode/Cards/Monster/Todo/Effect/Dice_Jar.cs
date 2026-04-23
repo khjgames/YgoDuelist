@@ -91,7 +91,7 @@ public sealed class Dice_Jar : EffectMonsterCard
                     return;
                 }
 
-                foreach (Creature pet in pending.Pets)
+                foreach (Creature pet in YgoMpCombatOrder.CreatureListOrderedByCombatId(pending.Pets))
                     await CreatureCmd.Kill(pet, force: true);
 
                 int hpLoss = pending.MausoleumHpLossTotal;
@@ -127,7 +127,7 @@ public sealed class Dice_Jar : EffectMonsterCard
         int def = BaseDef;
         if (Owner != null)
         {
-            var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.ToList() ?? new List<BaseMonsterCard>();
+            var field = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
             if (!field.Contains(this))
                 field.Add(this);
             def = CalcDuelMonsterStats(field).Def;
@@ -152,8 +152,11 @@ public sealed class Dice_Jar : EffectMonsterCard
             return;
 
         Creature playerCreature = player.Creature;
-        Creature? pet = player.PlayerCombatState?.Pets
-            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+        if (player.PlayerCombatState == null)
+            return;
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => DuelMonsterFieldRegistry.HasSourceCard(p, this));
         ulong mix = YgoDeterministicRng.MixDuelMonsterAttack(playerCreature, pet, cardPlay);
 
         int round = 0;
@@ -175,21 +178,14 @@ public sealed class Dice_Jar : EffectMonsterCard
             YgoDeterministicRngResultDisplay.CreateD6RollResultCard(cs, player, playerFace),
             YgoDeterministicRngResultDisplay.CreateD6RollResultCard(cs, player, enemyFace)
         };
-        var prefs = new CardSelectorPrefs(RollPreviewPrompt, 0, 0)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = false
-        };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, preview, player, prefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, preview, player, RollPreviewPrompt);
 
         WillSet = false;
 
         if (playerScore > enemyScore)
         {
             decimal dmgEach = DynamicVars["Mgc"].BaseValue * playerScore;
-            foreach (Creature enemy in YgoDeterministicRng.StableOrder(
-                         cs.HittableEnemies.Where(c => c.IsAlive),
-                         c => c.CombatId))
+            foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             {
                 await DamageCmd.Attack(dmgEach)
                     .FromCard(this)
@@ -198,12 +194,10 @@ public sealed class Dice_Jar : EffectMonsterCard
                     .Execute(choiceContext);
             }
         }
-        else if (player.PlayerCombatState != null)
+        else
         {
-            foreach (Creature summon in YgoDeterministicRng.StableOrder(
-                         player.PlayerCombatState.Pets.Where(
-                             p => p.Monster is DuelMonsterModel && p.IsAlive),
-                         p => p.CombatId))
+            foreach (Creature summon in YgoMpCombatOrder.PetsSnapshotAliveDuelMonstersOrderedByCombatId(
+                         player.PlayerCombatState))
             {
                 await CreatureCmd.Damage(
                     choiceContext,

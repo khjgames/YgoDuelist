@@ -28,36 +28,20 @@ public sealed class Terraforming : BaseSpellCard, IYgoPrePlayCancelableGridSelec
     public override YgoCardPackTags PackTags => YgoCardPackTags.Spell | YgoCardPackTags.Draw;
 
     protected override bool IsPlayable =>
-        base.IsPlayable && Owner != null && GetFieldSpellsInDrawOrDiscard(Owner).Count > 0;
+        base.IsPlayable && Owner != null && BuildFieldSpellCandidates(Owner).Count > 0;
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        List<BaseFieldSpellCard> candidates = GetFieldSpellsInDrawOrDiscard(player);
+        List<BaseFieldSpellCard> candidates = BuildFieldSpellCandidates(player);
         if (candidates.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates.Cast<CardModel>().ToList(),
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        CardModel? first = selected.FirstOrDefault();
-        if (first is not BaseFieldSpellCard chosen)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<BaseFieldSpellCard>(
+            player,
+            sourceCard,
+            candidates.Cast<CardModel>().ToList(),
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildFieldSpellCandidates(player).Cast<CardModel>().ToList());
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -69,14 +53,14 @@ public sealed class Terraforming : BaseSpellCard, IYgoPrePlayCancelableGridSelec
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseFieldSpellCard chosen)
             return;
 
-        CardPile? draw = PileType.Draw.GetPile(player);
-        CardPile? discard = PileType.Discard.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         bool inDraw = draw != null && draw.Cards.Contains(chosen);
         bool inDiscard = discard != null && discard.Cards.Contains(chosen);
         if (!inDraw && !inDiscard)
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return;
 
@@ -93,30 +77,30 @@ public sealed class Terraforming : BaseSpellCard, IYgoPrePlayCancelableGridSelec
         EnergyCost.UpgradeBy(-1);
     }
 
-    private static List<BaseFieldSpellCard> GetFieldSpellsInDrawOrDiscard(Player player)
+    private static List<BaseFieldSpellCard> BuildFieldSpellCandidates(Player player)
     {
         var list = new List<BaseFieldSpellCard>();
 
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         if (draw != null)
         {
-            foreach (CardModel c in draw.Cards)
+            foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards))
             {
                 if (c is BaseFieldSpellCard fs)
                     list.Add(fs);
             }
         }
 
-        CardPile? discard = PileType.Discard.GetPile(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         if (discard != null)
         {
-            foreach (CardModel c in discard.Cards)
+            foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(discard.Cards))
             {
                 if (c is BaseFieldSpellCard fs)
                     list.Add(fs);
             }
         }
 
-        return list;
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(list).OfType<BaseFieldSpellCard>().ToList();
     }
 }

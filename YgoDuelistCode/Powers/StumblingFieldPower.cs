@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -9,6 +8,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -43,7 +43,7 @@ public sealed class StumblingFieldPower : YgoDuelistPower
         if (loss <= 0m)
             return;
 
-        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
+        foreach (Creature e in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, loss, Owner, null);
     }
 
@@ -54,8 +54,10 @@ public sealed class StumblingFieldPower : YgoDuelistPower
         if (pl == null)
             return 0m;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
-        Stumbling? src = zone?.Cards.OfType<Stumbling>().FirstOrDefault();
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(pl);
+        Stumbling? src = zone == null
+            ? null
+            : YgoMpCombatOrder.FirstCardWhereStable(zone.Cards, c => c is Stumbling) as Stumbling;
         if (src?.DynamicVars != null && src.DynamicVars.ContainsKey("Mgc"))
             return src.DynamicVars["Mgc"].BaseValue;
         return 0m;

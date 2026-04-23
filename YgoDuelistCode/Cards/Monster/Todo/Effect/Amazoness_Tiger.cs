@@ -32,7 +32,7 @@ public sealed class Amazoness_Tiger : EffectMonsterCard
         if (Owner == null)
             return (0, 0);
 
-        var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.ToList() ?? new List<BaseMonsterCard>();
+        var field = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         int n = field.Count(m =>
             m != this &&
             m.Id.Entry.Contains("AMAZONESS", StringComparison.OrdinalIgnoreCase));

@@ -54,8 +54,8 @@ public sealed class Gora_Turtle : EffectMonsterCard, IYgoTurnStartWeakFromAttack
         if (threshold <= 0)
             return;
 
-        var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
-        foreach (Creature enemy in owner.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive))
+        var ctx = EnsureBlockingChoiceContext(choiceContext);
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(owner.Creature.CombatState))
         {
             int intent = YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, owner.Creature);
             if (intent < threshold)

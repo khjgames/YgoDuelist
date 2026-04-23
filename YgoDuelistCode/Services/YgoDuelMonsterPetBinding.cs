@@ -15,9 +15,9 @@ public static class YgoDuelMonsterPetBinding
     {
         if (monster?.Owner?.PlayerCombatState == null)
             return 0;
-        foreach (Creature p in monster.Owner.PlayerCombatState.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(monster.Owner.PlayerCombatState))
         {
-            if (p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.GetSourceCardForPet(p) == monster)
+            if (p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.HasSourceCard(p, monster))
                 return p.CombatId ?? 0;
         }
 
@@ -28,11 +28,11 @@ public static class YgoDuelMonsterPetBinding
     {
         if (player?.PlayerCombatState == null || petCombatId == 0)
             return null;
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (pet.CombatId != petCombatId)
                 continue;
-            return DuelMonsterFieldRegistry.GetSourceCardForPet(pet) as BaseMonsterCard;
+            return DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
         }
 
         return null;

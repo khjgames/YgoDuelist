@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -9,15 +10,18 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 internal static class RushReliablePreSpendSelection
 {
     public static async Task<bool> TryPrepareAsync(CardModel card, Player player)
     {
-        var candidates = DuelMonsterFieldRegistry.GetFieldMonsters(player)
-            .OfType<BaseMonsterCard>()
-            .ToList();
+        List<BaseMonsterCard> BuildCandidates() =>
+            DuelMonsterFieldRegistry.OrderedFieldMonsters(player).ToList();
+
+        var candidates = BuildCandidates();
         if (candidates.Count == 0)
             return false;
 
@@ -27,8 +31,11 @@ internal static class RushReliablePreSpendSelection
             Cancelable = true
         };
 
-        var pick = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        var selected = pick.OfType<BaseMonsterCard>().FirstOrDefault();
+        BaseMonsterCard? selected = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoChoiceContexts.Blocking(),
+            player,
+            prefs,
+            BuildCandidates);
         if (selected == null)
             return false;
 

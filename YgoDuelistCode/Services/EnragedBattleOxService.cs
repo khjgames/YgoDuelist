@@ -39,11 +39,11 @@ public static class EnragedBattleOxService
         bool want = false;
         if (player.PlayerCombatState != null)
         {
-            foreach (Creature pet in player.PlayerCombatState.Pets)
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
             {
                 if (!pet.IsAlive)
                     continue;
-                if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not Enraged_Battle_Ox ox)
+                if (DuelMonsterFieldRegistry.GetSourceMonster<Enraged_Battle_Ox>(pet) is not Enraged_Battle_Ox ox)
                     continue;
                 if (ox.FaceDown)
                     continue;

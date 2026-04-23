@@ -6,6 +6,8 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Black_Tyranno : EffectMonsterCard
@@ -41,7 +43,7 @@ public sealed class Black_Tyranno : EffectMonsterCard
     {
         if (Owner?.Creature?.CombatState == null)
             return false;
-        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(Owner.Creature.CombatState.HittableEnemies))
         {
             if (!enemy.IsAlive)
                 continue;

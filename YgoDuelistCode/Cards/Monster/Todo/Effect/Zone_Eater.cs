@@ -1,7 +1,6 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -70,9 +69,7 @@ public sealed class Zone_Eater : EffectMonsterCard
             return;
 
         CombatState cs = Owner.Creature.CombatState;
-        List<Creature> enemies = YgoDeterministicRng
-            .StableOrder(cs.HittableEnemies.Where(c => c.IsAlive), c => c.CombatId)
-            .ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
 
         if (enemies.Count == 0)
             return;

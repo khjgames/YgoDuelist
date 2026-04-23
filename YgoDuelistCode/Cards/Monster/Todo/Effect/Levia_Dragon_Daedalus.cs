@@ -75,27 +75,23 @@ public sealed class Levia_Dragon_Daedalus : EffectMonsterCard, IMonsterActivated
         int blight = (int)(atk * DynamicVars["Mgc2"].BaseValue);
         if (blight > 0)
         {
-            foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies)
-            {
-                if (!enemy.IsAlive)
-                    continue;
+            foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
                 await PowerCmd.Apply<BlightPower>(enemy, blight, Owner.Creature, this);
-            }
         }
 
-        foreach (Creature pet in Owner.PlayerCombatState?.Pets?.ToList() ?? Enumerable.Empty<Creature>())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this)
+            if (DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             await CreatureCmd.Kill(pet, force: true);
         }
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(Owner);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(Owner);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(Owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(Owner);
         if (zone != null && gy != null)
-            await CardPileCmd.Add(zone.Cards.ToList(), gy, CardPilePosition.Top, this, false);
+            await CardPileCmd.Add(YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards), gy, CardPilePosition.Top, this, false);
     }
 
     protected override void OnUpgrade()
@@ -110,11 +106,11 @@ public sealed class Levia_Dragon_Daedalus : EffectMonsterCard, IMonsterActivated
 
     private static async Task<bool> TrySendUmiLikeFieldSpellToGraveyardAsync(MegaCrit.Sts2.Core.Entities.Players.Player player)
     {
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (zone == null || gy == null)
             return false;
-        CardModel? card = zone.Cards.FirstOrDefault(c => c is Umi or A_Legendary_Ocean);
+        CardModel? card = YgoMpCombatOrder.FirstCardWhereStable(zone.Cards, c => c is Umi or A_Legendary_Ocean);
         if (card == null)
             return false;
         await CardPileCmd.Add(new[] { card }, gy, CardPilePosition.Top, card, false);

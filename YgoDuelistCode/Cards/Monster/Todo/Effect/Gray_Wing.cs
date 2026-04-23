@@ -48,15 +48,15 @@ public sealed class Gray_Wing : EffectMonsterCard, IMonsterActivatedEffect
 
     public bool IsActivatedEffectAvailable =>
         Owner != null
-        && PileType.Hand.GetPile(Owner)?.Cards.Count > 0;
+        && YgoPlayerPiles.Hand(Owner)?.Cards.Count > 0;
 
     protected override (int atk, int def) GetSecondaryStats()
     {
         if (Owner?.PlayerCombatState == null)
             return base.GetSecondaryStats();
-        foreach (Creature p in Owner.PlayerCombatState.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(p) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(p, this))
                 continue;
             if (MonsterCommandRegistry.TryGet(p, out var s) && s.GrayWingAtkPenaltyThisTurn > 0)
                 return (-s.GrayWingAtkPenaltyThisTurn, 0);
@@ -70,9 +70,9 @@ public sealed class Gray_Wing : EffectMonsterCard, IMonsterActivatedEffect
         int n = base.GetAttackDefendResolutionCount(player);
         if (Owner?.PlayerCombatState == null)
             return n;
-        foreach (Creature p in Owner.PlayerCombatState.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(p) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(p, this))
                 continue;
             if (MonsterCommandRegistry.TryGet(p, out var s) && s.GrayWingDoubleAttackThisTurn)
                 return n + 1;
@@ -87,30 +87,15 @@ public sealed class Gray_Wing : EffectMonsterCard, IMonsterActivatedEffect
             return;
 
         Player player = Owner;
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, gw);
-        if (candidates.Count == 0)
-            return;
-
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                choiceContext,
-                candidates,
-                player,
-                new CardSelectorPrefs(HandPrompt, 1, 1) { Cancelable = true },
-                rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, gw));
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        CardModel? chosen = pick.FirstOrDefault();
+        CardModel? chosen = await YgoHandCardSelection.TryChooseSingleHandCardAsync<CardModel>(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(HandPrompt, 1, 1) { Cancelable = true },
+            excludeReference: gw);
         if (chosen == null)
             return;
 
-        CardPile? discard = PileType.Discard.GetPile(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         if (discard == null)
             return;
 

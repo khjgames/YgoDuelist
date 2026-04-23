@@ -45,11 +45,12 @@ public sealed class Helping_Robo_for_Combat : EffectMonsterCard
 
     protected override async Task BeforeAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner?.Creature == null)
+        if (Owner?.Creature == null || Owner.PlayerCombatState == null)
             return;
 
-        Creature? pet = Owner.PlayerCombatState?.Pets
-            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            Owner.PlayerCombatState,
+            p => DuelMonsterFieldRegistry.HasSourceCard(p, this));
         if (pet == null || !pet.IsAlive)
             return;
 
@@ -59,8 +60,8 @@ public sealed class Helping_Robo_for_Combat : EffectMonsterCard
 
         await CardPileCmd.Draw(choiceContext, n, Owner);
 
-        CardPile? hand = PileType.Hand.GetPile(Owner);
-        CardPile? discard = PileType.Discard.GetPile(Owner);
+        CardPile? hand = YgoPlayerPiles.Hand(Owner);
+        CardPile? discard = YgoPlayerPiles.Discard(Owner);
         if (hand == null || discard == null)
             return;
 
@@ -68,28 +69,18 @@ public sealed class Helping_Robo_for_Combat : EffectMonsterCard
         if (toDiscard <= 0)
             return;
 
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this);
+        List<CardModel> candidates = BuildDiscardCandidates(Owner, this);
         if (candidates.Count == 0)
             return;
 
         toDiscard = Math.Min(toDiscard, candidates.Count);
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                choiceContext,
-                candidates,
-                Owner,
-                new CardSelectorPrefs(DiscardPrompt, toDiscard, toDiscard) { Cancelable = false },
-                rebuildCanonicalForRemoteApply: () =>
-                    TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this));
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
+        List<CardModel> pick = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(DiscardPrompt, toDiscard, toDiscard) { Cancelable = false },
+            () => BuildDiscardCandidates(Owner, this),
+            maxResults: toDiscard);
         foreach (CardModel c in pick)
             await CardPileCmd.Add(new[] { c }, discard, CardPilePosition.Top, c, false);
     }
@@ -99,4 +90,7 @@ public sealed class Helping_Robo_for_Combat : EffectMonsterCard
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 2m;
     }
+
+    private static List<CardModel> BuildDiscardCandidates(Player player, CardModel sourceCard) =>
+        TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, sourceCard);
 }

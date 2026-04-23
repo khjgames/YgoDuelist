@@ -48,21 +48,27 @@ public sealed class Desertapir : EffectMonsterCard, IMonsterFlipEffect
             return;
 
         CombatState cs = Owner.Creature.CombatState;
-        var candidates = new List<BaseMonsterCard>();
-        foreach (Player p in cs.Players)
+        List<AbstractMonsterCard> BuildFlipTargets()
         {
-            foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.GetFieldMonsters(p))
+            var candidates = new List<AbstractMonsterCard>();
+            foreach (Player p in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(cs.Players))
             {
-                if (m.FaceDown || m is not AbstractMonsterCard)
-                    continue;
-                if (m is Desertapir)
-                    continue;
-                if (ReferenceEquals(m, flipper))
-                    continue;
-                candidates.Add(m);
+                foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.OrderedFieldMonsters(p))
+                {
+                    if (m.FaceDown || m is not AbstractMonsterCard am)
+                        continue;
+                    if (m is Desertapir)
+                        continue;
+                    if (ReferenceEquals(m, flipper))
+                        continue;
+                    candidates.Add(am);
+                }
             }
+
+            return YgoMpCombatOrder.CardsSnapshotOrderedForMp(candidates).OfType<AbstractMonsterCard>().ToList();
         }
 
+        List<AbstractMonsterCard> candidates = BuildFlipTargets();
         if (candidates.Count == 0)
             return;
 
@@ -72,17 +78,12 @@ public sealed class Desertapir : EffectMonsterCard, IMonsterFlipEffect
             Cancelable = true
         };
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(choiceContext, candidates, Owner, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        if (pick.FirstOrDefault() is not AbstractMonsterCard target || target.Owner == null)
+        AbstractMonsterCard? target = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            Owner,
+            prefs,
+            BuildFlipTargets);
+        if (target?.Owner == null)
             return;
         if (target is not NormalMonsterCard targetNormal)
             return;

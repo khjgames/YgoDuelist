@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -47,7 +48,7 @@ public sealed class Breath_of_Light : BaseSpellCard
             if (Owner.PlayerCombatState == null)
                 continue;
 
-            foreach (Creature pet in Owner.PlayerCombatState.Pets.ToList())
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
             {
                 if (pet == null || !pet.IsAlive || pet.Monster is not DuelMonsterModel)
                     continue;

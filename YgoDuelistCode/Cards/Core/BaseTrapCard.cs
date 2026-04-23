@@ -142,7 +142,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
     /// </summary>
     public static void ClearSetThisTurnForFacedownSetTrapsInZone(Player player)
     {
-        var pile = SpellTrapZonePile.CustomType.GetPile(player);
+        var pile = YgoPlayerPiles.SpellTrapZone(player);
         if (pile == null)
             return;
 
@@ -222,7 +222,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         if (player == null)
             return;
 
-        var graveyardPile = GraveyardPile.CustomType.GetPile(player);
+        var graveyardPile = YgoPlayerPiles.Graveyard(player);
         if (graveyardPile == null)
             return;
 

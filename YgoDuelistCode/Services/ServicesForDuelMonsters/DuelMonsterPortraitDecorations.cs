@@ -75,7 +75,7 @@ public static class DuelMonsterPortraitDecorations
         if (nCreature == null || !GodotObject.IsInstanceValid(nCreature))
             return;
 
-        var source = DuelMonsterFieldRegistry.GetSourceCardForPet(pet) as BaseMonsterCard;
+        var source = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
         if (source == null)
             return;
 

@@ -54,19 +54,22 @@ public sealed class Pumpking_the_King_of_Ghosts : EffectMonsterCard
         }
     }
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            async () =>
+            {
+                decimal stacks = DynamicVars["Mgc"].BaseValue;
+                if (stacks <= 0m)
+                    return;
 
-        decimal stacks = DynamicVars["Mgc"].BaseValue;
-        if (stacks <= 0m)
-            return;
-
-        if (duelMonsterPet.GetPower<PumpkingRitualPower>() is { } existing)
-            await PowerCmd.ModifyAmount(existing, stacks, player.Creature, this);
-        else
-            await PowerCmd.Apply<PumpkingRitualPower>(duelMonsterPet, stacks, player.Creature, this);
-    }
+                if (duelMonsterPet.GetPower<PumpkingRitualPower>() is { } existing)
+                    await PowerCmd.ModifyAmount(existing, stacks, player.Creature, this);
+                else
+                    await PowerCmd.Apply<PumpkingRitualPower>(duelMonsterPet, stacks, player.Creature, this);
+            });
 
     protected override void OnUpgrade()
     {

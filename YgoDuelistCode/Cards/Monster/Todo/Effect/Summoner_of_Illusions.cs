@@ -1,7 +1,6 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -69,32 +68,26 @@ public sealed class Summoner_of_Illusions : EffectMonsterCard, IMonsterFlipEffec
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player,1))
             return;
 
-        List<BaseMonsterCard> tributeCandidates = TributeSummonSelection
+        List<BaseMonsterCard> BuildTributeTargets() => TributeSummonSelection
             .BuildTributeCandidateCards(player)
             .Where(c => !ReferenceEquals(c, this))
             .ToList();
 
-        List<FusionMonsterCard> fusionTargets = BuildFusionCardsInExtraDeck(player);
+        List<BaseMonsterCard> tributeCandidates = BuildTributeTargets();
+
+        List<FusionMonsterCard> fusionTargets = YgoFusionExtraDeckSelection.BuildFusionCardsInExtraDeck(player);
         if (tributeCandidates.Count == 0 || fusionTargets.Count == 0)
             return;
 
-        var tributePrefs = new CardSelectorPrefs(TributePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> tributePick;
-        try
-        {
-            tributePick = await CardSelectCmd.FromSimpleGrid(choiceContext, tributeCandidates, player, tributePrefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        BaseMonsterCard? tributeCard = tributePick.OfType<BaseMonsterCard>().FirstOrDefault();
+        BaseMonsterCard? tributeCard = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(TributePrompt, 1, 1)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true,
+            },
+            BuildTributeTargets);
         if (tributeCard == null)
             return;
 
@@ -104,33 +97,16 @@ public sealed class Summoner_of_Illusions : EffectMonsterCard, IMonsterFlipEffec
 
         await CreatureCmd.Kill(tributePet, force: true);
 
-        CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+        CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
         if (graveyard != null)
             await CardPileCmd.Add(new[] { tributeCard }, graveyard, CardPilePosition.Top, tributeCard, false);
 
-        FusionMonsterCard fusionCard;
-        if (fusionTargets.Count == 1)
-        {
-            fusionCard = fusionTargets[0];
-        }
-        else
-        {
-            var fusionPrefs = new CardSelectorPrefs(PickFusionPrompt, 1, 1) { Cancelable = true };
-            IEnumerable<CardModel> fusionPick;
-            try
-            {
-                fusionPick = await CardSelectCmd.FromSimpleGrid(choiceContext, fusionTargets, player, fusionPrefs);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            FusionMonsterCard? picked = fusionPick.OfType<FusionMonsterCard>().FirstOrDefault();
-            if (picked == null || !fusionTargets.Any(f => ReferenceEquals(f, picked)))
-                return;
-            fusionCard = picked;
-        }
+        FusionMonsterCard? fusionCard = await YgoFusionExtraDeckSelection.TryChooseFusionFromExtraDeckAsync(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(PickFusionPrompt, 1, 1) { Cancelable = true });
+        if (fusionCard == null || !fusionTargets.Any(f => ReferenceEquals(f, fusionCard)))
+            return;
 
         if (!await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, fusionCard, choiceContext))
             return;
@@ -146,19 +122,4 @@ public sealed class Summoner_of_Illusions : EffectMonsterCard, IMonsterFlipEffec
             this);
     }
 
-    private static List<FusionMonsterCard> BuildFusionCardsInExtraDeck(Player player)
-    {
-        var list = new List<FusionMonsterCard>();
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        if (extra == null)
-            return list;
-
-        foreach (CardModel c in extra.Cards)
-        {
-            if (c is FusionMonsterCard fm)
-                list.Add(fm);
-        }
-
-        return list;
-    }
 }

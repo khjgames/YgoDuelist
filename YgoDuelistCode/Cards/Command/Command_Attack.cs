@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -56,8 +55,7 @@ public sealed class Command_Attack : MonsterCommandCard
             return null;
 
         string suffix = ".description_combat";
-        if (atkSource.UseAlternateUpgradedDescription
-            && (atkSource.IsUpgraded || atkSource.UpgradePreviewType != CardUpgradePreviewType.None))
+        if (atkSource.UseAlternateUpgradedDescription && atkSource.IsUpgradedOrPreviewActive)
         {
             var alt = new LocString("cards", atkSource.Id.Entry + ".description_combat_upgraded");
             if (alt.Exists())
@@ -144,8 +142,8 @@ public sealed class Command_Attack : MonsterCommandCard
         if (player?.PlayerCombatState == null)
             return null;
 
-        return player.PlayerCombatState.Pets
-            .OrderBy(p => p.CombatId)
-            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == source);
+        return YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => DuelMonsterFieldRegistry.HasSourceCard(p, source));
     }
 }

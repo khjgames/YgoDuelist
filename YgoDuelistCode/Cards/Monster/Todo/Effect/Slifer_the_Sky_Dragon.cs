@@ -22,8 +22,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDragonFieldMonster, IYgoOwnerTurnStartFieldMonsterEffect, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
 {
-    private bool ShowSlifersPressurePlus =>
-        IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
+    private bool ShowSlifersPressurePlus => IsUpgradedOrPreviewActive;
 
     public Slifer_the_Sky_Dragon()
         : base(
@@ -91,7 +90,7 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDrag
             return 0;
         if (CombatManager.Instance?.IsInProgress != true)
             return 0;
-        var hand = PileType.Hand.GetPile(card.Owner).Cards;
+        var hand = YgoPlayerPiles.Hand(card.Owner).Cards;
         return hand.Count(c => c != card);
     }
 
@@ -146,10 +145,8 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDrag
         if (owner.Creature?.CombatState == null || FaceDown)
             return;
         int blight = (int)DynamicVars["Mgc"].BaseValue;
-        foreach (Creature enemy in owner.Creature.CombatState.HittableEnemies.ToList())
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(owner.Creature.CombatState))
         {
-            if (!enemy.IsAlive)
-                continue;
             bool hasPressure = enemy.HasPower<SlifersPressureTemporaryStrengthPower>() || enemy.HasPower<SlifersPressureTemporaryStrengthPowerPlus>();
             if (!hasPressure)
                 continue;

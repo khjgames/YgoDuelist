@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -58,7 +59,7 @@ public sealed class D_D_Scout_Plane : EffectMonsterCard, IYgoDdScoutPlaneCard, I
 
     public async Task TryResolveOwnerBeforeTurnEndFlushBanishedEffectAsync(PlayerChoiceContext choiceContext, Player owner)
     {
-        CardPile? banished = BanishedPile.CustomType.GetPile(owner);
+        CardPile? banished = YgoPlayerPiles.Banished(owner);
         if (banished == null || !banished.Cards.Contains(this))
             return;
         int stamp = YgoPlayerCombatTurnStamp.Get(owner);
@@ -71,8 +72,12 @@ public sealed class D_D_Scout_Plane : EffectMonsterCard, IYgoDdScoutPlaneCard, I
             RequireManualConfirmation = true,
             Cancelable = true
         };
-        var pick = await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { this }, owner, prefs);
-        if (pick.FirstOrDefault() is not D_D_Scout_Plane)
+        D_D_Scout_Plane? pick = await YgoOrderedCardSelection.TryConfirmSingleCardAsync(
+            choiceContext,
+            owner,
+            prefs,
+            this);
+        if (!ReferenceEquals(pick, this))
             return;
         if (!banished.Cards.Contains(this))
             return;

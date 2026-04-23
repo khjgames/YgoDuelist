@@ -42,28 +42,23 @@ public sealed class Berfomet : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Berfomet), typeof(Gazelle_the_King_of_Mythical_Beasts) };
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
-        if (YgoDuelMonsterSummonStyleContext.CurrentNormalOrTribute != true)
-            return;
-
-        var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
-        await TryOfferGazelleFromDeckAsync(ctx, player);
-    }
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnNormalOrTributeSummonAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            ctx => TryOfferGazelleFromDeckAsync(ctx, player));
 
     public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player) =>
-        await TryOfferGazelleFromDeckAsync(choiceContext, player);
+        await RunOnFlipSummonedFromCommandMenuAsync(
+            choiceContext,
+            ctx => TryOfferGazelleFromDeckAsync(ctx, player));
 
     private static async Task TryOfferGazelleFromDeckAsync(PlayerChoiceContext choiceContext, Player player)
     {
-        CardPile? draw = PileType.Draw.GetPile(player);
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (draw == null || hand == null)
-            return;
-
-        List<Gazelle_the_King_of_Mythical_Beasts> gazelles = draw.Cards.OfType<Gazelle_the_King_of_Mythical_Beasts>().ToList();
-        if (gazelles.Count == 0)
             return;
 
         var prefs = new CardSelectorPrefs(AddGazellePrompt, 1, 1)
@@ -72,10 +67,19 @@ public sealed class Berfomet : EffectMonsterCard
             Cancelable = true
         };
 
-        IEnumerable<CardModel> pick = await CardSelectCmd.FromSimpleGrid(choiceContext, gazelles, player, prefs);
-        if (pick.FirstOrDefault() is not Gazelle_the_King_of_Mythical_Beasts gazelle)
+        Gazelle_the_King_of_Mythical_Beasts? gazelle = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            player,
+            prefs,
+            () => BuildGazelleTargets(draw));
+        if (gazelle == null)
             return;
 
         await CardPileCmd.Add(new CardModel[] { gazelle }, hand, CardPilePosition.Top, gazelle, false);
     }
+
+    private static List<Gazelle_the_King_of_Mythical_Beasts> BuildGazelleTargets(CardPile draw) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(draw.Cards)
+        .OfType<Gazelle_the_King_of_Mythical_Beasts>()
+        .ToList();
 }

@@ -82,13 +82,13 @@ public static class NetCombatCardDbDeterministicIdsPatch
         if (IdCardIfNecessary == null)
             return;
 
-        TryIdCardPile(db, YgoCardOptionPile.CustomType.GetPile(player));
-        TryIdCardPile(db, SpellTrapZonePile.CustomType.GetPile(player));
-        TryIdCardPile(db, GraveyardPile.CustomType.GetPile(player));
-        TryIdCardPile(db, MonsterPile.CustomType.GetPile(player));
-        TryIdCardPile(db, FieldPile.CustomType.GetPile(player));
-        TryIdCardPile(db, ExtraDeckPile.CustomType.GetPile(player));
-        TryIdCardPile(db, BanishedPile.CustomType.GetPile(player));
+        TryIdCardPile(db, YgoPlayerPiles.OptionPile(player));
+        TryIdCardPile(db, YgoPlayerPiles.SpellTrapZone(player));
+        TryIdCardPile(db, YgoPlayerPiles.Graveyard(player));
+        TryIdCardPile(db, YgoPlayerPiles.MonsterZone(player));
+        TryIdCardPile(db, YgoPlayerPiles.Field(player));
+        TryIdCardPile(db, YgoPlayerPiles.ExtraDeck(player));
+        TryIdCardPile(db, YgoPlayerPiles.Banished(player));
     }
 
     private static void TryIdCardPile(NetCombatCardDb db, CardPile? pile)

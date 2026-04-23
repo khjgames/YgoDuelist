@@ -23,6 +23,9 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     CustomCardModel(cost, type, rarity, target),
     IYgoNHandPlayPhaseHighlightOverride
 {
+    protected internal bool IsUpgradedOrPreviewActive =>
+        IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
+
     public virtual YgoCardPackTags PackTags => YgoCardPackTags.None;
 
     /// <summary>
@@ -163,8 +166,7 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
         if (IsInHandDuringCombat())
             suffix = ".description_combat";
 
-        if (UseAlternateUpgradedDescription
-            && (IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None))
+        if (UseAlternateUpgradedDescription && IsUpgradedOrPreviewActive)
         {
             var upgraded = new LocString("cards", Id.Entry + suffix + "_upgraded");
             if (upgraded.Exists())

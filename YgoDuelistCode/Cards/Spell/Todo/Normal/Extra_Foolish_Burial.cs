@@ -36,37 +36,21 @@ public sealed class Extra_Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableG
     protected override bool IsPlayable =>
         base.IsPlayable &&
         Owner != null &&
-        PlayerRunExtraDeck.IsYgoDuelistPlayer(Owner) &&
-        GetFusionMonstersInExtraDeck(Owner).Any();
+        YgoPlayerRunPiles.IsYgoRunPlayer(Owner) &&
+        BuildFusionCandidates(Owner).Count > 0;
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        var candidates = GetFusionMonstersInExtraDeck(player).ToList();
+        List<CardModel> candidates = BuildFusionCandidates(player);
         if (candidates.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var chosen = selected.FirstOrDefault() as FusionMonsterCard;
-        if (chosen == null)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<FusionMonsterCard>(
+            player,
+            sourceCard,
+            candidates,
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildFusionCandidates(player));
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -78,7 +62,7 @@ public sealed class Extra_Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableG
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not FusionMonsterCard chosen)
             return;
 
-        CardPile? extra = PlayerRunExtraDeck.GetPileIfExists(player);
+        CardPile? extra = YgoPlayerRunPiles.RunExtraDeckIfExists(player);
         if (extra == null || !extra.Cards.Contains(chosen))
             return;
 
@@ -87,7 +71,7 @@ public sealed class Extra_Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableG
         if (lifeCostDamage > 0m)
             await CreatureCmd.Damage(choiceContext, player.Creature, lifeCostDamage, ValueProp.Unpowered, player.Creature, this);
 
-        var graveyardPile = GraveyardPile.CustomType.GetPile(player);
+        var graveyardPile = YgoPlayerPiles.Graveyard(player);
         if (graveyardPile == null)
             return;
 
@@ -104,12 +88,14 @@ public sealed class Extra_Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableG
         EnergyCost.UpgradeBy(-1);
     }
 
-    private static IEnumerable<FusionMonsterCard> GetFusionMonstersInExtraDeck(Player player)
+    private static List<CardModel> BuildFusionCandidates(Player player)
     {
-        CardPile? extra = PlayerRunExtraDeck.GetPileIfExists(player);
+        CardPile? extra = YgoPlayerRunPiles.RunExtraDeckIfExists(player);
         if (extra == null)
-            return Enumerable.Empty<FusionMonsterCard>();
+            return new List<CardModel>();
 
-        return extra.Cards.OfType<FusionMonsterCard>();
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(extra.Cards)
+            .OfType<FusionMonsterCard>()
+            .ToList<CardModel>();
     }
 }

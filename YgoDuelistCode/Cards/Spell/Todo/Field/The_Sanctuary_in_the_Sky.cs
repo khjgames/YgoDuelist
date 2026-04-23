@@ -39,11 +39,11 @@ public sealed class The_Sanctuary_in_the_Sky : BaseFieldSpellCard, IYgoOwnerTurn
         if (!YgoAnnualTracker.TryConsumeAnnual(player, AnnualKey))
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard m
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard m
                 && m.ParticipatesInSanctuaryMercuryDraw)
             {
                 await CardPileCmd.Draw(choiceContext, 1, player);

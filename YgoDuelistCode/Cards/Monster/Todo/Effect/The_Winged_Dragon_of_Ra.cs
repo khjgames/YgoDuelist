@@ -95,9 +95,9 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
 
         int sumAtk = 0;
         int sumDef = 0;
-        foreach (Creature pet in pending.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.CreatureListOrderedByCombatId(pending.Pets))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard m)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard m)
             {
                 sumAtk += m.BaseAtk;
                 sumDef += m.BaseDef;

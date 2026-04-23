@@ -133,7 +133,7 @@ public static class YgoOptionHandBridge
         if (player == null)
             throw new ArgumentNullException(nameof(player));
 
-        var pile = YgoCardOptionPile.CustomType.GetPile(player);
+        var pile = YgoPlayerPiles.OptionPile(player);
         if (pile == null)
         {
             // No option pile: clear any existing state and notify listeners.

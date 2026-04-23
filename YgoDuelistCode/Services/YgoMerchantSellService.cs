@@ -15,13 +15,13 @@ public static class YgoMerchantSellService
     public static List<CardModel> ListSellable(Player player)
     {
         var list = new List<CardModel>();
-        foreach (CardModel c in PlayerRunTrunk.GetOrCreatePile(player).Cards)
+        foreach (CardModel c in YgoPlayerRunPiles.Trunk(player)?.Cards ?? [])
         {
             if (IsSellEligible(c))
                 list.Add(c);
         }
 
-        foreach (CardModel c in PlayerRunSideDeck.GetOrCreatePile(player).Cards)
+        foreach (CardModel c in YgoPlayerRunPiles.SideDeck(player)?.Cards ?? [])
         {
             if (IsSellEligible(c))
                 list.Add(c);
@@ -58,13 +58,15 @@ public static class YgoMerchantSellService
 
     public static void RemoveFromTrunkOrSide(Player player, CardModel card)
     {
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(player);
+        if (trunk == null)
+            return;
         if (trunk.Cards.Contains(card))
         {
             trunk.RemoveInternal(card, silent: true);
             return;
         }
 
-        PlayerRunSideDeck.GetOrCreatePile(player).RemoveInternal(card, silent: true);
+        YgoPlayerRunPiles.SideDeck(player)?.RemoveInternal(card, silent: true);
     }
 }

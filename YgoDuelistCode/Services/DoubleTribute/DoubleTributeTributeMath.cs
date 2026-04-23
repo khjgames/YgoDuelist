@@ -45,7 +45,7 @@ public static class DoubleTributeTributeMath
         var cards = new List<BaseMonsterCard>(mats.Count);
         foreach (Creature pet in mats)
         {
-            BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
             if (c == null)
                 return false;
             cards.Add(c);

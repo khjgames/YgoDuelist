@@ -75,13 +75,8 @@ public static class YgoNeowStarterDeckGridService
                 Cancelable = false
             };
 
-            DraftLog("await CardSelectCmd.FromSimpleGrid (BlockingPlayerChoiceContext)…");
-            IEnumerable<CardModel> chosen = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                grid,
-                player,
-                prefs);
-            var chosenList = chosen.ToList();
+            DraftLog("await YgoSimpleGridSelection.SelectAsync…");
+            List<CardModel> chosenList = await YgoSimpleGridSelection.SelectAsync(player, grid, prefs);
             DraftLog($"FromSimpleGrid returned chosenCount={chosenList.Count}");
 
             // Deck.AddInternal alone does not set Owner or RunState._allCards; Hook.ShouldAllowAncient → RunState.Contains NREs on Owner.
@@ -94,7 +89,9 @@ public static class YgoNeowStarterDeckGridService
                 c.AfterCreated();
             }
 
-            CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
+            CardPile? trunk = YgoPlayerRunPiles.Trunk(player);
+            if (trunk == null)
+                return;
             int trunkCount = 0;
             foreach (CardModel c in grid)
             {

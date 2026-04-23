@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -7,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -44,7 +44,7 @@ public sealed class TornadoWallFieldPower : YgoDuelistPower
             return;
 
         decimal strLoss = Amount;
-        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
+        foreach (Creature e in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             await PowerCmd.Apply<YgoTemporaryStrengthLossPower>(e, strLoss, Owner, null);
     }
 }

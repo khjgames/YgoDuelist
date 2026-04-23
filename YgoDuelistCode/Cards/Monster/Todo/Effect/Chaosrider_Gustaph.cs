@@ -49,7 +49,7 @@ public sealed class Chaosrider_Gustaph : EffectMonsterCard, IMonsterActivatedEff
 
     public bool IsActivatedEffectAvailable =>
         Owner != null
-        && GraveyardRelic.GetGraveyardCards(Owner).OfType<BaseSpellCard>().Any();
+        && BuildSpellBanishCandidates(Owner).Count > 0;
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -57,29 +57,20 @@ public sealed class Chaosrider_Gustaph : EffectMonsterCard, IMonsterActivatedEff
             return;
 
         Player player = Owner;
+        if (BuildSpellBanishCandidates(player).Count == 0)
+            return;
+
         Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(source, player);
         if (pet == null)
             return;
 
-        List<BaseSpellCard> pool = GraveyardRelic
-            .GetGraveyardCards(player)
-            .OfType<BaseSpellCard>()
-            .ToList();
-        if (pool.Count == 0)
-            return;
-
         var prefs = new CardSelectorPrefs(BanishPrompt, 1, 2) { Cancelable = true };
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(choiceContext, pool, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        List<BaseSpellCard> banished = pick.OfType<BaseSpellCard>().Distinct().Take(2).ToList();
+        List<BaseSpellCard> banished = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            player,
+            prefs,
+            () => BuildSpellBanishCandidates(player),
+            maxResults: 2);
         if (banished.Count == 0)
             return;
 
@@ -88,4 +79,8 @@ public sealed class Chaosrider_Gustaph : EffectMonsterCard, IMonsterActivatedEff
 
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
     }
+    private static List<BaseSpellCard> BuildSpellBanishCandidates(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseSpellCard>()
+        .ToList();
 }

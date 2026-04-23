@@ -62,6 +62,8 @@ Master file list: `all-cs-files.txt` (optional; may be regenerated manually via 
 | Wave 15 queueing | Logged a 35-card mixed PackTags batch in `packtags-review-ledger.md` including owner turn-start field-monster dispatch normalization. |
 | Wave 16 queueing | Logged a 35-card mixed PackTags batch in `packtags-review-ledger.md` including owner before-turn-end spell/trap-zone dispatch normalization. |
 | Wave 17 queueing | Logged a 35-card effect-monster PackTags batch in `packtags-review-ledger.md` including phased owner turn-start spell/trap dispatch + Sanctuary refactor. |
+| Wave 18 queueing | Logged card-owned graveyard hook expansion (`Cockroach_Knight`, `Outstanding_Dog_Marron`, `Skull_Mark_Ladybug`), `The_Immortal_of_Thunder` field-to-graveyard inlining, and shared summon/flip wrapper cleanup on `BaseMonsterCard`. |
+| Wave 19 queueing | Logged shared choice-context normalization (`YgoChoiceContexts`) across cards/services/patches and graveyard-triggered source confirmation consolidation (`YgoGraveyardTriggeredActivation`). |
 
 ---
 

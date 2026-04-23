@@ -9,7 +9,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// <summary>
 /// MP: Stiff/Fatigue on duel pets must match on every peer when <see cref="MegaCrit.Sts2.Core.Multiplayer.Game.ChecksumTracker"/>
 /// snapshots state. A Harmony postfix on <see cref="MegaCrit.Sts2.Core.Hooks.Hook.AfterPlayerTurnStart"/> that uses
-/// <c>async void</c> can still be in flight when the game immediately hashes "After player turn start". Do not block
+/// fire-and-forget async work can still be in flight when the game immediately hashes "After player turn start". Do not block
 /// with <c>PowerCmd.Remove</c> + <c>GetResult()</c> — that awaits timed waits and can freeze the host. Use
 /// <see cref="MonsterCommandRegistry.ResetCommandLockStateSyncForChecksum"/> instead.
 /// </summary>
@@ -23,12 +23,12 @@ public static class YgoMonsterCommandChecksumReconcile
     /// </summary>
     public static void ReconcileAfterPlayerTurnStartForChecksum(IRunState runState)
     {
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.PlayerCombatState == null)
                 continue;
 
-            foreach (Creature pet in player.PlayerCombatState.Pets)
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
             {
                 if (!MonsterCommandRegistry.TryGet(pet, out _))
                     continue;

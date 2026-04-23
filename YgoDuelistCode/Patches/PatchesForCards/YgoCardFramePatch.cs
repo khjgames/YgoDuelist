@@ -54,7 +54,7 @@ internal static class YgoSetCardVisualHelper
         if (owner == null)
             return false;
 
-        var hand = PileType.Hand.GetPile(owner);
+        var hand = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.Hand(owner);
         return hand?.Cards?.Any(c => ReferenceEquals(c, card)) == true;
     }
 

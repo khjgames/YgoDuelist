@@ -46,8 +46,7 @@ public sealed class Greenkappa : EffectMonsterCard, IMonsterFlipEffect
             return;
 
         CombatState cs = Owner.Creature.CombatState;
-        var candidates = new List<CardModel>();
-        YgoFlipSpellTrapFieldEffects.CollectSetSpellTrapsInAllSpellTrapZones(cs, candidates);
+        List<CardModel> candidates = BuildTargets(cs);
         if (candidates.Count == 0)
             return;
 
@@ -56,25 +55,16 @@ public sealed class Greenkappa : EffectMonsterCard, IMonsterFlipEffect
         if (maxPick <= 0)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates,
-                Owner,
-                new CardSelectorPrefs(FlipTargetPrompt, 1, maxPick)
-                {
-                    RequireManualConfirmation = true,
-                    Cancelable = true
-                });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        List<CardModel> destroyed = pick.ToList();
+        List<CardModel> destroyed = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(FlipTargetPrompt, 1, maxPick)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true
+            },
+            () => BuildTargets(cs),
+            maxResults: maxPick);
         if (destroyed.Count == 0)
             return;
 
@@ -94,5 +84,12 @@ public sealed class Greenkappa : EffectMonsterCard, IMonsterFlipEffect
     protected override void OnUpgrade()
     {
         DynamicVars["Mgc"].BaseValue = 3m;
+    }
+
+    private static List<CardModel> BuildTargets(CombatState combatState)
+    {
+        var candidates = new List<CardModel>();
+        YgoFlipSpellTrapFieldEffects.CollectSetSpellTrapsInAllSpellTrapZones(combatState, candidates);
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(candidates);
     }
 }

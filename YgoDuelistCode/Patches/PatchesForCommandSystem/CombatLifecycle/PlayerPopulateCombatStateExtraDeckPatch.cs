@@ -20,18 +20,20 @@ public static class PlayerPopulateCombatStateExtraDeckPatch
     [HarmonyPostfix]
     public static void Postfix(Player __instance, Rng rng, CombatState state)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(__instance))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(__instance))
             return;
 
         PlayerCombatState? pcs = __instance.PlayerCombatState;
         if (pcs == null)
             return;
 
-        CardPile? combatExtra = ExtraDeckPile.CustomType.GetPile(__instance);
+        CardPile? combatExtra = YgoPlayerPiles.ExtraDeck(__instance);
         if (combatExtra == null)
             return;
 
-        CardPile runExtra = PlayerRunExtraDeck.GetOrCreatePile(__instance);
+        CardPile? runExtra = YgoPlayerRunPiles.RunExtraDeck(__instance);
+        if (runExtra == null)
+            return;
         foreach (CardModel c in runExtra.Cards.ToList())
         {
             if (c is not FusionMonsterCard)

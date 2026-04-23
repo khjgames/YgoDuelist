@@ -79,8 +79,7 @@ public sealed class Rigorous_Reaver : EffectMonsterCard
         if (cs == null)
             return;
 
-        List<Creature> ordered = YgoDeterministicRng
-            .StableOrder(cs.HittableEnemies.Where(e => e.IsAlive), e => e.CombatId)
+        List<Creature> ordered = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs)
             .OrderByDescending(e => e.MaxHp)
             .ToList();
 

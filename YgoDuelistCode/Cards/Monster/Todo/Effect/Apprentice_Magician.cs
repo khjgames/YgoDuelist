@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -64,29 +63,45 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
         return true;
     }
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
-        if (YgoDuelMonsterSummonStyleContext.CurrentNormalOrTribute != true)
-            return;
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnNormalOrTributeSummonAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            ctx => TryPlaceSpellCounterOnFieldAsync(ctx, player));
 
-        var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
-        await TryPlaceSpellCounterOnFieldAsync(ctx, player);
-    }
-
-    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player)
-    {
-        var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
-        await TryPlaceSpellCounterOnFieldAsync(ctx, player);
-    }
+    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player) =>
+        await RunOnFlipSummonedFromCommandMenuAsync(
+            choiceContext,
+            ctx => TryPlaceSpellCounterOnFieldAsync(ctx, player));
 
     private static async Task TryPlaceSpellCounterOnFieldAsync(PlayerChoiceContext choiceContext, Player player)
     {
         if (player?.PlayerCombatState == null)
             return;
 
+        List<BaseMonsterCard> candidates = BuildSpellCounterTargets(player);
+        if (candidates.Count == 0)
+            return;
+
+        BaseMonsterCard? target = candidates.Count == 1
+            ? candidates[0]
+            : await YgoOrderedCardSelection.TryChooseSingleAsync(
+                choiceContext,
+                player,
+                new CardSelectorPrefs(SelectPrompt, 1, 1) { Cancelable = true },
+                () => BuildSpellCounterTargets(player));
+        if (target is not IYgoSpellCounterMonster)
+            return;
+
+        if (target is IYgoSpellCounterMonster m)
+            m.AddSpellCounter(1);
+    }
+
+    private static List<BaseMonsterCard> BuildSpellCounterTargets(Player player)
+    {
         var candidates = new List<BaseMonsterCard>();
-        foreach (BaseMonsterCard field in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard field in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (field is not IYgoSpellCounterMonster counterMonster)
                 continue;
@@ -97,33 +112,6 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
             candidates.Add(field);
         }
 
-        if (candidates.Count == 0)
-            return;
-
-        BaseMonsterCard target = candidates[0];
-        if (candidates.Count > 1)
-        {
-            IEnumerable<CardModel> pick;
-            try
-            {
-                pick = await CardSelectCmd.FromSimpleGrid(
-                    choiceContext,
-                    candidates.Cast<CardModel>().ToList(),
-                    player,
-                    new CardSelectorPrefs(SelectPrompt, 1, 1) { Cancelable = true });
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            BaseMonsterCard? chosen = pick.OfType<BaseMonsterCard>().FirstOrDefault();
-            if (chosen is not IYgoSpellCounterMonster)
-                return;
-            target = chosen;
-        }
-
-        if (target is IYgoSpellCounterMonster m)
-            m.AddSpellCounter(1);
+        return candidates;
     }
 }

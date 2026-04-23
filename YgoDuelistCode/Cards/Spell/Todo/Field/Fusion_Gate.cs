@@ -132,7 +132,7 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource, IYgoCa
             if (!FusionSpellPlayPayload.TryTakePendingForCard(gate, out FusionSpellPendingResolution? pending) || pending == null)
                 return;
 
-            var ctx = new BlockingPlayerChoiceContext();
+            var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
             await FusionSummonSelection.ApplyResolvedFusionAsync(player, gate, pending, ctx);
         }
         finally

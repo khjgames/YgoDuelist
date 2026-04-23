@@ -132,9 +132,9 @@ public static class YgoSpellTrapEquipLinkRegistry
     {
         lock (Gate)
         {
-            foreach (var kv in TrapToMonster)
+            foreach (CardModel trap in YgoMpCombatOrder.CardsOrderedForMp(TrapToMonster.Keys))
             {
-                if (kv.Key is IYgoSpellTrapEquipLink link)
+                if (trap is IYgoSpellTrapEquipLink link)
                 {
                     link.SetEquipLinkedPetCombatId(0);
                     link.SetEquipLinkedMonster(null);
@@ -156,12 +156,12 @@ public static class YgoSpellTrapEquipLinkRegistry
         int detached = 0;
         int rebound = 0;
 
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.Creature == null)
                 continue;
 
-            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
             if (zone == null)
                 continue;
 
@@ -177,7 +177,7 @@ public static class YgoSpellTrapEquipLinkRegistry
 
         lock (Gate)
         {
-            foreach (CardModel trap in TrapToMonster.Keys.ToArray())
+            foreach (CardModel trap in YgoMpCombatOrder.CardsOrderedForMp(TrapToMonster.Keys))
             {
                 if (trap is not IYgoSpellTrapEquipLink link)
                     continue;

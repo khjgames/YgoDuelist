@@ -23,8 +23,8 @@ public static class YgoRelicInventoryCounterTextPatch
 
         MegaLabel amountLabel = __instance.GetNode<MegaLabel>("%AmountLabel");
         Player? owner = trunkSideRelic.Owner;
-        int trunkCount = owner == null ? 0 : PlayerRunTrunk.GetOrCreatePile(owner).Cards.Count;
-        int sideCount = owner == null ? 0 : PlayerRunSideDeck.GetOrCreatePile(owner).Cards.Count;
+        int trunkCount = YgoPlayerRunPiles.Trunk(owner)?.Cards.Count ?? 0;
+        int sideCount = YgoPlayerRunPiles.SideDeck(owner)?.Cards.Count ?? 0;
         amountLabel.SetTextAutoSize($"{trunkCount}/{sideCount}");
     }
 }
@@ -37,7 +37,7 @@ public static class YgoTopBarDeckCountTextPatch
     /// </summary>
     internal static void RefreshDeckCountLabelForPlayer(Player player)
     {
-        if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
         if (NRun.Instance?.GlobalUi?.TopBar?.Deck is not NTopBarDeckButton deckBtn)
             return;
@@ -59,7 +59,7 @@ public static class YgoTopBarDeckCountTextPatch
     private static void Postfix(NTopBarDeckButton __instance)
     {
         Player? player = Traverse.Create(__instance).Field<Player>("_player").Value;
-        if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
         ApplyDeckCountLabel(__instance, player);
     }

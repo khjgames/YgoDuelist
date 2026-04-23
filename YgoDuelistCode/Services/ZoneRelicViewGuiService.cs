@@ -67,11 +67,7 @@ public static class ZoneRelicViewGuiService
                 YgoRelicBrowseGridOverlayPatch.SetPendingKind(YgoRelicBrowseGridOverlayPatch.RelicGridKind.ZoneRelicView);
                 try
                 {
-                    await CardSelectCmd.FromSimpleGrid(
-                        new BlockingPlayerChoiceContext(),
-                        cards,
-                        player,
-                        prefs);
+                    await YgoSimpleGridSelection.SelectAsync(player, cards, prefs);
                 }
                 catch (OperationCanceledException)
                 {
@@ -101,7 +97,7 @@ public static class ZoneRelicViewGuiService
     private static IReadOnlyList<CardModel> GetCardsForActivePage(Player player) =>
         ZoneRelicViewSession.ActivePage switch
         {
-            ZoneRelicViewPage.Graveyard => GraveyardRelic.GetGraveyardCards(player),
+            ZoneRelicViewPage.Graveyard => YgoPlayerPiles.GraveyardCards(player),
             ZoneRelicViewPage.Banished => BanishedRelic.GetBanishedCards(player),
             ZoneRelicViewPage.ExtraDeck => ExtraDeckRelic.GetExtraDeckCards(player),
             _ => Array.Empty<CardModel>()
@@ -110,9 +106,9 @@ public static class ZoneRelicViewGuiService
     private static RelicModel? GetRelicModelForPage(Player player, ZoneRelicViewPage page) =>
         page switch
         {
-            ZoneRelicViewPage.Graveyard => player.Relics.OfType<GraveyardRelic>().FirstOrDefault(),
-            ZoneRelicViewPage.Banished => player.Relics.OfType<BanishedRelic>().FirstOrDefault(),
-            ZoneRelicViewPage.ExtraDeck => player.Relics.OfType<ExtraDeckRelic>().FirstOrDefault(),
+            ZoneRelicViewPage.Graveyard => YgoPlayerRelicAccess.GetRelic<GraveyardRelic>(player),
+            ZoneRelicViewPage.Banished => YgoPlayerRelicAccess.GetRelic<BanishedRelic>(player),
+            ZoneRelicViewPage.ExtraDeck => YgoPlayerRelicAccess.GetRelic<ExtraDeckRelic>(player),
             _ => null
         };
 }

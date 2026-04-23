@@ -2042,7 +2042,6 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoCardPackGenerator.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoCardPackRewardFlow.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoCardTraderContinuous.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoCockroachKnightGraveyard.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoCurseOfDarknessField.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoCurseOfDarknessSpellHook.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoDarkSpiritSilentState.cs
@@ -2073,7 +2072,6 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoGoraTurtleService.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoGraveyardOptionalDeckSpecialSummon.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoGraveyardPileHooks.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoImmortalOfThunderFieldToGraveyard.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoIntentAttackDamage.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoJamBreedingMachineContinuous.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoLordPoisonGraveyard.cs
@@ -2099,7 +2097,6 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoNetCombatCardPileGate.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoNetPlayCardHandStanceStash.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoNormalMonsterPackTier.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoOutstandingDogMarronGraveyard.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoPackCardCatalog.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoPackParticipatingTags.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoPackRewardProgress.cs
@@ -2127,7 +2124,6 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoSealedPackPortraitLayout.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoSealmasterMeiseiGate.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoSkullInvitationGraveyard.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoSkullMarkLadybugGraveyard.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoSolarFlareDragonEndPhase.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoSpellCounterService.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Services\YgoSpellTrapDiscountEnergyRefresh.cs

@@ -47,7 +47,7 @@ public sealed class Exit_Monster_Options : MonsterCommandCard
             return Task.CompletedTask;
         }
 
-        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        var optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null)
         {
             GD.Print("[ZGO_ERROR] Exit_Monster_Options.ExecuteExitAsync() early exit: optionPile null");

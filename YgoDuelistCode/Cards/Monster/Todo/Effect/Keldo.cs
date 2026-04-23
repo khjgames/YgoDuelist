@@ -13,6 +13,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -57,11 +58,11 @@ public sealed class Keldo : EffectMonsterCard, IYgoCustomFieldMonsterDeathGravey
             graveyard,
             graveyard);
 
-        CardPile? discard = PileType.Discard.GetPile(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         if (discard == null)
             return;
 
-        List<CardModel> inGrave = graveyard.Cards.ToList();
+        List<CardModel> inGrave = BuildGraveyardCandidates(graveyard);
         if (inGrave.Count == 0)
             return;
 
@@ -72,9 +73,13 @@ public sealed class Keldo : EffectMonsterCard, IYgoCustomFieldMonsterDeathGravey
             Cancelable = true
         };
 
-        var ctx = new BlockingPlayerChoiceContext();
-        IEnumerable<CardModel> picked = await CardSelectCmd.FromSimpleGrid(ctx, inGrave, player, prefs);
-        List<CardModel> toDiscard = picked.ToList();
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
+        List<CardModel> toDiscard = await YgoOrderedCardSelection.TryChooseManyAsync(
+            ctx,
+            player,
+            prefs,
+            () => BuildGraveyardCandidates(graveyard),
+            maxResults: maxSelectable);
         if (toDiscard.Count == 0)
             return;
 
@@ -90,4 +95,7 @@ public sealed class Keldo : EffectMonsterCard, IYgoCustomFieldMonsterDeathGravey
                 false);
         }
     }
+
+    private static List<CardModel> BuildGraveyardCandidates(CardPile graveyard) =>
+        YgoMpCombatOrder.CardsSnapshotOrderedForMp(graveyard.Cards);
 }

@@ -82,11 +82,11 @@ public sealed class Hourglass_of_Courage : EffectMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return false;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.HasPower<HourglassOfCourageHalvedPower>();
         }
@@ -108,11 +108,11 @@ public sealed class Hourglass_of_Courage : EffectMonsterCard
         if (owner?.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in owner.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(owner.PlayerCombatState))
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != card)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, card))
                 continue;
             if (pet.HasPower<HourglassOfCourageHalvedPower>())
                 return;

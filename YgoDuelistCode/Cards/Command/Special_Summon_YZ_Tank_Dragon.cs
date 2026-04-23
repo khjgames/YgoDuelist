@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
@@ -17,16 +18,21 @@ public sealed class Special_Summon_YZ_Tank_Dragon : Special_Summon_Union_Fusion_
         source.GetType() == Yz_Tank_Dragon.RequiredMaterialTypes[0]
         || source.GetType() == Yz_Tank_Dragon.RequiredMaterialTypes[1];
 
-    protected override bool TryGetSummonData(Player player, out FusionMonsterCard fusionTarget, out List<BaseMonsterCard> materials)
+    protected override bool TryGetSummonData(Player player, out List<FusionMonsterCard> fusionTargets, out List<BaseMonsterCard> materials)
     {
-        fusionTarget = null!;
+        fusionTargets = new List<FusionMonsterCard>();
         materials = new List<BaseMonsterCard>();
         if (!Yz_Tank_Dragon.PlayerHasInExtraDeck(player))
             return false;
         if (!Yz_Tank_Dragon.TryGetExactFieldMaterials(player, out materials))
             return false;
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        fusionTarget = extra?.Cards.OfType<Yz_Tank_Dragon>().FirstOrDefault()!;
-        return fusionTarget != null;
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
+        if (extra == null)
+            return false;
+        fusionTargets = YgoMpCombatOrder.CardsOrderedForMp(extra.Cards)
+            .OfType<Yz_Tank_Dragon>()
+            .Cast<FusionMonsterCard>()
+            .ToList();
+        return fusionTargets.Count > 0;
     }
 }

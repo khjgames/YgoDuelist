@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -40,25 +39,18 @@ public static class YgoFlipReturnOwnFieldMonsterToHand
         if (candidates.Count == 0)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates.Cast<CardModel>().ToList(),
-                owner,
-                new CardSelectorPrefs(selectPrompt, 1, 1)
-                {
-                    RequireManualConfirmation = true,
-                    Cancelable = true
-                });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
+        Func<List<NormalMonsterCard>> buildCandidates = BuildCandidates(owner, flipper);
 
-        if (pick.FirstOrDefault() is not NormalMonsterCard target)
+        NormalMonsterCard? target = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            owner,
+            new CardSelectorPrefs(selectPrompt, 1, 1)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true
+            },
+            buildCandidates);
+        if (target == null)
             return;
 
         await TryReturnToHandAsync(owner, target);
@@ -84,25 +76,18 @@ public static class YgoFlipReturnOwnFieldMonsterToHand
         if (candidates.Count == 0)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates.Cast<CardModel>().ToList(),
-                owner,
-                new CardSelectorPrefs(selectPrompt, 1, 1)
-                {
-                    RequireManualConfirmation = true,
-                    Cancelable = true
-                });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
+        Func<List<NormalMonsterCard>> buildCandidates = BuildCandidates(owner, flipper);
 
-        if (pick.FirstOrDefault() is not NormalMonsterCard target)
+        NormalMonsterCard? target = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            owner,
+            new CardSelectorPrefs(selectPrompt, 1, 1)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true
+            },
+            buildCandidates);
+        if (target == null)
             return;
 
         Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(target, owner);
@@ -121,11 +106,11 @@ public static class YgoFlipReturnOwnFieldMonsterToHand
     private static List<NormalMonsterCard> BuildOtherControlledFieldMonsters(Player owner, AbstractMonsterCard flipper)
     {
         var list = new List<NormalMonsterCard>();
-        foreach (Creature p in owner.PlayerCombatState!.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(owner.PlayerCombatState))
         {
             if (!p.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(p) is not NormalMonsterCard nm)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<NormalMonsterCard>(p) is not NormalMonsterCard nm)
                 continue;
             if (ReferenceEquals(nm, flipper))
                 continue;
@@ -134,4 +119,7 @@ public static class YgoFlipReturnOwnFieldMonsterToHand
 
         return list;
     }
+
+    private static Func<List<NormalMonsterCard>> BuildCandidates(Player owner, AbstractMonsterCard flipper) =>
+        () => BuildOtherControlledFieldMonsters(owner, flipper);
 }

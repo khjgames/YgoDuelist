@@ -11,7 +11,10 @@ using YgoDuelist.YgoDuelistCode.Relics;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>Shared guards and owner resolution for handlers that react to cards entering the YGO graveyard pile.</summary>
+/// <summary>
+/// Shared guards and owner resolution for handlers that react to cards entering the YGO graveyard pile.
+/// Keep patches on this generic dispatch path instead of re-adding per-card graveyard service calls.
+/// </summary>
 public static class YgoGraveyardPileHooks
 {
     /// <summary>True when <paramref name="pile"/> is the combat graveyard and <paramref name="addedCard"/> belongs to the player side in an active combat.</summary>
@@ -41,9 +44,9 @@ public static class YgoGraveyardPileHooks
 
     public static Player? ResolveGraveyardOwner(CombatState cs, CardPile pile)
     {
-        foreach (Player p in cs.Players)
+        foreach (Player p in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(cs.Players))
         {
-            if (GraveyardRelic.GetGraveyardPile(p) == pile)
+            if (YgoPlayerPiles.Graveyard(p) == pile)
                 return p;
         }
 

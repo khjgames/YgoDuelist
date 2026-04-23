@@ -56,7 +56,7 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, 
     public bool IsSecondActivatedEffectAvailable =>
         Owner?.Creature?.CombatState != null
         && HasMetalReflectInHandDeckOrGraveyard(Owner)
-        && SpellTrapZonePile.CustomType.GetPile(Owner) != null
+        && YgoPlayerPiles.SpellTrapZone(Owner) != null
         && YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(
             Owner,
             Owner.Creature.CombatState.CreateCard<Metal_Reflect_Slime>(Owner));
@@ -91,7 +91,7 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, 
         MonsterCommandRegistry.SetHasUsedSecondActivatedEffectThisTurn(pet, true);
 
         await CreatureCmd.Kill(pet, force: true);
-        CardPile? grave = GraveyardPile.CustomType.GetPile(player);
+        CardPile? grave = YgoPlayerPiles.Graveyard(player);
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
@@ -105,7 +105,7 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, 
 
     private static IEnumerable<Metal_Reflect_Slime> EnumerateMetalReflect(Player player)
     {
-        foreach (var pile in new[] { PileType.Hand.GetPile(player), PileType.Draw.GetPile(player), PileType.Discard.GetPile(player), GraveyardPile.CustomType.GetPile(player) })
+        foreach (var pile in new[] { YgoPlayerPiles.Hand(player), YgoPlayerPiles.Draw(player), YgoPlayerPiles.Discard(player), YgoPlayerPiles.Graveyard(player) })
         {
             if (pile == null)
                 continue;

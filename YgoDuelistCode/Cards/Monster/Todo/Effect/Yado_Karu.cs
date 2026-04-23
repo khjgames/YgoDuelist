@@ -1,7 +1,6 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -59,11 +58,11 @@ public sealed class Yado_Karu : EffectMonsterCard
         if (player.Creature?.CombatState == null)
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null || hand.Cards.Count == 0)
             return;
 
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, null);
+        List<CardModel> candidates = BuildHandCandidates(player);
         int maxSelectable = candidates.Count;
         var prefs = new CardSelectorPrefs(HandToDeckBottomPrompt, 0, maxSelectable)
         {
@@ -71,18 +70,17 @@ public sealed class Yado_Karu : EffectMonsterCard
             Cancelable = true
         };
 
-        IEnumerable<CardModel> picked = await TributeSummonGridSelect.FromSimpleGridCombat(
+        List<CardModel> ordered = (await YgoOrderedCardSelection.TryChooseManyAsync(
             choiceContext,
-            candidates,
             player,
             prefs,
-            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, null),
-            PlayerChoiceOptions.CancelPlayCardActions);
-        List<CardModel> ordered = picked.ToList();
+            () => BuildHandCandidates(player),
+            maxSelectable,
+            PlayerChoiceOptions.CancelPlayCardActions)).Cast<CardModel>().ToList();
         if (ordered.Count == 0)
             return;
 
-        CardPile? drawPile = PileType.Draw.GetPile(player);
+        CardPile? drawPile = YgoPlayerPiles.Draw(player);
         if (drawPile == null)
             return;
 
@@ -94,4 +92,7 @@ public sealed class Yado_Karu : EffectMonsterCard
             await CardPileCmd.Add(card, drawPile, CardPilePosition.Bottom, this, false);
         }
     }
+
+    private static List<CardModel> BuildHandCandidates(Player player) =>
+        TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, null);
 }

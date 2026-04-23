@@ -80,9 +80,9 @@ public sealed class Karate_Man : EffectMonsterCard, IMonsterActivatedEffect
         if (Owner?.PlayerCombatState == null)
             return false;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return MonsterCommandRegistry.TryGet(pet, out MonsterCommandState s) && s.KarateManBurstAtkThisTurn;
         }

@@ -36,7 +36,7 @@ public static class CreatureCmdHealBadReactionToSimochiPatch
 
         decimal damage = amount * mult;
         __result = CreatureCmd.Damage(
-            new BlockingPlayerChoiceContext(),
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
             creature,
             damage,
             ValueProp.Unpowered,

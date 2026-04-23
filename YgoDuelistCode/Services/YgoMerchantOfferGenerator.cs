@@ -78,7 +78,7 @@ public static class YgoMerchantOfferGenerator
         List<CardRarity> r2 = TakeAndShuffleSlice(rarityPool, rng, 10, 4);
         List<CardRarity> r3 = TakeAndShuffleSlice(rarityPool, rng, 14, 4);
 
-        var trunkCounts = CountIds(PlayerRunTrunk.GetOrCreatePile(player).Cards);
+        var trunkCounts = CountIds(YgoPlayerRunPiles.Trunk(player)?.Cards ?? []);
         var relatedBonus = BuildRelatedBonus(player);
         var chosenIds = new HashSet<ModelId>();
         var grid = new ShopSlot?[SlotCount];
@@ -436,7 +436,7 @@ public static class YgoMerchantOfferGenerator
                 AddFromYgo(y, 2);
         }
 
-        foreach (CardModel c in PlayerRunSideDeck.GetOrCreatePile(player).Cards)
+        foreach (CardModel c in YgoPlayerRunPiles.SideDeck(player)?.Cards ?? [])
         {
             if (c is YgoDuelistCard y)
                 AddFromYgo(y, 1);

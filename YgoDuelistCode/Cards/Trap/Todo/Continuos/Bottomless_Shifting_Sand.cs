@@ -64,11 +64,11 @@ public sealed class Bottomless_Shifting_Sand : BaseContinuousTrapCard, IYgoOwner
             return;
 
         int handThreshold = (int)DynamicVars["Mgc"].BaseValue;
-        CardPile? hand = PileType.Hand.GetPile(owner);
+        CardPile? hand = YgoPlayerPiles.Hand(owner);
         int handCount = hand?.Cards.Count ?? 0;
         if (handCount < handThreshold)
         {
-            CardPile? gy = GraveyardPile.CustomType.GetPile(owner);
+            CardPile? gy = YgoPlayerPiles.Graveyard(owner);
             if (gy != null)
                 await CardPileCmd.Add(new[] { this }, gy, CardPilePosition.Top, this, false);
             YgoSpellTrapZoneBridge.SyncFromZonePile(owner);
@@ -80,7 +80,7 @@ public sealed class Bottomless_Shifting_Sand : BaseContinuousTrapCard, IYgoOwner
         var cs = owner.Creature.CombatState;
         if (cs == null)
             return;
-        List<Creature> alive = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
+        List<Creature> alive = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
         if (alive.Count == 0)
             return;
 

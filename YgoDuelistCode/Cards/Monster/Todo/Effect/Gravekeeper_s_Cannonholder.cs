@@ -59,40 +59,23 @@ public sealed class Gravekeeper_s_Cannonholder : EffectMonsterCard, IMonsterActi
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-GRAVEKEEPER_S_CANNONHOLDER.activated_effect.description";
 
     public bool IsActivatedEffectAvailable =>
-        Owner?.PlayerCombatState?.Pets != null
+        Owner?.PlayerCombatState != null
         && BuildGravekeeperTributeCandidates(Owner).Count > 0;
 
     public async Task<bool> TryPrepareActivatedEffectPlayAsync(Player player, NormalMonsterCard source)
     {
-        if (player.PlayerCombatState?.Pets == null)
+        if (player.PlayerCombatState == null)
             return false;
 
         List<BaseMonsterCard> candidates = BuildGravekeeperTributeCandidates(player);
         if (candidates.Count == 0)
             return false;
 
-        var prefs = new CardSelectorPrefs(TributePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
-        if (chosen == null)
-            return false;
-
-        ActivatedEffectTributeSelectionPayload.SetPending(source, chosen);
-        return true;
+        return await YgoActivatedEffectTributeSelection.TryPrepareSingleTributeAsync(
+            player,
+            source,
+            candidates.Cast<CardModel>().ToList(),
+            TributePrompt);
     }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
@@ -105,19 +88,20 @@ public sealed class Gravekeeper_s_Cannonholder : EffectMonsterCard, IMonsterActi
         if (!ActivatedEffectTributeSelectionPayload.TryTakePending(source, out var chosen) || chosen == null)
             return;
 
-        Creature? tributePet = player.PlayerCombatState.Pets
-            .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), chosen));
+        Creature? tributePet = YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, chosen));
         if (tributePet == null || !tributePet.IsAlive)
             return;
 
         await CreatureCmd.Kill(tributePet, force: true);
 
-        CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+        CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
         if (graveyard != null)
             await CardPileCmd.Add(new[] { chosen }, graveyard, CardPilePosition.Top, chosen, false);
 
         int blight = (int)source.DynamicVars["Mgc"].BaseValue;
-        foreach (Creature enemy in player.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(player.Creature.CombatState))
         {
             if (blight > 0)
                 await PowerCmd.Apply<BlightPower>(enemy, blight, pet, source);
@@ -135,11 +119,11 @@ public sealed class Gravekeeper_s_Cannonholder : EffectMonsterCard, IMonsterActi
     private static List<BaseMonsterCard> BuildGravekeeperTributeCandidates(Player player)
     {
         var list = new List<BaseMonsterCard>();
-        foreach (Creature p in player.PlayerCombatState!.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!p.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(p) is not BaseMonsterCard c)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(p) is not BaseMonsterCard c)
                 continue;
             if (c is Gravekeeper_s_Cannonholder)
                 continue;

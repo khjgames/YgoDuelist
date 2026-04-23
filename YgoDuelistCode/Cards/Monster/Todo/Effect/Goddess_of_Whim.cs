@@ -59,9 +59,9 @@ public sealed class Goddess_of_Whim : EffectMonsterCard, IMonsterActivatedEffect
         if (Owner?.PlayerCombatState == null)
             return base.GetSelfStatMultiplier();
 
-        foreach (Creature p in Owner.PlayerCombatState.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(p) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(p, this))
                 continue;
             if (!MonsterCommandRegistry.TryGet(p, out MonsterCommandState s))
                 break;
@@ -107,7 +107,7 @@ public sealed class Goddess_of_Whim : EffectMonsterCard, IMonsterActivatedEffect
             RequireManualConfirmation = true,
             Cancelable = false
         };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, new List<CardModel> { resultCard }, player, coinPrefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, new List<CardModel> { resultCard }, player, coinPrefs);
 
         var state = MonsterCommandRegistry.GetOrCreate(pet);
         state.GoddessOfWhimAtkMultiplierThisTurn = calledHeads == flipIsHeads ? 2m : 0.5m;

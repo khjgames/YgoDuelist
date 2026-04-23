@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
@@ -62,14 +61,15 @@ public static class CreatureCmdHealFirePrincessPatch
         if (player == null || cs == null)
             return;
 
-        foreach (BaseMonsterCard card in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard card in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (card is not IYgoAfterOwnerPlayerCreatureHealGain hook || card.FaceDown)
                 continue;
 
             if (player.PlayerCombatState == null
-                || !player.PlayerCombatState.Pets.Any(p =>
-                    p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), card)))
+                || !YgoMpCombatOrder.PetsAny(
+                    player.PlayerCombatState,
+                    p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, card)))
                 continue;
 
             await hook.ReactToOwnerPlayerHpGainAfterHealAsync(player, creature, hpBeforeHeal, gained, cs, NextSeq(cs));

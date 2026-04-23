@@ -21,7 +21,7 @@ public static class LegionFiendJesterSpellcasterConduit
         if (player == null)
             return 0;
         int n = 0;
-        foreach (BaseMonsterCard? m in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard? m in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (m is IYgoLegionFiendJesterFieldMonster)
                 n++;

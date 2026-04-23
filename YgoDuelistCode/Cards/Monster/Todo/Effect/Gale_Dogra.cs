@@ -63,8 +63,8 @@ public sealed class Gale_Dogra : EffectMonsterCard, IMonsterActivatedEffect
 
     public bool IsActivatedEffectAvailable =>
         Owner != null
-        && PlayerRunExtraDeck.IsYgoDuelistPlayer(Owner)
-        && BuildFusionCardsInExtraDeck(Owner).Count > 0;
+        && YgoPlayerRunPiles.IsYgoRunPlayer(Owner)
+        && YgoFusionExtraDeckSelection.BuildFusionCardsInExtraDeck(Owner).Count > 0;
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -73,36 +73,19 @@ public sealed class Gale_Dogra : EffectMonsterCard, IMonsterActivatedEffect
         if (player?.Creature == null || pet == null)
             return;
 
-        List<FusionMonsterCard> fusionTargets = BuildFusionCardsInExtraDeck(player);
+        List<FusionMonsterCard> fusionTargets = YgoFusionExtraDeckSelection.BuildFusionCardsInExtraDeck(player);
         if (fusionTargets.Count == 0)
             return;
 
-        FusionMonsterCard fusionCard;
-        if (fusionTargets.Count == 1)
-        {
-            fusionCard = fusionTargets[0];
-        }
-        else
-        {
-            var fusionPrefs = new CardSelectorPrefs(PickFusionPrompt, 1, 1) { Cancelable = true };
-            IEnumerable<CardModel> fusionPick;
-            try
-            {
-                fusionPick = await CardSelectCmd.FromSimpleGrid(choiceContext, fusionTargets, player, fusionPrefs);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
+        FusionMonsterCard? fusionCard = await YgoFusionExtraDeckSelection.TryChooseFusionFromExtraDeckAsync(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(PickFusionPrompt, 1, 1) { Cancelable = true });
+        if (fusionCard == null || !fusionTargets.Any(f => ReferenceEquals(f, fusionCard)))
+            return;
 
-            FusionMonsterCard? picked = fusionPick.OfType<FusionMonsterCard>().FirstOrDefault();
-            if (picked == null || !fusionTargets.Any(f => ReferenceEquals(f, picked)))
-                return;
-            fusionCard = picked;
-        }
-
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (extra == null || gy == null || !extra.Cards.Contains(fusionCard))
             return;
 
@@ -124,19 +107,4 @@ public sealed class Gale_Dogra : EffectMonsterCard, IMonsterActivatedEffect
         DynamicVars["Mgc"].BaseValue = 15m;
     }
 
-    private static List<FusionMonsterCard> BuildFusionCardsInExtraDeck(Player player)
-    {
-        var list = new List<FusionMonsterCard>();
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        if (extra == null)
-            return list;
-
-        foreach (CardModel c in extra.Cards)
-        {
-            if (c is FusionMonsterCard fm)
-                list.Add(fm);
-        }
-
-        return list;
-    }
 }

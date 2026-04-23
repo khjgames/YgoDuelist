@@ -97,7 +97,7 @@ public sealed class Ominous_Fortunetelling : BaseContinuousTrapCard, IYgoCardZon
 
     internal static void RefillAllInSpellTrapZoneForPlayer(Player player)
     {
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             return;
 
@@ -128,7 +128,7 @@ public sealed class Ominous_Fortunetelling : BaseContinuousTrapCard, IYgoCardZon
             if (card._activationsLeftThisTurn <= 0)
                 return;
 
-            var ctx = new BlockingPlayerChoiceContext();
+            var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
             var guessChoices = new List<CardModel>
             {
                 new YgoFortunetellingGuessProxyCard(YgoFortuneGuessKind.Spell),
@@ -136,18 +136,12 @@ public sealed class Ominous_Fortunetelling : BaseContinuousTrapCard, IYgoCardZon
                 new YgoFortunetellingGuessProxyCard(YgoFortuneGuessKind.Monster),
             };
 
-            var prefs = new CardSelectorPrefs(GuessPrompt, 1, 1) { Cancelable = true };
-            IEnumerable<CardModel> picked;
-            try
-            {
-                picked = await CardSelectCmd.FromSimpleGrid(ctx, guessChoices, player, prefs);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            YgoFortuneGuessKind? guess = picked.OfType<YgoFortunetellingGuessProxyCard>().FirstOrDefault()?.GuessKind;
+            YgoFortunetellingGuessProxyCard? picked = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                ctx,
+                player,
+                new CardSelectorPrefs(GuessPrompt, 1, 1) { Cancelable = true },
+                () => guessChoices.Cast<YgoFortunetellingGuessProxyCard>().ToList());
+            YgoFortuneGuessKind? guess = picked?.GuessKind;
             if (guess == null)
                 return;
 

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -47,18 +47,10 @@ public sealed class The_Kick_Man : EffectMonsterCard
         if (ColdWaveSpellTrapLockGate.IsPlayerLockedThisTurn(Owner))
             return;
 
-        var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.OfType<BaseMonsterCard>().ToList();
+        var field = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         if (field == null || !field.Contains(this))
             return;
-
-        CardPile? gy = GraveyardPile.CustomType.GetPile(Owner);
-        if (gy == null)
-            return;
-
-        List<BaseEquipSpellCard> candidates = gy.Cards
-            .OfType<BaseEquipSpellCard>()
-            .Where(e => !e.FaceDown && !FairyOfSpringReturnedEquipLock.IsLocked(e) && YgoEquipSpellTargetRules.IsLegalEquipTarget(e, this))
-            .ToList();
+        List<BaseEquipSpellCard> candidates = BuildEquipCandidates(Owner, this);
 
         if (candidates.Count == 0)
             return;
@@ -72,21 +64,16 @@ public sealed class The_Kick_Man : EffectMonsterCard
             Cancelable = true
         };
 
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates.Cast<CardModel>().ToList(),
-                Owner,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
+        BaseEquipSpellCard? equip = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            Owner,
+            prefs,
+            () => BuildEquipCandidates(Owner, this));
+        if (equip == null)
             return;
-        }
 
-        if (picked.FirstOrDefault() is not BaseEquipSpellCard equip)
+        CardPile? gy = YgoPlayerPiles.Graveyard(Owner);
+        if (gy == null)
             return;
 
         if (equip.Pile?.Type != GraveyardPile.CustomType || !gy.Cards.Contains(equip))
@@ -97,7 +84,7 @@ public sealed class The_Kick_Man : EffectMonsterCard
             return;
         if (!YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, equip))
             return;
-        if (DuelMonsterFieldRegistry.GetFieldMonsters(Owner)?.OfType<BaseMonsterCard>().Contains(this) != true)
+        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(Owner, this))
             return;
 
         ColdWaveSpellTrapLockGate.MarkPlayerUsedSpellTrapThisTurn(equip.Owner);
@@ -105,5 +92,16 @@ public sealed class The_Kick_Man : EffectMonsterCard
         await YgoCurseOfDarknessSpellHook.AfterSpellResolved(choiceContext, equip);
         YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(Owner);
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(Owner);
+    }
+
+    private static List<BaseEquipSpellCard> BuildEquipCandidates(Player player, The_Kick_Man target)
+    {
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
+        return gy == null
+            ? []
+            : YgoMpCombatOrder.CardsSnapshotOrderedForMp(gy.Cards)
+                .OfType<BaseEquipSpellCard>()
+                .Where(e => !e.FaceDown && !FairyOfSpringReturnedEquipLock.IsLocked(e) && YgoEquipSpellTargetRules.IsLegalEquipTarget(e, target))
+                .ToList();
     }
 }

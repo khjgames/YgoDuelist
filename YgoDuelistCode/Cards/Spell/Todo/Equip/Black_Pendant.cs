@@ -64,7 +64,7 @@ public sealed class Black_Pendant : BaseEquipSpellCard, IYgoOnAddedToYgoGraveyar
         ulong mix = YgoDeterministicRng.MixSpellTrapZoneSlot(owner, this);
         string key = $"BLACK_PENDANT-{Id}-{pile.Cards.Count}";
 
-        List<Creature> enemies = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
         if (enemies.Count == 0)
             return;
 

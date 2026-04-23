@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -71,26 +72,14 @@ public sealed class Thunder_Dragon : EffectMonsterCard
                 return false;
             if (!IsHandEffectFormActive || Owner == null)
                 return true;
-            return CountThunderDragonsInDrawAndDiscard(Owner) >= 1;
+            return BuildSearchPool(Owner).Count >= 1;
         }
-    }
-
-    private static int CountThunderDragonsInDrawAndDiscard(Player player)
-    {
-        int n = 0;
-        foreach (CardModel c in EnumerateDrawAndDiscard(player))
-        {
-            if (c is Thunder_Dragon)
-                n++;
-        }
-
-        return n;
     }
 
     private static IEnumerable<CardModel> EnumerateDrawAndDiscard(Player player)
     {
-        CardPile? draw = PileType.Draw.GetPile(player);
-        CardPile? discard = PileType.Discard.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         if (draw != null)
         {
             foreach (CardModel c in draw.Cards)
@@ -135,32 +124,23 @@ public sealed class Thunder_Dragon : EffectMonsterCard
         if (player == null)
             return;
 
-        List<Thunder_Dragon> pool = BuildSearchPool(player);
-        if (pool.Count == 0)
-            return;
-
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
         var prefs = new CardSelectorPrefs(SearchPrompt, 1, 2)
         {
             RequireManualConfirmation = true,
             Cancelable = true
         };
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(ctx, pool, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        List<Thunder_Dragon> chosen = pick.OfType<Thunder_Dragon>().Distinct().ToList();
+        List<Thunder_Dragon> chosen = await YgoOrderedCardSelection.TryChooseManyAsync(
+            ctx,
+            player,
+            prefs,
+            () => BuildSearchPool(player),
+            maxResults: 2);
         if (chosen.Count == 0)
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return;
 

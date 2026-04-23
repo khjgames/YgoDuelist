@@ -95,7 +95,7 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
                     return;
                 }
 
-                foreach (Creature pet in pending.Pets)
+                foreach (Creature pet in YgoMpCombatOrder.CreatureListOrderedByCombatId(pending.Pets))
                     await CreatureCmd.Kill(pet, force: true);
 
                 int hpLoss = pending.MausoleumHpLossTotal;
@@ -118,32 +118,37 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
         await OnAfterMonsterPlayResolved(choiceContext, cardPlay);
     }
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        if (player?.PlayerCombatState == null)
-            return;
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            async () =>
+            {
+                if (player?.PlayerCombatState == null)
+                    return;
 
-        var petsToKill = new List<Creature>();
-        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
-        {
-            if (pet == null || !pet.IsAlive)
-                continue;
-            BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
-            if (src == null || ReferenceEquals(src, this))
-                continue;
-            petsToKill.Add(pet);
-        }
+                var petsToKill = new List<Creature>();
+                foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
+                {
+                    if (pet == null || !pet.IsAlive)
+                        continue;
+                    BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
+                    if (src == null || ReferenceEquals(src, this))
+                        continue;
+                    petsToKill.Add(pet);
+                }
 
-        int flatBonus = (int)DynamicVars["Mgc"].BaseValue;
-        if (flatBonus > 0)
-        {
-            ApplyPermanentExecuteAtkDelta(flatBonus);
-            ApplyPermanentSummonAbsorbDefDelta(flatBonus);
-        }
+                int flatBonus = (int)DynamicVars["Mgc"].BaseValue;
+                if (flatBonus > 0)
+                {
+                    ApplyPermanentExecuteAtkDelta(flatBonus);
+                    ApplyPermanentSummonAbsorbDefDelta(flatBonus);
+                }
 
-        foreach (Creature pet in petsToKill)
-            await CreatureCmd.Kill(pet, force: true);
-    }
+                foreach (Creature pet in petsToKill)
+                    await CreatureCmd.Kill(pet, force: true);
+            });
 
     private void ApplyPermanentSummonAbsorbDefDelta(int delta)
     {

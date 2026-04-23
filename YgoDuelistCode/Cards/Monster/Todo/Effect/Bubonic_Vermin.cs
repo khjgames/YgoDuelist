@@ -45,8 +45,8 @@ public sealed class Bubonic_Vermin : EffectMonsterCard, IMonsterFlipEffect
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
             return;
 
-        CardPile? draw = PileType.Draw.GetPile(Owner);
-        Bubonic_Vermin? copy = draw?.Cards.OfType<Bubonic_Vermin>().FirstOrDefault(c => !ReferenceEquals(c, this));
+        CardPile? draw = YgoPlayerPiles.Draw(Owner);
+        Bubonic_Vermin? copy = (draw == null ? null : YgoMpCombatOrder.FirstCardWhereStable(draw.Cards, c => c is Bubonic_Vermin bv && !ReferenceEquals(bv, this)) as Bubonic_Vermin);
         if (copy == null)
             return;
         copy.FaceDown = true;

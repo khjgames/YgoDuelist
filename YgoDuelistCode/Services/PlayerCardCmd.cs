@@ -22,7 +22,7 @@ public static class PlayerCardCmd
             return;
         }
 
-        CardPile graveyardPile = GraveyardPile.CustomType.GetPile(destroyCards[0].Owner);
+        CardPile graveyardPile = YgoPlayerPiles.Graveyard(destroyCards[0].Owner);
         await CardPileCmd.Add(destroyCards, graveyardPile, CardPilePosition.Top, destroyCards[0], false);
 
         if (cardsToDraw > 0)

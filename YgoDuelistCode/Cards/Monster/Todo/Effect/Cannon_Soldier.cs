@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -68,10 +67,12 @@ public sealed class Cannon_Soldier : EffectMonsterCard, IMonsterActivatedEffect,
     {
         if (player.PlayerCombatState?.Pets == null)
             return false;
-        return player.PlayerCombatState.Pets.Any(p =>
-            p.IsAlive
-            && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard c
-            && c is not Cannon_Soldier);
+        return YgoMpCombatOrder.PetsAny(
+            player.PlayerCombatState,
+            p =>
+                p.IsAlive
+                && DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(p) is BaseMonsterCard c
+                && c is not Cannon_Soldier);
     }
 
     public async Task<bool> TryPrepareActivatedEffectPlayAsync(Player player, NormalMonsterCard source)
@@ -80,11 +81,11 @@ public sealed class Cannon_Soldier : EffectMonsterCard, IMonsterActivatedEffect,
             return false;
 
         var candidates = new List<BaseMonsterCard>();
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard c)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard c)
                 continue;
             if (c is Cannon_Soldier)
                 continue;
@@ -94,28 +95,11 @@ public sealed class Cannon_Soldier : EffectMonsterCard, IMonsterActivatedEffect,
         if (candidates.Count == 0)
             return false;
 
-        var prefs = new CardSelectorPrefs(TributePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
-        if (chosen == null)
-            return false;
-
-        ActivatedEffectTributeSelectionPayload.SetPending(source, chosen);
-        return true;
+        return await YgoActivatedEffectTributeSelection.TryPrepareSingleTributeAsync(
+            player,
+            source,
+            candidates.Cast<CardModel>().ToList(),
+            TributePrompt);
     }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
@@ -134,14 +118,15 @@ public sealed class Cannon_Soldier : EffectMonsterCard, IMonsterActivatedEffect,
         if (!ActivatedEffectTributeSelectionPayload.TryTakePending(source, out var chosen) || chosen == null)
             return;
 
-        Creature? tributePet = player.PlayerCombatState.Pets
-            .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), chosen));
+        Creature? tributePet = YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, chosen));
         if (tributePet == null || !tributePet.IsAlive)
             return;
 
         await CreatureCmd.Kill(tributePet, force: true);
 
-        CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+        CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
         if (graveyard != null)
             await CardPileCmd.Add(new[] { chosen }, graveyard, CardPilePosition.Top, chosen, false);
 

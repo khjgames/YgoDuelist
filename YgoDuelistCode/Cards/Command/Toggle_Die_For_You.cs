@@ -57,7 +57,7 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
     /// <summary>Shared by UI click and <see cref="GameActions.YgoMonsterMenuCommandGameAction"/> (MP).</summary>
     public static async Task ExecuteToggleFromPetAsync(Player player, Creature pet)
     {
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard sourceMonster)
+        if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard sourceMonster)
             return;
 
         var state = MonsterCommandRegistry.GetOrCreate(pet);
@@ -106,12 +106,8 @@ public sealed class Toggle_Die_For_You : MonsterCommandCard
         if (player.PlayerCombatState == null)
             return null;
 
-        foreach (var pet in player.PlayerCombatState.Pets)
-        {
-            if (pet.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == source)
-                return pet;
-        }
-
-        return null;
+        return YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            pet => pet.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.HasSourceCard(pet, source));
     }
 }

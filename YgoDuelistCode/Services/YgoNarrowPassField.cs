@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -24,7 +23,7 @@ public static class YgoNarrowPassField
     {
         if (player == null || CombatManager.Instance?.IsInProgress != true)
             return null;
-        return SpellTrapZonePile.CustomType.GetPile(player);
+        return YgoPlayerPiles.SpellTrapZone(player);
     }
 
     public static bool IsActive(Player? player)
@@ -106,9 +105,8 @@ public static class YgoNarrowPassField
         if (zone == null)
             return null;
 
-        return zone.Cards
-            .Where(c => c is IYgoMonsterCommandFieldTaxContributor hook && hook.IsMonsterCommandFieldTaxActive())
-            .OrderBy(c => c.Id?.Entry ?? string.Empty, StringComparer.Ordinal)
-            .FirstOrDefault();
+        return YgoMpCombatOrder.FirstCardWhereStable(
+            zone.Cards,
+            c => c is IYgoMonsterCommandFieldTaxContributor hook && hook.IsMonsterCommandFieldTaxActive());
     }
 }

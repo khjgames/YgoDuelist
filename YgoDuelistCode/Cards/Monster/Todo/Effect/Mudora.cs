@@ -46,7 +46,7 @@ public sealed class Mudora : EffectMonsterCard
         if (Owner == null)
             return (0, 0);
 
-        int n = GraveyardRelic.GetGraveyardCards(Owner).Count(c =>
+        int n = YgoPlayerPiles.GraveyardCards(Owner).Count(c =>
             c is BaseMonsterCard m && m.DuelMonsterRace == DuelMonsterRace.Fairy);
 
         return ((int)DynamicVars["Mgc"].BaseValue * n, 0);

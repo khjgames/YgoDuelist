@@ -16,10 +16,10 @@ public static class YgoSpellTrapEquipLinkCombat
         if (player?.PlayerCombatState == null)
             return;
 
-        Creature? pet = player.PlayerCombatState.Pets.FirstOrDefault(p =>
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(player.PlayerCombatState, p =>
             p.IsAlive
             && p.Monster is DuelMonsterModel
-            && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), monster));
+            && DuelMonsterFieldRegistry.HasSourceCard(p, monster));
 
         if (pet != null)
             await CreatureCmd.Kill(pet, force: true);

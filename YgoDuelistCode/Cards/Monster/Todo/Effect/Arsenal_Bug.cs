@@ -45,7 +45,7 @@ public sealed class Arsenal_Bug : EffectMonsterCard
 
     private bool HasOtherInsectOnField(Player player)
     {
-        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (ReferenceEquals(m, this))
                 continue;

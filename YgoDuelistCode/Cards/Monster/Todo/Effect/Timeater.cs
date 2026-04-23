@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -60,7 +61,7 @@ public sealed class Timeater : EffectMonsterCard
         if (!executed)
             return;
 
-        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive).ToList())
+        foreach (Creature e in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             await CreatureCmd.Stun(e);
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -57,8 +58,8 @@ public sealed class Dark_Spirit_of_the_Silent : BaseTrapCard
             return;
 
         CombatState cs = Owner.Creature.CombatState;
-        List<Creature> withAttack = cs.HittableEnemies
-            .Where(c => c.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(c, Owner.Creature) > 0)
+        List<Creature> withAttack = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs)
+            .Where(c => YgoIntentAttackDamage.GetTotalAttackIntentDamage(c, Owner.Creature) > 0)
             .ToList();
         if (withAttack.Count < 2)
             return;
@@ -78,21 +79,13 @@ public sealed class Dark_Spirit_of_the_Silent : BaseTrapCard
         }
         else
         {
-            var ctx = new BlockingPlayerChoiceContext();
-            var prefs = new CardSelectorPrefs(DoubleHitPrompt, 1, 1) { Cancelable = true };
-            List<YgoEnemyIntentProxyCard> proxies = secondPool.Select(c => new YgoEnemyIntentProxyCard(c)).ToList();
-            IEnumerable<CardModel> pick;
-            try
-            {
-                pick = await CardSelectCmd.FromSimpleGrid(ctx, proxies, Owner, prefs);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            YgoEnemyIntentProxyCard? proxy = pick.OfType<YgoEnemyIntentProxyCard>().FirstOrDefault();
-            if (proxy?.TargetCreature is not { } hit || !hit.IsAlive || !secondPool.Contains(hit))
+            Creature? hit = await YgoCreatureProxySelection.TryChooseSingleCreatureAsync(
+                YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+                Owner,
+                secondPool,
+                DoubleHitPrompt,
+                cancelable: true);
+            if (hit == null)
                 return;
             doubleHit = hit;
         }
@@ -109,6 +102,7 @@ public sealed class Dark_Spirit_of_the_Silent : BaseTrapCard
         CombatState? cs = pc?.CombatState;
         if (cs == null)
             return 0;
-        return cs.HittableEnemies.Count(e => e.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) > 0);
+        return YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs)
+            .Count(e => YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) > 0);
     }
 }

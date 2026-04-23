@@ -104,11 +104,11 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             player,
             YgoOwnerTurnStartSpellTrapDispatchPhase.BeforeOwnerFieldPetHooks);
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard bm)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard bm)
                 await bm.OnGraveyardRelicOwnerTurnStartForFieldPetAsync(choiceContext, player, pet, this);
         }
 
@@ -131,7 +131,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         if (player.PlayerCombatState != null)
         {
-            foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
             {
                 if (pet.GetPower<BazooSoulEaterTempAtkPower>() != null)
                     await PowerCmd.Remove<BazooSoulEaterTempAtkPower>(pet);
@@ -149,7 +149,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         if (creature.Side != CombatSide.Enemy || !creature.IsAlive || creature.CombatState == null)
             return;
 
-        var ctx = new BlockingPlayerChoiceContext();
+                var ctx = YgoChoiceContexts.Blocking();
         foreach (Player p in creature.CombatState.Players)
         {
             if (p.Creature?.Side != CombatSide.Player)
@@ -206,7 +206,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     private async Task AfterAttack_FromDuelMonsterAsync(AttackCommand command, BaseMonsterCard monster)
     {
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoChoiceContexts.Blocking();
         CombatState? cs = command.Attacker.CombatState;
         if (cs == null)
             return;
@@ -711,14 +711,14 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     /// </summary>
     public static void ArmSanctuaryHalveNextSpillDamage(Player? player)
     {
-        GraveyardRelic? g = player?.Relics.OfType<GraveyardRelic>().FirstOrDefault();
+        GraveyardRelic? g = YgoPlayerRelicAccess.GetRelic<GraveyardRelic>(player);
         if (g != null)
             g._sanctuaryHalveNextSpillToPlayer = true;
     }
 
     public static void RegisterDragonMonsterDestroyed(Player? player)
     {
-        GraveyardRelic? g = player?.Relics.OfType<GraveyardRelic>().FirstOrDefault();
+        GraveyardRelic? g = YgoPlayerRelicAccess.GetRelic<GraveyardRelic>(player);
         g?.NotifyDragonMonsterDestroyed();
     }
 

@@ -36,20 +36,24 @@ public sealed class Don_Turtle : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Don_Turtle) };
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
-        if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
-            return;
-        CardPile? hand = PileType.Hand.GetPile(player);
-        if (hand == null)
-            return;
-        List<Don_Turtle> copies = hand.Cards.OfType<Don_Turtle>().ToList();
-        foreach (Don_Turtle copy in copies)
-        {
-            if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
-                break;
-            await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, copy, choiceContext);
-        }
-    }
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            async () =>
+            {
+                if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
+                    return;
+                CardPile? hand = YgoPlayerPiles.Hand(player);
+                if (hand == null)
+                    return;
+                List<Don_Turtle> copies = YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards).OfType<Don_Turtle>().ToList();
+                foreach (Don_Turtle copy in copies)
+                {
+                    if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
+                        break;
+                    await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, copy, choiceContext);
+                }
+            });
 }

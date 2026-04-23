@@ -57,7 +57,7 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard, IYgoOwnerBeforeTu
 
     public async Task TryResolveOwnerBeforeTurnEndFlushGraveyardEffectAsync(PlayerChoiceContext choiceContext, Player owner)
     {
-        CardPile? gy = GraveyardRelic.GetGraveyardPile(owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(owner);
         if (gy == null || !gy.Cards.Contains(this))
             return;
         if (!IsOwnerBeforeTurnEndFlushGraveyardEffectActive())
@@ -65,7 +65,7 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard, IYgoOwnerBeforeTu
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(owner, 0))
             return;
 
-        List<BaseMonsterCard> fodder = BuildFodder(owner);
+        List<CardModel> fodder = BuildFodderCandidates(owner);
         if (fodder.Count == 0)
             return;
 
@@ -74,20 +74,24 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard, IYgoOwnerBeforeTu
             RequireManualConfirmation = true,
             Cancelable = true
         };
-        IEnumerable<CardModel> activationPick = await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { this }, owner, activatePrefs);
-        if (activationPick.FirstOrDefault() is not Manticore_of_Darkness)
+        Manticore_of_Darkness? activationPick = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            owner,
+            activatePrefs,
+            () => new List<Manticore_of_Darkness> { this });
+        if (!ReferenceEquals(activationPick, this))
             return;
 
-        fodder = BuildFodder(owner);
+        fodder = BuildFodderCandidates(owner);
         if (fodder.Count == 0)
             return;
 
-        IEnumerable<CardModel> fodderPick = await CardSelectCmd.FromSimpleGrid(
+        BaseMonsterCard? food = await YgoOrderedCardSelection.TryChooseSingleAsync(
             choiceContext,
-            fodder,
             owner,
-            new CardSelectorPrefs(FodderPrompt, 1, 1) { Cancelable = true });
-        if (fodderPick.FirstOrDefault() is not BaseMonsterCard food)
+            new CardSelectorPrefs(FodderPrompt, 1, 1) { Cancelable = true },
+            () => BuildFodderCandidates(owner).OfType<BaseMonsterCard>().ToList());
+        if (food == null)
             return;
         if (!await SendMonsterToGraveyardAsync(owner, food))
             return;
@@ -96,26 +100,26 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard, IYgoOwnerBeforeTu
         await DuelMonsterSummon.TrySummonDuelMonsterSpecial(owner, this, choiceContext);
     }
 
-    private List<BaseMonsterCard> BuildFodder(Player player)
+    private List<CardModel> BuildFodderCandidates(Player player)
     {
-        var list = new List<BaseMonsterCard>();
-        CardPile? hand = PileType.Hand.GetPile(player);
+        var list = new List<CardModel>();
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand != null)
         {
-            foreach (CardModel c in hand.Cards)
+            foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards))
             {
                 if (c is BaseMonsterCard bm && IsFodderRace(bm.DuelMonsterRace))
                     list.Add(bm);
             }
         }
 
-        foreach (BaseMonsterCard field in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard field in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (IsFodderRace(field.DuelMonsterRace))
                 list.Add(field);
         }
 
-        return list;
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(list);
     }
 
     private static bool IsFodderRace(DuelMonsterRace r) =>
@@ -123,10 +127,10 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard, IYgoOwnerBeforeTu
 
     private static async Task<bool> SendMonsterToGraveyardAsync(Player player, BaseMonsterCard m)
     {
-        CardPile? gy = GraveyardRelic.GetGraveyardPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy == null)
             return false;
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand != null && m.Pile == hand)
         {
             await CardPileCmd.Add(new[] { m }, gy, CardPilePosition.Top, m, false);

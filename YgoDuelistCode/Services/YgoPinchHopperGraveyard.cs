@@ -34,15 +34,16 @@ public static class YgoPinchHopperGraveyard
         TaskHelper.RunSafely(RunAsync(player, pinch));
     }
 
-    private static List<BaseMonsterCard> CollectInsectMonstersInHand(Player player)
+    private static List<CardModel> BuildHandCandidates(Player player)
     {
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return [];
 
-        return hand.Cards
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards)
             .OfType<BaseMonsterCard>()
             .Where(m => m.DuelMonsterRace == DuelMonsterRace.Insect && m.CanSummonDuelMonster)
+            .Cast<CardModel>()
             .ToList();
     }
 
@@ -51,32 +52,14 @@ public static class YgoPinchHopperGraveyard
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        List<BaseMonsterCard> insects = CollectInsectMonstersInHand(player);
-        if (insects.Count == 0)
-            return;
-
         if (pinch.Pile?.Type != GraveyardPile.CustomType)
             return;
 
-        var ctx = new BlockingPlayerChoiceContext();
-
-        var activatePrefs = new CardSelectorPrefs(ActivatePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true
-        };
-
-        IEnumerable<CardModel> activationPick = await CardSelectCmd.FromSimpleGrid(
-            ctx,
-            new[] { pinch },
+        PlayerChoiceContext? ctx = await YgoGraveyardTriggeredActivation.TryConfirmSourceAsync(
             player,
-            activatePrefs);
-
-        if (activationPick.FirstOrDefault() is not Pinch_Hopper)
-            return;
-
-        insects = CollectInsectMonstersInHand(player);
-        if (insects.Count == 0)
+            pinch,
+            ActivatePrompt);
+        if (ctx == null)
             return;
 
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
@@ -88,8 +71,15 @@ public static class YgoPinchHopperGraveyard
             Cancelable = true
         };
 
-        IEnumerable<CardModel> summonPick = await CardSelectCmd.FromSimpleGrid(ctx, insects, player, summonPrefs);
-        if (summonPick.FirstOrDefault() is not BaseMonsterCard chosen)
+        List<BaseMonsterCard> BuildTypedHandCandidates() =>
+            BuildHandCandidates(player).OfType<BaseMonsterCard>().ToList();
+
+        BaseMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            ctx,
+            player,
+            summonPrefs,
+            BuildTypedHandCandidates);
+        if (chosen == null)
             return;
 
         await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, ctx);

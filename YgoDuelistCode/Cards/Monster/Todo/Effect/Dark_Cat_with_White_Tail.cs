@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -61,11 +60,12 @@ public sealed class Dark_Cat_with_White_Tail : EffectMonsterCard, IMonsterFlipEf
         var player = Owner;
         var cs = player.Creature.CombatState;
 
-        List<BaseMonsterCard> others = DuelMonsterFieldRegistry
-            .GetFieldMonsters(player)
-            .OfType<BaseMonsterCard>()
+        List<NormalMonsterCard> BuildBounceTargets() => DuelMonsterFieldRegistry
+            .OrderedFieldMonstersOfType<NormalMonsterCard>(player)
             .Where(m => !ReferenceEquals(m, this))
             .ToList();
+
+        List<NormalMonsterCard> others = BuildBounceTargets();
 
         if (others.Count > 0)
         {
@@ -75,17 +75,11 @@ public sealed class Dark_Cat_with_White_Tail : EffectMonsterCard, IMonsterFlipEf
                 Cancelable = true
             };
 
-            IEnumerable<CardModel> pick;
-            try
-            {
-                pick = await CardSelectCmd.FromSimpleGrid(choiceContext, others, player, prefs);
-            }
-            catch (OperationCanceledException)
-            {
-                pick = Array.Empty<CardModel>();
-            }
-
-            var chosen = pick.FirstOrDefault() as NormalMonsterCard;
+            NormalMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                choiceContext,
+                player,
+                prefs,
+                BuildBounceTargets);
             if (chosen != null)
             {
                 Creature? bouncePet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(chosen);
@@ -97,7 +91,7 @@ public sealed class Dark_Cat_with_White_Tail : EffectMonsterCard, IMonsterFlipEf
             }
         }
 
-        foreach (Creature enemy in cs.HittableEnemies.Where(e => e.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
         {
             await PowerCmd.Apply<WeakPower>(enemy, 1m, player.Creature, this);
             await PowerCmd.Apply<VulnerablePower>(enemy, 1m, player.Creature, this);

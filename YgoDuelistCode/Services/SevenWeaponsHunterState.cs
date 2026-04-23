@@ -53,11 +53,11 @@ public static class SevenWeaponsHunterState
 
         int stack = GetStackAmount(player);
 
-        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not The_Hunter_with_7_Weapons hw)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<The_Hunter_with_7_Weapons>(pet) is not The_Hunter_with_7_Weapons hw)
                 continue;
 
             await SyncSevenWeaponsOnPetAsync(pet, player.Creature, hw, stack);
@@ -113,7 +113,7 @@ public static class SevenWeaponsHunterState
     {
         if (CombatManager.Instance?.IsEnding == true)
             return;
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not The_Hunter_with_7_Weapons hw)
+        if (DuelMonsterFieldRegistry.GetSourceMonster<The_Hunter_with_7_Weapons>(pet) is not The_Hunter_with_7_Weapons hw)
             return;
         if (player?.Creature == null)
             return;

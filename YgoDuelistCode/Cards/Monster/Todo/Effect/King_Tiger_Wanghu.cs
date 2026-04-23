@@ -88,7 +88,7 @@ public sealed class King_Tiger_Wanghu : EffectMonsterCard, IMonsterActivatedEffe
         if (player == null)
             return DynamicVars.Damage.BaseValue;
 
-        var fieldCards = DuelMonsterFieldRegistry.GetFieldMonsters(player).ToList();
+        var fieldCards = DuelMonsterFieldRegistry.OrderedFieldMonsters(player);
         if (!fieldCards.Contains(this))
             fieldCards.Add(this);
         return CalcDuelMonsterStats(fieldCards).Atk;

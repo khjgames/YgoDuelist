@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -67,17 +66,22 @@ public sealed class Hannibal_Necromancer : EffectMonsterCard, IMonsterActivatedE
         return true;
     }
 
-    protected internal override Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        AddSpellCounter(1);
-        return base.OnSummoned(player, choiceContext, duelMonsterPet);
-    }
+    protected internal override Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            () =>
+            {
+                AddSpellCounter(1);
+                return Task.CompletedTask;
+            });
 
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Skill;
     public TargetType ActivatedEffectTarget => TargetType.Self;
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-HANNIBAL_NECROMANCER.activated_effect.description";
-    public bool IsActivatedEffectAvailable => Owner != null && CurrentSpellCounters >= 3 && BuildTargets(Owner).Count > 0;
+    public bool IsActivatedEffectAvailable => Owner != null && CurrentSpellCounters >= 3 && BuildSummonTargets(Owner).Count > 0;
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -88,32 +92,19 @@ public sealed class Hannibal_Necromancer : EffectMonsterCard, IMonsterActivatedE
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        List<BaseMonsterCard> targets = BuildTargets(player);
-        if (targets.Count == 0)
+        if (BuildSummonTargets(player).Count == 0)
             return;
 
-        BaseMonsterCard summon = targets[0];
-        if (targets.Count > 1)
-        {
-            IEnumerable<CardModel> pick;
-            try
-            {
-                pick = await CardSelectCmd.FromSimpleGrid(
-                    choiceContext,
-                    targets.Cast<CardModel>().ToList(),
-                    player,
-                    new CardSelectorPrefs(SelectPrompt, 1, 1) { Cancelable = true });
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            BaseMonsterCard? chosen = pick.OfType<BaseMonsterCard>().FirstOrDefault();
-            if (chosen == null)
-                return;
-            summon = chosen;
-        }
+        List<BaseMonsterCard> targets = BuildSummonTargets(player);
+        BaseMonsterCard? summon = targets.Count == 1
+            ? targets[0]
+            : await YgoOrderedCardSelection.TryChooseSingleAsync(
+                choiceContext,
+                player,
+                new CardSelectorPrefs(SelectPrompt, 1, 1) { Cancelable = true },
+                () => BuildSummonTargets(player));
+        if (summon == null)
+            return;
 
         if (!await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, summon, choiceContext))
             return;
@@ -121,14 +112,14 @@ public sealed class Hannibal_Necromancer : EffectMonsterCard, IMonsterActivatedE
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
     }
 
-    private static List<BaseMonsterCard> BuildTargets(Player player)
+    private static List<BaseMonsterCard> BuildSummonTargets(Player player)
     {
         var list = new List<BaseMonsterCard>();
-        CardPile? gy = GraveyardRelic.GetGraveyardPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy == null)
             return list;
 
-        foreach (CardModel c in gy.Cards)
+        foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(gy.Cards))
         {
             if (c is not BaseMonsterCard bm)
                 continue;

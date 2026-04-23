@@ -63,7 +63,7 @@ public sealed class Gate_Guardian : EffectMonsterCard, IYgoNamedTripleTributeSum
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Concat(
-            IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
+            IsUpgradedOrPreviewActive
                 ? new[] { CardKeyword.Retain }
                 : Enumerable.Empty<CardKeyword>());
 
@@ -94,7 +94,7 @@ public sealed class Gate_Guardian : EffectMonsterCard, IYgoNamedTripleTributeSum
         var cards = new List<BaseMonsterCard>(3);
         foreach (Creature pet in pets)
         {
-            BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
             if (c == null)
                 return false;
             cards.Add(c);

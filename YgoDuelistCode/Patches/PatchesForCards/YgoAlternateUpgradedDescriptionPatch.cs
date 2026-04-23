@@ -24,7 +24,9 @@ public static class YgoAlternateUpgradedDescriptionPatch
             || __instance is MonsterCommandCard mcc && mcc.UseAlternateUpgradedDescription;
         if (!useAlternate)
             return true;
-        bool showUpgraded = __instance.IsUpgraded || __instance.UpgradePreviewType != CardUpgradePreviewType.None;
+        bool showUpgraded = __instance is YgoDuelistCard ygoCard
+            ? ygoCard.IsUpgradedOrPreviewActive
+            : __instance.IsUpgraded || __instance.UpgradePreviewType != CardUpgradePreviewType.None;
         if (!showUpgraded)
             return true;
         var loc = new LocString("cards", __instance.Id.Entry + ".description_upgraded");

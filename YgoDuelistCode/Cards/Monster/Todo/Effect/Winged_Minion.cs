@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -79,37 +78,20 @@ public sealed class Winged_Minion : EffectMonsterCard, IMonsterActivatedEffect, 
         if (player?.PlayerCombatState == null)
             return false;
 
-        return BuildFiendTargets(player, this).Count > 0;
+        return BuildFiendCandidates(player, this).Count > 0;
     }
 
     public async Task<bool> TryPrepareActivatedEffectPlayAsync(Player player, NormalMonsterCard source)
     {
-        List<BaseMonsterCard> candidates = BuildFiendTargets(player, source);
+        List<BaseMonsterCard> candidates = BuildFiendCandidates(player, source);
         if (candidates.Count == 0)
             return false;
 
-        var prefs = new CardSelectorPrefs(SilentFiendPickPrompt, 1, 1)
-        {
-            Cancelable = true,
-            RequireManualConfirmation = false,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
-        if (chosen == null)
-            return false;
-
-        ActivatedEffectTributeSelectionPayload.SetPending(source, chosen);
-        return true;
+        return await YgoActivatedEffectTributeSelection.TryPrepareSingleTributeAsync(
+            player,
+            source,
+            candidates.Cast<CardModel>().ToList(),
+            SilentFiendPickPrompt);
     }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
@@ -129,13 +111,13 @@ public sealed class Winged_Minion : EffectMonsterCard, IMonsterActivatedEffect, 
         if (targetPet == null || !targetPet.IsAlive || ReferenceEquals(chosenFiend, source))
             return;
 
-        if (!DuelMonsterFieldRegistry.GetFieldMonsters(player).Contains(chosenFiend))
+        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(player, chosenFiend))
             return;
 
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(sourcePet, true);
 
         await CreatureCmd.Kill(sourcePet, force: true);
-        var grave = GraveyardPile.CustomType.GetPile(player);
+        var grave = YgoPlayerPiles.Graveyard(player);
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
@@ -147,9 +129,9 @@ public sealed class Winged_Minion : EffectMonsterCard, IMonsterActivatedEffect, 
         await PowerCmd.Apply<WingedMinionTributeAtkPower>(targetPet, atkBonus, player.Creature, source);
     }
 
-    private static List<BaseMonsterCard> BuildFiendTargets(Player player, NormalMonsterCard source)
+    private static List<BaseMonsterCard> BuildFiendCandidates(Player player, NormalMonsterCard source)
     {
-        return DuelMonsterFieldRegistry.GetFieldMonsters(player)
+        return DuelMonsterFieldRegistry.OrderedFieldMonsters(player)
             .Where(c => !ReferenceEquals(c, source) && c.DuelMonsterRace == DuelMonsterRace.Fiend)
             .ToList();
     }

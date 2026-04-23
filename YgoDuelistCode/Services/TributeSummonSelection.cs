@@ -122,7 +122,7 @@ public static class TributeSummonSelection
         var field = new List<BaseMonsterCard>(pets.Count);
         foreach (Creature pet in pets)
         {
-            BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
             if (c == null)
                 return false;
             field.Add(c);
@@ -165,13 +165,13 @@ public static class TributeSummonSelection
         {
             selected = useCombatWire
                 ? await TributeSummonGridSelect.FromSimpleGridCombat(
-                    new BlockingPlayerChoiceContext(),
+                    YgoChoiceContexts.Blocking(),
                     candidates,
                     player,
                     prefs,
                     rebuildCanonicalForRemoteApply: rebuildCanonical)
                 : await TributeSummonGridSelect.FromSimpleGridIndexed(
-                    new BlockingPlayerChoiceContext(),
+                    YgoChoiceContexts.Blocking(),
                     candidates,
                     player,
                     prefs,
@@ -216,7 +216,7 @@ public static class TributeSummonSelection
 
     private static List<CardModel> BuildTributeSelectionCandidates(Player player, BaseMonsterCard summonCard, int need)
     {
-        List<CardModel> candidates = BuildTributeCandidateCards(player).Cast<CardModel>().ToList();
+        List<CardModel> candidates = YgoMpCombatOrder.CardsSnapshotOrderedForMp(BuildTributeCandidateCards(player));
         if (summonCard.AllowsMausoleumHpTributeForThisTributeSummon
             && YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<Mausoleum_of_the_Emperor>(player)
             && player.Creature?.CombatState != null)
@@ -355,11 +355,11 @@ public static class TributeSummonSelection
             return 0;
 
         int n = 0;
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != null)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) != null)
                 n++;
         }
 
@@ -377,11 +377,11 @@ public static class TributeSummonSelection
         if (player.PlayerCombatState == null)
             return list;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            BaseMonsterCard? c = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
             if (c != null)
                 list.Add(c);
         }
@@ -410,9 +410,9 @@ public static class TributeSummonSelection
         if (player.PlayerCombatState == null)
             return null;
 
-        foreach (Creature p in player.PlayerCombatState.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
-            if (p.Monster is DuelMonsterModel && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), fieldSourceCard))
+            if (p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.HasSourceCard(p, fieldSourceCard))
                 return p;
         }
 
@@ -442,7 +442,7 @@ public static class TributeSummonSelection
         try
         {
             selected = await TributeSummonGridSelect.FromSimpleGridIndexed(
-                new BlockingPlayerChoiceContext(),
+                YgoChoiceContexts.Blocking(),
                 candidates,
                 player,
                 prefs,

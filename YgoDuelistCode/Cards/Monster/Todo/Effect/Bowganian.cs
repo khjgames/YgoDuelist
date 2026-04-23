@@ -1,6 +1,5 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -58,9 +57,7 @@ public sealed class Bowganian : EffectMonsterCard
         if (target == null)
         {
             var cs = Owner.Creature.CombatState;
-            var list = YgoDeterministicRng
-                .StableOrder(cs.HittableEnemies.Where(c => c.IsAlive), c => c.CombatId)
-                .ToList();
+            var list = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
             if (list.Count == 0)
                 return;
             target = YgoDeterministicRng.PickOne(cs, list, "BOWGANIAN-RANDOM_TARGET");

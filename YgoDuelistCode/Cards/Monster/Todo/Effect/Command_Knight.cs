@@ -54,7 +54,7 @@ public sealed class Command_Knight : EffectMonsterCard
 
     public override int GetFortifiedBeastsBonusMaxHp(Player player)
     {
-        IReadOnlyCollection<BaseMonsterCard>? field = DuelMonsterFieldRegistry.GetFieldMonsters(player);
+        IReadOnlyCollection<BaseMonsterCard>? field = DuelMonsterFieldRegistry.OrderedFieldMonsters(player);
         if (field == null || field.Count < 2)
             return 0;
         return (int)DynamicVars["Mgc2"].BaseValue;

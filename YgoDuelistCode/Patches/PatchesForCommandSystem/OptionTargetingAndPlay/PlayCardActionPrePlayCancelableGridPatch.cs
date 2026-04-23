@@ -93,19 +93,19 @@ public static class PlayCardActionPrePlayCancelableGridPatch
         if (RunManager.Instance?.NetService.Type == NetGameType.Singleplayer)
             return false;
 
-        if (PileType.Hand.GetPile(player)?.Cards.Contains(card) == true)
+        if (YgoPlayerPiles.Hand(player)?.Cards.Contains(card) == true)
         {
             sourceTag = "hand_infer";
             return true;
         }
 
-        if (SpellTrapZonePile.CustomType.GetPile(player)?.Cards.Contains(card) == true)
+        if (YgoPlayerPiles.SpellTrapZone(player)?.Cards.Contains(card) == true)
         {
             sourceTag = "spell_trap_zone_infer";
             return true;
         }
 
-        if (YgoCardOptionPile.CustomType.GetPile(player)?.Cards.Contains(card) == true)
+        if (YgoPlayerPiles.OptionPile(player)?.Cards.Contains(card) == true)
         {
             sourceTag = "option_pile_infer";
             return true;

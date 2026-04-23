@@ -221,7 +221,7 @@ public static class YgoCardPackGenerator
         var cards = new List<CardModel>();
         bool excludeBundledTagFromPool = false;
 
-        var trunkCounts = CountIds(PlayerRunTrunk.GetOrCreatePile(player).Cards);
+        var trunkCounts = CountIds(YgoPlayerRunPiles.Trunk(player)?.Cards ?? []);
         var relatedBonus = BuildRelatedBonus(player);
 
         var slotRarities = new CardRarity[packSlots];
@@ -534,7 +534,7 @@ public static class YgoCardPackGenerator
                 AddFromYgo(y, 2);
         }
 
-        foreach (CardModel c in PlayerRunSideDeck.GetOrCreatePile(player).Cards)
+        foreach (CardModel c in YgoPlayerRunPiles.SideDeck(player)?.Cards ?? [])
         {
             if (c is YgoDuelistCard y)
                 AddFromYgo(y, 1);

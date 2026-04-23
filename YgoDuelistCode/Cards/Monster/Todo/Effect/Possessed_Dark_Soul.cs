@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -63,11 +64,11 @@ public sealed class Possessed_Dark_Soul : EffectMonsterCard, IMonsterActivatedEf
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
 
         await CreatureCmd.Kill(pet, force: true);
-        var grave = GraveyardPile.CustomType.GetPile(player);
+        var grave = YgoPlayerPiles.Graveyard(player);
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
-        foreach (var enemy in player.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(player.Creature.CombatState))
         {
             if (!enemy.IsAlive)
                 continue;

@@ -54,7 +54,7 @@ public static class DuelMonsterPetDeathPatch
                 return;
             }
 
-            var card = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            var card = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
             if (card == null)
             {
                 GD.Print("[ZGO] DuelMonsterPetDeathPatch: no source card found for pet.");
@@ -101,7 +101,7 @@ public static class DuelMonsterPetDeathPatch
 
     private static async Task NotifyZoneCardsAfterDuelMonsterDiedAsync(Player player, DuelMonsterPetDeathContext ctx)
     {
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             return;
 
@@ -139,7 +139,7 @@ public static class DuelMonsterPetDeathPatch
             $"[YgoDuelist][MP][DuelDeath] deferred tail BEGIN pet={pet.Name} card={card.Id?.Entry} ownerNet={player.NetId} petCombatId={pet.CombatId}");
 
         await GuardianSpiritPower.OnPlayerDuelMonsterDestroyedAsync(
-            new BlockingPlayerChoiceContext(),
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
             player,
             pet);
 
@@ -148,7 +148,7 @@ public static class DuelMonsterPetDeathPatch
 
         if (bounceToHand)
         {
-            CardPile? hand = PileType.Hand.GetPile(player);
+            CardPile? hand = YgoPlayerPiles.Hand(player);
             if (hand != null && graveyard != null && card.Pile != hand && card is BaseMonsterCard bmBounce)
             {
                 GD.Print($"[ZGO] DuelMonsterPetDeathPatch: bounce {card.Id.Entry} to hand (equips to GY).");
@@ -291,12 +291,12 @@ public static class DuelMonsterPetDeathPatch
             return;
         if (!pet.IsAlive)
             return;
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != fieldCard)
+        if (!DuelMonsterFieldRegistry.HasSourceCard(pet, fieldCard))
             return;
 
         TryClearOptionPileForFieldMonster(player, fieldCard, pet);
 
-        CardPile? banished = BanishedPile.CustomType.GetPile(player);
+        CardPile? banished = YgoPlayerPiles.Banished(player);
         CardPile? graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
         if (banished == null || graveyard == null)
             return;
@@ -332,12 +332,12 @@ public static class DuelMonsterPetDeathPatch
             return;
         if (!pet.IsAlive)
             return;
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != fieldCard)
+        if (!DuelMonsterFieldRegistry.HasSourceCard(pet, fieldCard))
             return;
 
         TryClearOptionPileForFieldMonster(player, fieldCard, pet);
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         CardPile? graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
         if (hand == null || graveyard == null)
             return;
@@ -362,7 +362,7 @@ public static class DuelMonsterPetDeathPatch
 
     private static void TryClearOptionPileForFieldMonster(Player player, CardModel fieldMonsterCard, Creature pet)
     {
-        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        var optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null || optionPile.Cards.Count == 0)
             return;
 

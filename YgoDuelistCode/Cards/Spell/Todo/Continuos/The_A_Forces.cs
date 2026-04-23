@@ -31,7 +31,7 @@ public sealed class The_A_Forces : BaseContinuousSpellCard
         if (Owner == null || target.Owner != Owner)
             return StatEffectTotal.None;
 
-        int n = DuelMonsterFieldRegistry.GetFieldMonsters(Owner).OfType<BaseMonsterCard>().Count();
+        int n = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner).Count;
         return new StatEffectTotal(_atkPerMonster * n, 0);
     }
 

@@ -87,55 +87,29 @@ public sealed class Guardian_Slime : EffectMonsterCard, IMonsterActivatedEffect
 
     private static async Task RunAncientChantFromGraveyardAsync(Player player)
     {
-        List<Ancient_Chant> candidates = CollectAncientChants(player);
-        if (candidates.Count == 0)
+        if (BuildAncientChantCandidates(player).Count == 0)
             return;
 
-        var prefs = new CardSelectorPrefs(AddAncientChantPrompt, 0, 1) { Cancelable = true };
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates.Cast<CardModel>().ToList(),
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        Ancient_Chant? chosen = picked.OfType<Ancient_Chant>().FirstOrDefault();
+        Ancient_Chant? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            new CardSelectorPrefs(AddAncientChantPrompt, 0, 1) { Cancelable = true },
+            () => BuildAncientChantCandidates(player));
         if (chosen == null)
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
-            return;
-
-        if (!candidates.Contains(chosen))
             return;
 
         await CardPileCmd.Add(new[] { chosen }, hand, CardPilePosition.Top, chosen, false);
     }
 
-    private static List<Ancient_Chant> CollectAncientChants(Player player)
+    private static List<Ancient_Chant> BuildAncientChantCandidates(Player player)
     {
-        var list = new List<Ancient_Chant>();
-        Append(PileType.Draw.GetPile(player), list);
-        Append(PileType.Discard.GetPile(player), list);
-        return list;
-    }
-
-    private static void Append(CardPile? pile, List<Ancient_Chant> list)
-    {
-        if (pile == null)
-            return;
-        foreach (CardModel c in pile.Cards)
-        {
-            if (c is Ancient_Chant ac)
-                list.Add(ac);
-        }
+        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Ancient_Chant>(
+            player,
+            YgoPlayerPiles.Draw,
+            YgoPlayerPiles.Discard);
     }
 }

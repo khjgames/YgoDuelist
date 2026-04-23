@@ -13,6 +13,8 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
@@ -63,18 +65,13 @@ public static class YgoFairyBoxHeadsTailsWeak
 
         CardModel resultCard = YgoDeterministicRngResultDisplay.CreateCoinFlipResultCard(cs, player, flipIsHeads);
         var coinPrompt = new LocString("cards", "YGODUELIST-FAIRY_BOX.coin_result.selection");
-        var coinPrefs = new CardSelectorPrefs(coinPrompt, 0, 0)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = false
-        };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, new List<CardModel> { resultCard }, player, coinPrefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, new List<CardModel> { resultCard }, player, coinPrompt);
 
         if (calledHeads != flipIsHeads)
             return;
 
         decimal weakStacks = trapCard.DynamicVars["Mgc"].BaseValue;
-        foreach (Creature e in cs.HittableEnemies)
+        foreach (Creature e in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
         {
             if (e.IsAlive)
                 await PowerCmd.Apply<WeakPower>(e, weakStacks, ownerCreature, trapCard);

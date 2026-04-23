@@ -43,11 +43,11 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && GetDestroyableHandCards(Owner, this).Count > 0;
+        && BuildDiscardCandidates(Owner, this).Count > 0;
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        var candidates = GetDestroyableHandCards(player, sourceCard);
+        List<CardModel> candidates = BuildDiscardCandidates(player, sourceCard);
         GD.Print(
             $"[YgoDuelist][MP][RaigekiBreak] preplay_begin owner={player.NetId} source={sourceCard.Id?.Entry} candidates={candidates.Count}");
         if (candidates.Count == 0)
@@ -57,25 +57,11 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
             return false;
         }
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            GD.Print(
-                $"[YgoDuelist][MP][RaigekiBreak] preplay_cancel_user owner={player.NetId} source={sourceCard.Id?.Entry}");
-            return false;
-        }
-
-        var chosen = selected.FirstOrDefault();
+        CardModel? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync<CardModel>(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            () => BuildDiscardCandidates(player, sourceCard));
         if (chosen == null || !candidates.Contains(chosen))
         {
             GD.Print(
@@ -104,7 +90,7 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
             return;
         }
 
-        var hand = PileType.Hand.GetPile(player);
+        var hand = YgoPlayerPiles.Hand(player);
         if (hand == null || !hand.Cards.Contains(chosen))
         {
             GD.Print(
@@ -121,18 +107,18 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
             $"[YgoDuelist][MP][RaigekiBreak] onplay_apply_blight owner={player.NetId} source={Id?.Entry} target={cardPlay.Target.ModelId}");
     }
 
-    private static List<CardModel> GetDestroyableHandCards(Player player, CardModel sourceCard)
+    private static List<CardModel> BuildDiscardCandidates(Player player, CardModel sourceCard)
     {
-        var hand = PileType.Hand.GetPile(player);
+        var hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return new List<CardModel>();
 
-        return hand.Cards.Where(c => c != sourceCard).ToList();
+        return TributeSummonGridSelect.BuildStabilizedHandCandidates(player, c => c != sourceCard, null);
     }
 
     private static async Task SendHandCardToGraveyard(PlayerChoiceContext choiceContext, Player player, CardModel card)
     {
-        var graveyardPile = GraveyardPile.CustomType.GetPile(player);
+        var graveyardPile = YgoPlayerPiles.Graveyard(player);
         if (graveyardPile == null)
             return;
 

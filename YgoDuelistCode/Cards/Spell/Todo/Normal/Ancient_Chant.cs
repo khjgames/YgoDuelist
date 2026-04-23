@@ -57,7 +57,7 @@ public sealed class Ancient_Chant : BaseSpellCard, IYgoApplyAncientChantPowerWhe
             return;
 
         The_Winged_Dragon_of_Ra toHand = ra[0];
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return;
 
@@ -79,27 +79,17 @@ public sealed class Ancient_Chant : BaseSpellCard, IYgoApplyAncientChantPowerWhe
 
     private static List<The_Winged_Dragon_of_Ra> FindRaCandidates(Player player)
     {
-        var list = new List<The_Winged_Dragon_of_Ra>();
-        AppendRa(PileType.Draw.GetPile(player), list);
-        AppendRa(PileType.Discard.GetPile(player), list);
+        var list = YgoPlayerPiles.OrderedCardsOfTypeFromPiles<The_Winged_Dragon_of_Ra>(
+            player,
+            YgoPlayerPiles.Draw,
+            YgoPlayerPiles.Discard);
         AppendRaFromGraveyard(player, list);
         return list;
     }
 
-    private static void AppendRa(CardPile? pile, List<The_Winged_Dragon_of_Ra> list)
-    {
-        if (pile == null)
-            return;
-        foreach (CardModel c in pile.Cards)
-        {
-            if (c is The_Winged_Dragon_of_Ra ra)
-                list.Add(ra);
-        }
-    }
-
     private static void AppendRaFromGraveyard(Player player, List<The_Winged_Dragon_of_Ra> list)
     {
-        foreach (CardModel c in GraveyardRelic.GetGraveyardCards(player))
+        foreach (CardModel c in YgoPlayerPiles.GraveyardCards(player))
         {
             if (c is The_Winged_Dragon_of_Ra ra)
                 list.Add(ra);

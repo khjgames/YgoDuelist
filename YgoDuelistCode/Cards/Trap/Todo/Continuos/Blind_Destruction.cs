@@ -1,7 +1,6 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -85,17 +84,17 @@ public sealed class Blind_Destruction : BaseContinuousTrapCard, IYgoOwnerTurnSta
             RequireManualConfirmation = true,
             Cancelable = false
         };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { resultCard }, player, prefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, new[] { resultCard }, player, prefs);
 
         decimal sixCase = DynamicVars["Mgc"].BaseValue;
         decimal dmg = roll == 6 ? sixCase : roll;
-        foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
+        foreach (Creature e in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             await CreatureCmd.Damage(choiceContext, e, dmg, ValueProp.Unpowered, player.Creature, this);
 
         if (roll == 6 || player.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (pet.IsAlive)
                 await CreatureCmd.Damage(choiceContext, pet, dmg, ValueProp.Unpowered, player.Creature, this);

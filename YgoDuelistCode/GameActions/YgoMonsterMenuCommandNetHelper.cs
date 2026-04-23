@@ -65,7 +65,7 @@ public static class YgoMonsterMenuCommandNetHelper
     /// <summary>True when <paramref name="card"/> is in this player's YGO option pile.</summary>
     public static bool IsInYgoOptionPile(CardModel card, Player player)
     {
-        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        var optionPile = YgoPlayerPiles.OptionPile(player);
         return optionPile != null && card.Pile == optionPile;
     }
 
@@ -139,9 +139,9 @@ public static class YgoMonsterMenuCommandNetHelper
 
     private static Creature? FindPetForSourceMonster(Player player, NormalMonsterCard source)
     {
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
-            if (pet.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == source)
+            if (pet.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.HasSourceCard(pet, source))
                 return pet;
         }
 

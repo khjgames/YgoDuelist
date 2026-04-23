@@ -16,7 +16,7 @@ public static class YgoBanishedService
     {
         if (player?.PlayerCombatState == null)
             return null;
-        return BanishedPile.CustomType.GetPile(player);
+        return YgoPlayerPiles.Banished(player);
     }
 
     public static async Task BanishCard(Player player, CardModel card)

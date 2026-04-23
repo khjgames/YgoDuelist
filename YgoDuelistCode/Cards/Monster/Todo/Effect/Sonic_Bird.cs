@@ -31,19 +31,21 @@ public sealed class Sonic_Bird : EffectMonsterCard
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Ritual | YgoCardPackTags.Wind | YgoCardPackTags.Spell;
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
-        if (YgoDuelMonsterSummonStyleContext.CurrentNormalOrTribute != true)
-            return;
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnNormalOrTributeSummonAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            ctx => YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(
+                player,
+                ctx,
+                RitualDeckSearchKind.RitualSpellOnly));
 
-        var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
-        await YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(player, ctx, RitualDeckSearchKind.RitualSpellOnly);
-    }
-
-    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player)
-    {
-        var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
-        await YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(player, ctx, RitualDeckSearchKind.RitualSpellOnly);
-    }
+    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player) =>
+        await RunOnFlipSummonedFromCommandMenuAsync(
+            choiceContext,
+            ctx => YgoRitualDeckSearchService.TrySearchAndAddToHandAsync(
+                player,
+                ctx,
+                RitualDeckSearchKind.RitualSpellOnly));
 }

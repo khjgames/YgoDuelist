@@ -61,9 +61,9 @@ public sealed class Curse_of_Anubis : BaseTrapCard
         if (!player.Creature.HasPower<YgoCurseOfAnubisPlayerMarkerPower>())
             await PowerCmd.Apply<YgoCurseOfAnubisPlayerMarkerPower>(player.Creature, 1m, player.Creature, this);
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
-            BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
             if (src is not EffectMonsterCard)
                 continue;
             if (pet.HasPower<YgoCurseOfAnubisEffectMonsterPower>())
@@ -71,7 +71,7 @@ public sealed class Curse_of_Anubis : BaseTrapCard
             await PowerCmd.Apply<YgoCurseOfAnubisEffectMonsterPower>(pet, 1m, player.Creature, this);
         }
 
-        foreach (Creature enemy in cs.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
         {
             if (!enemy.IsAlive)
                 continue;

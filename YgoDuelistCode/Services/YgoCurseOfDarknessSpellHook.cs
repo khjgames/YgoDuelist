@@ -45,7 +45,7 @@ public static class YgoCurseOfDarknessSpellHook
             return;
 
         CombatState cs = player.Creature.CombatState;
-        List<Creature> enemies = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
         if (enemies.Count == 0)
             return;
 

@@ -61,7 +61,7 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             return;
 
         var promptCandidates = new List<AbstractMonsterCard>();
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!FlipFaceDownOnPlayerEnemyAttackHelpers.TryGetEligibleFaceDownSourceCard(pet, out AbstractMonsterCard? card))
                 continue;
@@ -98,10 +98,15 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             Cancelable = true
         };
 
-        IEnumerable<CardModel> selected = await CardSelectCmd.FromSimpleGrid(choiceContext, promptCandidates, player, prefs);
-        foreach (CardModel cardModel in selected)
+        List<AbstractMonsterCard> selected = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            player,
+            prefs,
+            () => YgoMpCombatOrder.CardsSnapshotOrderedForMp(promptCandidates).OfType<AbstractMonsterCard>().ToList(),
+            promptCandidates.Count);
+        foreach (AbstractMonsterCard selectedCard in selected)
         {
-            if (cardModel is not AbstractMonsterCard selectedCard || !selectedCard.FaceDown)
+            if (!selectedCard.FaceDown)
                 continue;
             FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpNow(selectedCard, choiceContext);
         }
@@ -117,7 +122,7 @@ internal static class FlipFaceDownOnPlayerEnemyAttackHelpers
             return false;
         if (!MonsterCommandRegistry.PetHasUsedAnyCommandSlotThisTurn(pet))
             return false;
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not AbstractMonsterCard sourceCard)
+        if (DuelMonsterFieldRegistry.GetSourceMonster<AbstractMonsterCard>(pet) is not AbstractMonsterCard sourceCard)
             return false;
         if (!sourceCard.FaceDown || !sourceCard.IsMutable)
             return false;

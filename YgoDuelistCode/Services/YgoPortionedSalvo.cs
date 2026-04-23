@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -116,7 +117,7 @@ public static class YgoPortionedSalvo
                 return false;
 
             aggregatedPastBlockOnPrimary = s.AggregatedPastBlockOnPrimary;
-            foreach (KeyValuePair<uint, int> kv in s.BlightByEnemyId)
+            foreach (KeyValuePair<uint, int> kv in s.BlightByEnemyId.OrderBy(kv => kv.Key))
                 aggregatedBlightByEnemyId[kv.Key] = kv.Value;
             portionPrimaryReceiver = s.PrimaryTarget;
             MonsterStates.Remove(monster);
@@ -139,7 +140,7 @@ public static class YgoPortionedSalvo
                 return false;
 
             aggregatedPastBlockOnPrimary = s.AggregatedPastBlockOnPrimary;
-            foreach (KeyValuePair<uint, int> kv in s.BlightByEnemyId)
+            foreach (KeyValuePair<uint, int> kv in s.BlightByEnemyId.OrderBy(kv => kv.Key))
                 aggregatedBlightByEnemyId[kv.Key] = kv.Value;
             portionPrimaryReceiver = s.PrimaryTarget;
             CardStates.Remove(card);

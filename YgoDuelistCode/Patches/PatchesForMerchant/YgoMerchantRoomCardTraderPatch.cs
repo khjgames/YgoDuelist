@@ -27,7 +27,7 @@ public static class YgoMerchantRoomCardTraderReadyPatch
             return;
 
         MerchantInventory? invModel = __instance.Inventory?.Inventory;
-        if (invModel == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(invModel.Player))
+        if (invModel == null || !YgoPlayerRunPiles.IsYgoRunPlayer(invModel.Player))
             return;
 
         string relBland = "card_frames/card_trader_npc_bland.png".ImagePath().Replace('\\', '/');

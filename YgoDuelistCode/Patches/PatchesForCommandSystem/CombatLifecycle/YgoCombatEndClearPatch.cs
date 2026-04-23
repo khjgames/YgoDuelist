@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Rooms;
@@ -22,11 +23,18 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 public static class YgoCombatEndClearPatch
 {
     [HarmonyPostfix]
-    public static async void Postfix(IRunState runState, CombatState? combatState, CombatRoom room)
+    public static void Postfix(IRunState runState, CombatState? combatState, CombatRoom room)
     {
+        _ = TaskHelper.RunSafely(PostfixAsync(runState, combatState, room));
+    }
+
+    private static async Task PostfixAsync(IRunState runState, CombatState? combatState, CombatRoom room)
+    {
+        _ = runState;
+        _ = room;
         if (combatState != null)
         {
-            var ctx = new BlockingPlayerChoiceContext();
+            var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
             foreach (Player p in combatState.Players)
                 await RaRebirthPower.ResolveCombatEndBeforeDoomedAsync(p);
             foreach (Player p in combatState.Players)
@@ -67,7 +75,5 @@ public static class YgoCombatEndClearPatch
             foreach (var p in combatState.Players)
                 await YgoBanishedService.RemoveAllFromCombat(p);
         }
-
-        await Task.CompletedTask;
     }
 }

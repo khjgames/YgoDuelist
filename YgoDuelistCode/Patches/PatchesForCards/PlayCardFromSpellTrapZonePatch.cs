@@ -54,7 +54,7 @@ public static class PlayCardFromSpellTrapZonePatch
         }
 
         CardPile? pile = card.Pile;
-        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
         if (pile == null || zonePile == null || !ReferenceEquals(pile, zonePile))
             return true;
 

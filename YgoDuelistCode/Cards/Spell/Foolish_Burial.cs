@@ -58,36 +58,20 @@ public sealed class Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableGridSel
     protected override bool IsPlayable =>
         base.IsPlayable &&
         Owner != null &&
-        GetMonsterCardsFromDeckAndDiscard(Owner).Any();
+        BuildMonsterCandidates(Owner).Count > 0;
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        var allMonsters = GetMonsterCardsFromDeckAndDiscard(player).ToList();
+        List<CardModel> allMonsters = BuildMonsterCandidates(player);
         if (allMonsters.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                allMonsters,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var chosen = selected.FirstOrDefault();
-        if (chosen == null)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<CardModel>(
+            player,
+            sourceCard,
+            allMonsters,
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildMonsterCandidates(player));
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -99,27 +83,27 @@ public sealed class Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableGridSel
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? chosen) || chosen == null)
             return;
 
-        if (!GetMonsterCardsFromDeckAndDiscard(player).Contains(chosen))
+        if (!BuildMonsterCandidates(player).Contains(chosen))
             return;
 
         await SendCardToGraveyard(choiceContext, player, chosen);
     }
 
-    private static IEnumerable<CardModel> GetMonsterCardsFromDeckAndDiscard(Player player)
+    private static List<CardModel> BuildMonsterCandidates(Player player)
     {
-        // In combat, monsters live in the draw pile (PileType.Draw) and discard pile.
-        var deck = PileType.Draw.GetPile(player);
-        var discard = PileType.Discard.GetPile(player);
-
-        IEnumerable<CardModel> FromPile(CardPile? pile) =>
-            pile?.Cards.Where(c => c is BaseMonsterCard) ?? Enumerable.Empty<CardModel>();
-
-        return FromPile(deck).Concat(FromPile(discard));
+        var deck = YgoPlayerPiles.Draw(player);
+        var discard = YgoPlayerPiles.Discard(player);
+        var result = new List<CardModel>();
+        if (deck != null)
+            result.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(deck.Cards).Where(c => c is BaseMonsterCard));
+        if (discard != null)
+            result.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(discard.Cards).Where(c => c is BaseMonsterCard));
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(result);
     }
 
     private static async Task SendCardToGraveyard(PlayerChoiceContext choiceContext, Player player, CardModel card)
     {
-        var graveyardPile = GraveyardPile.CustomType.GetPile(player);
+        var graveyardPile = YgoPlayerPiles.Graveyard(player);
         if (graveyardPile == null)
             return;
 

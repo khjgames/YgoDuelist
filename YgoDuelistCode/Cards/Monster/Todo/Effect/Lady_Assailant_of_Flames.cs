@@ -62,12 +62,12 @@ public sealed class Lady_Assailant_of_Flames : EffectMonsterCard, IMonsterFlipEf
         int blight = (int)DynamicVars["Mgc2"].BaseValue;
         if (banishCount > 0)
         {
-            CardPile? draw = PileType.Draw.GetPile(Owner);
+            CardPile? draw = YgoPlayerPiles.Draw(Owner);
             for (int i = 0; i < banishCount; i++)
             {
                 if (draw == null || draw.IsEmpty)
                     break;
-                CardModel? top = draw.Cards.FirstOrDefault();
+                CardModel? top = draw.Cards.Count > 0 ? draw.Cards[0] : null;
                 if (top == null)
                     break;
                 await YgoBanishedService.BanishCard(Owner, top);
@@ -76,7 +76,7 @@ public sealed class Lady_Assailant_of_Flames : EffectMonsterCard, IMonsterFlipEf
 
         if (blight <= 0)
             return;
-        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(Owner.Creature.CombatState.HittableEnemies))
         {
             if (!enemy.IsAlive)
                 continue;

@@ -68,53 +68,40 @@ public sealed class Night_Assailant : EffectMonsterCard, IMonsterFlipEffect, IYg
         _ = fromPile;
         if (player.Creature?.CombatState == null || player.Creature.Side != CombatSide.Player)
             return;
-        if (!GraveyardRelic.GetGraveyardCards(player).Contains(this))
+        if (!YgoPlayerPiles.GraveyardContains(player, this))
             return;
 
-        var candidates = new List<BaseMonsterCard>();
-        foreach (CardModel c in GraveyardRelic.GetGraveyardCards(player))
-        {
-            if (c is not BaseMonsterCard bm)
-                continue;
-            if (c is not IMonsterFlipEffect)
-                continue;
-            if (ReferenceEquals(c, this))
-                continue;
-            candidates.Add(bm);
-        }
+        List<BaseMonsterCard> candidates = BuildFlipTargets(player, this);
 
         if (candidates.Count == 0)
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates.Cast<CardModel>().ToList(),
-                player,
-                new CardSelectorPrefs(GyFlipReturnPrompt, 1, 1)
-                {
-                    RequireManualConfirmation = true,
-                    Cancelable = true
-                });
-        }
-        catch (OperationCanceledException)
-        {
+        BaseMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            new CardSelectorPrefs(GyFlipReturnPrompt, 1, 1)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true
+            },
+            () => BuildFlipTargets(player, this));
+        if (chosen == null)
             return;
-        }
-
-        if (pick.FirstOrDefault() is not BaseMonsterCard chosen)
-            return;
-        if (!GraveyardRelic.GetGraveyardCards(player).Contains(chosen))
+        if (!YgoPlayerPiles.GraveyardContains(player, chosen))
             return;
 
         await CardPileCmd.Add(new[] { chosen }, hand, CardPilePosition.Top, chosen, false);
     }
+
+    private static List<BaseMonsterCard> BuildFlipTargets(Player player, CardModel sourceCard) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .Where(c => c is BaseMonsterCard && c is IMonsterFlipEffect && !ReferenceEquals(c, sourceCard))
+        .OfType<BaseMonsterCard>()
+        .ToList();
 
     protected override void AddExtraArgsToDescription(LocString description) =>
         description.Add("conduitIcon", ConduitImgBbcode);

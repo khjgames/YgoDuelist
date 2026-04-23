@@ -40,14 +40,14 @@ public sealed class Ultimate_Obedient_Fiend : EffectMonsterCard
         if (player?.PlayerCombatState == null)
             return false;
 
-        List<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(player)?.ToList() ?? new List<BaseMonsterCard>();
+        List<BaseMonsterCard> field = DuelMonsterFieldRegistry.OrderedFieldMonsters(player);
         foreach (BaseMonsterCard? m in field)
         {
             if (m != null && !ReferenceEquals(m, selfCard))
                 return false;
         }
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return true;
 

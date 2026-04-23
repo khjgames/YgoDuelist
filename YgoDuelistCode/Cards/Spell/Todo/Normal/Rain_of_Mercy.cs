@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -34,13 +35,13 @@ public sealed class Rain_of_Mercy : BaseSpellCard
 
         decimal heal = DynamicVars["Mgc2"].BaseValue;
 
-        foreach (Creature enemy in cs.HittableEnemies.Where(e => e.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             await CreatureCmd.Heal(enemy, heal);
 
         if (Owner.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
             if (pet == null || !pet.IsAlive)
                 continue;

@@ -16,7 +16,7 @@ public static class YgoCurseOfDarknessField
         if (player == null)
             return false;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             return false;
 
@@ -31,7 +31,7 @@ public static class YgoCurseOfDarknessField
         if (player == null)
             return 0m;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             return 0m;
 
@@ -50,7 +50,7 @@ public static class YgoCurseOfDarknessField
         if (player == null)
             return null;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             return null;
 

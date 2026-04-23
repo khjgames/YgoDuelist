@@ -36,7 +36,7 @@ public sealed class Shadow_Ghoul : EffectMonsterCard
         if (Owner == null)
             return base.GetSecondaryStats();
 
-        int gyMonsters = GraveyardRelic.GetGraveyardCards(Owner).Count(c => c is BaseMonsterCard);
+        int gyMonsters = YgoPlayerPiles.GraveyardCards(Owner).Count(c => c is BaseMonsterCard);
         int mgc = (int)DynamicVars["Mgc"].BaseValue;
         return (gyMonsters * mgc, 0);
     }

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
@@ -18,7 +17,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 public static class HookAfterCardPlayedEffectMonsterPatch
 {
     [HarmonyPostfix]
-    public static async void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public static void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         _ = combatState;
         _ = choiceContext;
@@ -36,13 +35,11 @@ public static class HookAfterCardPlayedEffectMonsterPatch
             if (delayedBlock > 0)
                 YgoTotalDefenseShogunDeferredBlock.Queue(player, delayedBlock);
         }
-
-        await Task.CompletedTask;
     }
 
     private static void RegisterSpellCounterOnFieldMonsters(Player player)
     {
-        foreach (BaseMonsterCard field in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard field in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (field is IYgoSpellCounterMonster spellCounterMonster)
                 spellCounterMonster.AddSpellCounter(1);

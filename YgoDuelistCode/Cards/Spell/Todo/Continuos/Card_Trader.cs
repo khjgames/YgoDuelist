@@ -45,16 +45,16 @@ public sealed class Card_Trader : BaseContinuousSpellCard, IYgoOwnerTurnStartSpe
         if (!YgoAnnualTracker.TryConsumeAnnual(player, AnnualKey))
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null || hand.Cards.Count == 0)
             return;
 
-        CardPile? drawPile = PileType.Draw.GetPile(player);
+        CardPile? drawPile = YgoPlayerPiles.Draw(player);
         if (drawPile == null)
             return;
 
         int maxPick = Math.Min(1, hand.Cards.Count);
-        var candidates = hand.Cards.ToList();
+        var candidates = BuildHandCandidates(player);
         var prompt = new LocString("cards", "YGODUELIST-CARD_TRADER.turn_selection.title");
         prompt.Add("Max", maxPick);
         var prefs = new CardSelectorPrefs(prompt, 0, maxPick)
@@ -63,11 +63,23 @@ public sealed class Card_Trader : BaseContinuousSpellCard, IYgoOwnerTurnStartSpe
             Cancelable = false
         };
 
-        IEnumerable<CardModel> picked = await CardSelectCmd.FromSimpleGrid(choiceContext, candidates, player, prefs);
-        List<CardModel> toDeck = picked.Where(c => hand.Cards.Contains(c)).Distinct().Take(maxPick).ToList();
+        List<CardModel> toDeck = (await YgoOrderedCardSelection.TryChooseManyAsync(
+                choiceContext,
+                player,
+                prefs,
+                () => BuildHandCandidates(player),
+                maxResults: maxPick))
+            .Where(c => hand.Cards.Contains(c))
+            .ToList();
         foreach (CardModel card in toDeck)
             await CardPileCmd.Add(new[] { card }, drawPile, CardPilePosition.Random, card, false);
         if (toDeck.Count > 0)
             await CardPileCmd.Draw(choiceContext, toDeck.Count, player);
+    }
+
+    private static List<CardModel> BuildHandCandidates(Player player)
+    {
+        CardPile? hand = YgoPlayerPiles.Hand(player);
+        return hand == null ? [] : YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards);
     }
 }

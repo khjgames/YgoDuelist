@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -47,8 +46,7 @@ public sealed class Command_Defend : MonsterCommandCard, IYgoDefendMonsterComman
             return null;
 
         string suffix = ".description_skill_combat";
-        if (defSource.UseAlternateUpgradedDescription
-            && (defSource.IsUpgraded || defSource.UpgradePreviewType != CardUpgradePreviewType.None))
+        if (defSource.UseAlternateUpgradedDescription && defSource.IsUpgradedOrPreviewActive)
         {
             var alt = new LocString("cards", defSource.Id.Entry + ".description_skill_combat_upgraded");
             if (alt.Exists())
@@ -111,10 +109,9 @@ public sealed class Command_Defend : MonsterCommandCard, IYgoDefendMonsterComman
         if (player?.PlayerCombatState == null)
             return null;
 
-        return player.PlayerCombatState.Pets
-            .OrderBy(p => p.CombatId)
-            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == source);
+        return YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => DuelMonsterFieldRegistry.HasSourceCard(p, source));
     }
 
 }
-

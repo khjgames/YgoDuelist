@@ -48,8 +48,10 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         if (p == null)
             return;
 
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(p);
-        CardPile side = PlayerRunSideDeck.GetOrCreatePile(p);
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(p);
+        CardPile? side = YgoPlayerRunPiles.SideDeck(p);
+        if (trunk == null || side == null)
+            return;
         TrunkSideDeckEditorPage page = TrunkSideDeckEditorSession.ActivePage;
 
         if (state.RightGrid != null && state.TrunkBaseline != null && state.SideBaseline != null)

@@ -32,36 +32,20 @@ public sealed class Reinforcement_of_the_Army : BaseSpellCard, IYgoPrePlayCancel
     public override Type[] RelatedCards => new[] { typeof(Reinforcement_of_the_Army) };
 
     protected override bool IsPlayable =>
-        base.IsPlayable && Owner != null && GetEligibleWarriorsInDraw(Owner).Any();
+        base.IsPlayable && Owner != null && BuildEligibleWarriors(Owner).Count > 0;
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        var candidates = GetEligibleWarriorsInDraw(player).ToList();
+        List<CardModel> candidates = BuildEligibleWarriors(player);
         if (candidates.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates.Cast<CardModel>().ToList(),
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var first = selected.FirstOrDefault();
-        if (first is not BaseMonsterCard chosen)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<BaseMonsterCard>(
+            player,
+            sourceCard,
+            candidates,
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildEligibleWarriors(player));
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -73,11 +57,11 @@ public sealed class Reinforcement_of_the_Army : BaseSpellCard, IYgoPrePlayCancel
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseMonsterCard chosen)
             return;
 
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         if (draw == null || !draw.Cards.Contains(chosen))
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return;
 
@@ -94,14 +78,16 @@ public sealed class Reinforcement_of_the_Army : BaseSpellCard, IYgoPrePlayCancel
         EnergyCost.UpgradeBy(-1);
     }
 
-    private static IEnumerable<BaseMonsterCard> GetEligibleWarriorsInDraw(Player player)
+    private static List<CardModel> BuildEligibleWarriors(Player player)
     {
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         if (draw == null)
-            return Enumerable.Empty<BaseMonsterCard>();
+            return new List<CardModel>();
 
-        return draw.Cards
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards)
             .OfType<BaseMonsterCard>()
-            .Where(m => m.DuelMonsterRace == DuelMonsterRace.Warrior && m.DuelMonsterLevel <= 4);
+            .Where(m => m.DuelMonsterRace == DuelMonsterRace.Warrior && m.DuelMonsterLevel <= 4)
+            .Cast<CardModel>()
+            .ToList();
     }
 }

@@ -34,37 +34,21 @@ public sealed class A_Deal_with_Dark_Ruler : BaseSpellCard, IYgoPrePlayCancelabl
         base.IsPlayable
         && Owner != null
         && YgoDealWithDarkRulerState.HasLevel8PlusMonsterSentToGraveyardThisTurn(Owner)
-        && CollectBerserkDragonCandidates(Owner).Count > 0
+        && BuildBerserkDragonCandidates(Owner).Count > 0
         && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tributeReleaseCount: 0);
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        List<Berserk_Dragon> candidates = CollectBerserkDragonCandidates(player);
+        List<CardModel> candidates = BuildBerserkDragonCandidates(player);
         if (candidates.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates.Cast<CardModel>().ToList(),
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var chosen = selected.FirstOrDefault() as Berserk_Dragon;
-        if (chosen == null)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<Berserk_Dragon>(
+            player,
+            sourceCard,
+            candidates,
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildBerserkDragonCandidates(player));
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -76,8 +60,8 @@ public sealed class A_Deal_with_Dark_Ruler : BaseSpellCard, IYgoPrePlayCancelabl
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not Berserk_Dragon berserk)
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         bool inHand = hand != null && hand.Cards.Contains(berserk);
         bool inDeck = draw != null && draw.Cards.Contains(berserk);
         if (!inHand && !inDeck)
@@ -99,22 +83,11 @@ public sealed class A_Deal_with_Dark_Ruler : BaseSpellCard, IYgoPrePlayCancelabl
         EnergyCost.UpgradeBy(-1);
     }
 
-    private static List<Berserk_Dragon> CollectBerserkDragonCandidates(Player player)
+    private static List<CardModel> BuildBerserkDragonCandidates(Player player)
     {
-        var list = new List<Berserk_Dragon>();
-        Append(PileType.Hand.GetPile(player), list);
-        Append(PileType.Draw.GetPile(player), list);
-        return list;
-    }
-
-    private static void Append(CardPile? pile, List<Berserk_Dragon> list)
-    {
-        if (pile == null)
-            return;
-        foreach (CardModel c in pile.Cards)
-        {
-            if (c is Berserk_Dragon b)
-                list.Add(b);
-        }
+        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Berserk_Dragon>(
+            player,
+            YgoPlayerPiles.Hand,
+            YgoPlayerPiles.Draw).Cast<CardModel>().ToList();
     }
 }

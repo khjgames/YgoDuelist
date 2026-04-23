@@ -21,7 +21,7 @@ public static class CardSelectCmdFromDeckForRemovalYgoMinimumPatch
 
     public static void Prefix(Player player, ref Func<CardModel, bool>? filter)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
 
         int min = YgoPlayerMinimumDeck.Get(player);
@@ -51,7 +51,7 @@ public static class CardPileCmdRemoveFromDeckYgoMinimumPatch
             return;
 
         Player? p = cards[0].Owner;
-        if (p == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(p))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(p))
             return;
 
         __result = YgoDeckRemovalMinTracker.ChainAfterRemoveFromDeck(__result, cards);

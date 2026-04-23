@@ -111,12 +111,7 @@ public sealed class Copycat : EffectMonsterCard, IMonsterActivatedEffect
 
         CardModel resultCard = YgoDeterministicRngResultDisplay.CreateCoinFlipResultCard(cs, player, flipIsHeads);
         var coinPrompt = new LocString("cards", "YGODUELIST-COPYCAT.coin_result.selection");
-        var coinPrefs = new CardSelectorPrefs(coinPrompt, 0, 0)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = false
-        };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, new List<CardModel> { resultCard }, player, coinPrefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, new List<CardModel> { resultCard }, player, coinPrompt);
 
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
 
@@ -136,7 +131,7 @@ public sealed class Copycat : EffectMonsterCard, IMonsterActivatedEffect
 
         int cap = (int)source.DynamicVars["Cap"].BaseValue;
         int maxIntent = 0;
-        foreach (Creature enemy in cs.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
         {
             if (enemy.IsAlive)
                 maxIntent = Math.Max(maxIntent, YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, playerCreature));

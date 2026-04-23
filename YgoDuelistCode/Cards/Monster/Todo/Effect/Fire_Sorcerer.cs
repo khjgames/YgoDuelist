@@ -54,11 +54,11 @@ public sealed class Fire_Sorcerer : EffectMonsterCard, IMonsterFlipEffect
             return;
 
         CombatState cs = Owner.Creature.CombatState;
-        CardPile? hand = PileType.Hand.GetPile(Owner);
+        CardPile? hand = YgoPlayerPiles.Hand(Owner);
         if (hand == null)
             return;
 
-        var pool = hand.Cards.ToList();
+        var pool = YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards);
         for (int i = 0; i < 2 && pool.Count > 0; i++)
         {
             CardModel? pick = YgoDeterministicRng.PickOne(cs, pool, "FIRE_SORCERER_BANISH", (ulong)i);
@@ -72,7 +72,7 @@ public sealed class Fire_Sorcerer : EffectMonsterCard, IMonsterFlipEffect
         if (blight <= 0)
             return;
 
-        foreach (Creature enemy in cs.HittableEnemies.Where(e => e.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             await PowerCmd.Apply<BlightPower>(enemy, blight, Owner.Creature, this);
     }
 

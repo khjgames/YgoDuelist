@@ -44,32 +44,30 @@ public sealed class Tornado_Bird : EffectMonsterCard, IMonsterFlipEffect
         if (self is not Tornado_Bird || Owner == null)
             return;
 
-        var candidates = new List<CardModel>();
-        YgoFlipSpellTrapFieldEffects.CollectOwnerSpellAndTrapCardsInZone(Owner, candidates);
+        var candidates = BuildSpellTrapZoneCandidates(Owner);
         if (candidates.Count == 0)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates,
-                Owner,
-                new CardSelectorPrefs(FlipPrompt, 0, 2)
-                {
-                    RequireManualConfirmation = true,
-                    Cancelable = true
-                });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        foreach (CardModel c in pick.Distinct())
+        List<CardModel> pick = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(FlipPrompt, 0, 2)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true
+            },
+            () => BuildSpellTrapZoneCandidates(Owner),
+            maxResults: 2);
+        foreach (CardModel c in pick)
         {
             await YgoFlipSpellTrapFieldEffects.TryReturnSpellTrapFromZoneToHandAsync(Owner, c, self);
         }
+    }
+
+    private static List<CardModel> BuildSpellTrapZoneCandidates(Player player)
+    {
+        var candidates = new List<CardModel>();
+        YgoFlipSpellTrapFieldEffects.CollectOwnerSpellAndTrapCardsInZone(player, candidates);
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(candidates);
     }
 }

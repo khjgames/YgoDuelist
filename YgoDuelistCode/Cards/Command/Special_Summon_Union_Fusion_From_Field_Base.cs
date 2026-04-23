@@ -1,12 +1,14 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Godot;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -22,6 +24,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 /// </summary>
 public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterCommandCard, IYgoNHandPlayPhaseHighlightOverride
 {
+    private static readonly LocString PickTargetPrompt = new("combat_messages", "FUSION_SUMMON_PICK_TARGET");
+
     protected override bool MirrorSourceMonsterUpgradeVisual => true;
 
     protected internal override string? CommandEnergyIconPrefix => "silent";
@@ -34,7 +38,7 @@ public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterComma
 
     protected abstract bool IsValidSourceMaterial(BaseMonsterCard source);
 
-    protected abstract bool TryGetSummonData(Player player, out FusionMonsterCard fusionTarget, out List<BaseMonsterCard> materials);
+    protected abstract bool TryGetSummonData(Player player, out List<FusionMonsterCard> fusionTargets, out List<BaseMonsterCard> materials);
 
     /// <summary>Portrait for canonical instances during asset preload (no <see cref="CardModel.Owner"/>).</summary>
     protected abstract string CanonicalUnionFusionPortraitPath { get; }
@@ -49,8 +53,11 @@ public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterComma
 
             TryResolveSourceMonsterFromStoredPetId();
             Player? owner = Owner;
-            if (owner != null && TryGetSummonData(owner, out FusionMonsterCard fusion, out _) && fusion != null && !string.IsNullOrEmpty(fusion.PortraitPath))
-                return fusion.PortraitPath;
+            if (owner != null
+                && TryGetSummonData(owner, out List<FusionMonsterCard> fusionTargets, out _)
+                && fusionTargets.Count > 0
+                && !string.IsNullOrEmpty(fusionTargets[0].PortraitPath))
+                return fusionTargets[0].PortraitPath;
             return "card.png".CardImagePath();
         }
     }
@@ -88,7 +95,7 @@ public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterComma
                 return false;
             if (SourceMonster is not BaseMonsterCard bm || !IsValidSourceMaterial(bm))
                 return false;
-            if (!TryGetSummonData(Owner, out _, out var materials) || materials.Count == 0)
+            if (!TryGetSummonData(Owner, out List<FusionMonsterCard> fusionTargets, out var materials) || fusionTargets.Count == 0 || materials.Count == 0)
                 return false;
             if (!materials.Any(m => ReferenceEquals(m, bm)))
                 return false;
@@ -106,13 +113,16 @@ public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterComma
         Player player = Owner;
         if (!IsValidSourceMaterial(source))
             return;
-        if (!TryGetSummonData(player, out FusionMonsterCard fusionTarget, out List<BaseMonsterCard> materials))
+        if (!TryGetSummonData(player, out List<FusionMonsterCard> fusionTargets, out List<BaseMonsterCard> materials))
+            return;
+        FusionMonsterCard? fusionTarget = await SelectFusionTargetAsync(choiceContext, player, fusionTargets);
+        if (fusionTarget == null)
             return;
         if (!materials.Any(m => ReferenceEquals(m, source)))
             return;
 
         GD.Print(
-            $"[YgoDuelist][MP][UnionFusion] OnPlay START ownerNet={player.NetId} fusion={fusionTarget.Id?.Entry} materials={materials.Count} cmd={GetType().Name}");
+            $"[YgoDuelist][MP][UnionFusion] OnPlay START ownerNet={player.NetId} fusion={fusionTarget.Id?.Entry} options={fusionTargets.Count} materials={materials.Count} cmd={GetType().Name}");
 
         int idx = 0;
         foreach (BaseMonsterCard m in materials)
@@ -145,5 +155,25 @@ public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterComma
         Creature? summonedPet = TributeSummonSelection.ResolvePetForFieldCard(player, fusionTarget);
         GD.Print(
             $"[YgoDuelist][MP][UnionFusion] OnPlay END ownerNet={player.NetId} fusion={fusionTarget.Id?.Entry} summonedPet={summonedPet?.CombatId}");
+    }
+
+    private static async Task<FusionMonsterCard?> SelectFusionTargetAsync(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        List<FusionMonsterCard> fusionTargets)
+    {
+        if (fusionTargets.Count == 0)
+            return null;
+        if (fusionTargets.Count == 1)
+            return fusionTargets[0];
+
+        return await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(PickTargetPrompt, 1, 1) { Cancelable = true },
+            () => TributeSummonGridSelect
+                .StabilizeHandPileCandidates(fusionTargets.Cast<CardModel>())
+                .OfType<FusionMonsterCard>()
+                .ToList());
     }
 }

@@ -17,6 +17,8 @@ using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Relics;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary><see cref="Spear_Cretin"/>: sent to the Graveyard the turn it was flipped — Special Summon 1 monster from the Graveyard.</summary>
@@ -40,13 +42,13 @@ public static class YgoSpearCretinGraveyard
         TaskHelper.RunSafely(RunAsync(player, sc));
     }
 
-    private static List<BaseMonsterCard> BuildGySummons(Player player, Spear_Cretin sourceInGy)
+    private static List<BaseMonsterCard> BuildGraveyardSummons(Player player, Spear_Cretin sourceInGy)
     {
-        CardPile? gy = GraveyardRelic.GetGraveyardPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy == null)
             return [];
 
-        return gy.Cards
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(gy.Cards)
             .OfType<BaseMonsterCard>()
             .Where(m => !ReferenceEquals(m, sourceInGy) && m.CanSummonDuelMonster)
             .ToList();
@@ -57,36 +59,23 @@ public static class YgoSpearCretinGraveyard
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        List<BaseMonsterCard> candidates = BuildGySummons(player, sourceInGy);
+        List<BaseMonsterCard> candidates = BuildGraveyardSummons(player, sourceInGy);
         if (candidates.Count == 0)
             return;
 
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoChoiceContexts.Blocking();
 
-        BaseMonsterCard summon = candidates[0];
-        if (candidates.Count > 1)
-        {
-            IEnumerable<CardModel> pick;
-            try
-            {
-                pick = await CardSelectCmd.FromSimpleGrid(
-                    ctx,
-                    candidates.Cast<CardModel>().ToList(),
-                    player,
-                    new CardSelectorPrefs(GyPrompt, 1, 1) { Cancelable = true });
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
+        BaseMonsterCard? summon = candidates.Count == 1
+            ? candidates[0]
+            : await YgoOrderedCardSelection.TryChooseSingleAsync(
+                ctx,
+                player,
+                new CardSelectorPrefs(GyPrompt, 1, 1) { Cancelable = true },
+                () => BuildGraveyardSummons(player, sourceInGy));
+        if (summon == null)
+            return;
 
-            BaseMonsterCard? chosen = pick.OfType<BaseMonsterCard>().FirstOrDefault();
-            if (chosen == null)
-                return;
-            summon = chosen;
-        }
-
-        if (!GraveyardRelic.GetGraveyardCards(player).Contains(summon))
+        if (!YgoPlayerPiles.GraveyardContains(player, summon))
             return;
 
         CombatState? cs = player.Creature?.CombatState;
@@ -98,21 +87,17 @@ public static class YgoSpearCretinGraveyard
         var tails = cs.CreateCard<Tails>(player);
         tails.InitializeSource(sourceInGy);
 
-        IEnumerable<CardModel> posPick;
-        try
-        {
-            posPick = await CardSelectCmd.FromSimpleGrid(
-                ctx,
-                new CardModel[] { heads, tails },
-                player,
-                new CardSelectorPrefs(PositionPrompt, 1, 1) { Cancelable = true });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
+        List<CardModel> BuildPositionOptions() => new List<CardModel> { heads, tails };
 
-        bool faceDownDefense = posPick.FirstOrDefault() is Tails;
+        CardModel? posPick = await YgoOrderedCardSelection.TryChooseSingleAsync<CardModel>(
+            ctx,
+            player,
+            new CardSelectorPrefs(PositionPrompt, 1, 1) { Cancelable = true },
+            BuildPositionOptions);
+        if (posPick == null)
+            return;
+
+        bool faceDownDefense = posPick is Tails;
         if (faceDownDefense)
             summon.FaceDown = true;
 

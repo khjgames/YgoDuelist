@@ -47,7 +47,7 @@ public sealed class Spellbook_Organization : BaseSpellCard
 
         await CardPileCmd.ShuffleIfNecessary(choiceContext, player);
 
-        var drawPile = PileType.Draw.GetPile(player);
+        var drawPile = YgoPlayerPiles.Draw(player);
         if (drawPile == null)
             return;
 

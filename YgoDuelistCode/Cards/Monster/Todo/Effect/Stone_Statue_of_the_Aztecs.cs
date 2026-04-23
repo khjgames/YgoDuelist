@@ -63,7 +63,7 @@ public sealed class Stone_Statue_of_the_Aztecs : EffectMonsterCard
         if (mult <= 0m || blockGranted <= 0)
             return;
 
-        foreach (Creature enemy in cs.HittableEnemies.Where(e => e.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
         {
             int intent = YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, playerCreature);
             int diff = blockGranted - intent;

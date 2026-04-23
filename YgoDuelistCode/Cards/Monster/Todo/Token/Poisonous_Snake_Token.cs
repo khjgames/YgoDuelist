@@ -7,10 +7,11 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
 
@@ -43,8 +44,8 @@ public sealed class Poisonous_Snake_Token : YgoTokenEffectMonster
     {
         if (player.Creature?.CombatState == null)
             return;
-        var ctx = new BlockingPlayerChoiceContext();
-        foreach (Creature e in player.Creature.CombatState.HittableEnemies)
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
+        foreach (Creature e in YgoMpCombatOrder.CreatureListOrderedByCombatId(player.Creature.CombatState.HittableEnemies))
         {
             if (e.IsAlive)
                 await CreatureCmd.Damage(ctx, e, 5m, ValueProp.Unpowered, player.Creature, null);

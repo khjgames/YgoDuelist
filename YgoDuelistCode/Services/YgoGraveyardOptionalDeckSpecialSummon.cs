@@ -42,13 +42,17 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
         TaskHelper.RunSafely(RunAsync(player, source, bd.BattleDeathActivatePrompt, bd.BattleDeathSummonPrompt, bd.IsBattleDeathDeckSummonCandidate));
     }
 
-    private static List<BaseMonsterCard> CollectCandidates(Player player, Func<BaseMonsterCard, bool> isCandidate)
+    private static List<CardModel> BuildDeckCandidates(Player player, Func<BaseMonsterCard, bool> isCandidate)
     {
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         if (draw == null)
             return [];
 
-        return draw.Cards.OfType<BaseMonsterCard>().Where(isCandidate).ToList();
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards)
+            .OfType<BaseMonsterCard>()
+            .Where(isCandidate)
+            .Cast<CardModel>()
+            .ToList();
     }
 
     private static async Task RunAsync(
@@ -61,29 +65,11 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        List<BaseMonsterCard> candidates = CollectCandidates(player, isCandidate);
-        if (candidates.Count == 0)
-            return;
-
-        var ctx = new BlockingPlayerChoiceContext();
-
-        var activatePrefs = new CardSelectorPrefs(activatePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true
-        };
-
-        IEnumerable<CardModel> activationPick = await CardSelectCmd.FromSimpleGrid(
-            ctx,
-            new[] { source },
+        PlayerChoiceContext? ctx = await YgoGraveyardTriggeredActivation.TryConfirmSourceAsync(
             player,
-            activatePrefs);
-
-        if (activationPick.FirstOrDefault() != source)
-            return;
-
-        candidates = CollectCandidates(player, isCandidate);
-        if (candidates.Count == 0)
+            source,
+            activatePrompt);
+        if (ctx == null)
             return;
 
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
@@ -95,8 +81,15 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
             Cancelable = true
         };
 
-        IEnumerable<CardModel> summonPick = await CardSelectCmd.FromSimpleGrid(ctx, candidates, player, summonPrefs);
-        if (summonPick.FirstOrDefault() is not BaseMonsterCard chosen)
+        List<BaseMonsterCard> BuildTypedDeckCandidates() =>
+            BuildDeckCandidates(player, isCandidate).OfType<BaseMonsterCard>().ToList();
+
+        BaseMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            ctx,
+            player,
+            summonPrefs,
+            BuildTypedDeckCandidates);
+        if (chosen == null)
             return;
 
         await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, ctx);

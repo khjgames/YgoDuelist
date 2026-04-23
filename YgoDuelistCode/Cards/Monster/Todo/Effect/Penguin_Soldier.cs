@@ -70,29 +70,20 @@ public sealed class Penguin_Soldier : EffectMonsterCard, IMonsterFlipEffect
             return;
         }
 
-        List<NormalMonsterCard> candidates = BuildOtherControlledFieldMonsters(Owner, self);
+        List<NormalMonsterCard> candidates = BuildBounceTargets(Owner, self);
         if (candidates.Count == 0)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates.Cast<CardModel>().ToList(),
-                Owner,
-                new CardSelectorPrefs(FlipPromptMulti, 0, 2)
-                {
-                    RequireManualConfirmation = true,
-                    Cancelable = true
-                });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        List<NormalMonsterCard> ordered = pick.OfType<NormalMonsterCard>().Distinct().ToList();
+        List<NormalMonsterCard> ordered = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(FlipPromptMulti, 0, 2)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true
+            },
+            () => BuildBounceTargets(Owner, self),
+            maxResults: 2);
         foreach (NormalMonsterCard target in ordered)
         {
             await YgoFlipReturnOwnFieldMonsterToHand.TryReturnToHandAsync(Owner, target);
@@ -106,14 +97,14 @@ public sealed class Penguin_Soldier : EffectMonsterCard, IMonsterFlipEffect
 
     protected override void OnUpgrade() => DynamicVars.Energy.UpgradeValueBy(1m);
 
-    private static List<NormalMonsterCard> BuildOtherControlledFieldMonsters(Player owner, AbstractMonsterCard flipper)
+    private static List<NormalMonsterCard> BuildBounceTargets(Player owner, AbstractMonsterCard flipper)
     {
         var list = new List<NormalMonsterCard>();
-        foreach (Creature p in owner.PlayerCombatState!.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(owner.PlayerCombatState))
         {
             if (!p.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(p) is not NormalMonsterCard nm)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<NormalMonsterCard>(p) is not NormalMonsterCard nm)
                 continue;
             if (ReferenceEquals(nm, flipper))
                 continue;

@@ -63,7 +63,7 @@ public sealed class Bazoo_the_Soul_Eater : EffectMonsterCard, IMonsterActivatedE
     public string ActivatedEffectDescriptionLocKey => "YGODUELIST-BAZOO_THE_SOUL_EATER.activated_effect.description";
 
     public bool IsActivatedEffectAvailable =>
-        Owner != null && CountBanishableMonstersInGraveyard(Owner) >= 1;
+        Owner != null && BuildBanishCandidates(Owner).Count >= 1;
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -71,25 +71,16 @@ public sealed class Bazoo_the_Soul_Eater : EffectMonsterCard, IMonsterActivatedE
             return;
 
         Player player = Owner;
-        List<BaseMonsterCard> pool = GraveyardRelic
-            .GetGraveyardCards(player)
-            .OfType<BaseMonsterCard>()
-            .ToList();
-        if (pool.Count == 0)
+        if (BuildBanishCandidates(player).Count == 0)
             return;
 
         var prefs = new CardSelectorPrefs(BanishPrompt, 1, 3) { Cancelable = true };
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(choiceContext, pool, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        List<BaseMonsterCard> banished = pick.OfType<BaseMonsterCard>().Distinct().Take(3).ToList();
+        List<BaseMonsterCard> banished = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            player,
+            prefs,
+            () => BuildBanishCandidates(player),
+            maxResults: 3);
         if (banished.Count == 0)
             return;
 
@@ -116,6 +107,8 @@ public sealed class Bazoo_the_Soul_Eater : EffectMonsterCard, IMonsterActivatedE
         DynamicVars["Mgc"].BaseValue = 2m;
     }
 
-    private static int CountBanishableMonstersInGraveyard(Player player) =>
-        GraveyardRelic.GetGraveyardCards(player).OfType<BaseMonsterCard>().Count();
+    private static List<BaseMonsterCard> BuildBanishCandidates(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseMonsterCard>()
+        .ToList();
 }

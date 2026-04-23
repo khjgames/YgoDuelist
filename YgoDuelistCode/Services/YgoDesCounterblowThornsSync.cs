@@ -21,7 +21,7 @@ public static class YgoDesCounterblowThornsSync
         if (player.Creature == null)
             return;
 
-        int activeCopies = SpellTrapZonePile.CustomType.GetPile(player)?
+        int activeCopies = YgoPlayerPiles.SpellTrapZone(player)?
             .Cards.OfType<Des_Counterblow>()
             .Count(c => !c.FaceDown) ?? 0;
         decimal desired = activeCopies * ThornsPerCopy;

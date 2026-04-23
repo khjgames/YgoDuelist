@@ -20,32 +20,37 @@ public static class YgoFieldToGraveyardDeckSearch
         if (source is not IFieldToGraveyardDeckSearchEffect fx)
             return;
 
-        CardPile? draw = PileType.Draw.GetPile(player);
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (draw == null || hand == null)
             return;
 
-        int cap = fx.FieldToGraveyardSearchMaxPrintedAtk;
-        List<BaseMonsterCard> candidates = draw.Cards
-            .OfType<BaseMonsterCard>()
-            .Where(m => m.BaseAtk <= cap)
-            .ToList();
-        if (candidates.Count == 0)
-            return;
-
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoChoiceContexts.Blocking();
         var prefs = new CardSelectorPrefs(fx.FieldToGraveyardSearchPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true
         };
 
-        IEnumerable<CardModel> pick = await CardSelectCmd.FromSimpleGrid(ctx, candidates, player, prefs);
-        if (pick.FirstOrDefault() is not BaseMonsterCard chosen)
+        List<BaseMonsterCard> BuildCurrentSearchTargets() =>
+            BuildSearchTargets(draw, fx.FieldToGraveyardSearchMaxPrintedAtk);
+
+        BaseMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            ctx,
+            player,
+            prefs,
+            BuildCurrentSearchTargets);
+        if (chosen == null)
             return;
 
         await CardPileCmd.Add(new CardModel[] { chosen }, hand, CardPilePosition.Top, chosen, false);
         if (fx.FieldToGraveyardSearchApplyNameLock)
             YgoSanganNameLock.Set(player, chosen.Id.Entry);
     }
+
+    private static List<BaseMonsterCard> BuildSearchTargets(CardPile draw, int maxPrintedAtk) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(draw.Cards)
+        .OfType<BaseMonsterCard>()
+        .Where(m => m.BaseAtk <= maxPrintedAtk)
+        .ToList();
 }

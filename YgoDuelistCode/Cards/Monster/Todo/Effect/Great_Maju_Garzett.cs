@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -57,15 +58,14 @@ public sealed class Great_Maju_Garzett : EffectMonsterCard
                     return;
                 }
 
-                int tributePrintedAtk = pending.Pets.Count > 0
-                    ? GetTributePrintedAtk(pending.Pets[0])
-                    : 0;
+                List<Creature> orderedTributes = YgoMpCombatOrder.CreatureListOrderedByCombatId(pending.Pets);
+                int tributePrintedAtk = orderedTributes.Count > 0 ? GetTributePrintedAtk(orderedTributes[0]) : 0;
                 int doubled = Math.Clamp(tributePrintedAtk * 2, 0, 9999) + PermanentAtkBonusFromExecutes;
                 if (doubled > 9999)
                     doubled = 9999;
                 DynamicVars.Damage.BaseValue = doubled;
 
-                foreach (Creature pet in pending.Pets)
+                foreach (Creature pet in orderedTributes)
                     await CreatureCmd.Kill(pet, force: true);
 
                 int hpLoss = pending.MausoleumHpLossTotal;
@@ -90,7 +90,7 @@ public sealed class Great_Maju_Garzett : EffectMonsterCard
 
     private static int GetTributePrintedAtk(Creature pet)
     {
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard src)
+        if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard src)
             return 0;
         if (src.DynamicVars?.Damage != null)
             return (int)src.DynamicVars.Damage.BaseValue;

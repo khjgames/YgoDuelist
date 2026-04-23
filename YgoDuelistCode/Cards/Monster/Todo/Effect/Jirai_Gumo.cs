@@ -75,8 +75,12 @@ public sealed class Jirai_Gumo : EffectMonsterCard
         if (playerCreature.CombatState is not CombatState cs)
             return;
 
-        Creature? pet = player.PlayerCombatState?.Pets
-            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == source);
+        if (player.PlayerCombatState == null)
+            return;
+
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => DuelMonsterFieldRegistry.HasSourceCard(p, source));
         if (pet == null)
             return;
 
@@ -99,12 +103,7 @@ public sealed class Jirai_Gumo : EffectMonsterCard
 
         CardModel resultCard = YgoDeterministicRngResultDisplay.CreateCoinFlipResultCard(cs, player, flipIsHeads);
         var coinPrompt = new LocString("cards", "YGODUELIST-JIRAI_GUMO.coin_result.selection");
-        var coinPrefs = new CardSelectorPrefs(coinPrompt, 0, 0)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = false
-        };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, new List<CardModel> { resultCard }, player, coinPrefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, new List<CardModel> { resultCard }, player, coinPrompt);
 
         if (calledHeads == flipIsHeads)
             return;

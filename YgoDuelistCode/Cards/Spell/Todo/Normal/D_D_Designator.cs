@@ -39,7 +39,7 @@ public sealed class D_D_Designator : BaseSpellCard
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && PileType.Hand.GetPile(Owner)?.Cards.Any(c => !ReferenceEquals(c, this)) == true;
+        && YgoPlayerPiles.HasOtherHandCard(Owner, this);
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -58,26 +58,15 @@ public sealed class D_D_Designator : BaseSpellCard
 
     private async Task<CardModel?> ChooseOtherHandCard(PlayerChoiceContext choiceContext)
     {
-        var hand = PileType.Hand.GetPile(Owner!);
-        if (hand == null)
-            return null;
-
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner!, null, this);
-
-        var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = false
-        };
-
-        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
+        return await YgoHandCardSelection.TryChooseSingleHandCardAsync<CardModel>(
             choiceContext,
-            candidates,
             Owner!,
-            prefs,
-            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner!, null, this),
-            PlayerChoiceOptions.CancelPlayCardActions);
-
-        return selected.FirstOrDefault();
+            new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = false
+            },
+            excludeReference: this,
+            choiceBegunOptions: PlayerChoiceOptions.CancelPlayCardActions);
     }
 }

@@ -42,7 +42,7 @@ public static class FortifiedBeastsDuelMonsterHp
         if (delta > 0)
             await CreatureCmd.GainMaxHp(pet, delta);
         else if (delta < 0)
-            await CreatureCmd.LoseMaxHp(new BlockingPlayerChoiceContext(), pet, -delta, isFromCard: false);
+            await CreatureCmd.LoseMaxHp(YgoChoiceContexts.Blocking(), pet, -delta, isFromCard: false);
     }
 
     /// <summary>Recompute max/current for every living duel monster the player controls (e.g. after playing Fortified Beasts).</summary>
@@ -51,11 +51,11 @@ public static class FortifiedBeastsDuelMonsterHp
         if (player?.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (pet == null || !pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard src)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard src)
                 continue;
             await SyncPetFromCardAsync(pet, src, player);
         }

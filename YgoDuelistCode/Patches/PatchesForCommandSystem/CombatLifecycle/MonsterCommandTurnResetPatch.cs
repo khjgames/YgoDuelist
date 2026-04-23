@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -22,11 +23,16 @@ public static class MonsterCommandTurnResetPatch
 {
     /// <summary>
     /// Per-turn YGO cleanup for the player whose turn started. Stiff/Fatigue removal must also be reconciled at the
-    /// "After player turn start" checksum — see <see cref="YgoMonsterCommandChecksumReconcile"/> (async void here cannot
-    /// complete before that snapshot; blocking with GetResult() can deadlock PowerCmd on the main thread).
+    /// "After player turn start" checksum — see <see cref="YgoMonsterCommandChecksumReconcile"/>. Fire-and-forget async
+    /// work may still be in flight at snapshot time; blocking with GetResult() can deadlock PowerCmd on the main thread.
     /// </summary>
     [HarmonyPostfix]
-    public static async void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, Player player)
+    public static void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, Player player)
+    {
+        _ = TaskHelper.RunSafely(PostfixAsync(combatState, choiceContext, player));
+    }
+
+    private static async Task PostfixAsync(CombatState combatState, PlayerChoiceContext choiceContext, Player player)
     {
         if (combatState == null || combatState.CurrentSide != CombatSide.Player)
             return;
@@ -35,12 +41,11 @@ public static class MonsterCommandTurnResetPatch
         if (combatPlayer.PlayerCombatState == null)
             return;
 
-        // Snapshot: SetHasUsedCommandThisTurn / registry hooks can add or remove pets while we run;
-        // iterating Pets directly uses the underlying List enumerator and throws InvalidOperationException.
-        List<Creature> petsAtTurnStart = combatPlayer.PlayerCombatState.Pets.ToList();
+        // Snapshot (ordered by CombatId for MP): hooks can mutate the live pet list during iteration.
+        List<Creature> petsAtTurnStart = YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(combatPlayer.PlayerCombatState);
         foreach (Creature pet in petsAtTurnStart)
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard bm)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard bm)
                 bm.FlippedThisTurn = false;
             if (!MonsterCommandRegistry.TryGet(pet, out MonsterCommandState state))
                 continue;
@@ -73,8 +78,6 @@ public static class MonsterCommandTurnResetPatch
         await ResolveTurnStartFieldMonsterAtkGrowthAsync(combatPlayer);
 
         YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRefreshAfterTurnStartIfZoneViewActive(combatPlayer);
-
-        await Task.CompletedTask;
     }
 
     private static async Task ResolveTurnStartFieldMonsterAtkGrowthAsync(Player player)
@@ -82,12 +85,12 @@ public static class MonsterCommandTurnResetPatch
         if (player.PlayerCombatState == null)
             return;
 
-        List<Creature> petsSnapshot = player.PlayerCombatState.Pets.ToList();
+        List<Creature> petsSnapshot = YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState);
         foreach (Creature pet in petsSnapshot)
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not IYgoTurnStartAtkGrowthFromFieldMonsterAfterCommandReset hook)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<IYgoTurnStartAtkGrowthFromFieldMonsterAfterCommandReset>(pet) is not IYgoTurnStartAtkGrowthFromFieldMonsterAfterCommandReset hook)
                 continue;
 
             await hook.ApplyTurnStartAtkGrowthAsync(player, pet);

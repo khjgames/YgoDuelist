@@ -58,7 +58,7 @@ public sealed class Secret_Barrel : BaseTrapCard
             return;
 
 
-        var handPile = PileType.Hand.GetPile(Owner);
+        var handPile = YgoPlayerPiles.Hand(Owner);
         int hits = handPile?.Cards?.Count ?? 0;
         if (hits <= 0)
             return;

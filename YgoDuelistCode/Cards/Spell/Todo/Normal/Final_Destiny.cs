@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -7,6 +6,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -43,7 +43,7 @@ public sealed class Final_Destiny : BaseSpellCard
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && PileType.Hand.GetPile(Owner) is { } hand
+        && YgoPlayerPiles.Hand(Owner) is { } hand
         && hand.Cards.Count >= HandCardsToDestroy + (Pile?.Type == PileType.Hand ? 1 : 0);
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -51,28 +51,26 @@ public sealed class Final_Destiny : BaseSpellCard
         if (Owner?.Creature?.CombatState is not CombatState cs)
             return;
 
-        // MP: combat-card wire (same as CardSelectCmd.FromHand); Index fallback uses rebuild when synchronizer delivers Index.
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this);
-        var picked = (await TributeSummonGridSelect.FromSimpleGridCombat(
+        List<CardModel> picked = (await YgoOrderedCardSelection.TryChooseManyAsync(
             choiceContext,
-            candidates,
             Owner,
             new CardSelectorPrefs(HandDestroySelectionPrompt, HandCardsToDestroy, HandCardsToDestroy)
             {
                 RequireManualConfirmation = true,
                 Cancelable = true
             },
-            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this),
-            PlayerChoiceOptions.CancelPlayCardActions)).ToList();
+            () => BuildHandDestroyCandidates(Owner, this),
+            HandCardsToDestroy,
+            PlayerChoiceOptions.CancelPlayCardActions)).Cast<CardModel>().ToList();
 
         if (picked.Count < HandCardsToDestroy)
             return;
 
-        CardPile? gy = GraveyardPile.CustomType.GetPile(Owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(Owner);
         if (gy == null)
             return;
 
-        foreach (CardModel c in picked)
+        foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(picked))
         {
             await CardPileCmd.Add(
                 new[] { c },
@@ -83,9 +81,12 @@ public sealed class Final_Destiny : BaseSpellCard
         }
 
         decimal blight = DynamicVars["Mgc"].BaseValue;
-        foreach (Creature enemy in cs.HittableEnemies.Where(e => e.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             await PowerCmd.Apply<BlightPower>(enemy, blight, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(12m);
+
+    private static List<CardModel> BuildHandDestroyCandidates(Player player, CardModel sourceCard) =>
+        TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, sourceCard);
 }

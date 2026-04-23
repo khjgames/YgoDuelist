@@ -40,7 +40,7 @@ public sealed class Card_Destruction : BaseSpellCard
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        IEnumerable<CardModel> cards = PileType.Hand.GetPile(base.Owner).Cards;
+        IEnumerable<CardModel> cards = YgoPlayerPiles.Hand(base.Owner)?.Cards ?? [];
         int cardsToDraw = cards.Count() + (int)DynamicVars["Mgc"].BaseValue;
         await PlayerCardCmd.DestroyAllAndDraw(choiceContext, cards, cardsToDraw);
     }

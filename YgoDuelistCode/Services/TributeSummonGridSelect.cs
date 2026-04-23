@@ -67,7 +67,7 @@ public static class TributeSummonGridSelect
         Func<CardModel, bool>? predicate,
         CardModel? excludeReference = null)
     {
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return new List<CardModel>();
 
@@ -236,6 +236,19 @@ public static class TributeSummonGridSelect
             return cards.ToList();
 
         uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
+        NetGameType net = RunManager.Instance.NetService.Type;
+        bool mpObserver = !ShouldSelectLocalCard(player) && (net == NetGameType.Host || net == NetGameType.Client);
+        if (mpObserver)
+        {
+            GridCombatMpExpectation.Pending.Value = new GridCombatMpExpectation.Active
+            {
+                OwnerNetId = player.NetId,
+                MinSelect = prefs.MinSelect,
+                MaxSelect = prefs.MaxSelect,
+                CandidateRowCount = cards.Count
+            };
+        }
+
         await context.SignalPlayerChoiceBegun(choiceBegunOptions);
         try
         {
@@ -298,7 +311,15 @@ public static class TributeSummonGridSelect
         }
         finally
         {
-            await context.SignalPlayerChoiceEnded();
+            try
+            {
+                await context.SignalPlayerChoiceEnded();
+            }
+            finally
+            {
+                if (mpObserver)
+                    GridCombatMpExpectation.Pending.Value = null;
+            }
         }
     }
 

@@ -107,38 +107,22 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
             if (Pile?.Type == PileType.Hand && !YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
                 return false;
 
-            return DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Count > 0;
+            return BuildFieldCandidates(Owner).Count > 0;
         }
     }
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        List<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(player).ToList();
+        List<BaseMonsterCard> field = BuildFieldCandidates(player);
         if (field.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                field,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var chosen = selected.FirstOrDefault() as BaseMonsterCard;
-        if (chosen == null)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<BaseMonsterCard>(
+            player,
+            sourceCard,
+            field.Cast<CardModel>().ToList(),
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildFieldCandidates(player).Cast<CardModel>().ToList());
     }
 
     protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -158,7 +142,7 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
             return Task.CompletedTask;
         }
 
-        if (!DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Contains(chosen))
+        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(Owner, chosen))
         {
             _fizzleToGraveyard = true;
             return Task.CompletedTask;
@@ -193,4 +177,7 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
         EnergyCost.UpgradeBy(-1);
         DynamicVars["Mgc"].UpgradeValueBy(15m);
     }
+
+    private static List<BaseMonsterCard> BuildFieldCandidates(Player player) =>
+        DuelMonsterFieldRegistry.OrderedFieldMonsters(player).ToList();
 }

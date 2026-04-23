@@ -48,9 +48,7 @@ public sealed class Secret_Pass_to_the_Treasures : BaseSpellCard, IYgoPlayCardAc
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner)
-            .OfType<BaseMonsterCard>()
-            .Any(m => m.CalcDuelMonsterStats(DuelMonsterFieldRegistry.GetFieldMonsters(Owner)).Atk <= AtkThresholdForSelection);
+        && BuildTargetCandidates(Owner, AtkThresholdForSelection).Count > 0;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -60,9 +58,9 @@ public sealed class Secret_Pass_to_the_Treasures : BaseSpellCard, IYgoPlayCardAc
         if (!SecretPassPlayPayload.TryTakePending(this, out BaseMonsterCard? targetMonster) || targetMonster == null)
             return;
 
-        Creature? pet = Owner.PlayerCombatState.Pets.FirstOrDefault(p =>
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(Owner.PlayerCombatState, p =>
             p.IsAlive
-            && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), targetMonster));
+            && DuelMonsterFieldRegistry.HasSourceCard(p, targetMonster));
 
         if (pet == null)
             return;
@@ -90,13 +88,7 @@ public sealed class Secret_Pass_to_the_Treasures : BaseSpellCard, IYgoPlayCardAc
     {
         var spell = (Secret_Pass_to_the_Treasures)self;
         decimal maxAtk = spell.AtkThresholdForSelection;
-        var field = DuelMonsterFieldRegistry.GetFieldMonsters(player).OfType<BaseMonsterCard>().ToList();
-        var candidates = field
-            .Where(m => m.CalcDuelMonsterStats(field).Atk <= maxAtk)
-            .ToList();
-
-        if (candidates.Count == 0)
-            return false;
+        List<BaseMonsterCard> BuildCandidates() => BuildTargetCandidates(player, maxAtk);
 
         var prefs = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 1, 1)
         {
@@ -104,8 +96,11 @@ public sealed class Secret_Pass_to_the_Treasures : BaseSpellCard, IYgoPlayCardAc
             Cancelable = true
         };
 
-        var pick = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        var selected = pick.OfType<BaseMonsterCard>().FirstOrDefault();
+        BaseMonsterCard? selected = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            prefs,
+            BuildCandidates);
         if (selected == null)
             return false;
 
@@ -115,4 +110,12 @@ public sealed class Secret_Pass_to_the_Treasures : BaseSpellCard, IYgoPlayCardAc
 
     void IYgoPlayCardActionPreSpendResourceFlow.ClearPreSpendPlayState(CardModel self) =>
         SecretPassPlayPayload.ClearForCard(self);
+
+    private static List<BaseMonsterCard> BuildTargetCandidates(Player player, decimal maxAtk)
+    {
+        List<BaseMonsterCard> field = DuelMonsterFieldRegistry.OrderedFieldMonsters(player).ToList();
+        return field
+            .Where(m => m.CalcDuelMonsterStats(field).Atk <= maxAtk)
+            .ToList();
+    }
 }

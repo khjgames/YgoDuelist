@@ -97,7 +97,7 @@ public static class PlayCardFromOptionPilePatch
 
             if (cardPlayed != null)
             {
-                var postPlayOptionPile = YgoCardOptionPile.CustomType.GetPile(player);
+                var postPlayOptionPile = YgoPlayerPiles.OptionPile(player);
                 bool cardStillInOptionPile = postPlayOptionPile != null && postPlayOptionPile.Cards.Contains(cardPlayed);
                 if (IsLifecycleDebugCard(cardPlayed))
                     GD.Print("[YgoLifecycle] PlayCardFromOptionPile P2_PostPlayPileCheck cardInOptionPile=", cardStillInOptionPile);
@@ -136,7 +136,7 @@ public static class PlayCardFromOptionPilePatch
     /// </summary>
     private static CardModel? TryResolveCanonicalOptionPileCard(Player player, CardModel card)
     {
-        CardPile? optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        CardPile? optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null)
             return null;
 
@@ -147,12 +147,12 @@ public static class PlayCardFromOptionPilePatch
         YgoNetCombatCardPileGate.EnsureMutableCombatCardsHaveNetIds(optionPile.Cards);
 
         uint id = NetCombatCardDb.Instance.GetCardId(card);
-        return optionPile.Cards.FirstOrDefault(c => NetCombatCardDb.Instance.GetCardId(c) == id);
+        return YgoMpCombatOrder.FirstCardWithNetId(optionPile.Cards, id);
     }
 
     private static bool IsOptionPilePlay(Player player, CardModel card)
     {
-        CardPile? optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        CardPile? optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null)
             return false;
 
@@ -213,7 +213,7 @@ public static class PlayCardFromOptionPilePatch
             if (card is MonsterCommandCard mccPlay)
                 mccPlay.TryResolveSourceMonsterFromStoredPetId();
 
-            var optionPile = YgoCardOptionPile.CustomType.GetPile(action.Player);
+            var optionPile = YgoPlayerPiles.OptionPile(action.Player);
             if (optionPile == null || !optionPile.Cards.Contains(card))
             {
                 GD.PrintErr(

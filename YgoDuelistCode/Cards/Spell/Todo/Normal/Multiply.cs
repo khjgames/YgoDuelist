@@ -39,31 +39,20 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).OfType<Kuriboh>().Any();
+        && BuildKuribohCandidates(Owner).Count > 0;
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        List<Kuriboh> field = DuelMonsterFieldRegistry.GetFieldMonsters(player).OfType<Kuriboh>().ToList();
+        List<Kuriboh> field = BuildKuribohCandidates(player);
         if (field.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), field, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var chosen = selected.FirstOrDefault() as Kuriboh;
-        if (chosen == null)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<Kuriboh>(
+            player,
+            sourceCard,
+            field.Cast<CardModel>().ToList(),
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildKuribohCandidates(player).Cast<CardModel>().ToList());
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -74,7 +63,7 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not Kuriboh kuriboh)
             return;
 
-        if (!DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Contains(kuriboh))
+        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(Owner, kuriboh))
             return;
 
         Creature? tributePet = TributeSummonSelection.ResolvePetForFieldCard(Owner, kuriboh);
@@ -82,7 +71,7 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
             return;
 
         await CreatureCmd.Kill(tributePet, force: true);
-        CardPile? grave = GraveyardPile.CustomType.GetPile(Owner);
+        CardPile? grave = YgoPlayerPiles.Graveyard(Owner);
         if (grave != null)
             await CardPileCmd.Add(new[] { kuriboh }, grave, CardPilePosition.Top, kuriboh, false);
 
@@ -92,4 +81,7 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
+    private static List<Kuriboh> BuildKuribohCandidates(Player player) =>
+        DuelMonsterFieldRegistry.OrderedFieldMonstersOfType<Kuriboh>(player).ToList();
 }

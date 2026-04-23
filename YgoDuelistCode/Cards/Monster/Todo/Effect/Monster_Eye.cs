@@ -63,7 +63,7 @@ public sealed class Monster_Eye : EffectMonsterCard, IMonsterActivatedEffect
 
     public bool IsActivatedEffectAvailable =>
         Owner != null
-        && GraveyardRelic.GetGraveyardCards(Owner).OfType<Polymerization>().Any();
+        && YgoPlayerPiles.GraveyardCards(Owner).OfType<Polymerization>().Any();
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -72,15 +72,14 @@ public sealed class Monster_Eye : EffectMonsterCard, IMonsterActivatedEffect
         if (player?.Creature == null || pet == null)
             return;
 
-        Polymerization? poly = GraveyardRelic
-            .GetGraveyardCards(player)
-            .OfType<Polymerization>()
-            .FirstOrDefault();
+        Polymerization? poly = YgoMpCombatOrder.FirstCardWhereStable(
+            YgoPlayerPiles.GraveyardCards(player),
+            c => c is Polymerization) as Polymerization;
         if (poly == null)
             return;
 
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (gy == null || hand == null || !gy.Cards.Contains(poly))
             return;
 

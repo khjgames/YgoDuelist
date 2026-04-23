@@ -33,7 +33,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
             return 0;
 
         int n = 0;
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (pet.Monster is DuelMonsterModel && pet.IsAlive)
                 n++;
@@ -75,7 +75,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
         if (player.PlayerCombatState != null)
         {
-            foreach (Creature pet in player.PlayerCombatState.Pets)
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
             {
                 if (pet?.CombatState != null)
                     return pet.CombatState;
@@ -183,7 +183,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         if (player.PlayerCombatState == null)
             return;
 
-        CardPile targetPile = MonsterPile.CustomType.GetPile(player);
+        CardPile targetPile = YgoPlayerPiles.MonsterZone(player);
         if (targetPile == null)
             return;
 

@@ -40,6 +40,6 @@ public sealed class Iron_Blacksmith_Kotetsu : EffectMonsterCard
 
     /// <summary>Upgrade: −1 energy to play in attack stance and in defense stance (summon / Command Attack / Command Defend).</summary>
     public override int GetDuelMonsterPlayEnergyDiscount() =>
-        (IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None ? 1 : 0) + GetCostDownHandPlayEnergyDiscount();
+        (IsUpgradedOrPreviewActive ? 1 : 0) + GetCostDownHandPlayEnergyDiscount();
 
 }

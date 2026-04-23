@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -40,7 +41,7 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype);
+        && DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype);
 
     protected override Type[] PreviewReferencedCardTypes => new[] { typeof(Blue_Eyes_White_Dragon) };
 
@@ -53,16 +54,16 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
         if (targetCreature == null || !targetCreature.IsAlive)
             return;
 
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(targetCreature) is not BaseMonsterCard sourceMonster
+        if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(targetCreature) is not BaseMonsterCard sourceMonster
             || !YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype(sourceMonster))
             return;
 
-        var fieldCards = DuelMonsterFieldRegistry.GetFieldMonsters(Owner).ToList();
+        var fieldCards = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         decimal dmg = sourceMonster.CalcDuelMonsterStats(fieldCards).Atk;
         if (IsUpgraded)
             dmg *= 1.5m;
 
-        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive).ToList())
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
             await CreatureCmd.Damage(choiceContext, enemy, dmg, ValueProp.Unpowered, Owner.Creature, this);
     }
 
@@ -71,9 +72,9 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
         if (player.PlayerCombatState == null)
             return null;
 
-        List<Creature> blueEyesPets = player.PlayerCombatState.Pets
+        List<Creature> blueEyesPets = YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState)
             .Where(p => p.IsAlive
-                && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard bm
+                && DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(p) is BaseMonsterCard bm
                 && YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype(bm))
             .ToList();
 
@@ -82,21 +83,12 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
         if (blueEyesPets.Count == 1)
             return blueEyesPets[0];
 
-        List<YgoEnemyIntentProxyCard> proxies = blueEyesPets.Select(c => new YgoEnemyIntentProxyCard(c)).ToList();
-        var prefs = new CardSelectorPrefs(BlueEyesSelectionPrompt, 1, 1) { Cancelable = cancelable };
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), proxies, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return null;
-        }
-
-        YgoEnemyIntentProxyCard? pick = selected.OfType<YgoEnemyIntentProxyCard>().FirstOrDefault();
-        Creature? chosen = pick?.TargetCreature;
-        return chosen != null && chosen.IsAlive && blueEyesPets.Contains(chosen) ? chosen : null;
+        return await YgoCreatureProxySelection.TryChooseSingleCreatureAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            blueEyesPets,
+            BlueEyesSelectionPrompt,
+            cancelable);
     }
 
     public override async Task<Creature?> TryResolveSpellTrapZonePlayTargetAsync(Player player, Creature? targetFromAction, bool cancelable)
@@ -110,7 +102,7 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
     {
         if (target == null || !target.IsAlive || Owner?.Creature == null)
             return false;
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not Blue_Eyes_White_Dragon)
+        if (DuelMonsterFieldRegistry.GetSourceMonster<Blue_Eyes_White_Dragon>(target) is null)
             return false;
         return target.Side == Owner.Creature.Side;
     }

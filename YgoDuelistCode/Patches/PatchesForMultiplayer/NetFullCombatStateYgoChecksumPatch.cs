@@ -171,7 +171,7 @@ public static class NetFullCombatStateYgoChecksumPatch
         int monsters = 0;
         int traps = 0;
 
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.PlayerCombatState == null)
                 continue;
@@ -215,42 +215,42 @@ public static class NetFullCombatStateYgoChecksumPatch
 
     private static void ReconcileFaceDownOnYgoCustomPiles(Player player, ref int monsters, ref int traps)
     {
-        CardPile? opt = YgoCardOptionPile.CustomType.GetPile(player);
+        CardPile? opt = YgoPlayerPiles.OptionPile(player);
         if (opt != null)
             ReconcileFaceDownKeywordsOnPileCards(opt, ref monsters, ref traps);
-        CardPile? st = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? st = YgoPlayerPiles.SpellTrapZone(player);
         if (st != null)
             ReconcileFaceDownKeywordsOnPileCards(st, ref monsters, ref traps);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy != null)
             ReconcileFaceDownKeywordsOnPileCards(gy, ref monsters, ref traps);
-        CardPile? mon = MonsterPile.CustomType.GetPile(player);
+        CardPile? mon = YgoPlayerPiles.MonsterZone(player);
         if (mon != null)
             ReconcileFaceDownKeywordsOnPileCards(mon, ref monsters, ref traps);
-        CardPile? field = FieldPile.CustomType.GetPile(player);
+        CardPile? field = YgoPlayerPiles.Field(player);
         if (field != null)
             ReconcileFaceDownKeywordsOnPileCards(field, ref monsters, ref traps);
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
         if (extra != null)
             ReconcileFaceDownKeywordsOnPileCards(extra, ref monsters, ref traps);
-        CardPile? banished = BanishedPile.CustomType.GetPile(player);
+        CardPile? banished = YgoPlayerPiles.Banished(player);
         if (banished != null)
             ReconcileFaceDownKeywordsOnPileCards(banished, ref monsters, ref traps);
     }
 
     private static void ReconcileDuelPetDieForYouBeforeSnapshot(IRunState runState)
     {
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.PlayerCombatState == null || player.Creature == null)
                 continue;
 
-            foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
             {
                 if (pet == null || !pet.IsAlive || pet.Monster is not DuelMonsterModel)
                     continue;
 
-                if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard bm)
+                if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard bm)
                     continue;
 
                 if (bm.ReconcileDieForYouChecksumForPet(pet, player))
@@ -272,17 +272,17 @@ public static class NetFullCombatStateYgoChecksumPatch
 
     private static void ReconcileDuelPetStancePowersBeforeSnapshot(IRunState runState)
     {
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.PlayerCombatState == null || player.Creature == null)
                 continue;
 
-            foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
             {
                 if (pet == null || !pet.IsAlive || pet.Monster is not DuelMonsterModel)
                     continue;
 
-                if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not AbstractMonsterCard amc)
+                if (DuelMonsterFieldRegistry.GetSourceMonster<AbstractMonsterCard>(pet) is not AbstractMonsterCard amc)
                     continue;
 
                 DuelMonsterStancePowerSync.ApplyStanceFromSourceCardSyncForChecksum(pet, amc, player.Creature);
@@ -293,7 +293,7 @@ public static class NetFullCombatStateYgoChecksumPatch
 
     private static Player? FindPlayer(IRunState runState, ulong netId)
     {
-        foreach (Player p in runState.Players)
+        foreach (Player p in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (p.NetId == netId)
                 return p;
@@ -305,13 +305,13 @@ public static class NetFullCombatStateYgoChecksumPatch
     private static void AppendYgoCustomCombatPiles(Player player, ref NetFullCombatState.PlayerState ps)
     {
         int before = ps.piles.Count;
-        CardPile? opt = YgoCardOptionPile.CustomType.GetPile(player);
-        CardPile? st = SpellTrapZonePile.CustomType.GetPile(player);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
-        CardPile? mon = MonsterPile.CustomType.GetPile(player);
-        CardPile? field = FieldPile.CustomType.GetPile(player);
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        CardPile? banished = BanishedPile.CustomType.GetPile(player);
+        CardPile? opt = YgoPlayerPiles.OptionPile(player);
+        CardPile? st = YgoPlayerPiles.SpellTrapZone(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
+        CardPile? mon = YgoPlayerPiles.MonsterZone(player);
+        CardPile? field = YgoPlayerPiles.Field(player);
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
+        CardPile? banished = YgoPlayerPiles.Banished(player);
         TryAppendYgoOptionPileForChecksum(ref ps, opt);
         TryAppendPile(ref ps, st);
         TryAppendPile(ref ps, gy);
@@ -710,7 +710,7 @@ public static class NetFullCombatStateYgoChecksumPatch
         string tag)
     {
         bool any = false;
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.Character is not YgoChar)
                 continue;

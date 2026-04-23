@@ -31,11 +31,11 @@ public static class DuelMonsterMonsterOptionsMenu
         if (player?.PlayerCombatState == null)
             return Task.CompletedTask;
 
-        var sourceCard = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+        var sourceCard = DuelMonsterFieldRegistry.GetSourceMonster<NormalMonsterCard>(pet);
         if (sourceCard is not NormalMonsterCard monsterCard)
             return Task.CompletedTask;
 
-        CardPile optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        CardPile optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null)
             return Task.CompletedTask;
 

@@ -26,10 +26,12 @@ public static class RunStateCreateSharedMoveFusionToExtraDeckPatch
     {
         foreach (Player player in players)
         {
-            if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+            if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
                 continue;
 
-            CardPile runExtra = PlayerRunExtraDeck.GetOrCreatePile(player);
+            CardPile? runExtra = YgoPlayerRunPiles.RunExtraDeck(player);
+            if (runExtra == null)
+                continue;
             bool changed = false;
             foreach (CardModel card in player.Deck.Cards.ToList())
             {

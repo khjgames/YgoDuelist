@@ -102,7 +102,7 @@ public static class ConvulsionOfNaturePreviewUiPatch
         }
 
         // "Control the card" = you currently have Convulsion of Nature face-up in your Spell/Trap zone pile.
-        var zonePile = SpellTrapZonePile.CustomType.GetPile(me);
+        var zonePile = YgoPlayerPiles.SpellTrapZone(me);
         bool enabled = zonePile != null
             && zonePile.Cards.Any(c =>
                 c is IYgoConvulsionDrawPilePreviewSource preview && preview.IsFaceUpActiveForConvulsionDrawPreview());
@@ -126,4 +126,3 @@ public static class ConvulsionOfNaturePreviewUiPatch
         }
     }
 }
-

@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -81,14 +82,20 @@ public sealed class Des_Feral_Imp : EffectMonsterCard, IMonsterFlipEffect
             RequireManualConfirmation = true,
             Cancelable = false
         };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { self }, player, activationPrefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, new[] { self }, player, activationPrefs);
 
         int maxPick = (int)DynamicVars["Mgc"].BaseValue;
         if (maxPick <= 0)
             return;
 
-        CardPile gravePile = GraveyardPile.CustomType.GetPile(player);
-        List<CardModel> inGrave = gravePile.Cards.ToList();
+        CardPile gravePile = YgoPlayerPiles.Graveyard(player);
+        List<CardModel> BuildGraveyardTargets()
+        {
+            CardPile latestGravePile = YgoPlayerPiles.Graveyard(player);
+            return YgoMpCombatOrder.CardsSnapshotOrderedForMp(latestGravePile.Cards);
+        }
+
+        List<CardModel> inGrave = BuildGraveyardTargets();
         if (inGrave.Count == 0)
             return;
 
@@ -98,12 +105,16 @@ public sealed class Des_Feral_Imp : EffectMonsterCard, IMonsterFlipEffect
             RequireManualConfirmation = true,
             Cancelable = false
         };
-        IEnumerable<CardModel> picked = await CardSelectCmd.FromSimpleGrid(choiceContext, inGrave, player, gravePrefs);
-        List<CardModel> toShuffle = picked.ToList();
+        List<CardModel> toShuffle = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            player,
+            gravePrefs,
+            BuildGraveyardTargets,
+            maxResults: maxSelectable);
         if (toShuffle.Count == 0)
             return;
 
-        CardPile drawPile = PileType.Draw.GetPile(player);
+        CardPile drawPile = YgoPlayerPiles.Draw(player);
         foreach (CardModel card in toShuffle)
             await CardPileCmd.Add(card, drawPile, CardPilePosition.Random, card, false);
 

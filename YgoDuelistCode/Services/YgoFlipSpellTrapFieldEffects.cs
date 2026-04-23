@@ -15,9 +15,9 @@ public static class YgoFlipSpellTrapFieldEffects
 {
     public static void CollectSpellsInAllSpellTrapZones(CombatState cs, List<BaseSpellCard> into)
     {
-        foreach (Player p in cs.Players)
+        foreach (Player p in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(cs.Players))
         {
-            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(p);
+            CardPile? zone = YgoPlayerPiles.SpellTrapZone(p);
             if (zone == null)
                 continue;
             foreach (CardModel c in zone.Cards)
@@ -30,9 +30,9 @@ public static class YgoFlipSpellTrapFieldEffects
 
     public static void CollectTrapsInAllSpellTrapZones(CombatState cs, List<BaseTrapCard> into)
     {
-        foreach (Player p in cs.Players)
+        foreach (Player p in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(cs.Players))
         {
-            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(p);
+            CardPile? zone = YgoPlayerPiles.SpellTrapZone(p);
             if (zone == null)
                 continue;
             foreach (CardModel c in zone.Cards)
@@ -46,9 +46,9 @@ public static class YgoFlipSpellTrapFieldEffects
     /// <summary>Set Spell/Trap Cards (facedown in the zone).</summary>
     public static void CollectSetSpellTrapsInAllSpellTrapZones(CombatState cs, List<CardModel> into)
     {
-        foreach (Player p in cs.Players)
+        foreach (Player p in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(cs.Players))
         {
-            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(p);
+            CardPile? zone = YgoPlayerPiles.SpellTrapZone(p);
             if (zone == null)
                 continue;
             foreach (CardModel c in zone.Cards)
@@ -73,10 +73,10 @@ public static class YgoFlipSpellTrapFieldEffects
         Player? owner = spellOrTrapOnField.Owner;
         if (owner == null)
             return false;
-        CardPile? gy = GraveyardPile.CustomType.GetPile(owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(owner);
         if (gy == null)
             return false;
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(owner);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(owner);
         if (zone == null || !zone.Cards.Contains(spellOrTrapOnField))
             return false;
 
@@ -103,10 +103,10 @@ public static class YgoFlipSpellTrapFieldEffects
         Player? owner = spellOrTrapOnField.Owner;
         if (owner == null || owner != player)
             return false;
-        CardPile? hand = PileType.Hand.GetPile(owner);
+        CardPile? hand = YgoPlayerPiles.Hand(owner);
         if (hand == null)
             return false;
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(owner);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(owner);
         if (zone == null || !zone.Cards.Contains(spellOrTrapOnField))
             return false;
 
@@ -129,7 +129,7 @@ public static class YgoFlipSpellTrapFieldEffects
 
     public static void CollectOwnerSpellAndTrapCardsInZone(Player player, List<CardModel> into)
     {
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             return;
         foreach (CardModel c in zone.Cards)

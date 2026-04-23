@@ -62,7 +62,7 @@ public sealed class Ameba : EffectMonsterCard, IMonsterActivatedEffect
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
 
         await CreatureCmd.Kill(pet, force: true);
-        var grave = GraveyardPile.CustomType.GetPile(player);
+        var grave = YgoPlayerPiles.Graveyard(player);
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 

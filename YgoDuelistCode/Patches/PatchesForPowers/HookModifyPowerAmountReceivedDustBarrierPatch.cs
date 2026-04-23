@@ -36,7 +36,7 @@ public static class HookModifyPowerAmountReceivedDustBarrierPatch
         if (!target.IsPet || target.PetOwner == null)
             return;
 
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not BaseMonsterCard bm || bm.YgoCardType != YgoCardType.Monster)
+        if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(target) is not BaseMonsterCard bm || bm.YgoCardType != YgoCardType.Monster)
             return;
 
         Creature? hero = target.PetOwner.Creature;

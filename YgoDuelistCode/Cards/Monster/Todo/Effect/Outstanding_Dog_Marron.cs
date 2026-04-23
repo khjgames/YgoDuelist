@@ -1,14 +1,19 @@
 using System;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>Graveyard: shuffle into deck + draw — <see cref="YgoOutstandingDogMarronGraveyard"/>.</summary>
-public sealed class Outstanding_Dog_Marron : EffectMonsterCard
+/// <summary>Graveyard: shuffle into deck and draw through the shared graveyard hook interface.</summary>
+public sealed class Outstanding_Dog_Marron : EffectMonsterCard, IYgoOnAddedToYgoGraveyardPile
 {
     public Outstanding_Dog_Marron()
         : base(
@@ -33,5 +38,20 @@ public sealed class Outstanding_Dog_Marron : EffectMonsterCard
     {
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 2m;
+    }
+
+    public async Task OnAddedToYgoGraveyardPileAsync(Player owner, CardPile pile)
+    {
+        CardPile? draw = YgoPlayerPiles.Draw(owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(owner);
+        if (draw == null || gy == null || !gy.Cards.Contains(this))
+            return;
+
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
+        await CardPileCmd.Add(this, draw, CardPilePosition.Bottom, this, false);
+        await CardPileCmd.ShuffleIfNecessary(ctx, owner);
+
+        int draws = CurrentUpgradeLevel >= 1 ? 2 : 1;
+        await CardPileCmd.Draw(ctx, draws, owner);
     }
 }

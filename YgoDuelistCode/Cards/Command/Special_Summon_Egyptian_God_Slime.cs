@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -50,8 +49,10 @@ public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard, IYgo
             Player? p = Owner;
             if (p == null)
                 return "card.png".CardImagePath();
-            CardPile? extra = ExtraDeckPile.CustomType.GetPile(p);
-            Egyptian_God_Slime? slime = extra?.Cards.OfType<Egyptian_God_Slime>().FirstOrDefault();
+            CardPile? extra = YgoPlayerPiles.ExtraDeck(p);
+            Egyptian_God_Slime? slime = extra == null
+                ? null
+                : YgoMpCombatOrder.FirstCardWhereStable(extra.Cards, c => c is Egyptian_God_Slime) as Egyptian_God_Slime;
             if (slime != null && !string.IsNullOrEmpty(slime.PortraitPath))
                 return slime.PortraitPath;
             return "card.png".CardImagePath();
@@ -111,8 +112,10 @@ public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard, IYgo
         if (source is not BaseMonsterCard bm || !Egyptian_God_Slime.QualifiesAsSlimeTributeMaterial(bm))
             return;
 
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        Egyptian_God_Slime? slime = extra?.Cards.OfType<Egyptian_God_Slime>().FirstOrDefault();
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
+        Egyptian_God_Slime? slime = extra == null
+            ? null
+            : YgoMpCombatOrder.FirstCardWhereStable(extra.Cards, c => c is Egyptian_God_Slime) as Egyptian_God_Slime;
         if (slime == null)
             return;
 
@@ -122,7 +125,7 @@ public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard, IYgo
 
         await CreatureCmd.Kill(pet, force: true);
 
-        CardPile? grave = GraveyardPile.CustomType.GetPile(player);
+        CardPile? grave = YgoPlayerPiles.Graveyard(player);
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -34,7 +33,7 @@ public sealed class Amazoness_Archers : BaseTrapCard
         if (Owner?.Creature?.CombatState == null)
             return;
 
-        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies.Where(c => c.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
         {
             if (YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, Owner.Creature) <= 0)
                 continue;

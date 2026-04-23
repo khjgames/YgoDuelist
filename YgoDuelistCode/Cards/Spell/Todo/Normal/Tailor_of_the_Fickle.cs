@@ -44,11 +44,11 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard, IYgoPlayCardActionPreS
 
     internal static List<BaseEquipSpellCard> GetReassignableEquips(MegaCrit.Sts2.Core.Entities.Players.Player player)
     {
-        var zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        var zonePile = YgoPlayerPiles.SpellTrapZone(player);
         if (zonePile == null)
             return new List<BaseEquipSpellCard>();
 
-        return zonePile.Cards
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(zonePile.Cards)
             .OfType<BaseEquipSpellCard>()
             .Where(eq => YgoEquipSpellRegistry.GetEquippedMonster(eq) != null)
             .Where(eq => GetAlternateValidTargets(eq, player).Count > 0)
@@ -88,23 +88,18 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard, IYgoPlayCardActionPreS
         Player player,
         CardModel self)
     {
-        var equipCandidates = GetReassignableEquips(player).Cast<CardModel>().ToList();
-        if (equipCandidates.Count == 0)
-            return false;
-
         var equipPrefs = new CardSelectorPrefs(CardSelectorPrefs.UpgradeSelectionPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true
         };
 
-        var equipPick = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), equipCandidates, player, equipPrefs);
-        var selectedEquip = equipPick.FirstOrDefault() as BaseEquipSpellCard;
+        BaseEquipSpellCard? selectedEquip = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            equipPrefs,
+            () => GetReassignableEquips(player));
         if (selectedEquip == null)
-            return false;
-
-        var targetCandidates = GetAlternateValidTargets(selectedEquip, player).Cast<CardModel>().ToList();
-        if (targetCandidates.Count == 0)
             return false;
 
         var targetPrefs = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 1, 1)
@@ -113,8 +108,11 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard, IYgoPlayCardActionPreS
             Cancelable = true
         };
 
-        var targetPick = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), targetCandidates, player, targetPrefs);
-        var selectedTarget = targetPick.FirstOrDefault() as BaseMonsterCard;
+        BaseMonsterCard? selectedTarget = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            targetPrefs,
+            () => GetAlternateValidTargets(selectedEquip, player));
         if (selectedTarget == null)
             return false;
 

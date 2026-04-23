@@ -42,7 +42,7 @@ public sealed class Riryoku : BaseSpellCard, IYgoPlayCardActionPreSpendResourceF
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Count >= 2;
+        && BuildFieldCandidates(Owner).Count >= 2;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -53,15 +53,15 @@ public sealed class Riryoku : BaseSpellCard, IYgoPlayCardActionPreSpendResourceF
             || donor == null || receiver == null)
             return;
 
-        var field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner).OfType<BaseMonsterCard>().ToList();
+        var field = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         int donorAtk = (int)donor.CalcDuelMonsterStats(field).Atk;
         int newAtk = donorAtk / 2;
         int lost = donorAtk - newAtk;
 
-        Creature? donorPet = Owner.PlayerCombatState.Pets.FirstOrDefault(p =>
-            p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), donor));
-        Creature? recvPet = Owner.PlayerCombatState.Pets.FirstOrDefault(p =>
-            p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), receiver));
+        Creature? donorPet = YgoMpCombatOrder.FirstPetWhere(Owner.PlayerCombatState, p =>
+            p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, donor));
+        Creature? recvPet = YgoMpCombatOrder.FirstPetWhere(Owner.PlayerCombatState, p =>
+            p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, receiver));
 
         if (donorPet == null || recvPet == null || lost <= 0)
             return;
@@ -83,9 +83,9 @@ public sealed class Riryoku : BaseSpellCard, IYgoPlayCardActionPreSpendResourceF
         Player player,
         CardModel self)
     {
-        var candidates = DuelMonsterFieldRegistry.GetFieldMonsters(player)
-            .OfType<BaseMonsterCard>()
-            .ToList();
+        List<BaseMonsterCard> BuildCandidates() => BuildFieldCandidates(player);
+
+        var candidates = BuildCandidates();
         if (candidates.Count < 2)
             return false;
 
@@ -95,20 +95,27 @@ public sealed class Riryoku : BaseSpellCard, IYgoPlayCardActionPreSpendResourceF
             Cancelable = true
         };
 
-        var pick1 = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs1);
-        var donor = pick1.OfType<BaseMonsterCard>().FirstOrDefault();
+        BaseMonsterCard? donor = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            prefs1,
+            BuildCandidates);
         if (donor == null)
             return false;
 
-        var secondList = candidates.Where(c => !ReferenceEquals(c, donor)).ToList();
+        List<BaseMonsterCard> BuildReceiversForSelectedDonor() => BuildReceiverCandidates(player, donor);
+
         var prefs2 = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true
         };
 
-        var pick2 = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), secondList, player, prefs2);
-        var receiver = pick2.OfType<BaseMonsterCard>().FirstOrDefault();
+        BaseMonsterCard? receiver = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            prefs2,
+            BuildReceiversForSelectedDonor);
         if (receiver == null)
             return false;
 
@@ -118,4 +125,10 @@ public sealed class Riryoku : BaseSpellCard, IYgoPlayCardActionPreSpendResourceF
 
     void IYgoPlayCardActionPreSpendResourceFlow.ClearPreSpendPlayState(CardModel self) =>
         RiryokuPlayPayload.ClearForCard(self);
+
+    private static List<BaseMonsterCard> BuildFieldCandidates(Player player) =>
+        DuelMonsterFieldRegistry.OrderedFieldMonsters(player).ToList();
+
+    private static List<BaseMonsterCard> BuildReceiverCandidates(Player player, BaseMonsterCard donor) =>
+        BuildFieldCandidates(player).Where(c => !ReferenceEquals(c, donor)).ToList();
 }

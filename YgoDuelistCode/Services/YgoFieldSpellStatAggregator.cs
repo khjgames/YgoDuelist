@@ -24,7 +24,7 @@ public static class YgoFieldSpellStatAggregator
         if (CombatManager.Instance?.IsInProgress != true)
             yield break;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             yield break;
 
@@ -43,7 +43,7 @@ public static class YgoFieldSpellStatAggregator
         if (CombatManager.Instance?.IsInProgress != true)
             yield break;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             yield break;
 
@@ -62,7 +62,7 @@ public static class YgoFieldSpellStatAggregator
         if (player == null)
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand != null)
         {
             foreach (CardModel c in hand.Cards)
@@ -75,7 +75,7 @@ public static class YgoFieldSpellStatAggregator
             }
         }
 
-        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             m.RefreshSummonKeywordsForMonsterLevel();
             CardModelEnergyCache.Invalidate(m);

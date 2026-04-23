@@ -16,8 +16,7 @@ public sealed class Super_Rejuvenation : BaseSpellCard
 {
     public override bool UseAlternateUpgradedDescription => true;
 
-    private bool ShowUpgradedSuperRejuvenationPowerHover =>
-        IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
+    private bool ShowUpgradedSuperRejuvenationPowerHover => IsUpgradedOrPreviewActive;
 
     public Super_Rejuvenation()
         : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)

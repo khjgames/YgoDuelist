@@ -37,11 +37,11 @@ public sealed class LimiterRemovalPower : YgoDuelistPower
         if (!player.Creature.HasPower<LimiterRemovalPower>())
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (pet == null || !pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard src
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard src
                 || src.DuelMonsterRace != DuelMonsterRace.Machine)
                 continue;
             await PowerCmd.Apply<LimitRemovedPower>(pet, 1m, player.Creature, null);
@@ -68,11 +68,11 @@ public sealed class LimiterRemovalPower : YgoDuelistPower
         if (player?.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (pet == null || !pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard src
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard src
                 || src.DuelMonsterRace != DuelMonsterRace.Machine)
                 continue;
             await CreatureCmd.Kill(pet, force: true);
@@ -87,7 +87,7 @@ public sealed class LimiterRemovalPower : YgoDuelistPower
         if (player?.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
             await PowerCmd.Remove<LimitRemovedPower>(pet);
     }
 }

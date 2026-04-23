@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -77,7 +76,7 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
     /// <summary>Shared by UI click and <see cref="GameActions.YgoMonsterMenuCommandGameAction"/> (MP).</summary>
     public static async Task ExecuteChangeBattlePositionFromPetAsync(Player player, Creature pet, Creature? enemyTarget)
     {
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not NormalMonsterCard sourceMonster)
+        if (DuelMonsterFieldRegistry.GetSourceMonster<NormalMonsterCard>(pet) is not NormalMonsterCard sourceMonster)
             return;
         if (sourceMonster is not AbstractMonsterCard monster)
             return;
@@ -103,7 +102,7 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
         // ("Use ModelDb instead"). Use the field monster card as the power source (same logical source as menu `this`).
         await MonsterCommandRegistry.ApplyStiffFromBattlePositionChangeOnly(pet, player.Creature, sourceMonster);
 
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
         if (switchedDefToAtk)
             await monster.OnSwitchedFromDefenseToAttackFromCommandAsync(ctx, player);
         else if (wasAttackPosition)
@@ -136,7 +135,8 @@ public sealed class Command_Change_Battle_Position : MonsterCommandCard
         if (player.PlayerCombatState == null)
             return null;
 
-        return player.PlayerCombatState.Pets
-            .FirstOrDefault(p => p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.GetSourceCardForPet(p) == source);
+        return YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.HasSourceCard(p, source));
     }
 }

@@ -23,6 +23,8 @@ using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Piles;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 public static class FusionSummonSelection
@@ -75,7 +77,7 @@ public static class FusionSummonSelection
     public static List<FusionMonsterCard> GetFusionTargetsInExtraDeck(Player player, IFusionSpellSource spell, CardModel spellCard)
     {
         var list = new List<FusionMonsterCard>();
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
         if (extra == null)
             return list;
 
@@ -102,7 +104,7 @@ public static class FusionSummonSelection
                 list.Add(field);
         }
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand != null)
         {
             foreach (CardModel c in hand.Cards)
@@ -201,7 +203,7 @@ public static class FusionSummonSelection
     public static async Task<bool> TrySelectFusionResolutionAsync(Player player, IFusionSpellSource spell)
     {
         var spellCard = (CardModel)(object)spell;
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoChoiceContexts.Blocking();
 
         List<FusionMonsterCard> targets = GetFeasibleFusionTargetsInExtraDeck(player, spell);
         if (targets.Count == 0)
@@ -223,24 +225,14 @@ public static class FusionSummonSelection
         if (needTargetGrid)
         {
             var targetPrefs = new CardSelectorPrefs(PickTargetPrompt, 1, 1) { Cancelable = true };
-            IEnumerable<CardModel> targetPick;
-            try
-            {
-                targetPick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                    ctx,
-                    feasibleStable,
-                    player,
-                    targetPrefs,
-                    rebuildCanonicalForRemoteApply: () =>
-                        TributeSummonGridSelect.StabilizeHandPileCandidates(
-                            GetFeasibleFusionTargetsInExtraDeck(player, spell).Cast<CardModel>()));
-            }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
-
-            FusionMonsterCard? picked = targetPick.OfType<FusionMonsterCard>().FirstOrDefault();
+            FusionMonsterCard? picked = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                ctx,
+                player,
+                targetPrefs,
+                () => TributeSummonGridSelect.StabilizeHandPileCandidates(
+                        GetFeasibleFusionTargetsInExtraDeck(player, spell).Cast<CardModel>())
+                    .OfType<FusionMonsterCard>()
+                    .ToList());
             if (picked == null || !spell.FusionTargetMonsterType.IsInstanceOfType(picked))
                 return false;
             fusionCard = picked;
@@ -251,24 +243,14 @@ public static class FusionSummonSelection
             // only one legal fusion exists. Otherwise peers that skip this ReserveChoiceId (while the caster shows a
             // multi-target grid) assign different choice ids to the material grid and apply wrong buffered results.
             var targetPrefs = new CardSelectorPrefs(PickTargetPrompt, 1, 1) { Cancelable = true };
-            IEnumerable<CardModel> targetPick;
-            try
-            {
-                targetPick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                    ctx,
-                    feasibleStable,
-                    player,
-                    targetPrefs,
-                    rebuildCanonicalForRemoteApply: () =>
-                        TributeSummonGridSelect.StabilizeHandPileCandidates(
-                            GetFeasibleFusionTargetsInExtraDeck(player, spell).Cast<CardModel>()));
-            }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
-
-            FusionMonsterCard? picked = targetPick.OfType<FusionMonsterCard>().FirstOrDefault();
+            FusionMonsterCard? picked = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                ctx,
+                player,
+                targetPrefs,
+                () => TributeSummonGridSelect.StabilizeHandPileCandidates(
+                        GetFeasibleFusionTargetsInExtraDeck(player, spell).Cast<CardModel>())
+                    .OfType<FusionMonsterCard>()
+                    .ToList());
             if (picked == null || !spell.FusionTargetMonsterType.IsInstanceOfType(picked))
                 return false;
             fusionCard = picked;
@@ -300,24 +282,15 @@ public static class FusionSummonSelection
         List<CardModel> materialsStable =
             TributeSummonGridSelect.StabilizeHandPileCandidates(materials.Cast<CardModel>());
 
-        IEnumerable<CardModel> matPick;
-        try
-        {
-            matPick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                ctx,
-                materialsStable,
-                player,
-                matPrefs,
-                rebuildCanonicalForRemoteApply: () =>
-                    TributeSummonGridSelect.StabilizeHandPileCandidates(
-                        BuildValidMaterialCandidatesForGrid(player, spell, fusionCard).Cast<CardModel>()));
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        List<BaseMonsterCard> pickedMats = matPick.OfType<BaseMonsterCard>().ToList();
+        List<BaseMonsterCard> pickedMats = await YgoOrderedCardSelection.TryChooseManyAsync(
+            ctx,
+            player,
+            matPrefs,
+            () => TributeSummonGridSelect.StabilizeHandPileCandidates(
+                    BuildValidMaterialCandidatesForGrid(player, spell, fusionCard).Cast<CardModel>())
+                .OfType<BaseMonsterCard>()
+                .ToList(),
+            slots.Count);
         if (pickedMats.Count != slots.Count)
             return false;
         if (pickedMats.Distinct().Count() != pickedMats.Count)
@@ -366,7 +339,7 @@ public static class FusionSummonSelection
                 }
                 else
                 {
-                    CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+                    CardPile? gy = YgoPlayerPiles.Graveyard(player);
                     if (gy == null)
                         return;
 

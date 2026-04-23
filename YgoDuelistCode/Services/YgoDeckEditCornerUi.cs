@@ -90,7 +90,7 @@ public static class YgoDeckEditCornerUi
             return;
         }
 
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
         {
             ClearCornerLayerRef(layerName);
             host.GetNodeOrNull<Control>(layerName)?.QueueFree();

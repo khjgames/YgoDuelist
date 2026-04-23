@@ -11,6 +11,8 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>Helpers for execute-kill hooks on <see cref="BaseMonsterCard.OnEnemyExecutedByThisAttackAsync"/>.</summary>
@@ -22,7 +24,7 @@ public static class YgoExecuteKillShared
     public static bool PlayerControlsAtLeastTwoFiendsOnField(Player player)
     {
         int fiends = 0;
-        foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard c in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (c.DuelMonsterRace == DuelMonsterRace.Fiend)
                 fiends++;
@@ -47,7 +49,7 @@ public static class YgoExecuteKillShared
             if (blight <= 0)
                 continue;
 
-            foreach (Creature enemy in cs.HittableEnemies)
+            foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
             {
                 if (!enemy.IsAlive)
                     continue;

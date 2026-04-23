@@ -41,13 +41,13 @@ public sealed class NecroticRitualPower : YgoDuelistPower
         if (pcs == null || playerCreature == null)
             return;
 
-        BaseMonsterCard? sourceCard = DuelMonsterFieldRegistry.GetSourceCardForPet(Owner) as BaseMonsterCard;
+        BaseMonsterCard? sourceCard = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(Owner);
 
-        foreach (Creature pet in pcs.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(pcs))
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard bm)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard bm)
                 continue;
             if (bm.FaceDown || bm.DuelMonsterRace != DuelMonsterRace.Zombie)
                 continue;

@@ -53,7 +53,7 @@ public sealed class The_Reliable_Guardian : BaseSpellCard, IYgoPlayCardActionPre
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Any();
+        && DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner).Any();
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -63,9 +63,9 @@ public sealed class The_Reliable_Guardian : BaseSpellCard, IYgoPlayCardActionPre
         if (!RushReliablePlayPayload.TryTakePending(this, out var targetMonster) || targetMonster == null)
             return;
 
-        Creature? targetPet = Owner.PlayerCombatState.Pets
-            .OrderBy(p => p.CombatId)
-            .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), targetMonster));
+        Creature? targetPet = YgoMpCombatOrder.FirstPetWhere(
+            Owner.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, targetMonster));
         if (targetPet == null)
             return;
 

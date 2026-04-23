@@ -21,7 +21,7 @@ public static class YgoMerchantInventoryPostfixPatch
     public static void Postfix(MerchantInventory __result)
     {
         Player player = __result.Player;
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
 
         var offer = YgoMerchantOfferGenerator.Generate(player, player.PlayerRng.Shops);

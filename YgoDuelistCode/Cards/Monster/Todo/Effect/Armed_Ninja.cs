@@ -60,30 +60,27 @@ public sealed class Armed_Ninja : EffectMonsterCard, IMonsterFlipEffect
             return;
 
         CombatState cs = Owner.Creature.CombatState;
-        var candidates = new List<BaseSpellCard>();
-        YgoFlipSpellTrapFieldEffects.CollectSpellsInAllSpellTrapZones(cs, candidates);
+        List<BaseSpellCard> BuildTargets()
+        {
+            var candidates = new List<BaseSpellCard>();
+            YgoFlipSpellTrapFieldEffects.CollectSpellsInAllSpellTrapZones(cs, candidates);
+            return candidates;
+        }
+
+        List<BaseSpellCard> candidates = BuildTargets();
         if (candidates.Count == 0)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates.Cast<CardModel>().ToList(),
-                Owner,
-                new CardSelectorPrefs(FlipTargetPrompt, 1, 1)
-                {
-                    RequireManualConfirmation = true,
-                    Cancelable = true
-                });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        if (pick.FirstOrDefault() is not BaseSpellCard victim)
+        BaseSpellCard? victim = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(FlipTargetPrompt, 1, 1)
+            {
+                RequireManualConfirmation = true,
+                Cancelable = true
+            },
+            BuildTargets);
+        if (victim == null)
             return;
 
         bool destroyed = await YgoFlipSpellTrapFieldEffects.TrySendSpellTrapOnFieldToGraveyardAsync(victim, this);

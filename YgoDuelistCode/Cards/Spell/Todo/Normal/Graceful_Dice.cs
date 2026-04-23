@@ -66,12 +66,7 @@ public sealed class Graceful_Dice : BaseSpellCard
             preview.Add(YgoDeterministicRngResultDisplay.CreateD6RollResultCard(cs, Owner, face));
         }
 
-        var prefs = new CardSelectorPrefs(RollPreviewPrompt, 0, 0)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = false
-        };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, preview, Owner, prefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, preview, Owner, RollPreviewPrompt);
 
         await PowerCmd.Apply<GracefulDicePower>(Owner.Creature, total, Owner.Creature, this);
     }

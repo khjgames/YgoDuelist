@@ -17,6 +17,8 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 public static class RitualSummonSelection
@@ -134,7 +136,7 @@ public static class RitualSummonSelection
     public static List<RitualMonsterCard> GetRitualTargetsInHand(Player player, RitualSpellCard spell)
     {
         var list = new List<RitualMonsterCard>();
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return list;
 
@@ -165,7 +167,7 @@ public static class RitualSummonSelection
                 list.Add(field);
         }
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand != null)
         {
             foreach (CardModel c in hand.Cards)
@@ -188,7 +190,7 @@ public static class RitualSummonSelection
     /// <summary>Grids only; stores <see cref="RitualSpellPlayPayload"/> for the spell's <see cref="BaseSpellCard.OnPlay"/>.</summary>
     public static async Task<bool> TrySelectRitualResolutionAsync(Player player, RitualSpellCard spell)
     {
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoChoiceContexts.Blocking();
 
         List<CardModel> ritualTargetsStable =
             TributeSummonGridSelect.StabilizeHandPileCandidates(GetRitualTargetsInHand(player, spell));
@@ -202,23 +204,13 @@ public static class RitualSummonSelection
         {
             var targetPrefs = new CardSelectorPrefs(PickTargetPrompt, 1, 1) { Cancelable = true };
 
-            IEnumerable<CardModel> targetPick;
-            try
-            {
-                targetPick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                    ctx,
-                    ritualTargetsStable,
-                    player,
-                    targetPrefs,
-                    rebuildCanonicalForRemoteApply: () =>
-                        TributeSummonGridSelect.StabilizeHandPileCandidates(GetRitualTargetsInHand(player, spell)));
-            }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
-
-            RitualMonsterCard? pickedTarget = targetPick.OfType<RitualMonsterCard>().FirstOrDefault();
+            RitualMonsterCard? pickedTarget = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                ctx,
+                player,
+                targetPrefs,
+                () => TributeSummonGridSelect.StabilizeHandPileCandidates(GetRitualTargetsInHand(player, spell))
+                    .OfType<RitualMonsterCard>()
+                    .ToList());
             if (pickedTarget == null || !spell.RitualTargetMonsterType.IsInstanceOfType(pickedTarget))
                 return false;
             if (spell.RitualTargetAttributeFilter is { } fa && pickedTarget.DuelMonsterAttribute != fa)
@@ -255,24 +247,15 @@ public static class RitualSummonSelection
 
         List<CardModel> materialsStable = TributeSummonGridSelect.StabilizeHandPileCandidates(materials);
 
-        IEnumerable<CardModel> matPick;
-        try
-        {
-            matPick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                ctx,
-                materialsStable,
-                player,
-                matPrefs,
-                rebuildCanonicalForRemoteApply: () =>
-                    TributeSummonGridSelect.StabilizeHandPileCandidates(
-                        BuildMaterialCandidates(player, spell, ritualCard)));
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        List<BaseMonsterCard> picked = matPick.OfType<BaseMonsterCard>().ToList();
+        List<BaseMonsterCard> picked = await YgoOrderedCardSelection.TryChooseManyAsync(
+            ctx,
+            player,
+            matPrefs,
+            () => TributeSummonGridSelect.StabilizeHandPileCandidates(
+                    BuildMaterialCandidates(player, spell, ritualCard))
+                .OfType<BaseMonsterCard>()
+                .ToList(),
+            maxMatPick);
         if (picked.Count == 0)
             return false;
 
@@ -318,7 +301,7 @@ public static class RitualSummonSelection
 
             if (m.Pile?.Type == PileType.Hand)
             {
-                CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+                CardPile? gy = YgoPlayerPiles.Graveyard(player);
                 if (gy == null)
                     return;
 

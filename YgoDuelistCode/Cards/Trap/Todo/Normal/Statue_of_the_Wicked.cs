@@ -39,7 +39,7 @@ public sealed class Statue_of_the_Wicked : BaseTrapCard, IYgoAfterFaceDownSetTra
             return;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
         await YgoTokenSummon.TrySpecialSummonTokenAsync<Wicked_Token>(player, ctx, defensePosition: false);
     }
 

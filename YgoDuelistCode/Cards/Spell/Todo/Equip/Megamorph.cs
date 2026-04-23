@@ -8,6 +8,8 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Equip;
 
 public sealed class Megamorph : BaseEquipSpellCard
@@ -61,7 +63,7 @@ public sealed class Megamorph : BaseEquipSpellCard
 
         int sumEnemyCurrent = 0;
         int sumEnemyMax = 0;
-        foreach (Creature enemy in cs.HittableEnemies.Where(e => e.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
         {
             sumEnemyCurrent += enemy.CurrentHp;
             sumEnemyMax += enemy.MaxHp;

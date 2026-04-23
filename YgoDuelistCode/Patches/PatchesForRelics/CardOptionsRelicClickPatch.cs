@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Relics;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -49,11 +50,7 @@ public static class CardOptionsRelicClickPatch
 
         async Task ShowOptionsAsync()
         {
-            await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                cards,
-                player,
-                prefs);
+            await YgoSimpleGridSelection.SelectAsync(player, cards, prefs);
         }
 
         return false;

@@ -42,7 +42,7 @@ public abstract class BaseYgoPowerCard : YgoDuelistCard
         if (player == null)
             return;
 
-        CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+        CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
         if (graveyard == null)
             return;
 

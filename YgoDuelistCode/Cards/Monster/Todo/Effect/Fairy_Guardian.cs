@@ -60,7 +60,7 @@ public sealed class Fairy_Guardian : EffectMonsterCard, IMonsterActivatedEffect
 
     public bool IsActivatedEffectAvailable =>
         Owner != null &&
-        GraveyardRelic.GetGraveyardCards(Owner).Any(c => c is BaseSpellCard);
+        BuildSpellTargets(Owner).Count > 0;
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -75,30 +75,22 @@ public sealed class Fairy_Guardian : EffectMonsterCard, IMonsterActivatedEffect
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
 
         await CreatureCmd.Kill(pet, force: true);
-        var grave = GraveyardPile.CustomType.GetPile(player);
+        var grave = YgoPlayerPiles.Graveyard(player);
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
-        List<BaseSpellCard> spellsInGy = GraveyardRelic
-            .GetGraveyardCards(player)
-            .OfType<BaseSpellCard>()
-            .ToList();
-
-        if (spellsInGy.Count == 0)
+        if (BuildSpellTargets(player).Count == 0)
             return;
 
-        var prefs = new CardSelectorPrefs(SpellPickPrompt, 1, 1);
-        var picked = await CardSelectCmd.FromSimpleGrid(
+        BaseSpellCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
             choiceContext,
-            spellsInGy,
             player,
-            prefs);
-
-        var chosen = picked.FirstOrDefault() as BaseSpellCard;
+            new CardSelectorPrefs(SpellPickPrompt, 1, 1),
+            () => BuildSpellTargets(player));
         if (chosen == null)
             return;
 
-        var drawPile = PileType.Draw.GetPile(player);
+        var drawPile = YgoPlayerPiles.Draw(player);
         if (drawPile == null)
             return;
 
@@ -106,4 +98,9 @@ public sealed class Fairy_Guardian : EffectMonsterCard, IMonsterActivatedEffect
     }
 
     protected override void OnUpgrade() => base.OnUpgrade();
+
+    private static List<BaseSpellCard> BuildSpellTargets(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseSpellCard>()
+        .ToList();
 }

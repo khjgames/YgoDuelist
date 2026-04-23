@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -37,7 +39,7 @@ public sealed class Dark_Magic_Attack : BaseSpellCard, IYgoNeowSignatureDarkMagi
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpDarkMagicianArchetype);
+        && DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpDarkMagicianArchetype);
 
     protected override Type[] PreviewReferencedCardTypes => new[] { typeof(Dark_Magician) };
 
@@ -49,7 +51,7 @@ public sealed class Dark_Magic_Attack : BaseSpellCard, IYgoNeowSignatureDarkMagi
         decimal weak = DynamicVars["Mgc"].BaseValue;
         decimal vuln = DynamicVars["Mgc2"].BaseValue;
 
-        foreach (var enemy in Owner.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
         {
             if (!enemy.IsAlive)
                 continue;

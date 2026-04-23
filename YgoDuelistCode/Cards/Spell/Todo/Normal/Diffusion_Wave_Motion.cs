@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -37,7 +38,7 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard, IYgoNeowSignatureDark
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Any(IsLevelSevenPlusSpellcaster);
+        && DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner).Any(IsLevelSevenPlusSpellcaster);
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -48,16 +49,16 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard, IYgoNeowSignatureDark
         if (targetCreature == null || !targetCreature.IsAlive)
             return;
 
-        BaseMonsterCard? source = DuelMonsterFieldRegistry.GetSourceCardForPet(targetCreature);
+        BaseMonsterCard? source = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(targetCreature);
         if (source == null || !IsLevelSevenPlusSpellcaster(source))
             return;
 
-        var fieldCards = DuelMonsterFieldRegistry.GetFieldMonsters(Owner).ToList();
+        var fieldCards = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         decimal dmg = source.CalcDuelMonsterStats(fieldCards).Atk;
         if (IsUpgraded)
             dmg *= 1.5m;
 
-        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive).ToList())
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
             await CreatureCmd.Damage(choiceContext, enemy, dmg, ValueProp.Unpowered, Owner.Creature, this);
     }
 
@@ -69,9 +70,9 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard, IYgoNeowSignatureDark
         if (player.PlayerCombatState == null)
             return null;
 
-        List<Creature> eligible = player.PlayerCombatState.Pets
+        List<Creature> eligible = YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState)
             .Where(p => p.IsAlive
-                && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard m
+                && DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(p) is BaseMonsterCard m
                 && IsLevelSevenPlusSpellcaster(m))
             .ToList();
 
@@ -80,21 +81,12 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard, IYgoNeowSignatureDark
         if (eligible.Count == 1)
             return eligible[0];
 
-        List<YgoEnemyIntentProxyCard> proxies = eligible.Select(c => new YgoEnemyIntentProxyCard(c)).ToList();
-        var prefs = new CardSelectorPrefs(SpellcasterSelectionPrompt, 1, 1) { Cancelable = cancelable };
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), proxies, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return null;
-        }
-
-        YgoEnemyIntentProxyCard? pick = selected.OfType<YgoEnemyIntentProxyCard>().FirstOrDefault();
-        Creature? chosen = pick?.TargetCreature;
-        return chosen != null && chosen.IsAlive && eligible.Contains(chosen) ? chosen : null;
+        return await YgoCreatureProxySelection.TryChooseSingleCreatureAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            eligible,
+            SpellcasterSelectionPrompt,
+            cancelable);
     }
 
     public override async Task<Creature?> TryResolveSpellTrapZonePlayTargetAsync(Player player, Creature? targetFromAction, bool cancelable)
@@ -108,7 +100,7 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard, IYgoNeowSignatureDark
     {
         if (target == null || !target.IsAlive || Owner?.Creature == null)
             return false;
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not BaseMonsterCard m
+        if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(target) is not BaseMonsterCard m
             || !IsLevelSevenPlusSpellcaster(m))
             return false;
         return target.Side == Owner.Creature.Side;

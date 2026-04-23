@@ -49,11 +49,6 @@ public sealed class Legendary_Fiend : EffectMonsterCard, IYgoTurnStartAtkGrowthF
         }
     }
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
-    }
-
     public async Task ApplyTurnStartAtkGrowthAsync(Player player, Creature pet)
     {
         LegendaryFiendAtkPower? p = pet.GetPower<LegendaryFiendAtkPower>();

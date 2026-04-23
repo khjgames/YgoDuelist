@@ -46,39 +46,30 @@ public sealed class Dark_Magician_of_Chaos : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Dark_Magician_of_Chaos), typeof(Dark_Magician) };
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            async () =>
+            {
+                BaseSpellCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                    EnsureBlockingChoiceContext(choiceContext),
+                    player,
+                    new CardSelectorPrefs(PickSpellPrompt, 1, 1) { Cancelable = true },
+                    () => BuildSpellTargets(player));
+                if (chosen == null)
+                    return;
 
-        List<BaseSpellCard> spells = GraveyardRelic
-            .GetGraveyardCards(player)
-            .OfType<BaseSpellCard>()
-            .ToList();
-        if (spells.Count == 0)
-            return;
+                CardPile? discard = YgoPlayerPiles.Discard(player);
+                if (discard == null)
+                    return;
 
-        var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                ctx,
-                spells,
-                player,
-                new CardSelectorPrefs(PickSpellPrompt, 1, 1) { Cancelable = true });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
+                await CardPileCmd.Add(new[] { chosen }, discard, CardPilePosition.Top, chosen, false);
+            });
 
-        if (pick.FirstOrDefault() is not BaseSpellCard chosen)
-            return;
-
-        CardPile? discard = PileType.Discard.GetPile(player);
-        if (discard == null)
-            return;
-
-        await CardPileCmd.Add(new[] { chosen }, discard, CardPilePosition.Top, chosen, false);
-    }
+    private static List<BaseSpellCard> BuildSpellTargets(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseSpellCard>()
+        .ToList();
 }

@@ -37,7 +37,7 @@ public static class HookModifyPowerAmountReceivedTorpedoFishUmiPatch
         if (!target.IsPet || target.PetOwner?.Creature == null)
             return;
 
-        if (DuelMonsterFieldRegistry.GetSourceCardForPet(target) is not IYgoPetDebuffPowerAmountReceivedHook hook)
+        if (DuelMonsterFieldRegistry.GetSourceMonster<IYgoPetDebuffPowerAmountReceivedHook>(target) is not IYgoPetDebuffPowerAmountReceivedHook hook)
             return;
 
         hook.TryZeroIncomingDebuffPowerAmount(ref __result, combatState, canonicalPower, target, amount, giver);

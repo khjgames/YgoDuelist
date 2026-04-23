@@ -78,7 +78,7 @@ public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
         if (Owner == null)
             return null;
 
-        var hand = PileType.Hand.GetPile(Owner);
+        var hand = YgoPlayerPiles.Hand(Owner);
         if (hand == null || hand.Cards.Count == 0)
             return null;
 
@@ -91,22 +91,11 @@ public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
             Cancelable = false
         };
 
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(
-            Owner,
-            c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
-            null);
-
-        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
+        return await YgoHandCardSelection.TryChooseSingleHandCardAsync<CardModel>(
             choiceContext,
-            candidates,
             Owner,
             prefs,
-            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(
-                Owner,
-                c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
-                null),
-            PlayerChoiceOptions.CancelPlayCardActions);
-
-        return selected.FirstOrDefault();
+            predicate: c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
+            choiceBegunOptions: PlayerChoiceOptions.CancelPlayCardActions);
     }
 }

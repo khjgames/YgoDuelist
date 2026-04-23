@@ -52,7 +52,7 @@ public sealed class Elephant_Statue_of_Disaster : EffectMonsterCard
         if (cs == null)
             return;
 
-        List<Creature> enemies = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
         if (enemies.Count == 0)
             return;
 
@@ -63,7 +63,7 @@ public sealed class Elephant_Statue_of_Disaster : EffectMonsterCard
         if (target == null || !target.IsAlive)
             return;
 
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
         await DamageCmd.Attack(20m)
             .FromCard(this)
             .Targeting(target)

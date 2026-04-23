@@ -14,7 +14,7 @@ public static class UnionFusionSpecialSummonRules
     public static bool PlayerHasFusionInExtraDeck<TFusion>(Player player)
         where TFusion : FusionMonsterCard
     {
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
         return extra != null && extra.Cards.Any(static c => c is TFusion);
     }
 
@@ -28,11 +28,11 @@ public static class UnionFusionSpecialSummonRules
             return false;
 
         var field = new List<BaseMonsterCard>();
-        foreach (var pet in player.PlayerCombatState.Pets)
+        foreach (var pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard bm)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard bm)
                 field.Add(bm);
         }
 

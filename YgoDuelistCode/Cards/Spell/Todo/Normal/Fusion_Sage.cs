@@ -11,6 +11,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
@@ -44,7 +45,7 @@ public sealed class Fusion_Sage : BaseSpellCard
             return;
 
         Polymerization toHand = candidates[0];
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return;
 
@@ -58,11 +59,11 @@ public sealed class Fusion_Sage : BaseSpellCard
 
     private static List<Polymerization> GetPolymersInDrawPile(Player player)
     {
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         if (draw == null)
             return new List<Polymerization>();
 
-        return draw.Cards.OfType<Polymerization>().ToList();
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards).OfType<Polymerization>().ToList();
     }
 
     protected override void OnUpgrade()

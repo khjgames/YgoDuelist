@@ -38,15 +38,16 @@ public static class YgoLordPoisonGraveyard
         TaskHelper.RunSafely(RunAsync(player, lp));
     }
 
-    private static List<BaseMonsterCard> CollectPlantsExceptLordPoison(Player player)
+    private static List<CardModel> BuildGraveyardCandidates(Player player)
     {
-        CardPile? gy = GraveyardRelic.GetGraveyardPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy == null)
             return [];
 
-        return gy.Cards
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(gy.Cards)
             .OfType<BaseMonsterCard>()
             .Where(m => m.DuelMonsterRace == DuelMonsterRace.Plant && m is not Lord_Poison && m.CanSummonDuelMonster)
+            .Cast<CardModel>()
             .ToList();
     }
 
@@ -55,29 +56,11 @@ public static class YgoLordPoisonGraveyard
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        List<BaseMonsterCard> plants = CollectPlantsExceptLordPoison(player);
-        if (plants.Count == 0)
-            return;
-
-        var ctx = new BlockingPlayerChoiceContext();
-
-        var activatePrefs = new CardSelectorPrefs(ActivatePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true
-        };
-
-        IEnumerable<CardModel> activationPick = await CardSelectCmd.FromSimpleGrid(
-            ctx,
-            new[] { sourceInGraveyard },
+        PlayerChoiceContext? ctx = await YgoGraveyardTriggeredActivation.TryConfirmSourceAsync(
             player,
-            activatePrefs);
-
-        if (activationPick.FirstOrDefault() is not Lord_Poison)
-            return;
-
-        plants = CollectPlantsExceptLordPoison(player);
-        if (plants.Count == 0)
+            sourceInGraveyard,
+            ActivatePrompt);
+        if (ctx == null)
             return;
 
         var summonPrefs = new CardSelectorPrefs(SummonPrompt, 1, 1)
@@ -86,8 +69,15 @@ public static class YgoLordPoisonGraveyard
             Cancelable = true
         };
 
-        IEnumerable<CardModel> summonPick = await CardSelectCmd.FromSimpleGrid(ctx, plants, player, summonPrefs);
-        if (summonPick.FirstOrDefault() is not BaseMonsterCard chosen)
+        List<BaseMonsterCard> BuildTypedGraveyardCandidates() =>
+            BuildGraveyardCandidates(player).OfType<BaseMonsterCard>().ToList();
+
+        BaseMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            ctx,
+            player,
+            summonPrefs,
+            BuildTypedGraveyardCandidates);
+        if (chosen == null)
             return;
 
         await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, ctx);

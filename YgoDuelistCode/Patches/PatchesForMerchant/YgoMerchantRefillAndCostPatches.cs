@@ -18,7 +18,7 @@ public static class YgoMerchantNoRefillPatch
     {
         if (!__result)
             return;
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
         if (entry is MerchantCardEntry)
             __result = false;
@@ -33,7 +33,7 @@ public static class YgoMerchantCalcCostPatch
     public static bool Prefix(MerchantCardEntry __instance)
     {
         Player? player = Traverse.Create(__instance).Field<Player>("_player").Value;
-        if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return true;
 
         var creation = Traverse.Create(__instance).Property<CardCreationResult?>("CreationResult").Value;

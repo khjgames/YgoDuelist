@@ -9,8 +9,8 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
@@ -66,6 +66,25 @@ public sealed class The_Immortal_of_Thunder : EffectMonsterCard, IMonsterFlipEff
     {
         if (player == null || from != MonsterPile.CustomType || newPileType != GraveyardPile.CustomType)
             return;
-        TaskHelper.RunSafely(YgoImmortalOfThunderFieldToGraveyard.RunAsync(player, this));
+        TaskHelper.RunSafely(DealFieldToGraveyardDamageAsync(player));
+    }
+
+    private async Task DealFieldToGraveyardDamageAsync(Player player)
+    {
+        if (player.Creature?.CombatState == null)
+            return;
+
+        decimal damage = DynamicVars["Mgc2"].BaseValue;
+        if (damage <= 0m)
+            return;
+
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
+        await CreatureCmd.Damage(
+            ctx,
+            player.Creature,
+            damage,
+            ValueProp.Unblockable | ValueProp.Unpowered,
+            player.Creature,
+            this);
     }
 }

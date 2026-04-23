@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -80,7 +79,7 @@ public sealed class Twin_Headed_Behemoth : EffectMonsterCard, IYgoOwnerBeforeTur
 
     public async Task TryResolveOwnerBeforeTurnEndFlushGraveyardEffectAsync(PlayerChoiceContext choiceContext, Player owner)
     {
-        CardPile? gy = GraveyardPile.CustomType.GetPile(owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(owner);
         if (gy == null || !gy.Cards.Contains(this))
             return;
         int stamp = YgoPlayerCombatTurnStamp.Get(owner);
@@ -89,18 +88,16 @@ public sealed class Twin_Headed_Behemoth : EffectMonsterCard, IYgoOwnerBeforeTur
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(owner, 0))
             return;
 
-        var prefs = new CardSelectorPrefs(ActivatePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true
-        };
-        IEnumerable<CardModel> pick = await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { this }, owner, prefs);
-        if (pick.FirstOrDefault() is not Twin_Headed_Behemoth)
+        PlayerChoiceContext? ctx = await YgoGraveyardTriggeredActivation.TryConfirmSourceAsync(
+            owner,
+            this,
+            ActivatePrompt);
+        if (ctx == null)
             return;
         if (!gy.Cards.Contains(this))
             return;
         ArmReviveSummonMiniStats();
-        await DuelMonsterSummon.TrySummonDuelMonsterSpecial(owner, this, choiceContext);
+        await DuelMonsterSummon.TrySummonDuelMonsterSpecial(owner, this, ctx);
         ClearEndPhaseReviveEligibility();
     }
 }

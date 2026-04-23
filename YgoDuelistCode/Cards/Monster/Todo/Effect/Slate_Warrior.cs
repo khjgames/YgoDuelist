@@ -58,11 +58,12 @@ public sealed class Slate_Warrior : EffectMonsterCard, IMonsterFlipEffect
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {
-        if (self is not Slate_Warrior || Owner?.Creature == null)
+        if (self is not Slate_Warrior || Owner?.Creature == null || Owner.PlayerCombatState == null)
             return;
 
-        Creature? pet = Owner.PlayerCombatState?.Pets
-            .FirstOrDefault(p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            Owner.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, this));
         if (pet == null || !pet.IsAlive)
             return;
 
@@ -80,7 +81,7 @@ public sealed class Slate_Warrior : EffectMonsterCard, IMonsterFlipEffect
     {
         if (ctx.CommandState?.DestroyedByEnemyBattleDamage == true && ctx.Player.Creature?.CombatState != null)
         {
-            foreach (Creature enemy in ctx.Player.Creature.CombatState.HittableEnemies)
+            foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(ctx.Player.Creature.CombatState.HittableEnemies))
             {
                 if (!enemy.IsAlive)
                     continue;

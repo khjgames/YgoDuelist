@@ -78,7 +78,7 @@ public sealed class Jigen_Bakudan : EffectMonsterCard, IMonsterFlipEffect
             RequireManualConfirmation = true,
             Cancelable = false
         };
-        await CardSelectCmd.FromSimpleGrid(choiceContext, new[] { self }, player, activationPrefs);
+        await YgoPreviewGridSelection.ShowPreviewAsync(choiceContext, new[] { self }, player, activationPrefs);
 
         await PowerCmd.Apply<JigenBakudanPower>(Owner.Creature, 1m, Owner.Creature, self);
     }

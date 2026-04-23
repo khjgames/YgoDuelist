@@ -34,31 +34,35 @@ public sealed class Enraged_Battle_Ox : EffectMonsterCard, IMonsterFlipEffect
 
     public override Type[] RelatedCards => new[] { typeof(Enraged_Battle_Ox) };
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
-        await EnragedBattleOxService.SyncPlayerPowerAsync(player);
-    }
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            () => SyncPlayerPowerAsync(player));
 
     public override async Task OnSwitchedFromDefenseToAttackFromCommandAsync(PlayerChoiceContext choiceContext, Player player)
     {
         await base.OnSwitchedFromDefenseToAttackFromCommandAsync(choiceContext, player);
-        await EnragedBattleOxService.SyncPlayerPowerAsync(player);
+        await SyncPlayerPowerAsync(player);
     }
 
     public override async Task OnSwitchedFromAttackToDefenseFromCommandAsync(PlayerChoiceContext choiceContext, Player player)
     {
         await base.OnSwitchedFromAttackToDefenseFromCommandAsync(choiceContext, player);
-        await EnragedBattleOxService.SyncPlayerPowerAsync(player);
+        await SyncPlayerPowerAsync(player);
     }
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {
         if (self is not Enraged_Battle_Ox || Owner == null)
             return;
-        await EnragedBattleOxService.SyncPlayerPowerAsync(Owner);
+        await SyncPlayerPowerAsync(Owner);
     }
 
     public override Task OnAfterDuelMonsterPetDeathBeforeUnregisterAsync(Player player) =>
+        SyncPlayerPowerAsync(player);
+
+    private static Task SyncPlayerPowerAsync(Player player) =>
         EnragedBattleOxService.SyncPlayerPowerAsync(player);
 }

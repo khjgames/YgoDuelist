@@ -30,7 +30,7 @@ public static class YgoTokenAlternatePortrait
         int count = tok.TokenAlternatePortraitCount;
         Type tokenType = card.GetType();
         var used = new HashSet<int>();
-        foreach (BaseMonsterCard field in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard field in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (field.GetType() != tokenType)
                 continue;

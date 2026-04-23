@@ -58,7 +58,7 @@ public sealed class Draining_Shield : BaseTrapCard
 
         decimal healPer = DynamicVars["Mgc"].BaseValue;
         decimal healTotal = 0m;
-        foreach (var enemy in Owner.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
         {
             if (!enemy.IsAlive)
                 continue;

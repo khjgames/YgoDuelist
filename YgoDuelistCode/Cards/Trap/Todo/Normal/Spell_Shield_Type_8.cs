@@ -57,7 +57,7 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
 
         decimal block = DynamicVars["Mgc"].BaseValue;
 
-        CardPile? graveyard = GraveyardPile.CustomType.GetPile(Owner);
+        CardPile? graveyard = YgoPlayerPiles.Graveyard(Owner);
         if (graveyard != null)
         {
             // Optional: send a Spell from hand to Graveyard; cancel = base block only.
@@ -74,7 +74,7 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
 
     private async Task<CardModel?> TryChooseSpellToSendToGraveyard(PlayerChoiceContext choiceContext, Player player)
     {
-        var hand = PileType.Hand.GetPile(player);
+        var hand = YgoPlayerPiles.Hand(player);
         if (hand == null || hand.Cards.Count == 0)
             return null;
 
@@ -88,23 +88,12 @@ public sealed class Spell_Shield_Type_8 : BaseTrapCard
             Cancelable = true,
         };
 
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(
-            player,
-            c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
-            null);
-
-        var selected = await TributeSummonGridSelect.FromSimpleGridCombat(
+        return await YgoHandCardSelection.TryChooseSingleHandCardAsync<CardModel>(
             choiceContext,
-            candidates,
             player,
             prefs,
-            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(
-                player,
-                c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
-                null),
-            PlayerChoiceOptions.CancelPlayCardActions);
-
-        return selected.FirstOrDefault();
+            predicate: c => c is IYgoCard y && y.YgoCardType == YgoCardType.Spell,
+            choiceBegunOptions: PlayerChoiceOptions.CancelPlayCardActions);
     }
 
     protected override void OnUpgrade()

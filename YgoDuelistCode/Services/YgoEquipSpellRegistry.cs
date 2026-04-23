@@ -91,7 +91,7 @@ public static class YgoEquipSpellRegistry
     {
         lock (Gate)
         {
-            foreach (var equip in EquipToMonster.Keys)
+            foreach (BaseEquipSpellCard equip in YgoMpCombatOrder.CardsOrderedForMp(EquipToMonster.Keys).OfType<BaseEquipSpellCard>())
             {
                 equip.SetEquippedMonster(null);
                 equip.SetEquippedTargetPetCombatId(0);
@@ -111,12 +111,12 @@ public static class YgoEquipSpellRegistry
         int detached = 0;
         int rebound = 0;
 
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.Creature == null)
                 continue;
 
-            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
             if (zone == null)
                 continue;
 
@@ -130,7 +130,7 @@ public static class YgoEquipSpellRegistry
 
         lock (Gate)
         {
-            foreach (BaseEquipSpellCard equip in EquipToMonster.Keys.ToArray())
+            foreach (BaseEquipSpellCard equip in YgoMpCombatOrder.CardsOrderedForMp(EquipToMonster.Keys).OfType<BaseEquipSpellCard>())
             {
                 if (equip.Owner == null)
                 {

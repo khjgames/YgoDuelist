@@ -88,28 +88,12 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
         if (candidates.Count < 2)
             return false;
 
-        var prefs = new CardSelectorPrefs(TributePrompt, 2, 2)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var list = picked.OfType<BaseMonsterCard>().ToList();
-        if (list.Count != 2 || ReferenceEquals(list[0], list[1]))
-            return false;
-
-        ObeliskActivatedTributePayload.SetPending(source, list);
-        return true;
+        return await YgoActivatedEffectTributeSelection.TryPrepareExactTributesAsync(
+            player,
+            source,
+            candidates,
+            tributeCount: 2,
+            TributePrompt);
     }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
@@ -130,12 +114,12 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
 
             await CreatureCmd.Kill(tributePet, force: true);
 
-            CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+            CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
             if (graveyard != null)
                 await CardPileCmd.Add(new[] { tributeCard }, graveyard, CardPilePosition.Top, tributeCard, false);
         }
 
-        var field = DuelMonsterFieldRegistry.GetFieldMonsters(player)?.ToList() ?? new List<BaseMonsterCard>();
+        var field = DuelMonsterFieldRegistry.OrderedFieldMonsters(player);
         if (source is BaseMonsterCard bm && !field.Contains(bm))
             field.Add(bm);
 
@@ -152,7 +136,7 @@ public sealed class Obelisk_the_Tormentor : EffectMonsterCard, IMonsterActivated
         int blight = source.CalcDuelMonsterStats(field).Atk;
         CombatState cs = player.Creature.CombatState;
 
-        foreach (Creature enemy in cs.HittableEnemies.Where(e => e.IsAlive))
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
             await PowerCmd.Apply<BlightPower>(enemy, blight, player.Creature, source);
 
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);

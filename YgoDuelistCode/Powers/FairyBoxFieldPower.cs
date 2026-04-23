@@ -22,10 +22,15 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 
 internal static class FairyBoxFieldPowerShared
 {
-    internal static BaseTrapCard? FaceUpTrapForTier(Player player, bool expectPlus) =>
-        SpellTrapZonePile.CustomType.GetPile(player)?.Cards
-            .OfType<BaseTrapCard>()
-            .FirstOrDefault(c => c.MatchesFairyBoxFieldPowerTier(expectPlus));
+    internal static BaseTrapCard? FaceUpTrapForTier(Player player, bool expectPlus)
+    {
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
+        return zone == null
+            ? null
+            : YgoMpCombatOrder.FirstCardWhereStable(
+                zone.Cards,
+                c => c is BaseTrapCard trap && trap.MatchesFairyBoxFieldPowerTier(expectPlus)) as BaseTrapCard;
+    }
 
     internal static async Task AfterPlayerTurnStartLateAsync(
         YgoDuelistPower self,
@@ -108,9 +113,13 @@ internal static class FairyBoxFieldPowerShared
 
     private static async Task DestroyTrapAndRemovePowerAsync(Player pl, YgoDuelistPower self, bool expectPlus)
     {
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
-        BaseTrapCard? box = zone?.Cards.OfType<BaseTrapCard>().FirstOrDefault(c => c.MatchesFairyBoxFieldPowerTier(expectPlus));
-        CardPile? gy = GraveyardPile.CustomType.GetPile(pl);
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(pl);
+        BaseTrapCard? box = zone == null
+            ? null
+            : YgoMpCombatOrder.FirstCardWhereStable(
+                zone.Cards,
+                c => c is BaseTrapCard trap && trap.MatchesFairyBoxFieldPowerTier(expectPlus)) as BaseTrapCard;
+        CardPile? gy = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.Graveyard(pl);
         if (box != null && gy != null)
             await CardPileCmd.Add(new[] { box }, gy, CardPilePosition.Top, box, false);
 

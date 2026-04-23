@@ -75,11 +75,13 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
         if (player?.PlayerCombatState == null)
             return false;
 
-        return player.PlayerCombatState.Pets.Any(p =>
-            p.IsAlive
-            && DuelMonsterFieldRegistry.GetSourceCardForPet(p) is BaseMonsterCard c
-            && c.DuelMonsterAttribute == DuelMonsterAttribute.Earth
-            && !ReferenceEquals(c, this));
+        return YgoMpCombatOrder.PetsAny(
+            player.PlayerCombatState,
+            p =>
+                p.IsAlive
+                && DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(p) is BaseMonsterCard c
+                && c.DuelMonsterAttribute == DuelMonsterAttribute.Earth
+                && !ReferenceEquals(c, this));
     }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
@@ -98,14 +100,15 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
         if (!ActivatedEffectTributeSelectionPayload.TryTakePending(source, out var chosen) || chosen == null)
             return;
 
-        Creature? tributePet = player.PlayerCombatState.Pets
-            .FirstOrDefault(p => p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), chosen));
+        Creature? tributePet = YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, chosen));
         if (tributePet == null || !tributePet.IsAlive)
             return;
 
         await CreatureCmd.Kill(tributePet, force: true);
 
-        CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+        CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
         if (graveyard != null)
             await CardPileCmd.Add(new[] { chosen }, graveyard, CardPilePosition.Top, chosen, false);
 
@@ -119,12 +122,12 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
             return false;
 
         var candidates = new List<BaseMonsterCard>();
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive)
                 continue;
 
-            BaseMonsterCard? card = DuelMonsterFieldRegistry.GetSourceCardForPet(pet);
+            BaseMonsterCard? card = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
             if (card == null || ReferenceEquals(card, source))
                 continue;
             if (card.DuelMonsterAttribute != DuelMonsterAttribute.Earth)
@@ -136,28 +139,11 @@ public sealed class Arcane_Archer_of_the_Forest : EffectMonsterCard, IMonsterAct
         if (candidates.Count == 0)
             return false;
 
-        var prefs = new CardSelectorPrefs(TributePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        BaseMonsterCard? chosen = picked.OfType<BaseMonsterCard>().FirstOrDefault();
-        if (chosen == null)
-            return false;
-
-        ActivatedEffectTributeSelectionPayload.SetPending(source, chosen);
-        return true;
+        return await YgoActivatedEffectTributeSelection.TryPrepareSingleTributeAsync(
+            player,
+            source,
+            candidates.Cast<CardModel>().ToList(),
+            TributePrompt);
     }
 
     protected override void OnUpgrade()

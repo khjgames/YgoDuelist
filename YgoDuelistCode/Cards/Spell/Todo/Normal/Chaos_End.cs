@@ -70,10 +70,8 @@ public sealed class Chaos_End : BaseSpellCard
         if (dmg <= 0m)
             return;
 
-        foreach (var enemy in Owner.Creature.CombatState.HittableEnemies.ToList())
+        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
         {
-            if (!enemy.IsAlive)
-                continue;
             await CreatureCmd.Damage(choiceContext, enemy, dmg, ValueProp.Unpowered, Owner.Creature, this);
         }
     }

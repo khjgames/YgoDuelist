@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -100,14 +99,12 @@ public sealed class JigenBakudanPower : YgoDuelistPower
             return;
         }
 
-        List<Creature> pets = pcs.Pets
-            .Where(p => p.IsAlive && p.Monster is DuelMonsterModel)
-            .ToList();
+        List<Creature> pets = YgoMpCombatOrder.PetsSnapshotAliveDuelMonstersOrderedByCombatId(pcs);
 
         int totalAtk = 0;
         foreach (Creature pet in pets)
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is BaseMonsterCard bm)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard bm)
                 totalAtk += (int)NormalMonsterCard.GetTotalAtkForPreview(bm);
         }
 
@@ -117,7 +114,7 @@ public sealed class JigenBakudanPower : YgoDuelistPower
         int dmgEach = _isPlus ? (totalAtk * 3) / 4 : totalAtk / 2;
         if (dmgEach > 0)
         {
-            foreach (Creature e in cs.HittableEnemies.Where(c => c.IsAlive))
+            foreach (Creature e in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs))
                 await CreatureCmd.Damage(choiceContext, e, dmgEach, ValueProp.Unpowered, Owner, _sourceCard);
         }
 

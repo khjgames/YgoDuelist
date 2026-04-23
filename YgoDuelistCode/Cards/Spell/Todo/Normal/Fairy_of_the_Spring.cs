@@ -32,36 +32,20 @@ public sealed class Fairy_of_the_Spring : BaseSpellCard, IYgoPrePlayCancelableGr
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && GetEquipSpellsInGraveyard(Owner).Any();
+        && BuildEquipCandidates(Owner).Count > 0;
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        var equips = GetEquipSpellsInGraveyard(player).ToList();
+        List<CardModel> equips = BuildEquipCandidates(player);
         if (equips.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                equips,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        CardModel? chosen = selected.FirstOrDefault();
-        if (chosen is not BaseEquipSpellCard)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<BaseEquipSpellCard>(
+            player,
+            sourceCard,
+            equips,
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildEquipCandidates(player));
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -72,10 +56,10 @@ public sealed class Fairy_of_the_Spring : BaseSpellCard, IYgoPrePlayCancelableGr
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseEquipSpellCard equip)
             return;
 
-        if (!GraveyardRelic.GetGraveyardCards(Owner).Contains(equip))
+        if (!YgoPlayerPiles.GraveyardContains(Owner, equip))
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(Owner);
+        CardPile? hand = YgoPlayerPiles.Hand(Owner);
         if (hand == null)
             return;
 
@@ -94,8 +78,9 @@ public sealed class Fairy_of_the_Spring : BaseSpellCard, IYgoPrePlayCancelableGr
     {
     }
 
-    private static IEnumerable<BaseEquipSpellCard> GetEquipSpellsInGraveyard(Player player)
-    {
-        return GraveyardRelic.GetGraveyardCards(player).OfType<BaseEquipSpellCard>();
-    }
+    private static List<CardModel> BuildEquipCandidates(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseEquipSpellCard>()
+        .Cast<CardModel>()
+        .ToList();
 }

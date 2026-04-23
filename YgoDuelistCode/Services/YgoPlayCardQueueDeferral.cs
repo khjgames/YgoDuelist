@@ -27,7 +27,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// Keep this in sync with Harmony prefixes on <c>PlayCardAction.ExecuteAction</c> that return <c>false</c> and only
 /// call <c>UpdateCardBeforeExecution</c> inside their duplicated vanilla body after user confirmation.
 /// Spell/trap plays from the field also require matching bypass in <c>PlayCardFromSpellTrapZonePatch</c> (priority 900):
-/// implement <see cref="IYgoPrePlayCancelableGridSelection"/> for grid+before-spend flows, or add the card type there
+/// implement <see cref="IYgoPrePlayCancelableGridSelection"/> for grid+before-spend flows, ideally through shared
+/// helpers such as <see cref="YgoPrePlayGridSelection"/> / <see cref="YgoCardGridChoice"/>, or add the card type there
 /// if it uses a dedicated patch (Riryoku, Emergency Provisions, etc.).
 /// Option pile: only <see cref="Activate_Effect"/> + <see cref="IMonsterActivatedEffectPrePlaySelection"/> defers
 /// queue (see <c>PlayCardFromOptionPilePatch</c>); do not defer for every option-pile card.
@@ -66,7 +67,7 @@ public static class YgoPlayCardQueueDeferral
         Player? player = action.Player;
         if (player != null)
         {
-            CardPile? optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+            CardPile? optionPile = YgoPlayerPiles.OptionPile(player);
             if (optionPile != null
                 && ReferenceEquals(card.Pile, optionPile)
                 && card is MonsterCommandCard mcc

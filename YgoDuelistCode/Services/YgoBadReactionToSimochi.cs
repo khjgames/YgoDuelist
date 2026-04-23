@@ -21,9 +21,9 @@ public static class YgoBadReactionToSimochi
         CardModel? best = null;
         decimal bestMult = 0m;
 
-        foreach (Player player in cs.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(cs.Players))
         {
-            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
             if (zone == null)
                 continue;
 

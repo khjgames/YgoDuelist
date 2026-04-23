@@ -23,8 +23,9 @@ using MegaCrit.Sts2.Core.Runs;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Equip spell target grid: same MP contract as <see cref="CardSelectCmd.FromHand"/> — <see cref="PlayerChoiceResult.FromMutableCombatCards"/>
+/// Equip spell target grid: same MP contract as <see cref="CardSelectCmd.FromHand"/> – <see cref="PlayerChoiceResult.FromMutableCombatCards"/>
 /// so peers resolve the same <see cref="NetCombatCard"/> targets (index-only sync breaks when pile order differs).
+/// Keep equip-target selection plumbing here rather than cloning a custom grid flow into each patch/card.
 /// </summary>
 public static class EquipSpellGridSelect
 {

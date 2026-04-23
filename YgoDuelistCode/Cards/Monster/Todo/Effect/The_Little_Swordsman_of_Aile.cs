@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -88,9 +87,11 @@ public sealed class The_Little_Swordsman_of_Aile : EffectMonsterCard, IMonsterAc
 
         Player player = Owner;
 
-        List<BaseMonsterCard> candidates = TributeSummonSelection.BuildTributeCandidateCards(player)
+        List<BaseMonsterCard> BuildTributeTargets() => TributeSummonSelection.BuildTributeCandidateCards(player)
             .Where(c => !ReferenceEquals(c, this))
             .ToList();
+
+        List<BaseMonsterCard> candidates = BuildTributeTargets();
         if (candidates.Count == 0)
             return;
 
@@ -100,17 +101,11 @@ public sealed class The_Little_Swordsman_of_Aile : EffectMonsterCard, IMonsterAc
             RequireManualConfirmation = false,
         };
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(choiceContext, candidates, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        BaseMonsterCard? tributeCard = pick.OfType<BaseMonsterCard>().FirstOrDefault();
+        BaseMonsterCard? tributeCard = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            player,
+            prefs,
+            BuildTributeTargets);
         if (tributeCard == null)
             return;
 
@@ -120,7 +115,7 @@ public sealed class The_Little_Swordsman_of_Aile : EffectMonsterCard, IMonsterAc
 
         await CreatureCmd.Kill(tributePet, force: true);
 
-        CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+        CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
         if (graveyard != null)
             await CardPileCmd.Add(new[] { tributeCard }, graveyard, CardPilePosition.Top, tributeCard, false);
 

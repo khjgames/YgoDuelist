@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -78,33 +77,36 @@ public sealed class Zaborg_the_Thunder_Monarch : EffectMonsterCard
             && (tributePending.Pets.Count > 0 || tributePending.MausoleumHpTributes > 0);
     }
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            async () =>
+            {
+                if (!_hadTributeMaterialsForSummon)
+                    return;
+                if (YgoDuelMonsterSummonStyleContext.CurrentNormalOrTribute != true)
+                    return;
+                if (player.Creature?.CombatState == null)
+                    return;
 
-        if (!_hadTributeMaterialsForSummon)
-            return;
-        if (YgoDuelMonsterSummonStyleContext.CurrentNormalOrTribute != true)
-            return;
-        if (player.Creature?.CombatState == null)
-            return;
+                var enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(player.Creature.CombatState);
+                if (enemies.Count == 0)
+                    return;
 
-        var enemies = player.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive).ToList();
-        if (enemies.Count == 0)
-            return;
+                Creature? target = null;
+                if (_handPlayEnemyTarget != null && enemies.Contains(_handPlayEnemyTarget))
+                    target = _handPlayEnemyTarget;
+                else if (enemies.Count == 1)
+                    target = enemies[0];
+                else
+                    target = YgoMpCombatOrder.CreatureListOrderedByCombatId(enemies)[0];
 
-        Creature? target = null;
-        if (_handPlayEnemyTarget != null && enemies.Contains(_handPlayEnemyTarget))
-            target = _handPlayEnemyTarget;
-        else if (enemies.Count == 1)
-            target = enemies[0];
-        else
-            target = enemies.OrderBy(e => e.CombatId).First();
-
-        int blight = (int)DynamicVars["Mgc"].BaseValue;
-        if (blight > 0)
-            await PowerCmd.Apply<BlightPower>(target, blight, duelMonsterPet, this);
-    }
+                int blight = (int)DynamicVars["Mgc"].BaseValue;
+                if (blight > 0)
+                    await PowerCmd.Apply<BlightPower>(target, blight, duelMonsterPet, this);
+            });
 
     protected override void OnUpgrade()
     {

@@ -36,7 +36,7 @@ public sealed class Dark_Zebra : EffectMonsterCard
     {
         if (owner == null)
             return true;
-        List<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(owner)?.ToList() ?? [];
+        List<BaseMonsterCard> field = DuelMonsterFieldRegistry.OrderedFieldMonsters(owner);
         return !(field.Count == 1 && field[0] == this);
     }
 

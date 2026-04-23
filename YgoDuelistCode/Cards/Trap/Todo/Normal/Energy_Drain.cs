@@ -31,7 +31,7 @@ public sealed class Energy_Drain : BaseTrapCard
         if (Owner?.Creature == null)
             return;
 
-        var hand = PileType.Hand.GetPile(Owner);
+        var hand = YgoPlayerPiles.Hand(Owner);
         if (hand == null)
             return;
 

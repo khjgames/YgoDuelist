@@ -29,8 +29,8 @@ public sealed class Double_Spell : BaseSpellCard
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && HasOtherSpellInHand(Owner)
-        && HasEligibleReplaySpellInGraveyard(Owner);
+        && BuildDiscardSpellCandidates(Owner, this).Count > 0
+        && BuildReplaySpellCandidates(Owner).Count > 0;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -43,41 +43,24 @@ public sealed class Double_Spell : BaseSpellCard
             Cancelable = false
         };
 
-        CardPile? handForPick = PileType.Hand.GetPile(Owner);
+        CardPile? handForPick = YgoPlayerPiles.Hand(Owner);
         if (handForPick == null)
             return;
 
-        List<CardModel> handCandidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(
-            Owner,
-            c => !ReferenceEquals(c, this) && c is BaseSpellCard,
-            null);
+        List<CardModel> handCandidates = BuildDiscardSpellCandidates(Owner, this);
         if (handCandidates.Count == 0)
             return;
 
-        var handPick = await TributeSummonGridSelect.FromSimpleGridCombat(
+        BaseSpellCard? toDiscard = await YgoHandCardSelection.TryChooseSingleHandCardAsync<BaseSpellCard>(
             choiceContext,
-            handCandidates,
             Owner,
             prefsHand,
-            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(
-                Owner,
-                c => !ReferenceEquals(c, this) && c is BaseSpellCard,
-                null),
-            PlayerChoiceOptions.CancelPlayCardActions);
-
-        if (handPick.FirstOrDefault() is not BaseSpellCard toDiscard)
+            predicate: c => BuildDiscardSpellCandidates(Owner, this).Contains(c),
+            choiceBegunOptions: PlayerChoiceOptions.CancelPlayCardActions);
+        if (toDiscard == null)
             return;
 
         await CardCmd.Discard(choiceContext, toDiscard);
-
-        var gyEligible = GraveyardRelic
-            .GetGraveyardCards(Owner)
-            .OfType<BaseSpellCard>()
-            .Where(IsEligibleForReplay)
-            .ToList();
-
-        if (gyEligible.Count == 0)
-            return;
 
         var prefsGy = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 1, 1)
         {
@@ -85,19 +68,18 @@ public sealed class Double_Spell : BaseSpellCard
             Cancelable = false
         };
 
-        var gyPick = await CardSelectCmd.FromSimpleGrid(
-            new BlockingPlayerChoiceContext(),
-            gyEligible,
+        BaseSpellCard? replay = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
             Owner,
-            prefsGy);
-
-        if (gyPick.OfType<BaseSpellCard>().FirstOrDefault() is not { } replay)
+            prefsGy,
+            () => BuildReplaySpellCandidates(Owner));
+        if (replay == null)
             return;
 
-        if (!GraveyardRelic.GetGraveyardCards(Owner).Contains(replay))
+        if (!YgoPlayerPiles.GraveyardContains(Owner, replay))
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(Owner);
+        CardPile? hand = YgoPlayerPiles.Hand(Owner);
         if (hand == null)
             return;
 
@@ -113,16 +95,17 @@ public sealed class Double_Spell : BaseSpellCard
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 
-    private static bool HasOtherSpellInHand(Player player)
-    {
-        CardPile? hand = PileType.Hand.GetPile(player);
-        return hand != null && hand.Cards.Any(c => c is BaseSpellCard && c is not Double_Spell);
-    }
+    private static List<CardModel> BuildDiscardSpellCandidates(Player player, CardModel sourceCard) =>
+        TributeSummonGridSelect.BuildStabilizedHandCandidates(
+            player,
+            c => !ReferenceEquals(c, sourceCard) && c is BaseSpellCard,
+            null);
 
-    private static bool HasEligibleReplaySpellInGraveyard(Player player)
-    {
-        return GraveyardRelic.GetGraveyardCards(player).OfType<BaseSpellCard>().Any(IsEligibleForReplay);
-    }
+    private static List<BaseSpellCard> BuildReplaySpellCandidates(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseSpellCard>()
+        .Where(IsEligibleForReplay)
+        .ToList();
 
     private static bool IsEligibleForReplay(BaseSpellCard s)
     {

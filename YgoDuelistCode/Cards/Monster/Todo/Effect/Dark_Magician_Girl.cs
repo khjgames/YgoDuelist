@@ -41,7 +41,7 @@ public sealed class Dark_Magician_Girl : EffectMonsterCard
             return base.GetSecondaryStats();
 
         int n = 0;
-        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.GetFieldMonsters(Owner))
+        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner))
         {
             if (m == null || m.FaceDown || ReferenceEquals(m, this))
                 continue;
@@ -49,7 +49,7 @@ public sealed class Dark_Magician_Girl : EffectMonsterCard
                 n++;
         }
 
-        foreach (CardModel c in GraveyardRelic.GetGraveyardCards(Owner))
+        foreach (CardModel c in YgoPlayerPiles.GraveyardCards(Owner))
         {
             if (c is BaseMonsterCard bm && CountsAsDarkMagicianArchetypeOtherThanGirl(bm))
                 n++;

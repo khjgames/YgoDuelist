@@ -29,10 +29,9 @@ public sealed class TrunkSideDeckRelic : YgoDuelistRelic
     {
         if (player == null)
             return;
-        foreach (RelicModel r in player.Relics)
+        foreach (TrunkSideDeckRelic ts in YgoPlayerRelicAccess.GetRelics<TrunkSideDeckRelic>(player))
         {
-            if (r is TrunkSideDeckRelic ts)
-                ts.InvokeDisplayAmountChanged();
+            ts.InvokeDisplayAmountChanged();
         }
     }
 
@@ -51,22 +50,24 @@ public sealed class TrunkSideDeckRelic : YgoDuelistRelic
     private int GetTrunkSideCountForOwner()
     {
         Player? player = Owner;
-        if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return 0;
 
-        return PlayerRunTrunk.GetOrCreatePile(player).Cards.Count
-               + PlayerRunSideDeck.GetOrCreatePile(player).Cards.Count;
+        return (YgoPlayerRunPiles.Trunk(player)?.Cards.Count ?? 0)
+               + (YgoPlayerRunPiles.SideDeck(player)?.Cards.Count ?? 0);
     }
 
     private void SubscribeToRunPiles()
     {
         UnsubscribeFromRunPiles();
         Player? player = Owner;
-        if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
 
-        _subscribedTrunk = PlayerRunTrunk.GetOrCreatePile(player);
-        _subscribedSide = PlayerRunSideDeck.GetOrCreatePile(player);
+        _subscribedTrunk = YgoPlayerRunPiles.Trunk(player);
+        _subscribedSide = YgoPlayerRunPiles.SideDeck(player);
+        if (_subscribedTrunk == null || _subscribedSide == null)
+            return;
         _subscribedTrunk.ContentsChanged += OnTrunkSideContentsChanged;
         _subscribedSide.ContentsChanged += OnTrunkSideContentsChanged;
         InvokeDisplayAmountChanged();
@@ -90,16 +91,12 @@ public sealed class TrunkSideDeckRelic : YgoDuelistRelic
 
     public static IReadOnlyList<CardModel> GetTrunkCards(Player? player)
     {
-        if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
-            return [];
-        return PlayerRunTrunk.GetOrCreatePile(player).Cards.ToList();
+        return YgoPlayerRunPiles.TrunkCards(player);
     }
 
     public static IReadOnlyList<CardModel> GetSideDeckCards(Player? player)
     {
-        if (player == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
-            return [];
-        return PlayerRunSideDeck.GetOrCreatePile(player).Cards.ToList();
+        return YgoPlayerRunPiles.SideDeckCards(player);
     }
 
     public static bool IsTrunkSideDeckRelic(RelicModel? model) => model is TrunkSideDeckRelic;

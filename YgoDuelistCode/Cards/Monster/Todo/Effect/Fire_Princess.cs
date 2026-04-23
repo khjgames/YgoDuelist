@@ -60,12 +60,13 @@ public sealed class Fire_Princess : EffectMonsterCard, IYgoAfterOwnerPlayerCreat
         if (gainedHp <= 0m || FaceDown || Owner?.PlayerCombatState == null)
             return;
 
-        List<Creature> enemies = combatState.HittableEnemies.Where(e => e.IsAlive).ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(combatState);
         if (enemies.Count == 0)
             return;
 
-        if (!Owner.PlayerCombatState.Pets.Any(p =>
-                p.IsAlive && ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(p), this)))
+        if (!YgoMpCombatOrder.PetsAny(
+                Owner.PlayerCombatState,
+                p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, this)))
             return;
 
         decimal dmg = DynamicVars["Mgc"].BaseValue;
@@ -79,7 +80,7 @@ public sealed class Fire_Princess : EffectMonsterCard, IYgoAfterOwnerPlayerCreat
         if (target == null || !target.IsAlive)
             return;
 
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
         await DamageCmd.Attack(dmg)
             .FromCard(this)
             .Targeting(target)

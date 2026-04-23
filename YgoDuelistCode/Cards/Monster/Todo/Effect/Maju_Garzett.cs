@@ -59,9 +59,9 @@ public sealed class Maju_Garzett : EffectMonsterCard
 
                 int sumAtk = 0;
                 int sumDef = 0;
-                foreach (Creature pet in pending.Pets)
+                foreach (Creature pet in YgoMpCombatOrder.CreatureListOrderedByCombatId(pending.Pets))
                 {
-                    if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard src)
+                    if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard src)
                         continue;
                     sumAtk += GetPrintedAtk(src);
                     sumDef += GetPrintedDef(src);
@@ -74,7 +74,7 @@ public sealed class Maju_Garzett : EffectMonsterCard
                 if (DynamicVars.ContainsKey("Block"))
                     DynamicVars["Block"].BaseValue = sumDef;
 
-                foreach (Creature pet in pending.Pets)
+                foreach (Creature pet in YgoMpCombatOrder.CreatureListOrderedByCombatId(pending.Pets))
                     await CreatureCmd.Kill(pet, force: true);
 
                 int hpLoss = pending.MausoleumHpLossTotal;

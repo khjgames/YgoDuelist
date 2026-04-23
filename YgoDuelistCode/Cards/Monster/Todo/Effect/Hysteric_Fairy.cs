@@ -63,28 +63,12 @@ public sealed class Hysteric_Fairy : EffectMonsterCard, IMonsterActivatedEffect,
         if (candidates.Count < 2)
             return false;
 
-        var prefs = new CardSelectorPrefs(TributePrompt, 2, 2)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var list = picked.OfType<BaseMonsterCard>().ToList();
-        if (list.Count != 2 || ReferenceEquals(list[0], list[1]))
-            return false;
-
-        ObeliskActivatedTributePayload.SetPending(source, list);
-        return true;
+        return await YgoActivatedEffectTributeSelection.TryPrepareExactTributesAsync(
+            player,
+            source,
+            candidates,
+            tributeCount: 2,
+            TributePrompt);
     }
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
@@ -105,7 +89,7 @@ public sealed class Hysteric_Fairy : EffectMonsterCard, IMonsterActivatedEffect,
 
             await CreatureCmd.Kill(tributePet, force: true);
 
-            CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+            CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
             if (graveyard != null)
                 await CardPileCmd.Add(new[] { tributeCard }, graveyard, CardPilePosition.Top, tributeCard, false);
         }

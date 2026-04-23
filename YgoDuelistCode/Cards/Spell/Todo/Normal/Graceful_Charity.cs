@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -52,7 +53,7 @@ public sealed class Graceful_Charity : BaseSpellCard
 
         await CardPileCmd.Draw(choiceContext, 3, Owner);
 
-        var hand = PileType.Hand.GetPile(Owner);
+        var hand = YgoPlayerPiles.Hand(Owner);
         if (hand == null)
             return;
 
@@ -66,21 +67,17 @@ public sealed class Graceful_Charity : BaseSpellCard
             Cancelable = false
         };
 
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this);
-
-        IEnumerable<CardModel> selected = await TributeSummonGridSelect.FromSimpleGridCombat(
+        List<CardModel> cards = (await YgoOrderedCardSelection.TryChooseManyAsync(
             choiceContext,
-            candidates,
             Owner,
             prefs,
-            rebuildCanonicalForRemoteApply: () => TributeSummonGridSelect.BuildStabilizedHandCandidates(Owner, null, this),
-            PlayerChoiceOptions.CancelPlayCardActions);
-
-        List<CardModel> cards = selected.ToList();
+            () => BuildHandDestroyCandidates(Owner, this),
+            toDestroy,
+            PlayerChoiceOptions.CancelPlayCardActions)).Cast<CardModel>().ToList();
         if (cards.Count == 0)
             return;
 
-        var grave = GraveyardPile.CustomType.GetPile(Owner);
+        var grave = YgoPlayerPiles.Graveyard(Owner);
         if (grave == null)
             return;
 
@@ -91,4 +88,7 @@ public sealed class Graceful_Charity : BaseSpellCard
     {
         EnergyCost.UpgradeBy(-1);
     }
+
+    private static List<CardModel> BuildHandDestroyCandidates(Player player, CardModel sourceCard) =>
+        TributeSummonGridSelect.BuildStabilizedHandCandidates(player, null, sourceCard);
 }

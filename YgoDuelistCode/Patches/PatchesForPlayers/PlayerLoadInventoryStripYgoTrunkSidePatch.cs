@@ -106,7 +106,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
     /// <summary>Clears off-deck piles before re-applying a sync payload (avoids duplicate cards).</summary>
     internal static void ClearYgoOffDeckPiles(Player player)
     {
-        PlayerRunExtraDeck.GetPileIfExists(player)?.Clear(silent: true);
+        YgoPlayerRunPiles.RunExtraDeckIfExists(player)?.Clear(silent: true);
         PlayerRunTrunk.GetPileIfExists(player)?.Clear(silent: true);
         PlayerRunSideDeck.GetPileIfExists(player)?.Clear(silent: true);
     }
@@ -120,19 +120,19 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         foreach (SerializableCard sc in pending.Extra)
         {
             CardModel card = player.RunState.LoadCard(sc, player);
-            PlayerRunExtraDeck.GetOrCreatePile(player).AddInternal(card, -1, silent: true);
+            YgoPlayerRunPiles.RunExtraDeck(player)?.AddInternal(card, -1, silent: true);
         }
 
         foreach (SerializableCard sc in pending.Trunk)
         {
             CardModel card = player.RunState.LoadCard(sc, player);
-            PlayerRunTrunk.GetOrCreatePile(player).AddInternal(card, -1, silent: true);
+            YgoPlayerRunPiles.Trunk(player)?.AddInternal(card, -1, silent: true);
         }
 
         foreach (SerializableCard sc in pending.Side)
         {
             CardModel card = player.RunState.LoadCard(sc, player);
-            PlayerRunSideDeck.GetOrCreatePile(player).AddInternal(card, -1, silent: true);
+            YgoPlayerRunPiles.SideDeck(player)?.AddInternal(card, -1, silent: true);
         }
 
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);

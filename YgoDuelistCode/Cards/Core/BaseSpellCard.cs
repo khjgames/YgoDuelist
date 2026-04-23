@@ -129,7 +129,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         if (player == null)
             return;
 
-        var graveyardPile = GraveyardPile.CustomType.GetPile(player);
+        var graveyardPile = YgoPlayerPiles.Graveyard(player);
         if (graveyardPile == null)
             return;
 

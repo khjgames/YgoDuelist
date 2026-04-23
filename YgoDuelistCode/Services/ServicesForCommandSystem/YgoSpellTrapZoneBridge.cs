@@ -43,7 +43,7 @@ public static class YgoSpellTrapZoneBridge
 
     public static void SyncFromZonePile(Player player, bool forceNotify = false)
     {
-        var pile = SpellTrapZonePile.CustomType.GetPile(player);
+        var pile = YgoPlayerPiles.SpellTrapZone(player);
         if (pile == null)
         {
             bool removed = VisibleCardsByPlayer.Remove(player);
@@ -115,7 +115,7 @@ public static class YgoSpellTrapZoneBridge
 
     public static int CountNonFieldCards(Player player)
     {
-        var pile = SpellTrapZonePile.CustomType.GetPile(player);
+        var pile = YgoPlayerPiles.SpellTrapZone(player);
         if (pile == null)
             return 0;
         return pile.Cards.Count(c => !IsFieldSpell(c));
@@ -140,16 +140,16 @@ public static class YgoSpellTrapZoneBridge
             return false;
 
         Player player = card.Owner;
-        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
         if (zonePile == null)
             return false;
 
         if (IsFieldSpell(card))
         {
-            CardModel? existingField = zonePile.Cards.FirstOrDefault(IsFieldSpell);
+            CardModel? existingField = YgoMpCombatOrder.FirstCardWhereStable(zonePile.Cards, IsFieldSpell);
             if (existingField != null)
             {
-                CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+                CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
                 if (graveyard != null)
                 {
                     await CardPileCmd.Add(
@@ -204,7 +204,7 @@ public static class YgoSpellTrapZoneBridge
             return;
 
         Player player = card.Owner;
-        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
         if (zonePile == null)
             return;
 
@@ -216,10 +216,10 @@ public static class YgoSpellTrapZoneBridge
 
         card.MarkAsFaceUpFieldInZone();
 
-        CardModel? existingField = zonePile.Cards.FirstOrDefault(IsFieldSpell);
+        CardModel? existingField = YgoMpCombatOrder.FirstCardWhereStable(zonePile.Cards, IsFieldSpell);
         if (existingField != null && !ReferenceEquals(existingField, card))
         {
-            CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+            CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
             if (graveyard != null)
             {
                 await CardPileCmd.Add(
@@ -250,7 +250,7 @@ public static class YgoSpellTrapZoneBridge
             return;
 
         Player player = card.Owner;
-        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
         if (zonePile == null)
             return;
 
@@ -290,7 +290,7 @@ public static class YgoSpellTrapZoneBridge
             return;
 
         Player player = trap.Owner;
-        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
         if (zonePile == null)
             return;
 
@@ -327,7 +327,7 @@ public static class YgoSpellTrapZoneBridge
             return;
 
         Player player = card.Owner;
-        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
         if (zonePile == null)
             return;
 
@@ -365,7 +365,7 @@ public static class YgoSpellTrapZoneBridge
             return;
 
         Player player = card.Owner;
-        CardPile? zonePile = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
         if (zonePile == null)
             return;
 

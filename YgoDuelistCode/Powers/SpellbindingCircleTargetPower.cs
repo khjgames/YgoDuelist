@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -26,12 +27,12 @@ public sealed class SpellbindingCircleTargetPower : YgoDuelistPower
     /// </summary>
     public static void ReconcileOrphansBeforeMpChecksum(IRunState runState)
     {
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.Creature == null)
                 continue;
 
-            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
             if (zone != null && zone.Cards.OfType<Spellbinding_Circle>().Any())
                 continue;
 
@@ -46,7 +47,7 @@ public sealed class SpellbindingCircleTargetPower : YgoDuelistPower
         if (cs == null)
             return;
 
-        foreach (Creature enemy in cs.HittableEnemies.ToList())
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
             RemoveSpellbindingChainOnCreatureSyncForChecksum(enemy, applier);
     }
 
@@ -77,7 +78,7 @@ public sealed class SpellbindingCircleTargetPower : YgoDuelistPower
         var cs = applier.CombatState;
         if (cs == null)
             return;
-        foreach (Creature e in cs.HittableEnemies.ToList())
+        foreach (Creature e in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
         {
             SpellbindingCircleTargetPower? p = e.GetPower<SpellbindingCircleTargetPower>();
             if (p != null && p.Applier == applier)
@@ -89,7 +90,7 @@ public sealed class SpellbindingCircleTargetPower : YgoDuelistPower
     {
         if (player?.Creature == null)
             return;
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
         if (zone != null && zone.Cards.OfType<Spellbinding_Circle>().Any())
             return;
         TaskHelper.RunSafely(RemoveAllForApplier(player.Creature));
@@ -117,8 +118,10 @@ public sealed class SpellbindingCircleTargetPower : YgoDuelistPower
         if (pl == null)
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
-        Spellbinding_Circle? src = zone?.Cards.OfType<Spellbinding_Circle>().FirstOrDefault();
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(pl);
+        Spellbinding_Circle? src = zone == null
+            ? null
+            : YgoMpCombatOrder.FirstCardWhereStable(zone.Cards, c => c is Spellbinding_Circle) as Spellbinding_Circle;
         if (src == null)
         {
             await PowerCmd.Remove(this);

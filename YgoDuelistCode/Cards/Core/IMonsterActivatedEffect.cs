@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -47,8 +46,8 @@ public static class MonsterActivatedEffectRuntime
         if (player?.PlayerCombatState == null)
             return null;
 
-        return player.PlayerCombatState.Pets
-            .OrderBy(p => p.CombatId)
-            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == source && p.IsAlive);
+        return YgoMpCombatOrder.FirstPetWhere(
+            player.PlayerCombatState,
+            p => DuelMonsterFieldRegistry.HasSourceCard(p, source) && p.IsAlive);
     }
 }

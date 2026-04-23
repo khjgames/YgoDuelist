@@ -30,7 +30,7 @@ public sealed class TalismanTrapSealingFieldPower : YgoDuelistPower
         if (player != Owner.Player)
             return;
 
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.Hand(player);
         if (hand == null || hand.Cards.Count == 0)
             return;
 
@@ -45,18 +45,13 @@ public sealed class TalismanTrapSealingFieldPower : YgoDuelistPower
             Cancelable = true
         };
 
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null);
-
-        var pick = await TributeSummonGridSelect.FromSimpleGridCombat(
+        List<CardModel> pick = await YgoOrderedCardSelection.TryChooseManyAsync(
             choiceContext,
-            candidates,
             player,
             prefs,
-            rebuildCanonicalForRemoteApply: () =>
-                TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null),
-            PlayerChoiceOptions.None);
+            () => TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null));
 
-        foreach (CardModel c in pick.ToList())
+        foreach (CardModel c in pick)
             await CardCmd.Exhaust(choiceContext, c);
     }
 

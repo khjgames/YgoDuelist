@@ -68,8 +68,7 @@ public static class PlayCardActionEquipSpellPatch
                 return;
 
             var player = action.Player;
-            var candidates = DuelMonsterFieldRegistry.GetFieldMonsters(player)
-                .OfType<BaseMonsterCard>()
+            var candidates = DuelMonsterFieldRegistry.OrderedFieldMonsters(player)
                 .Where(m => YgoEquipSpellTargetRules.IsLegalEquipTarget(equip, m))
                 .Cast<CardModel>()
                 .ToList();
@@ -103,7 +102,7 @@ public static class PlayCardActionEquipSpellPatch
                 try
                 {
                     selected = await EquipSpellGridSelect.FromSimpleGrid(
-                        new BlockingPlayerChoiceContext(),
+                        YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
                         candidates,
                         player,
                         prefs);
@@ -114,7 +113,7 @@ public static class PlayCardActionEquipSpellPatch
                     return;
                 }
 
-                chosen = selected.FirstOrDefault() as BaseMonsterCard;
+                chosen = YgoMpCombatOrder.FirstCardWhereStable(selected, c => c is BaseMonsterCard) as BaseMonsterCard;
                 if (chosen == null || !candidates.Contains(chosen))
                 {
                     action.Cancel();

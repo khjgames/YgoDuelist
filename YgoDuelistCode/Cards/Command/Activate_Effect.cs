@@ -26,7 +26,7 @@ public sealed class Activate_Effect : MonsterCommandCard, IActivateEffectPileUi,
     internal override bool TryGetOptionPilePlayCardQueueDeferral(Player player, out string? reason)
     {
         reason = null;
-        CardPile? optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        CardPile? optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null || !ReferenceEquals(Pile, optionPile))
             return false;
         if (SourceMonster is IMonsterActivatedEffectPrePlaySelection && SourceMonster is NormalMonsterCard)

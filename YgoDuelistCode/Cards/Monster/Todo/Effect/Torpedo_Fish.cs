@@ -41,7 +41,7 @@ public sealed class Torpedo_Fish : EffectMonsterCard, IYgoPetDebuffPowerAmountRe
         _ = giver;
         if (!target.IsPet || target.PetOwner?.Creature == null)
             return false;
-        if (!ReferenceEquals(DuelMonsterFieldRegistry.GetSourceCardForPet(target), this))
+        if (!DuelMonsterFieldRegistry.HasSourceCard(target, this))
             return false;
         if (!YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(target.PetOwner).Any(static fs => fs is Umi))
             return false;

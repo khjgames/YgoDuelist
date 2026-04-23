@@ -37,7 +37,7 @@ public sealed class Machine_King : EffectMonsterCard
             return base.GetSecondaryStats();
 
         int others = 0;
-        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner);
+        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         foreach (BaseMonsterCard? m in field)
         {
             if (m == null || m.FaceDown || ReferenceEquals(m, this))

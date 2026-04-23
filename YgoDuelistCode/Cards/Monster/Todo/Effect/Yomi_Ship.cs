@@ -10,6 +10,8 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 /// <summary>When destroyed by battle: apply <c>{Mgc}</c> <see cref="BlightPower"/> to all enemies.</summary>
@@ -61,7 +63,7 @@ public sealed class Yomi_Ship : EffectMonsterCard
             return;
 
         decimal stacks = card.DynamicVars["Mgc"].BaseValue;
-        foreach (Creature enemy in player.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(player.Creature.CombatState.HittableEnemies))
         {
             if (!enemy.IsAlive)
                 continue;

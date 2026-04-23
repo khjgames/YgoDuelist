@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -38,14 +39,8 @@ public sealed class Burst_Breath : BaseTrapCard
         if (combat == null)
             return;
 
-        var field = DuelMonsterFieldRegistry
-            .GetFieldMonsters(player)
-            .OfType<BaseMonsterCard>()
-            .ToList();
-
-        var dragons = field
-            .Where(m => m.DuelMonsterRace == DuelMonsterRace.Dragon)
-            .ToList();
+        var field = DuelMonsterFieldRegistry.OrderedFieldMonsters(player);
+        List<BaseMonsterCard> dragons = BuildDragonFieldCandidates(player);
 
         if (dragons.Count == 0)
             return;
@@ -53,23 +48,17 @@ public sealed class Burst_Breath : BaseTrapCard
         BaseMonsterCard selectedDragon = dragons[0];
         if (dragons.Count > 1)
         {
-            var ctx = new BlockingPlayerChoiceContext();
+            var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
             var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1)
             {
                 Cancelable = true
             };
 
-            IEnumerable<CardModel> pick;
-            try
-            {
-                pick = await CardSelectCmd.FromSimpleGrid(ctx, dragons, player, prefs);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            selectedDragon = pick.OfType<BaseMonsterCard>().FirstOrDefault();
+            selectedDragon = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                ctx,
+                player,
+                prefs,
+                () => BuildDragonFieldCandidates(player));
             if (selectedDragon == null)
                 return;
         }
@@ -84,7 +73,7 @@ public sealed class Burst_Breath : BaseTrapCard
 
         await CreatureCmd.Kill(tributePet, force: true);
 
-        foreach (Creature e in combat.HittableEnemies.Where(c => c.IsAlive))
+        foreach (Creature e in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(combat))
         {
             await DamageCmd.Attack(dragonAtk)
                 .FromCard(this)
@@ -93,4 +82,9 @@ public sealed class Burst_Breath : BaseTrapCard
                 .Execute(choiceContext);
         }
     }
+
+    private static List<BaseMonsterCard> BuildDragonFieldCandidates(Player player) => DuelMonsterFieldRegistry
+        .OrderedFieldMonsters(player)
+        .Where(m => m.DuelMonsterRace == DuelMonsterRace.Dragon)
+        .ToList();
 }

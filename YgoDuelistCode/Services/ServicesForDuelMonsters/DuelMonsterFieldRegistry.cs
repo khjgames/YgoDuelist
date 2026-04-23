@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -40,10 +41,29 @@ public static class DuelMonsterFieldRegistry
             : System.Array.Empty<BaseMonsterCard>();
     }
 
+    public static List<BaseMonsterCard> OrderedFieldMonsters(Player? player) =>
+        YgoMpCombatOrder.CardsSnapshotOrderedForMp(GetFieldMonsters(player))
+            .OfType<BaseMonsterCard>()
+            .ToList();
+
+    public static List<TMonster> OrderedFieldMonstersOfType<TMonster>(Player? player)
+        where TMonster : BaseMonsterCard =>
+        OrderedFieldMonsters(player).OfType<TMonster>().ToList();
+
+    public static bool ContainsFieldMonster(Player? player, BaseMonsterCard? card) =>
+        card != null && GetFieldMonsters(player).Contains(card);
+
+    public static bool HasSourceCard(Creature? pet, BaseMonsterCard? card) =>
+        pet != null && card != null && ReferenceEquals(GetSourceCardForPet(pet), card);
+
     public static BaseMonsterCard? GetSourceCardForPet(Creature pet)
     {
         return _petToCard.TryGetValue(pet, out var card) ? card : null;
     }
+
+    public static TMonster? GetSourceMonster<TMonster>(Creature? pet)
+        where TMonster : class =>
+        pet == null ? null : GetSourceCardForPet(pet) as TMonster;
 
     /// <summary>
     /// Called when a duel monster pet dies; removes its mappings so it no longer

@@ -72,7 +72,7 @@ public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard, IMonsterActiva
             Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(this, Owner);
             if (pet == null || !MonsterCommandRegistry.TryGet(pet, out var cmd) || cmd.HasUsedActivatedEffectThisTurn)
                 return false;
-            if (CountLightInGraveyard(Owner) < 2)
+            if (BuildLightGraveyardCandidates(Owner).Count < 2)
                 return false;
             return Owner.Creature.CombatState.HittableEnemies.Any(e => e.IsAlive);
         }
@@ -88,29 +88,15 @@ public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard, IMonsterActiva
         if (pet == null)
             return;
 
-        List<BaseMonsterCard> pool = GraveyardRelic
-            .GetGraveyardCards(player)
-            .OfType<BaseMonsterCard>()
-            .Where(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Light)
-            .ToList();
-        if (pool.Count < 2)
+        if (BuildLightGraveyardCandidates(player).Count < 2)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                pool,
-                player,
-                new CardSelectorPrefs(BanishPrompt, 2, 2) { Cancelable = true });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        List<BaseMonsterCard> banished = pick.OfType<BaseMonsterCard>().Distinct().Take(2).ToList();
+        List<BaseMonsterCard> banished = await YgoOrderedCardSelection.TryChooseManyAsync(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(BanishPrompt, 2, 2) { Cancelable = true },
+            () => BuildLightGraveyardCandidates(player),
+            maxResults: 2);
         if (banished.Count < 2)
             return;
 
@@ -124,7 +110,7 @@ public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard, IMonsterActiva
         if (source is not Freed_the_Brave_Wanderer freed)
             return;
 
-        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(player);
+        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.OrderedFieldMonsters(player);
         int blight = freed.CalcDuelMonsterStats(field).Atk;
         if (blight > 0)
             await PowerCmd.Apply<BlightPower>(target, blight, player.Creature, freed);
@@ -132,6 +118,9 @@ public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard, IMonsterActiva
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
     }
 
-    private static int CountLightInGraveyard(Player player) =>
-        GraveyardRelic.GetGraveyardCards(player).OfType<BaseMonsterCard>().Count(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Light);
+    private static List<BaseMonsterCard> BuildLightGraveyardCandidates(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseMonsterCard>()
+        .Where(m => m.DuelMonsterAttribute == DuelMonsterAttribute.Light)
+        .ToList();
 }

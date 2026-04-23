@@ -63,9 +63,9 @@ public sealed class Magical_Scientist : EffectMonsterCard, IMonsterActivatedEffe
 
     public bool IsActivatedEffectAvailable =>
         Owner != null
-        && PlayerRunExtraDeck.IsYgoDuelistPlayer(Owner)
+        && YgoPlayerRunPiles.IsYgoRunPlayer(Owner)
         && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0)
-        && BuildFusionCardsInExtraDeck(Owner).Count > 0;
+        && YgoFusionExtraDeckSelection.BuildFusionCardsInExtraDeck(Owner).Count > 0;
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {
@@ -74,33 +74,16 @@ public sealed class Magical_Scientist : EffectMonsterCard, IMonsterActivatedEffe
         if (player?.Creature == null || pet == null)
             return;
 
-        List<FusionMonsterCard> fusionTargets = BuildFusionCardsInExtraDeck(player);
+        List<FusionMonsterCard> fusionTargets = YgoFusionExtraDeckSelection.BuildFusionCardsInExtraDeck(player);
         if (fusionTargets.Count == 0 || !DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
-        FusionMonsterCard fusionCard;
-        if (fusionTargets.Count == 1)
-        {
-            fusionCard = fusionTargets[0];
-        }
-        else
-        {
-            var fusionPrefs = new CardSelectorPrefs(PickFusionPrompt, 1, 1) { Cancelable = true };
-            IEnumerable<CardModel> fusionPick;
-            try
-            {
-                fusionPick = await CardSelectCmd.FromSimpleGrid(choiceContext, fusionTargets, player, fusionPrefs);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
-            }
-
-            FusionMonsterCard? picked = fusionPick.OfType<FusionMonsterCard>().FirstOrDefault();
-            if (picked == null || !fusionTargets.Any(f => ReferenceEquals(f, picked)))
-                return;
-            fusionCard = picked;
-        }
+        FusionMonsterCard? fusionCard = await YgoFusionExtraDeckSelection.TryChooseFusionFromExtraDeckAsync(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(PickFusionPrompt, 1, 1) { Cancelable = true });
+        if (fusionCard == null || !fusionTargets.Any(f => ReferenceEquals(f, fusionCard)))
+            return;
 
         if (!player.Creature.HasPower<RaDoomedPower>())
             await PowerCmd.Apply<RaDoomedPower>(player.Creature, 1m, player.Creature, source);
@@ -121,19 +104,4 @@ public sealed class Magical_Scientist : EffectMonsterCard, IMonsterActivatedEffe
         DynamicVars["Mgc"].BaseValue = 10m;
     }
 
-    private static List<FusionMonsterCard> BuildFusionCardsInExtraDeck(Player player)
-    {
-        var list = new List<FusionMonsterCard>();
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
-        if (extra == null)
-            return list;
-
-        foreach (CardModel c in extra.Cards)
-        {
-            if (c is FusionMonsterCard fm)
-                list.Add(fm);
-        }
-
-        return list;
-    }
 }

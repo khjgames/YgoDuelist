@@ -29,12 +29,12 @@ internal static class NightmareWheelPowerShared
     /// </summary>
     public static void ReconcileOrphansBeforeMpChecksum(IRunState runState)
     {
-        foreach (Player player in runState.Players)
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(runState.Players))
         {
             if (player?.Creature == null)
                 continue;
 
-            CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+            CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
             if (zone != null && zone.Cards.OfType<Nightmare_Wheel>().Any())
                 continue;
 
@@ -48,7 +48,7 @@ internal static class NightmareWheelPowerShared
         if (cs == null)
             return;
 
-        foreach (Creature enemy in cs.HittableEnemies.ToList())
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
         {
             foreach (PowerModel p in enemy.Powers.ToList())
             {
@@ -66,7 +66,7 @@ internal static class NightmareWheelPowerShared
         CombatState? cs = applier.CombatState;
         if (cs == null)
             return;
-        foreach (Creature e in cs.HittableEnemies.ToList())
+        foreach (Creature e in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
         {
             NightmareWheelPower? a = e.GetPower<NightmareWheelPower>();
             if (a != null && a.Applier == applier)
@@ -81,7 +81,7 @@ internal static class NightmareWheelPowerShared
     {
         if (player?.Creature == null)
             return;
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
         if (zone != null && zone.Cards.OfType<Nightmare_Wheel>().Any())
             return;
         TaskHelper.RunSafely(RemoveAllForApplier(player.Creature));
@@ -93,12 +93,14 @@ internal static class NightmareWheelPowerShared
         if (player == null)
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
-        Nightmare_Wheel? trap = zone?.Cards.OfType<Nightmare_Wheel>().FirstOrDefault();
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
+        Nightmare_Wheel? trap = zone == null
+            ? null
+            : YgoMpCombatOrder.FirstCardWhereStable(zone.Cards, c => c is Nightmare_Wheel) as Nightmare_Wheel;
         if (trap == null || trap.Pile?.Type != SpellTrapZonePile.CustomType)
             return;
 
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? gy = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.Graveyard(player);
         if (gy == null)
             return;
 
@@ -131,8 +133,10 @@ internal static class NightmareWheelPowerShared
         if (pl == null)
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
-        Nightmare_Wheel? trap = zone?.Cards.OfType<Nightmare_Wheel>().FirstOrDefault();
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(pl);
+        Nightmare_Wheel? trap = zone == null
+            ? null
+            : YgoMpCombatOrder.FirstCardWhereStable(zone.Cards, c => c is Nightmare_Wheel) as Nightmare_Wheel;
         if (trap == null)
         {
             await PowerCmd.Remove(self);

@@ -38,8 +38,7 @@ public sealed class Kazejin : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Kazejin) };
 
-    private bool ShowConsumableShacklesPlusPowerHover =>
-        CurrentUpgradeLevel > 0 || UpgradePreviewType != CardUpgradePreviewType.None;
+    private bool ShowConsumableShacklesPlusPowerHover => IsUpgradedOrPreviewActive;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
@@ -54,13 +53,10 @@ public sealed class Kazejin : EffectMonsterCard
         }
     }
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        if (player.Creature == null)
-            return;
-        if (CurrentUpgradeLevel > 0)
-            await PowerCmd.Apply<ConsumableShacklesPlusPower>(duelMonsterPet, 1m, player.Creature, this);
-        else
-            await PowerCmd.Apply<ConsumableShacklesPower>(duelMonsterPet, 1m, player.Creature, this);
-    }
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            () => ApplyConsumableShacklesOnSummonAsync(player, duelMonsterPet));
 }

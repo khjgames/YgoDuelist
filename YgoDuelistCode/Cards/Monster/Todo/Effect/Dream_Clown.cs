@@ -1,7 +1,6 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -57,9 +56,9 @@ public sealed class Dream_Clown : EffectMonsterCard
             return;
 
         Creature? pet = null;
-        foreach (Creature p in player.PlayerCombatState!.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
-            if (p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this)
+            if (p.Monster is DuelMonsterModel && DuelMonsterFieldRegistry.HasSourceCard(p, this))
             {
                 pet = p;
                 break;
@@ -70,9 +69,7 @@ public sealed class Dream_Clown : EffectMonsterCard
             return;
 
         CombatState cs = player.Creature.CombatState;
-        List<Creature> enemies = YgoDeterministicRng
-            .StableOrder(cs.HittableEnemies.Where(c => c.IsAlive), c => c.CombatId)
-            .ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
         if (enemies.Count == 0)
             return;
 

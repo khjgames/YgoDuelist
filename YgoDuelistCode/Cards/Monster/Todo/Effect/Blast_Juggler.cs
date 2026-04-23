@@ -68,7 +68,7 @@ public sealed class Blast_Juggler : EffectMonsterCard, IMonsterActivatedEffect
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
 
         await CreatureCmd.Kill(pet, force: true);
-        var grave = GraveyardPile.CustomType.GetPile(player);
+        var grave = YgoPlayerPiles.Graveyard(player);
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
@@ -79,10 +79,8 @@ public sealed class Blast_Juggler : EffectMonsterCard, IMonsterActivatedEffect
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
 
-        List<Creature> rest = YgoDeterministicRng
-            .StableOrder(
-                cs.HittableEnemies.Where(c => c.IsAlive && c != first),
-                c => c.CombatId)
+        List<Creature> rest = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs)
+            .Where(c => c != first)
             .ToList();
 
         if (rest.Count == 0)

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -41,8 +40,8 @@ public sealed class Needle_Worm : EffectMonsterCard, IMonsterFlipEffect
             return;
 
         Player player = Owner;
-        CardPile? draw = PileType.Draw.GetPile(player);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (draw == null || gy == null)
             return;
 
@@ -54,7 +53,7 @@ public sealed class Needle_Worm : EffectMonsterCard, IMonsterFlipEffect
         {
             if (draw.IsEmpty)
                 break;
-            CardModel? top = draw.Cards.FirstOrDefault();
+            CardModel? top = draw.Cards.Count > 0 ? draw.Cards[0] : null;
             if (top == null)
                 break;
             await CardPileCmd.Add(top, gy, CardPilePosition.Top, top, false);

@@ -41,7 +41,7 @@ public static class YgoDeckRemovalMinTracker
             return;
 
         Player? sample = cards[0].Owner;
-        if (sample == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(sample))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(sample))
             return;
 
         _ = EvaluateAfterNextFrameAsync(cards);
@@ -57,7 +57,7 @@ public static class YgoDeckRemovalMinTracker
         foreach (CardModel c in cards)
         {
             Player? owner = c.Owner;
-            if (owner == null || !PlayerRunExtraDeck.IsYgoDuelistPlayer(owner))
+            if (!YgoPlayerRunPiles.IsYgoRunPlayer(owner))
                 continue;
             bool skip = TryConsumeSkip(c);
             bool inRunPile = IsStillInMainDeckOrYgoStorage(owner, c);
@@ -73,11 +73,11 @@ public static class YgoDeckRemovalMinTracker
     {
         if (player.Deck.Cards.Contains(c))
             return true;
-        if (PlayerRunTrunk.GetOrCreatePile(player).Cards.Contains(c))
+        if (YgoPlayerRunPiles.Trunk(player)?.Cards.Contains(c) == true)
             return true;
-        if (PlayerRunSideDeck.GetOrCreatePile(player).Cards.Contains(c))
+        if (YgoPlayerRunPiles.SideDeck(player)?.Cards.Contains(c) == true)
             return true;
-        if (PlayerRunExtraDeck.GetOrCreatePile(player).Cards.Contains(c))
+        if (YgoPlayerRunPiles.RunExtraDeck(player)?.Cards.Contains(c) == true)
             return true;
         return false;
     }

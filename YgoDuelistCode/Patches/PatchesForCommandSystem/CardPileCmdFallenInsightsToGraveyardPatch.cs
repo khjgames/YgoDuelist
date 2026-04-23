@@ -39,7 +39,7 @@ public static class CardPileCmdFallenInsightsToGraveyardPatch
     {
         await moveCompleted;
 
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
 
         foreach ((CardModel card, _) in state)
         {

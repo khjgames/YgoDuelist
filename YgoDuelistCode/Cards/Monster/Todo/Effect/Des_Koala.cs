@@ -10,6 +10,8 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
+using YgoDuelist.YgoDuelistCode.Services;
+
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
 public sealed class Des_Koala : EffectMonsterCard, IMonsterFlipEffect
@@ -39,7 +41,7 @@ public sealed class Des_Koala : EffectMonsterCard, IMonsterFlipEffect
         if (self is not Des_Koala || Owner?.Creature?.CombatState == null)
             return;
 
-        int hits = PileType.Hand.GetPile(Owner)?.Cards.Count ?? 0;
+        int hits = YgoPlayerPiles.Hand(Owner)?.Cards.Count ?? 0;
         if (hits <= 0)
             return;
 
@@ -47,7 +49,7 @@ public sealed class Des_Koala : EffectMonsterCard, IMonsterFlipEffect
         if (dmg <= 0m)
             return;
 
-        foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies)
+        foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(Owner.Creature.CombatState.HittableEnemies))
         {
             if (!enemy.IsAlive)
                 continue;

@@ -69,10 +69,12 @@ public static class TrunkSideDeckGuiService
 
     public static bool HasAnyTrunkOrSideCards(Player player)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return false;
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
-        CardPile side = PlayerRunSideDeck.GetOrCreatePile(player);
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(player);
+        CardPile? side = YgoPlayerRunPiles.SideDeck(player);
+        if (trunk == null || side == null)
+            return false;
         return trunk.Cards.Count > 0 || side.Cards.Count > 0;
     }
 
@@ -94,7 +96,7 @@ public static class TrunkSideDeckGuiService
 
     public static async Task RunEditorAsync(Player player)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
 
         if (Interlocked.CompareExchange(ref _editorSessionActive, 1, 0) != 0)
@@ -129,8 +131,10 @@ public static class TrunkSideDeckGuiService
                 SetSkipDeckSelectPreviewLayer(true);
                 if (TrunkSideDeckEditorSession.ActivePage == TrunkSideDeckEditorPage.Split)
                 {
-                    CardPile trunkPile = PlayerRunTrunk.GetOrCreatePile(player);
-                    CardPile sidePile = PlayerRunSideDeck.GetOrCreatePile(player);
+                    CardPile? trunkPile = YgoPlayerRunPiles.Trunk(player);
+                    CardPile? sidePile = YgoPlayerRunPiles.SideDeck(player);
+                    if (trunkPile == null || sidePile == null)
+                        return;
                     SetSplitSessionPiles(trunkPile.Cards.ToList(), sidePile.Cards.ToList());
                 }
 
@@ -198,7 +202,7 @@ public static class TrunkSideDeckGuiService
         if (!prefs.RequireManualConfirmation && cards.Count <= prefs.MinSelect)
             return cards.ToList();
 
-        var context = new BlockingPlayerChoiceContext();
+        var context = YgoChoiceContexts.Blocking();
         uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
         await context.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
         List<CardModel> result;
@@ -251,8 +255,10 @@ public static class TrunkSideDeckGuiService
 
     private static bool PageHasCards(Player player, TrunkSideDeckEditorPage page)
     {
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
-        CardPile side = PlayerRunSideDeck.GetOrCreatePile(player);
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(player);
+        CardPile? side = YgoPlayerRunPiles.SideDeck(player);
+        if (trunk == null || side == null)
+            return false;
         return page switch
         {
             TrunkSideDeckEditorPage.Trunk => trunk.Cards.Count > 0,
@@ -264,8 +270,13 @@ public static class TrunkSideDeckGuiService
 
     private static bool TryBuildCardList(Player player, TrunkSideDeckEditorPage page, out List<CardModel> cards)
     {
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
-        CardPile side = PlayerRunSideDeck.GetOrCreatePile(player);
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(player);
+        CardPile? side = YgoPlayerRunPiles.SideDeck(player);
+        if (trunk == null || side == null)
+        {
+            cards = [];
+            return false;
+        }
         switch (page)
         {
             case TrunkSideDeckEditorPage.Trunk:
@@ -304,8 +315,10 @@ public static class TrunkSideDeckGuiService
         if (picked.Count == 0)
             return;
 
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
-        CardPile side = PlayerRunSideDeck.GetOrCreatePile(player);
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(player);
+        CardPile? side = YgoPlayerRunPiles.SideDeck(player);
+        if (trunk == null || side == null)
+            return;
 
         switch (page)
         {

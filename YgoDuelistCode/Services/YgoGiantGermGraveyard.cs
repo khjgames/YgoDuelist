@@ -39,13 +39,17 @@ public static class YgoGiantGermGraveyard
         TaskHelper.RunSafely(RunAsync(player, germ));
     }
 
-    private static List<Giant_Germ> CollectGermsInDeck(Player player)
+    private static List<CardModel> BuildDeckCandidates(Player player)
     {
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         if (draw == null)
             return [];
 
-        return draw.Cards.OfType<Giant_Germ>().Where(g => g.CanSummonDuelMonster).ToList();
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards)
+            .OfType<Giant_Germ>()
+            .Where(g => g.CanSummonDuelMonster)
+            .Cast<CardModel>()
+            .ToList();
     }
 
     private static async Task RunAsync(Player player, Giant_Germ sourceInGraveyard)
@@ -53,25 +57,15 @@ public static class YgoGiantGermGraveyard
         int blight = (int)sourceInGraveyard.DynamicVars["Mgc"].BaseValue;
         if (blight > 0 && player.Creature?.CombatState != null)
         {
-            foreach (Creature enemy in player.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive))
+            foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(player.Creature.CombatState))
                 await PowerCmd.Apply<BlightPower>(enemy, blight, player.Creature, sourceInGraveyard);
         }
 
-        var ctx = new BlockingPlayerChoiceContext();
-
-        var activatePrefs = new CardSelectorPrefs(ActivatePrompt, 1, 1)
-        {
-            RequireManualConfirmation = true,
-            Cancelable = true
-        };
-
-        IEnumerable<CardModel> activationPick = await CardSelectCmd.FromSimpleGrid(
-            ctx,
-            new[] { sourceInGraveyard },
+        PlayerChoiceContext? ctx = await YgoGraveyardTriggeredActivation.TryConfirmSourceAsync(
             player,
-            activatePrefs);
-
-        if (activationPick.FirstOrDefault() is not Giant_Germ)
+            sourceInGraveyard,
+            ActivatePrompt);
+        if (ctx == null)
             return;
 
         for (int i = 0; i < 2; i++)
@@ -79,7 +73,7 @@ public static class YgoGiantGermGraveyard
             if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
                 return;
 
-            List<Giant_Germ> germs = CollectGermsInDeck(player);
+            List<CardModel> germs = BuildDeckCandidates(player);
             if (germs.Count == 0)
                 return;
 
@@ -89,8 +83,15 @@ public static class YgoGiantGermGraveyard
                 Cancelable = true
             };
 
-            IEnumerable<CardModel> summonPick = await CardSelectCmd.FromSimpleGrid(ctx, germs, player, summonPrefs);
-            if (summonPick.FirstOrDefault() is not Giant_Germ chosen)
+            List<Giant_Germ> BuildTypedDeckCandidates() =>
+                BuildDeckCandidates(player).OfType<Giant_Germ>().ToList();
+
+            Giant_Germ? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                ctx,
+                player,
+                summonPrefs,
+                BuildTypedDeckCandidates);
+            if (chosen == null)
                 return;
 
             await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, ctx);

@@ -18,11 +18,11 @@ public static class YgoOwnerBeforeTurnEndFlushHooks
     {
         if (owner.PlayerCombatState != null)
         {
-            foreach (Creature pet in owner.PlayerCombatState.Pets.ToList())
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(owner.PlayerCombatState))
             {
                 if (!pet.IsAlive)
                     continue;
-                if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect hook)
+                if (DuelMonsterFieldRegistry.GetSourceMonster<IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect>(pet) is not IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect hook)
                     continue;
                 if (!hook.IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(pet))
                     continue;
@@ -30,7 +30,7 @@ public static class YgoOwnerBeforeTurnEndFlushHooks
             }
         }
 
-        CardPile? gy = GraveyardRelic.GetGraveyardPile(owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(owner);
         if (gy != null)
         {
             foreach (CardModel card in gy.Cards.ToList())
@@ -43,7 +43,7 @@ public static class YgoOwnerBeforeTurnEndFlushHooks
             }
         }
 
-        CardPile? banished = BanishedPile.CustomType.GetPile(owner);
+        CardPile? banished = YgoPlayerPiles.Banished(owner);
         if (banished != null)
         {
             foreach (CardModel card in banished.Cards.ToList())
@@ -56,7 +56,7 @@ public static class YgoOwnerBeforeTurnEndFlushHooks
             }
         }
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(owner);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(owner);
         if (zone != null)
         {
             foreach (CardModel card in zone.Cards.ToList())

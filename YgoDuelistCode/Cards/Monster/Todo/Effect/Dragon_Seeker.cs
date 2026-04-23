@@ -41,11 +41,12 @@ public sealed class Dragon_Seeker : EffectMonsterCard, IMonsterFlipEffect
 
     public override Type[] RelatedCards => new[] { typeof(Dragon_Seeker) };
 
-    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
-    {
-        await base.OnSummoned(player, choiceContext, duelMonsterPet);
-        await TryResolveDragonSeekerDestroyAndGrowAsync(player, choiceContext);
-    }
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            () => TryResolveDragonSeekerDestroyAndGrowAsync(player, choiceContext));
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {
@@ -59,11 +60,11 @@ public sealed class Dragon_Seeker : EffectMonsterCard, IMonsterFlipEffect
         if (player.PlayerCombatState == null)
             return;
 
-        List<Creature> faceUpDragonPets = player.PlayerCombatState.Pets
+        List<Creature> faceUpDragonPets = YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState)
             .Where(p => p != null && p.IsAlive)
             .Where(p =>
             {
-                BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceCardForPet(p);
+                BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(p);
                 return src != null && !src.FaceDown && src.DuelMonsterRace == DuelMonsterRace.Dragon;
             })
             .ToList();

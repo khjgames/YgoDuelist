@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -69,7 +68,7 @@ public sealed class SuperRejuvenationPower : YgoDuelistPower
 
         _latchedDrawCount = true;
 
-        GraveyardRelic? g = player.Relics.OfType<GraveyardRelic>().FirstOrDefault();
+        GraveyardRelic? g = YgoPlayerRelicAccess.GetRelic<GraveyardRelic>(player);
         int dragons = g?.DragonMonstersDestroyedThisTurn ?? 0;
         int total = dragons;
         _energyToGain = _grantEnergyNextTurn ? dragons : 0;

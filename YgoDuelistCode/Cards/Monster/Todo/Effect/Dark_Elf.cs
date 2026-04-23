@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -36,11 +35,12 @@ public sealed class Dark_Elf : EffectMonsterCard
 
     protected override async Task BeforeAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner?.Creature == null)
+        if (Owner?.Creature == null || Owner.PlayerCombatState == null)
             return;
 
-        Creature? pet = Owner.PlayerCombatState?.Pets
-            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            Owner.PlayerCombatState,
+            p => DuelMonsterFieldRegistry.HasSourceCard(p, this));
         if (pet == null || !pet.IsAlive)
             return;
 
@@ -52,7 +52,7 @@ public sealed class Dark_Elf : EffectMonsterCard
             choiceContext,
             Owner.Creature,
             dmg,
-            ValueProp.Move,
+            ValueProp.Move | ValueProp.Unpowered,
             dealer: null,
             cardSource: this);
     }

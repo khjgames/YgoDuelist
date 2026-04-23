@@ -150,16 +150,7 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
             return false;
         if (YgoDuelMonsterPetBinding.TryGetFieldMonsterForPetCombatId(player, SourcePetCombatId) is NormalMonsterCard nm)
         {
-            Creature? pet = null;
-            foreach (Creature p in player.PlayerCombatState.Pets)
-            {
-                if (p.CombatId == SourcePetCombatId)
-                {
-                    pet = p;
-                    break;
-                }
-            }
-
+            Creature? pet = YgoMpCombatOrder.FindPetByCombatId(player.PlayerCombatState, SourcePetCombatId);
             InitializeSource(nm, pet);
             return true;
         }
@@ -279,7 +270,7 @@ public abstract class MonsterCommandCard : CardModel, IYgoCard, ICustomModel
         if (player == null)
             return;
 
-        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        var optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null)
             return;
 

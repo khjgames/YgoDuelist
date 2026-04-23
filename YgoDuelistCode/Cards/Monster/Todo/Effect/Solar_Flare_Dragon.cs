@@ -97,7 +97,7 @@ public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerBeforeTurnE
         int blight = (int)DynamicVars["Mgc2"].BaseValue;
         if (blight <= 0)
             return;
-        List<Creature> enemies = owner.Creature.CombatState.HittableEnemies.Where(e => e.IsAlive).ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(owner.Creature.CombatState);
         if (enemies.Count == 0)
             return;
         Creature? target = YgoDeterministicRng.PickOne(owner.Creature.CombatState, enemies, "SOLAR_FLARE_DRAGON_BLIGHT", (ulong)(pet.CombatId ?? 0u));
@@ -108,7 +108,7 @@ public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerBeforeTurnE
 
     private static bool HasOtherPyroOnField(Player player, Solar_Flare_Dragon self)
     {
-        foreach (BaseMonsterCard? m in DuelMonsterFieldRegistry.GetFieldMonsters(player))
+        foreach (BaseMonsterCard? m in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
             if (m == null || m.FaceDown || ReferenceEquals(m, self))
                 continue;

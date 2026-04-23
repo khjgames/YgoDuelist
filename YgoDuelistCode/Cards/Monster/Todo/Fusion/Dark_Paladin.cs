@@ -37,7 +37,7 @@ public sealed class Dark_Paladin : FusionMonsterCard
             return base.GetSecondaryStats();
 
         int dragons = 0;
-        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner);
+        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         foreach (BaseMonsterCard? m in field)
         {
             if (m == null || m.FaceDown)
@@ -46,7 +46,7 @@ public sealed class Dark_Paladin : FusionMonsterCard
                 dragons++;
         }
 
-        foreach (CardModel c in GraveyardRelic.GetGraveyardCards(Owner))
+        foreach (CardModel c in YgoPlayerPiles.GraveyardCards(Owner))
         {
             if (c is BaseMonsterCard bm && bm.DuelMonsterRace == DuelMonsterRace.Dragon)
                 dragons++;

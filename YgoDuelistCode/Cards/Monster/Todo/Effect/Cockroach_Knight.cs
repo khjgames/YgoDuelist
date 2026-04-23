@@ -1,13 +1,17 @@
 using System;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>GY → deck top — <see cref="YgoCockroachKnightGraveyard"/>.</summary>
-public sealed class Cockroach_Knight : EffectMonsterCard
+/// <summary>GY -> deck top via the shared graveyard hook interface.</summary>
+public sealed class Cockroach_Knight : EffectMonsterCard, IYgoOnAddedToYgoGraveyardPile
 {
     public Cockroach_Knight()
         : base(
@@ -28,4 +32,14 @@ public sealed class Cockroach_Knight : EffectMonsterCard
         YgoCardPackTags.Earth | YgoCardPackTags.Insect;
 
     public override Type[] RelatedCards => new[] { typeof(Cockroach_Knight) };
+
+    public async Task OnAddedToYgoGraveyardPileAsync(Player owner, CardPile pile)
+    {
+        CardPile? draw = YgoPlayerPiles.Draw(owner);
+        CardPile? gy = YgoPlayerPiles.Graveyard(owner);
+        if (draw == null || gy == null || !gy.Cards.Contains(this))
+            return;
+
+        await CardPileCmd.Add(this, draw, CardPilePosition.Top, this, false);
+    }
 }

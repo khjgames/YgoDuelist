@@ -62,7 +62,7 @@ public sealed class Enraged_Muka_Muka : EffectMonsterCard
             return 0;
         if (CombatManager.Instance?.IsInProgress != true)
             return 0;
-        var handPile = PileType.Hand.GetPile(card.Owner);
+        var handPile = YgoPlayerPiles.Hand(card.Owner);
         var hand = handPile.Cards;
         return hand.Count(c => c != card);
     }

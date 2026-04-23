@@ -32,34 +32,35 @@ public static class YgoRitualDeckSearchService
         PlayerChoiceContext choiceContext,
         RitualDeckSearchKind kind)
     {
-        CardPile? draw = PileType.Draw.GetPile(player);
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (draw == null || hand == null)
             return;
 
-        List<CardModel> candidates = CollectCandidates(draw, kind);
-        if (candidates.Count == 0)
-            return;
-
-        var ctx = choiceContext ?? new BlockingPlayerChoiceContext();
+        var ctx = YgoChoiceContexts.Blocking(choiceContext);
         var prefs = new CardSelectorPrefs(SelectPrompt, 1, 1)
         {
             RequireManualConfirmation = true,
             Cancelable = true
         };
 
-        IEnumerable<CardModel> pick = await CardSelectCmd.FromSimpleGrid(ctx, candidates, player, prefs);
-        CardModel? chosen = pick.FirstOrDefault();
+        List<CardModel> BuildCandidates() => BuildDeckCandidates(draw, kind);
+
+        CardModel? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync<CardModel>(
+            ctx,
+            player,
+            prefs,
+            BuildCandidates);
         if (chosen == null)
             return;
 
         await CardPileCmd.Add(new CardModel[] { chosen }, hand, CardPilePosition.Top, chosen, false);
     }
 
-    private static List<CardModel> CollectCandidates(CardPile draw, RitualDeckSearchKind kind)
+    private static List<CardModel> BuildDeckCandidates(CardPile draw, RitualDeckSearchKind kind)
     {
         var list = new List<CardModel>();
-        foreach (CardModel c in draw.Cards)
+        foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards))
         {
             bool isRm = c is RitualMonsterCard;
             bool isRs = c is RitualSpellCard;

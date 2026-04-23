@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Combat;
@@ -99,7 +98,7 @@ public sealed class YgoMonsterMenuCommandGameAction : GameAction
     {
         if (player.PlayerCombatState == null)
             return null;
-        return player.PlayerCombatState.Pets.FirstOrDefault(p => p.CombatId == combatId);
+        return YgoMpCombatOrder.FindPetByCombatId(player.PlayerCombatState, combatId);
     }
 
     private static Creature? FindCreatureByCombatId(Player player, uint combatId)
@@ -107,7 +106,7 @@ public sealed class YgoMonsterMenuCommandGameAction : GameAction
         CombatState? cs = player.Creature.CombatState;
         if (cs == null)
             return null;
-        return cs.Creatures.FirstOrDefault(c => c.CombatId == combatId);
+        return YgoMpCombatOrder.FindCreatureByCombatId(cs.Creatures, combatId);
     }
 
     public override INetAction ToNetAction()

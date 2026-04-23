@@ -53,7 +53,7 @@ public sealed class Gilasaurus : EffectMonsterCard
             if (Owner?.Creature?.CombatState == null)
                 return;
             await DuelMonsterSummon.TrySummonDuelMonsterSpecial(Owner, this, choiceContext);
-            foreach (Creature enemy in Owner.Creature.CombatState.HittableEnemies)
+            foreach (Creature enemy in YgoMpCombatOrder.CreatureListOrderedByCombatId(Owner.Creature.CombatState.HittableEnemies))
             {
                 if (!enemy.IsAlive)
                     continue;

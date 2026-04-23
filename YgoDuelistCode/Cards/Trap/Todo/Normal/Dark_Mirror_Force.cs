@@ -74,7 +74,7 @@ public sealed class Dark_Mirror_Force : BaseTrapCard
 
         decimal damage = refDmg;
 
-        foreach (Creature e in Owner.Creature.CombatState.HittableEnemies.Where(c => c.IsAlive))
+        foreach (Creature e in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(Owner.Creature.CombatState))
         {
             if (YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, Owner.Creature) > 0)
                 continue;

@@ -14,11 +14,11 @@ public static class YgoOwnerTurnStartFieldMonsterHooks
         if (player.PlayerCombatState == null)
             return;
 
-        foreach (Creature pet in player.PlayerCombatState.Pets)
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not IYgoOwnerTurnStartFieldMonsterEffect hook)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<IYgoOwnerTurnStartFieldMonsterEffect>(pet) is not IYgoOwnerTurnStartFieldMonsterEffect hook)
                 continue;
             if (!hook.IsOwnerTurnStartFieldMonsterEffectActive())
                 continue;

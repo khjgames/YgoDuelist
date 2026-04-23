@@ -69,29 +69,13 @@ public sealed class Poison_of_the_Old_Man : BaseSpellCard, IYgoPrePlayCancelable
             this,
             "poison_of_the_old_man.png");
 
-        var options = new List<CardModel> { healOpt, blightOpt };
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                options,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        CardModel? pick = selected.FirstOrDefault();
-        if (pick is not YgoTransientSpellOptionCommandCard chosen)
-            return false;
-
-        YgoPrePlayOptionIdPayload.SetPending(sourceCard, chosen.OptionId);
-        return true;
+        List<CardModel> BuildOptions() => new List<CardModel> { healOpt, blightOpt };
+        return await YgoPrePlayGridSelection.TryPrepareSingleOptionIdPayloadAsync(
+            player,
+            sourceCard,
+            BuildOptions(),
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: BuildOptions);
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

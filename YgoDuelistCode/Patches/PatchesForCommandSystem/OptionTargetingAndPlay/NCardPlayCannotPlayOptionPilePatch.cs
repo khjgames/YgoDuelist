@@ -27,7 +27,7 @@ public static class NCardPlayCannotPlayOptionPilePatch
         if (player == null)
             return;
 
-        var optionPile = YgoCardOptionPile.CustomType.GetPile(player);
+        var optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null || card.Pile != optionPile)
             return;
 

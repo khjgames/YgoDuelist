@@ -24,24 +24,21 @@ public static class YgoMonsterFlipEffectRunner
             return;
         if (card is not BaseMonsterCard bm || bm.Owner == null)
             return;
-        if (!DuelMonsterFieldRegistry.GetFieldMonsters(bm.Owner).Contains(bm))
+        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(bm.Owner, bm))
             return;
         bm.ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline();
         bm.FlippedThisTurn = true;
         if (card is not IMonsterFlipEffect flip)
             return;
 
-        PlayerChoiceContext ctx = choiceContext ?? new BlockingPlayerChoiceContext();
+        PlayerChoiceContext ctx = YgoChoiceContexts.Blocking(choiceContext);
         TaskHelper.RunSafely(RunFlipAsync(flip, ctx, card));
     }
 
     private static async Task RunFlipAsync(IMonsterFlipEffect flip, PlayerChoiceContext ctx, AbstractMonsterCard self)
     {
         if (self is BaseMonsterCard monster && monster.Owner != null)
-        {
-            var prefs = new CardSelectorPrefs(ResolvingFlipEffectPrompt, 0, 0);
-            await CardSelectCmd.FromSimpleGrid(ctx, new[] { self }, monster.Owner, prefs);
-        }
+            await YgoPreviewGridSelection.ShowPreviewAsync(ctx, new[] { self }, monster.Owner, ResolvingFlipEffectPrompt);
 
         await flip.OnFlippedFaceUpAsync(ctx, self);
     }

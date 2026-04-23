@@ -1,4 +1,3 @@
-using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Players;
 using YgoDuelist.YgoDuelistCode.Relics;
 
@@ -11,13 +10,13 @@ public static class YgoAnnualTracker
 {
     public static bool TryConsumeAnnual(Player? player, string key)
     {
-        var relic = player?.Relics.OfType<GraveyardRelic>().FirstOrDefault();
+        GraveyardRelic? relic = YgoPlayerRelicAccess.GetRelic<GraveyardRelic>(player);
         return relic != null && relic.TryConsumeAnnual(key);
     }
 
     public static bool IsAnnualAvailable(Player? player, string key)
     {
-        var relic = player?.Relics.OfType<GraveyardRelic>().FirstOrDefault();
+        GraveyardRelic? relic = YgoPlayerRelicAccess.GetRelic<GraveyardRelic>(player);
         return relic != null && relic.IsAnnualAvailable(key);
     }
 }

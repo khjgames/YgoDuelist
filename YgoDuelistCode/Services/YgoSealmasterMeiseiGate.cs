@@ -13,15 +13,15 @@ public static class YgoSealmasterMeiseiGate
 {
     public static bool HasFaceUpSealmaster(Player? player) =>
         player != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(player).Any(m => m is IYgoSealmasterMeiseiFieldMonster && !m.FaceDown);
+        && DuelMonsterFieldRegistry.OrderedFieldMonsters(player).Any(m => m is IYgoSealmasterMeiseiFieldMonster && !m.FaceDown);
 
     public static async Task DestroyTalismansIfNoSealmaster(Player? player)
     {
         if (player == null || HasFaceUpSealmaster(player))
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (zone == null || gy == null)
             return;
 

@@ -29,8 +29,7 @@ public sealed class Fairy_Box : BaseContinuousTrapCard
 
     public override bool MatchesFairyBoxFieldPowerTier(bool expectPlus) => !FaceDown && IsUpgraded == expectPlus;
 
-    private bool ShowFairyBoxPlusPowerHover =>
-        IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
+    private bool ShowFairyBoxPlusPowerHover => IsUpgradedOrPreviewActive;
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Chance | YgoCardPackTags.Trap;
 

@@ -1,17 +1,19 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-/// <summary>
-/// Graveyard: heal <c>Mgc</c> and gain <c>Mgc</c> Doom — <see cref="YgoSkullMarkLadybugGraveyard"/>.
-/// </summary>
-public sealed class Skull_Mark_Ladybug : EffectMonsterCard
+/// <summary>Graveyard: heal <c>Mgc</c> and gain matching Doom through the shared graveyard hook interface.</summary>
+public sealed class Skull_Mark_Ladybug : EffectMonsterCard, IYgoOnAddedToYgoGraveyardPile
 {
     public Skull_Mark_Ladybug()
         : base(
@@ -46,5 +48,19 @@ public sealed class Skull_Mark_Ladybug : EffectMonsterCard
     {
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 3m;
+    }
+
+    public async Task OnAddedToYgoGraveyardPileAsync(Player owner, CardPile pile)
+    {
+        Creature? creature = owner.Creature;
+        if (creature == null || !creature.IsAlive)
+            return;
+
+        decimal amount = DynamicVars["Mgc"].BaseValue;
+        if (amount <= 0m)
+            return;
+
+        await CreatureCmd.Heal(creature, amount);
+        await PowerCmd.Apply<DoomPower>(creature, amount, creature, this);
     }
 }

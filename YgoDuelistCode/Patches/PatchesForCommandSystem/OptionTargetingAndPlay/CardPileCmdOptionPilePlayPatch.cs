@@ -22,8 +22,8 @@ public static class CardPileCmdOptionPilePlayPatch
         if (card?.Owner == null)
             return true;
 
-        var optionPile = YgoCardOptionPile.CustomType.GetPile(card.Owner);
-        var spellTrapPile = SpellTrapZonePile.CustomType.GetPile(card.Owner);
+        var optionPile = YgoPlayerPiles.OptionPile(card.Owner);
+        var spellTrapPile = YgoPlayerPiles.SpellTrapZone(card.Owner);
         bool inOptionPile = optionPile != null && card.Pile == optionPile;
         bool inSpellTrapPile = spellTrapPile != null && card.Pile == spellTrapPile;
         if (!inOptionPile && !inSpellTrapPile)

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -49,37 +48,28 @@ public sealed class Gravekeeper_s_Spy : EffectMonsterCard, IMonsterFlipEffect
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
             return;
 
-        List<BaseMonsterCard> candidates = CollectDeckCandidates(Owner);
+        List<BaseMonsterCard> candidates = BuildDeckTargets(Owner);
         if (candidates.Count == 0)
             return;
 
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await CardSelectCmd.FromSimpleGrid(
-                choiceContext,
-                candidates.Cast<CardModel>().ToList(),
-                Owner,
-                new CardSelectorPrefs(SummonPrompt, 1, 1) { Cancelable = true });
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        if (pick.FirstOrDefault() is not BaseMonsterCard chosen)
+        BaseMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(SummonPrompt, 1, 1) { Cancelable = true },
+            () => BuildDeckTargets(Owner));
+        if (chosen == null)
             return;
 
         await DuelMonsterSummon.TrySummonDuelMonsterSpecial(Owner, chosen, choiceContext);
     }
 
-    private static List<BaseMonsterCard> CollectDeckCandidates(Player player)
+    private static List<BaseMonsterCard> BuildDeckTargets(Player player)
     {
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         if (draw == null)
             return [];
 
-        return draw.Cards
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards)
             .OfType<BaseMonsterCard>()
             .Where(m => IsGravekeeperLowAtk(m) && m.CanSummonDuelMonster)
             .ToList();

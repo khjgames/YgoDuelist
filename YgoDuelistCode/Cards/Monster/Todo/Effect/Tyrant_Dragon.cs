@@ -46,9 +46,9 @@ public sealed class Tyrant_Dragon : EffectMonsterCard, IMonsterActivatedEffect
         int n = base.GetAttackDefendResolutionCount(player);
         if (Owner?.PlayerCombatState == null)
             return n;
-        foreach (Creature p in Owner.PlayerCombatState.Pets)
+        foreach (Creature p in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(p) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(p, this))
                 continue;
             if (MonsterCommandRegistry.TryGet(p, out var s) && s.TyrantDragonDoubleAttackThisTurn)
                 return n + 1;

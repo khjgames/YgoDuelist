@@ -60,7 +60,7 @@ public sealed class Talisman_of_Trap_Sealing
         if (!YgoAnnualTracker.IsAnnualAvailable(Owner, AnnualKey))
             return false;
 
-        CardPile? hand = PileType.Hand.GetPile(Owner);
+        CardPile? hand = YgoPlayerPiles.Hand(Owner);
         if (hand?.Cards.Any(IsStatusOrCurse) != true)
             return false;
 
@@ -81,7 +81,7 @@ public sealed class Talisman_of_Trap_Sealing
                 return true;
             if (!YgoAnnualTracker.IsAnnualAvailable(Owner, AnnualKey))
                 return false;
-            CardPile? hand = PileType.Hand.GetPile(Owner);
+            CardPile? hand = YgoPlayerPiles.Hand(Owner);
             return hand?.Cards.Any(IsStatusOrCurse) == true;
         }
     }
@@ -114,7 +114,7 @@ public sealed class Talisman_of_Trap_Sealing
             if (!YgoAnnualTracker.TryConsumeAnnual(player, AnnualKey))
                 return;
 
-            var ctx = new BlockingPlayerChoiceContext();
+            var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
             await ExhaustStatusesOrCursesAsync(ctx, player);
         }
         finally
@@ -126,7 +126,7 @@ public sealed class Talisman_of_Trap_Sealing
 
     private async Task ExhaustStatusesOrCursesAsync(PlayerChoiceContext choiceContext, Player player)
     {
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null || hand.Cards.Count == 0)
             return;
 
@@ -141,17 +141,13 @@ public sealed class Talisman_of_Trap_Sealing
             Cancelable = true
         };
 
-        List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null);
-
-        var pick = await TributeSummonGridSelect.FromSimpleGridCombat(
+        List<CardModel> pick = await YgoOrderedCardSelection.TryChooseManyAsync(
             choiceContext,
-            candidates,
             player,
             prefs,
-            rebuildCanonicalForRemoteApply: () =>
-                TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null),
-            PlayerChoiceOptions.CancelPlayCardActions);
-        foreach (CardModel c in pick.ToList())
+            () => TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsStatusOrCurse, null),
+            choiceBegunOptions: PlayerChoiceOptions.CancelPlayCardActions);
+        foreach (CardModel c in pick)
             await CardCmd.Exhaust(choiceContext, c);
     }
 

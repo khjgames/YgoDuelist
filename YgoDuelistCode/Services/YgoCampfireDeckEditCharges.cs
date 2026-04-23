@@ -22,7 +22,7 @@ public static class YgoCampfireDeckEditCharges
 
     public static void ResetForRestVisit(Player player)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
 
         ChargeState state = Table.GetValue(player, static _ => new ChargeState());
@@ -41,7 +41,7 @@ public static class YgoCampfireDeckEditCharges
     /// </summary>
     public static void EnsureInitializedForRestSiteUi(Player player)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
         if (Table.TryGetValue(player, out _))
             return;
@@ -50,7 +50,7 @@ public static class YgoCampfireDeckEditCharges
 
     public static void ConsumeStore(Player player, int amount)
     {
-        if (amount <= 0 || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (amount <= 0 || !YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
         ChargeState state = Table.GetValue(player, static _ => new ChargeState());
         state.StoreTrunk = Math.Max(0, state.StoreTrunk - amount);
@@ -58,7 +58,7 @@ public static class YgoCampfireDeckEditCharges
 
     public static void ConsumePutInDeck(Player player, int amount)
     {
-        if (amount <= 0 || !PlayerRunExtraDeck.IsYgoDuelistPlayer(player))
+        if (amount <= 0 || !YgoPlayerRunPiles.IsYgoRunPlayer(player))
             return;
         ChargeState state = Table.GetValue(player, static _ => new ChargeState());
         state.PutInDeck = Math.Max(0, state.PutInDeck - amount);

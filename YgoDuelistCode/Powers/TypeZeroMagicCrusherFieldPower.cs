@@ -35,8 +35,10 @@ public sealed class TypeZeroMagicCrusherFieldPower : YgoDuelistPower
         if (player != Owner.Player)
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
-        List<Type_Zero_Magic_Crusher> crushers = zone?.Cards.OfType<Type_Zero_Magic_Crusher>().ToList() ?? [];
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
+        List<Type_Zero_Magic_Crusher> crushers = zone == null
+            ? []
+            : YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards).OfType<Type_Zero_Magic_Crusher>().ToList();
 
         if (crushers.Count == 0)
         {
@@ -51,7 +53,7 @@ public sealed class TypeZeroMagicCrusherFieldPower : YgoDuelistPower
 
         foreach (Type_Zero_Magic_Crusher trapCard in crushers)
         {
-            CardPile? hand = PileType.Hand.GetPile(player);
+            CardPile? hand = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.Hand(player);
             if (hand == null || !hand.Cards.Any(IsSpellInHand))
                 continue;
 
@@ -61,25 +63,17 @@ public sealed class TypeZeroMagicCrusherFieldPower : YgoDuelistPower
                 Cancelable = true
             };
 
-            List<CardModel> candidates = TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsSpellInHand, null);
-            if (candidates.Count == 0)
-                continue;
-
-            var pick = await TributeSummonGridSelect.FromSimpleGridCombat(
+            CardModel? spell = await YgoOrderedCardSelection.TryChooseSingleAsync<CardModel>(
                 choiceContext,
-                candidates,
                 player,
                 prefs,
-                rebuildCanonicalForRemoteApply: () =>
-                    TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsSpellInHand, null),
-                PlayerChoiceOptions.None);
-            CardModel? spell = pick.FirstOrDefault();
+                () => TributeSummonGridSelect.BuildStabilizedHandCandidates(player, IsSpellInHand, null));
             if (spell == null)
                 continue;
 
             await CardCmd.Discard(choiceContext, spell);
 
-            foreach (Creature enemy in combat.HittableEnemies.Where(e => e.IsAlive))
+            foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(combat))
                 await CreatureCmd.Damage(choiceContext, enemy, 5m, ValueProp.Unpowered, self, trapCard);
         }
     }

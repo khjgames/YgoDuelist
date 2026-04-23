@@ -94,7 +94,7 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
         if (player?.Creature?.CombatState == null)
             return false;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone == null)
             return false;
 
@@ -102,7 +102,7 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
         if (!YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(player, probe))
             return false;
 
-        List<Metal_Reflect_Slime> candidates = CollectInHandDeckDiscardGraveyard(player);
+        List<Metal_Reflect_Slime> candidates = BuildCandidates(player);
         if (candidates.Count == 0)
             return false;
 
@@ -122,21 +122,11 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
                 RequireManualConfirmation = true,
             };
 
-            IEnumerable<CardModel> sel;
-            try
-            {
-                sel = await CardSelectCmd.FromSimpleGrid(
-                    choiceContext,
-                    candidates.Cast<CardModel>().ToList(),
-                    player,
-                    prefs);
-            }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
-
-            pick = sel.OfType<Metal_Reflect_Slime>().FirstOrDefault();
+            pick = await YgoOrderedCardSelection.TryChooseSingleAsync(
+                choiceContext,
+                player,
+                prefs,
+                () => BuildCandidates(player));
         }
 
         if (pick == null)
@@ -150,24 +140,13 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
         return true;
     }
 
-    private static List<Metal_Reflect_Slime> CollectInHandDeckDiscardGraveyard(Player player)
+    private static List<Metal_Reflect_Slime> BuildCandidates(Player player)
     {
-        var list = new List<Metal_Reflect_Slime>();
-        Append(PileType.Hand.GetPile(player), list);
-        Append(PileType.Draw.GetPile(player), list);
-        Append(PileType.Discard.GetPile(player), list);
-        Append(GraveyardPile.CustomType.GetPile(player), list);
-        return list;
-    }
-
-    private static void Append(CardPile? pile, List<Metal_Reflect_Slime> list)
-    {
-        if (pile == null)
-            return;
-        foreach (CardModel c in pile.Cards)
-        {
-            if (c is Metal_Reflect_Slime m)
-                list.Add(m);
-        }
+        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Metal_Reflect_Slime>(
+            player,
+            YgoPlayerPiles.Hand,
+            YgoPlayerPiles.Draw,
+            YgoPlayerPiles.Discard,
+            YgoPlayerPiles.Graveyard);
     }
 }

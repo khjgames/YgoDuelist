@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Combat;
@@ -77,8 +76,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         }
     }
 
-    private bool DuelMonsterPlayEnergyUpgradedOrPreview =>
-        IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
+    private bool DuelMonsterPlayEnergyUpgradedOrPreview => IsUpgradedOrPreviewActive;
 
     /// <summary>Energy to play from hand / summon in attack stance (Z = printed ATK from <see cref="GetDynamicPrintedAtkDef"/>).</summary>
     public int DuelMonsterAttackPlayEnergy => GetDuelMonsterAttackPlayEnergy(DuelMonsterPlayEnergyUpgradedOrPreview);
@@ -243,6 +241,46 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// </summary>
     protected internal virtual Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
         Task.CompletedTask;
+
+    protected static PlayerChoiceContext EnsureBlockingChoiceContext(PlayerChoiceContext choiceContext) =>
+        YgoChoiceContexts.Blocking(choiceContext);
+
+    protected async Task RunOnSummonedAsync(
+        Player player,
+        PlayerChoiceContext choiceContext,
+        Creature duelMonsterPet,
+        Func<Task> resolveAsync)
+    {
+        await resolveAsync();
+    }
+
+    protected async Task RunOnNormalOrTributeSummonAsync(
+        Player player,
+        PlayerChoiceContext choiceContext,
+        Creature duelMonsterPet,
+        Func<PlayerChoiceContext, Task> resolveAsync)
+    {
+        if (YgoDuelMonsterSummonStyleContext.CurrentNormalOrTribute != true)
+            return;
+
+        await resolveAsync(EnsureBlockingChoiceContext(choiceContext));
+    }
+
+    protected Task RunOnFlipSummonedFromCommandMenuAsync(
+        PlayerChoiceContext choiceContext,
+        Func<PlayerChoiceContext, Task> resolveAsync) =>
+        resolveAsync(EnsureBlockingChoiceContext(choiceContext));
+
+    protected async Task ApplyConsumableShacklesOnSummonAsync(Player player, Creature duelMonsterPet)
+    {
+        if (player.Creature == null)
+            return;
+
+        if (IsUpgraded)
+            await PowerCmd.Apply<ConsumableShacklesPlusPower>(duelMonsterPet, 1m, player.Creature, this);
+        else
+            await PowerCmd.Apply<ConsumableShacklesPower>(duelMonsterPet, 1m, player.Creature, this);
+    }
 
     /// <summary>
     /// Right after <see cref="OnSummoned"/> in <see cref="DuelMonsterSummon.TrySummonDuelMonster"/> (before stumble/anubis/stiff). Hourglass, Hunter, Cure Mermaid.
@@ -699,9 +737,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (this is not EffectMonsterCard || IsCanonical || Owner?.PlayerCombatState == null)
             return false;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this && pet.HasPower<YgoCurseOfAnubisEffectMonsterPower>())
+            if (DuelMonsterFieldRegistry.HasSourceCard(pet, this) && pet.HasPower<YgoCurseOfAnubisEffectMonsterPower>())
                 return true;
         }
 
@@ -713,9 +751,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return false;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) == this && pet.HasPower<TPower>())
+            if (DuelMonsterFieldRegistry.HasSourceCard(pet, this) && pet.HasPower<TPower>())
                 return true;
         }
 
@@ -727,9 +765,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<RushRecklesslyPower>();
         }
@@ -742,9 +780,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<RiryokuAtkShiftDonorPower>();
         }
@@ -757,9 +795,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<RiryokuAtkShiftReceiverPower>();
         }
@@ -772,9 +810,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<WingedMinionTributeAtkPower>();
         }
@@ -787,9 +825,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<InsectPrincessExecuteAtkPower>();
         }
@@ -802,9 +840,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<LegendaryFiendAtkPower>();
         }
@@ -817,9 +855,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<BazooSoulEaterTempAtkPower>();
         }
@@ -832,9 +870,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<SpiritRyuTempAtkDefPower>();
         }
@@ -847,9 +885,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<NecroticEvolutionPower>();
         }
@@ -862,9 +900,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<GearfriedIronKnightPower>();
         }
@@ -877,9 +915,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return null;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<SlateWarriorPower>();
         }
@@ -893,9 +931,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         if (IsCanonical || Owner?.PlayerCombatState == null)
             return 0;
 
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.OrderBy(p => p.CombatId))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) != this)
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             if (pet.GetPower<SevenWeaponsPlusPower>() is { } plus)
                 return plus.GetDuelMonsterAtkBonusFromStacks();
@@ -1075,7 +1113,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     private static async Task DrawCardsForPrintedMgcAsync(Player player, decimal n)
     {
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoChoiceContexts.Blocking();
         await CardPileCmd.Draw(ctx, n, player);
     }
 

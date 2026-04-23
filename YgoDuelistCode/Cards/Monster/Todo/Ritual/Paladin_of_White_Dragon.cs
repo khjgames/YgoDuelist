@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
@@ -63,12 +62,12 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
         if (p == null)
             return false;
         return DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(p, tributeReleaseCount: 1)
-            && GetEligibleBlueEyesWhiteDragons(p).Count > 0;
+            && BuildBlueEyesCandidates(p).Count > 0;
     }
 
     public async Task<bool> TryPrepareActivatedEffectPlayAsync(Player player, NormalMonsterCard source)
     {
-        List<Blue_Eyes_White_Dragon> candidates = GetEligibleBlueEyesWhiteDragons(player);
+        List<Blue_Eyes_White_Dragon> candidates = BuildBlueEyesCandidates(player);
         if (candidates.Count == 0)
             return false;
 
@@ -78,27 +77,15 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
             return true;
         }
 
-        var prefs = new CardSelectorPrefs(BlueEyesPickPrompt, 1, 1)
-        {
-            Cancelable = true,
-            RequireManualConfirmation = true,
-        };
-
-        IEnumerable<CardModel> picked;
-        try
-        {
-            picked = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                candidates.Cast<CardModel>().ToList(),
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        Blue_Eyes_White_Dragon? chosen = picked.OfType<Blue_Eyes_White_Dragon>().FirstOrDefault();
+        Blue_Eyes_White_Dragon? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            new CardSelectorPrefs(BlueEyesPickPrompt, 1, 1)
+            {
+                Cancelable = true,
+                RequireManualConfirmation = true,
+            },
+            () => BuildBlueEyesCandidates(player));
         if (chosen == null)
             return false;
 
@@ -127,7 +114,7 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
 
         await CreatureCmd.Kill(pet, force: true);
 
-        CardPile? grave = GraveyardPile.CustomType.GetPile(player);
+        CardPile? grave = YgoPlayerPiles.Graveyard(player);
         if (grave != null)
             await CardPileCmd.Add(new[] { source }, grave, CardPilePosition.Top, source, false);
 
@@ -163,35 +150,24 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
         }
     }
 
-    private static List<Blue_Eyes_White_Dragon> GetEligibleBlueEyesWhiteDragons(Player player)
+    private static List<Blue_Eyes_White_Dragon> BuildBlueEyesCandidates(Player player)
     {
-        var list = new List<Blue_Eyes_White_Dragon>();
-        AppendBlueEyesFromPile(PileType.Hand.GetPile(player), list);
-        AppendBlueEyesFromPile(PileType.Discard.GetPile(player), list);
-        AppendBlueEyesFromPile(PileType.Draw.GetPile(player), list);
-        return list;
-    }
-
-    private static void AppendBlueEyesFromPile(CardPile? pile, List<Blue_Eyes_White_Dragon> list)
-    {
-        if (pile == null)
-            return;
-        foreach (CardModel c in pile.Cards)
-        {
-            if (c is Blue_Eyes_White_Dragon bewd)
-                list.Add(bewd);
-        }
+        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Blue_Eyes_White_Dragon>(
+            player,
+            YgoPlayerPiles.Hand,
+            YgoPlayerPiles.Discard,
+            YgoPlayerPiles.Draw);
     }
 
     private static bool IsBlueEyesInHandDiscardOrDraw(Player player, Blue_Eyes_White_Dragon bewd)
     {
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand != null && hand.Cards.Contains(bewd))
             return true;
-        CardPile? discard = PileType.Discard.GetPile(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         if (discard != null && discard.Cards.Contains(bewd))
             return true;
-        CardPile? draw = PileType.Draw.GetPile(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
         return draw != null && draw.Cards.Contains(bewd);
     }
 }

@@ -49,11 +49,11 @@ public sealed class Fear_from_the_Dark : EffectMonsterCard, IYgoAfterMonsterMove
             return;
         if (player.Creature?.CombatState == null || player.Creature.Side != CombatSide.Player)
             return;
-        if (!GraveyardRelic.GetGraveyardCards(player).Contains(this))
+        if (!YgoPlayerPiles.GraveyardContains(player, this))
             return;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, tributeReleaseCount: 0))
             return;
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();
         await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, this, ctx);
     }
 }

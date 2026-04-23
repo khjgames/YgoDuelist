@@ -404,7 +404,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     {
         if (!UseAlternateUpgradedDescription)
             return false;
-        return IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
+        return IsUpgradedOrPreviewActive;
     }
 
     private bool IsInHand()
@@ -568,7 +568,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 var activateTitle = new LocString("card_keywords", "20051.title");
                 var activateDesc = new LocString("cards", ia.ActivatedEffectDescriptionLocKey);
                 DynamicVars.AddTo(activateDesc);
-                UpgradeDisplay ifUpgradedDisplay = IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
+                UpgradeDisplay ifUpgradedDisplay = IsUpgradedOrPreviewActive
                     ? UpgradeDisplay.Upgraded
                     : UpgradeDisplay.Normal;
                 activateDesc.Add(new IfUpgradedVar(ifUpgradedDisplay));
@@ -580,7 +580,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 var activate2Title = new LocString("card_keywords", "20053.title");
                 var activate2Desc = new LocString("cards", ia2.SecondActivatedEffectDescriptionLocKey);
                 DynamicVars.AddTo(activate2Desc);
-                UpgradeDisplay ifUpgradedDisplay2 = IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None
+                UpgradeDisplay ifUpgradedDisplay2 = IsUpgradedOrPreviewActive
                     ? UpgradeDisplay.Upgraded
                     : UpgradeDisplay.Normal;
                 activate2Desc.Add(new IfUpgradedVar(ifUpgradedDisplay2));

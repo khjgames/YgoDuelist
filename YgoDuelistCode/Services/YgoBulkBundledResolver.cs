@@ -48,6 +48,7 @@ public static class YgoBulkBundledResolver
                 && c is YgoDuelistCard y
                 && y.BulkBundled
                 && (YgoPackCardCatalog.GetEffectivePackTags(y) & activeContextTags) != 0)
+            .OrderBy(c => c.Id.Entry, StringComparer.Ordinal)
             .ToList();
     }
 
@@ -107,12 +108,12 @@ public static class YgoBulkBundledResolver
         int take = Math.Min(remaining, tier.Count);
         if (take == tier.Count)
         {
-            result.AddRange(tier);
+            result.AddRange(tier.OrderBy(c => c.Id.Entry, StringComparer.Ordinal));
             remaining -= take;
             return;
         }
 
-        var copy = new List<CardModel>(tier);
+        var copy = tier.OrderBy(c => c.Id.Entry, StringComparer.Ordinal).ToList();
         Shuffle(copy, rng);
         for (int i = 0; i < take; i++)
             result.Add(copy[i]);

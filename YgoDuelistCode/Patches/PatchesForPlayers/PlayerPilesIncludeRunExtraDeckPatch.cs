@@ -15,10 +15,12 @@ public static class PlayerPilesIncludeRunExtraDeckPatch
 {
     public static void Postfix(Player __instance, ref IEnumerable<CardPile> __result)
     {
-        if (!PlayerRunExtraDeck.IsYgoDuelistPlayer(__instance))
+        if (!YgoPlayerRunPiles.IsYgoRunPlayer(__instance))
             return;
 
-        CardPile extra = PlayerRunExtraDeck.GetOrCreatePile(__instance);
+        CardPile? extra = YgoPlayerRunPiles.RunExtraDeck(__instance);
+        if (extra == null)
+            return;
         __result = __result.Concat(new[] { extra });
     }
 }

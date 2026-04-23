@@ -36,7 +36,7 @@ public static class CardModelEnergyCache
     {
         if (player == null)
             return;
-        CardPile? hand = PileType.Hand.GetPile(player);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
         if (hand == null)
             return;
         foreach (CardModel c in hand.Cards)

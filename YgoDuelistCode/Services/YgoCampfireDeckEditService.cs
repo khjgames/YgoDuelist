@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
@@ -74,7 +72,7 @@ public static class YgoCampfireDeckEditService
         foreach (CardModel card in picked)
         {
             await CardPileCmd.RemoveFromDeck(card);
-            PlayerRunTrunk.GetOrCreatePile(player).AddInternal(card, -1, silent: true);
+            YgoPlayerRunPiles.Trunk(player)?.AddInternal(card, -1, silent: true);
         }
 
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
@@ -103,20 +101,7 @@ public static class YgoCampfireDeckEditService
             RequireManualConfirmation = true
         };
 
-        List<CardModel> pick;
-        try
-        {
-            pick = (await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                grid,
-                player,
-                prefs)).ToList();
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
+        List<CardModel> pick = await YgoSimpleGridSelection.TrySelectAsync(player, grid, prefs);
         if (pick.Count == 0)
             return;
 
@@ -143,7 +128,9 @@ public static class YgoCampfireDeckEditService
     private static List<CardModel> BuildPickGrid(Player player)
     {
         var grid = new List<CardModel>();
-        CardPile side = PlayerRunSideDeck.GetOrCreatePile(player);
+        CardPile? side = YgoPlayerRunPiles.SideDeck(player);
+        if (side == null)
+            return grid;
         foreach (CardModel c in side.Cards)
         {
             if (IsCampfireDeckEditEligible(c))
@@ -155,15 +142,15 @@ public static class YgoCampfireDeckEditService
 
     private static void DetachFromTrunkOrSideIfNeeded(Player player, CardModel card)
     {
-        CardPile trunk = PlayerRunTrunk.GetOrCreatePile(player);
-        if (trunk.Cards.Contains(card))
+        CardPile? trunk = YgoPlayerRunPiles.Trunk(player);
+        if (trunk != null && trunk.Cards.Contains(card))
         {
             trunk.RemoveInternal(card, silent: true);
             return;
         }
 
-        CardPile side = PlayerRunSideDeck.GetOrCreatePile(player);
-        if (side.Cards.Contains(card))
+        CardPile? side = YgoPlayerRunPiles.SideDeck(player);
+        if (side != null && side.Cards.Contains(card))
             side.RemoveInternal(card, silent: true);
     }
 }

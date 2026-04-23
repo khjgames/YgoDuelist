@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -68,32 +67,19 @@ public sealed class Woodland_Sprite : EffectMonsterCard, IMonsterActivatedEffect
             return;
 
         Player player = Owner;
-        IReadOnlyList<BaseEquipSpellCard> equips = YgoEquipSpellRegistry.GetEquipsForMonster(sprite);
+        IReadOnlyList<BaseEquipSpellCard> equips = BuildEquipCandidates(sprite);
         if (equips.Count == 0)
             return;
 
-        List<CardModel> candidates = TributeSummonGridSelect.StabilizeHandPileCandidates(equips.Cast<CardModel>());
-        IEnumerable<CardModel> pick;
-        try
-        {
-            pick = await TributeSummonGridSelect.FromSimpleGridCombat(
-                choiceContext,
-                candidates,
-                player,
-                new CardSelectorPrefs(EquipPrompt, 1, 1) { Cancelable = true },
-                rebuildCanonicalForRemoteApply: () =>
-                    TributeSummonGridSelect.StabilizeHandPileCandidates(
-                        YgoEquipSpellRegistry.GetEquipsForMonster(sprite).Cast<CardModel>()));
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        if (pick.FirstOrDefault() is not BaseEquipSpellCard equip)
+        BaseEquipSpellCard? equip = await YgoOrderedCardSelection.TryChooseSingleAsync(
+            choiceContext,
+            player,
+            new CardSelectorPrefs(EquipPrompt, 1, 1) { Cancelable = true },
+            () => BuildEquipCandidates(sprite));
+        if (equip == null)
             return;
 
-        CardPile? gy = GraveyardPile.CustomType.GetPile(player);
+        CardPile? gy = YgoPlayerPiles.Graveyard(player);
         if (gy == null)
             return;
 
@@ -122,4 +108,9 @@ public sealed class Woodland_Sprite : EffectMonsterCard, IMonsterActivatedEffect
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 7m;
     }
+
+    private static List<BaseEquipSpellCard> BuildEquipCandidates(Woodland_Sprite sprite) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoEquipSpellRegistry.GetEquipsForMonster(sprite).Cast<CardModel>())
+        .OfType<BaseEquipSpellCard>()
+        .ToList();
 }

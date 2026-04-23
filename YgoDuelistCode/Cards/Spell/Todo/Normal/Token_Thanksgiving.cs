@@ -35,11 +35,11 @@ public sealed class Token_Thanksgiving : BaseSpellCard
 
         decimal healPer = DynamicVars["Mgc"].BaseValue;
         int count = 0;
-        foreach (Creature pet in Owner.PlayerCombatState.Pets.ToList())
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
             if (!pet.IsAlive || pet.Monster is not DuelMonsterModel)
                 continue;
-            if (DuelMonsterFieldRegistry.GetSourceCardForPet(pet) is not BaseMonsterCard bm || bm is not IYgoTokenMonster)
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard bm || bm is not IYgoTokenMonster)
                 continue;
             await CreatureCmd.Kill(pet, force: true);
             count++;

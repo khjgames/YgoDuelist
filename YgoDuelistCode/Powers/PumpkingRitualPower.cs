@@ -40,12 +40,12 @@ public sealed class PumpkingRitualPower : YgoDuelistPower
         if (ownerPlayer == null || playerCreature == null)
             return;
 
-        bool castleUp = DuelMonsterFieldRegistry.GetFieldMonsters(ownerPlayer)
+        bool castleUp = DuelMonsterFieldRegistry.OrderedFieldMonsters(ownerPlayer)
             .Any(m => m is Castle_of_Dark_Illusions && !m.FaceDown);
         if (!castleUp)
             return;
 
-        BaseMonsterCard? sourceCard = DuelMonsterFieldRegistry.GetSourceCardForPet(Owner) as BaseMonsterCard;
+        BaseMonsterCard? sourceCard = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(Owner);
 
         if (Owner.GetPower<NecroticEvolutionPower>() is { } evo)
             await PowerCmd.ModifyAmount(evo, 1m, playerCreature, sourceCard);

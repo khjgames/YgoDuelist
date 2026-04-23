@@ -47,7 +47,7 @@ public sealed class Emergency_Provisions : BaseSpellCard, IYgoPlayCardActionPreS
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && SpellTrapZonePile.CustomType.GetPile(Owner)?.Cards.Any(YgoSpellTrapZoneBridge.IsSpellOrTrapCard) == true;
+        && BuildSpellTrapZoneCandidates(Owner).Count > 0;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -66,7 +66,7 @@ public sealed class Emergency_Provisions : BaseSpellCard, IYgoPlayCardActionPreS
         if (toDestroy.Count == 0)
             return;
 
-        CardPile? graveyard = GraveyardPile.CustomType.GetPile(player);
+        CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
         if (graveyard == null)
             return;
 
@@ -99,14 +99,7 @@ public sealed class Emergency_Provisions : BaseSpellCard, IYgoPlayCardActionPreS
         Player player,
         CardModel self)
     {
-        var zonePile = SpellTrapZonePile.CustomType.GetPile(player);
-        if (zonePile == null)
-            return false;
-
-        List<CardModel> candidates = zonePile.Cards
-            .Where(YgoSpellTrapZoneBridge.IsSpellOrTrapCard)
-            .ToList();
-
+        List<CardModel> candidates = BuildSpellTrapZoneCandidates(player);
         if (candidates.Count == 0)
             return false;
 
@@ -116,8 +109,12 @@ public sealed class Emergency_Provisions : BaseSpellCard, IYgoPlayCardActionPreS
             Cancelable = true
         };
 
-        var selection = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), candidates, player, prefs);
-        var selected = selection
+        List<CardModel> selected = await YgoOrderedCardSelection.TryChooseManyAsync(
+            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            player,
+            prefs,
+            () => BuildSpellTrapZoneCandidates(player));
+        selected = selected
             .Where(c => c.Pile?.Type == SpellTrapZonePile.CustomType && YgoSpellTrapZoneBridge.IsSpellOrTrapCard(c))
             .Distinct()
             .ToList();
@@ -131,4 +128,14 @@ public sealed class Emergency_Provisions : BaseSpellCard, IYgoPlayCardActionPreS
 
     void IYgoPlayCardActionPreSpendResourceFlow.ClearPreSpendPlayState(CardModel self) =>
         EmergencyProvisionsPlayPayload.ClearForCard(self);
+
+    private static List<CardModel> BuildSpellTrapZoneCandidates(Player player)
+    {
+        CardPile? zonePile = YgoPlayerPiles.SpellTrapZone(player);
+        return zonePile == null
+            ? []
+            : YgoMpCombatOrder.CardsSnapshotOrderedForMp(zonePile.Cards)
+                .Where(YgoSpellTrapZoneBridge.IsSpellOrTrapCard)
+                .ToList();
+    }
 }

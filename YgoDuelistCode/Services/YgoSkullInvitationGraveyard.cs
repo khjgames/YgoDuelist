@@ -22,8 +22,12 @@ public static class YgoSkullInvitationGraveyard
         if (!YgoGraveyardPileHooks.TryGetPlayerForGraveyardAdd(pile, addedCard, out Player? gyOwner))
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(gyOwner);
-        Skull_Invitation? inv = zone?.Cards.OfType<Skull_Invitation>().FirstOrDefault(c => !c.FaceDown);
+        CardPile? zone = YgoPlayerPiles.SpellTrapZone(gyOwner);
+        Skull_Invitation? inv = zone == null
+            ? null
+            : YgoMpCombatOrder.FirstCardWhereStable(
+                zone.Cards,
+                c => c is Skull_Invitation trap && !trap.FaceDown) as Skull_Invitation;
         if (inv == null)
             return;
 
@@ -39,12 +43,12 @@ public static class YgoSkullInvitationGraveyard
 
     private static async Task DealOnceAsync(Player player, Skull_Invitation inv, decimal dmg, string rngKey, ulong mix)
     {
-        var ctx = new BlockingPlayerChoiceContext();
+        var ctx = YgoChoiceContexts.Blocking();
         CombatState? cs = player.Creature?.CombatState;
         if (cs == null)
             return;
 
-        List<Creature> enemies = cs.HittableEnemies.Where(e => e.IsAlive).ToList();
+        List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs);
         if (enemies.Count == 0)
             return;
 

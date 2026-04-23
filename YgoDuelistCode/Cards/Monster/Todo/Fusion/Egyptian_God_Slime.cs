@@ -31,7 +31,7 @@ public sealed class Egyptian_God_Slime : FusionMonsterCard
 
     public static bool PlayerHasSlimeInExtraDeck(Player player)
     {
-        CardPile? extra = ExtraDeckPile.CustomType.GetPile(player);
+        CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
         return extra != null && extra.Cards.Any(static c => c is Egyptian_God_Slime);
     }
 

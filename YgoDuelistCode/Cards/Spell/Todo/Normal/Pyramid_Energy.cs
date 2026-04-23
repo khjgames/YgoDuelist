@@ -72,29 +72,13 @@ public sealed class Pyramid_Energy : BaseSpellCard, IYgoPrePlayCancelableGridSel
             this,
             "pyramid_energy.png");
 
-        var options = new List<CardModel> { atkOpt, defOpt };
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                options,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        CardModel? pick = selected.FirstOrDefault();
-        if (pick is not YgoTransientSpellOptionCommandCard chosen)
-            return false;
-
-        YgoPrePlayOptionIdPayload.SetPending(sourceCard, chosen.OptionId);
-        return true;
+        List<CardModel> BuildOptions() => new List<CardModel> { atkOpt, defOpt };
+        return await YgoPrePlayGridSelection.TryPrepareSingleOptionIdPayloadAsync(
+            player,
+            sourceCard,
+            BuildOptions(),
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: BuildOptions);
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

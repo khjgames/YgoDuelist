@@ -185,9 +185,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 || Owner?.Creature == null
                 || Owner.PlayerCombatState == null)
                 return;
-            Creature? selfPet = Owner.PlayerCombatState.Pets
-                .OrderBy(p => p.CombatId)
-                .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+            Creature? selfPet = YgoMpCombatOrder.FirstPetWhere(
+                Owner.PlayerCombatState,
+                p => DuelMonsterFieldRegistry.HasSourceCard(p, this));
             if (selfPet == null || !selfPet.IsAlive)
                 return;
             if (YgoMpDiagnostics.IsMultiplayer)
@@ -303,7 +303,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
                 await OnBeforeTributeMaterialsReleased(choiceContext, cardPlay, tributePending);
 
-                foreach (Creature pet in tributePending.Pets)
+                foreach (Creature pet in YgoMpCombatOrder.CreatureListOrderedByCombatId(tributePending.Pets))
                     await CreatureCmd.Kill(pet, force: true);
 
                 int hpLoss = tributePending.MausoleumHpLossTotal;
@@ -339,9 +339,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     {
         if (Owner?.PlayerCombatState == null)
             return;
-        Creature? pet = Owner.PlayerCombatState.Pets
-            .OrderBy(p => p.CombatId)
-            .FirstOrDefault(p => DuelMonsterFieldRegistry.GetSourceCardForPet(p) == this);
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            Owner.PlayerCombatState,
+            p => DuelMonsterFieldRegistry.HasSourceCard(p, this));
         await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, Owner, pet);
     }
 

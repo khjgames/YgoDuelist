@@ -70,41 +70,22 @@ public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapE
     protected override bool IsPlayable =>
         base.IsPlayable &&
         Owner != null &&
-        GraveyardRelic.GetGraveyardCards(Owner).Any(c => c is BaseMonsterCard) &&
+        BuildGraveyardMonsters(Owner).Count > 0 &&
         DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tributeReleaseCount: 0);
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        var graveyardMonsters = GraveyardRelic
-            .GetGraveyardCards(player)
-            .OfType<BaseMonsterCard>()
-            .ToList();
+        List<BaseMonsterCard> graveyardMonsters = BuildGraveyardMonsters(player);
 
         if (graveyardMonsters.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(
-                new BlockingPlayerChoiceContext(),
-                graveyardMonsters,
-                player,
-                prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var chosen = selected.FirstOrDefault() as BaseMonsterCard;
-        if (chosen == null)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<BaseMonsterCard>(
+            player,
+            sourceCard,
+            graveyardMonsters,
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildGraveyardMonsters(player).Cast<CardModel>().ToList());
     }
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -116,13 +97,18 @@ public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapE
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseMonsterCard chosen)
             return;
 
-        if (!GraveyardRelic.GetGraveyardCards(player).Contains(chosen))
+        if (!YgoPlayerPiles.GraveyardContains(player, chosen))
             return;
 
         bool summoned = await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, choiceContext);
         if (summoned)
             _pendingLinkAfterZone = chosen;
     }
+
+    private static List<BaseMonsterCard> BuildGraveyardMonsters(Player player) => YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+        .OfType<BaseMonsterCard>()
+        .ToList();
 
     protected override Task OnAfterContinuousTrapEnteredSpellTrapZoneAsync(
         PlayerChoiceContext choiceContext,

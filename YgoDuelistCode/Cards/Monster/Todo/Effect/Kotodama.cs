@@ -36,7 +36,7 @@ public sealed class Kotodama : EffectMonsterCard
         if (Owner == null)
             return StatEffectTotal.None;
 
-        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.GetFieldMonsters(Owner);
+        IReadOnlyCollection<BaseMonsterCard> field = DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner);
         if (field.Count < 2)
             return StatEffectTotal.None;
 

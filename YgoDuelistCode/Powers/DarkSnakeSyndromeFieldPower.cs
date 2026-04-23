@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
@@ -22,7 +23,7 @@ internal static class DarkSnakeSyndromeFieldPowerShared
         CombatState? cs = applier.CombatState;
         if (cs == null)
             return;
-        foreach (Creature e in cs.HittableEnemies.ToList())
+        foreach (Creature e in YgoMpCombatOrder.CreatureListOrderedByCombatId(cs.HittableEnemies))
         {
             DarkSnakeSyndromeFieldPower? a = e.GetPower<DarkSnakeSyndromeFieldPower>();
             if (a != null && a.Applier == applier)
@@ -37,7 +38,7 @@ internal static class DarkSnakeSyndromeFieldPowerShared
     {
         if (player?.Creature == null)
             return;
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(player);
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(player);
         if (zone != null && zone.Cards.OfType<Dark_Snake_Syndrome>().Any())
             return;
         TaskHelper.RunSafely(RemoveAllForApplier(player.Creature));
@@ -56,14 +57,15 @@ internal static class DarkSnakeSyndromeFieldPowerShared
         if (self.Owner.Side != CombatSide.Enemy || !self.Owner.IsAlive)
             return;
 
-        CardPile? zone = SpellTrapZonePile.CustomType.GetPile(pl);
+        CardPile? zone = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.SpellTrapZone(pl);
         if (zone == null || !zone.Cards.OfType<Dark_Snake_Syndrome>().Any())
         {
             await PowerCmd.Remove(self);
             return;
         }
 
-        Dark_Snake_Syndrome? src = zone.Cards.OfType<Dark_Snake_Syndrome>().FirstOrDefault();
+        Dark_Snake_Syndrome? src =
+            YgoMpCombatOrder.FirstCardWhereStable(zone.Cards, c => c is Dark_Snake_Syndrome) as Dark_Snake_Syndrome;
         decimal cap = GetStackDamageCap(src);
         decimal dmg = System.Math.Min(self.Amount, cap);
         if (dmg > 0m)

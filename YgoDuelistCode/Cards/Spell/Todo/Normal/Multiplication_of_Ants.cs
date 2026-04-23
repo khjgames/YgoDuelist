@@ -36,34 +36,20 @@ public sealed class Multiplication_of_Ants : BaseSpellCard, IYgoPrePlayCancelabl
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Any(m => m.DuelMonsterRace == DuelMonsterRace.Insect);
+        && BuildInsectFieldCandidates(Owner).Count > 0;
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {
-        List<BaseMonsterCard> field = DuelMonsterFieldRegistry
-            .GetFieldMonsters(player)
-            .Where(m => m.DuelMonsterRace == DuelMonsterRace.Insect)
-            .ToList();
+        List<BaseMonsterCard> field = BuildInsectFieldCandidates(player);
         if (field.Count == 0)
             return false;
 
-        var prefs = YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt);
-        IEnumerable<CardModel> selected;
-        try
-        {
-            selected = await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), field, player, prefs);
-        }
-        catch (OperationCanceledException)
-        {
-            return false;
-        }
-
-        var chosen = selected.FirstOrDefault() as BaseMonsterCard;
-        if (chosen == null)
-            return false;
-
-        YgoPrePlaySelectedCardPayload.SetPending(sourceCard, chosen);
-        return true;
+        return await YgoPrePlayGridSelection.TryPrepareSingleCardPayloadAsync<BaseMonsterCard>(
+            player,
+            sourceCard,
+            field.Cast<CardModel>().ToList(),
+            YgoCancelableConfirmGridPrefs.ForSinglePick(SelectionScreenPrompt),
+            rebuildCanonicalForRemoteApply: () => BuildInsectFieldCandidates(player).Cast<CardModel>().ToList());
     }
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -74,7 +60,7 @@ public sealed class Multiplication_of_Ants : BaseSpellCard, IYgoPrePlayCancelabl
         if (!YgoPrePlaySelectedCardPayload.TryTakePending(this, out CardModel? picked) || picked is not BaseMonsterCard tribute)
             return;
 
-        if (tribute.DuelMonsterRace != DuelMonsterRace.Insect || !DuelMonsterFieldRegistry.GetFieldMonsters(Owner).Contains(tribute))
+        if (tribute.DuelMonsterRace != DuelMonsterRace.Insect || !DuelMonsterFieldRegistry.ContainsFieldMonster(Owner, tribute))
             return;
 
         Creature? tributePet = TributeSummonSelection.ResolvePetForFieldCard(Owner, tribute);
@@ -82,7 +68,7 @@ public sealed class Multiplication_of_Ants : BaseSpellCard, IYgoPrePlayCancelabl
             return;
 
         await CreatureCmd.Kill(tributePet, force: true);
-        CardPile? grave = GraveyardPile.CustomType.GetPile(Owner);
+        CardPile? grave = YgoPlayerPiles.Graveyard(Owner);
         if (grave != null)
             await CardPileCmd.Add(new[] { tribute }, grave, CardPilePosition.Top, tribute, false);
 
@@ -95,4 +81,9 @@ public sealed class Multiplication_of_Ants : BaseSpellCard, IYgoPrePlayCancelabl
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
+    private static List<BaseMonsterCard> BuildInsectFieldCandidates(Player player) => DuelMonsterFieldRegistry
+        .OrderedFieldMonsters(player)
+        .Where(m => m.DuelMonsterRace == DuelMonsterRace.Insect)
+        .ToList();
 }
