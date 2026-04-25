@@ -56,7 +56,8 @@ public static class EquipSpellGridSelect
                 OwnerNetId = player.NetId,
                 MinSelect = prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
-                CandidateRowCount = cards.Count
+                CandidateRowCount = cards.Count,
+                AllowCombatCard = true
             };
         }
 

@@ -32,17 +32,26 @@ public sealed class NecroticRitualPower : YgoDuelistPower
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
-        if (player != Owner.Player || Amount <= 0)
-            return;
+        BaseMonsterCard? sourceCard = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(Owner);
+        Player? ownerPlayer = sourceCard?.Owner ?? Owner.PetOwner ?? Owner.Player;
 
-        Player? ownerPlayer = Owner.Player;
+        if (player != ownerPlayer || Amount <= 0)
+        {
+            Godot.GD.Print(
+                $"[YgoDuelist][NecroticRitual] Skip turn-start ownerGate current={player?.NetId} resolvedOwner={ownerPlayer?.NetId} ownerPlayer={Owner.Player?.NetId} petOwner={Owner.PetOwner?.NetId} amount={Amount} source={sourceCard?.Id?.Entry}");
+            return;
+        }
+
         PlayerCombatState? pcs = ownerPlayer?.PlayerCombatState;
         Creature? playerCreature = ownerPlayer?.Creature;
         if (pcs == null || playerCreature == null)
+        {
+            Godot.GD.Print(
+                $"[YgoDuelist][NecroticRitual] Skip missing owner combat state owner={ownerPlayer?.NetId} pcsNull={pcs == null} creatureNull={playerCreature == null}");
             return;
+        }
 
-        BaseMonsterCard? sourceCard = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(Owner);
-
+        int applied = 0;
         foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(pcs))
         {
             if (!pet.IsAlive)
@@ -56,8 +65,11 @@ public sealed class NecroticRitualPower : YgoDuelistPower
                 await PowerCmd.ModifyAmount(evo, 2m, playerCreature, sourceCard);
             else
                 await PowerCmd.Apply<NecroticEvolutionPower>(pet, 2m, playerCreature, sourceCard);
+            applied++;
         }
 
+        Godot.GD.Print(
+            $"[YgoDuelist][NecroticRitual] Applied turn-start owner={ownerPlayer.NetId} source={sourceCard?.Id?.Entry} targets={applied} amountBefore={Amount}");
         await PowerCmd.Decrement(this);
     }
 }

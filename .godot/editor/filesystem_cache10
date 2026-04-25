@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1776893513::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1777082287
-YgoDuelist.deps.json::JSON::-1::1777082287::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1777152330
+YgoDuelist.deps.json::JSON::-1::1777152330::0::1::::<><><>0<>0<><>::
 ::res://docs/::1775731862
 card_database_import.schema.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
@@ -21,7 +21,7 @@ Archetype_Assignments.md::TextFile::-1::1776187686::0::1::::<><><>0<>0<><>::
 Cardpack_Visuals.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
 cards_database.json::JSON::-1::1776037923::0::1::::<><><>0<>0<><>::
 Cards_Revised.md::TextFile::-1::1776106972::0::1::::<><><>0<>0<><>::
-Card_integration_playbook.md::TextFile::-1::1777078932::0::1::::<><><>0<>0<><>::
+Card_integration_playbook.md::TextFile::-1::1777152197::0::1::::<><><>0<>0<><>::
 Card_Library_Filtering.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
 Clarifying_Weighted_Tag_Selection.md::TextFile::-1::1776032743::0::1::::<><><>0<>0<><>::
 Darken_Shader.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
@@ -36,7 +36,7 @@ GraveyardRelic_CardHooks.md::TextFile::-1::1776206682::0::1::::<><><>0<>0<><>::
 Monster_Stat_Scaling_Balanced.md::TextFile::-1::1776459174::0::1::::<><><>0<>0<><>::
 Monster_Stat_Scaling_OLD_Balancing.md::TextFile::-1::1777017311::0::1::::<><><>0<>0<><>::
 Monster_Stat_Scaling_REVISED_Balancing.md::TextFile::-1::1775991994::0::1::::<><><>0<>0<><>::
-Multiplayer_playbook.md::TextFile::-1::1777078932::0::1::::<><><>0<>0<><>::
+Multiplayer_playbook.md::TextFile::-1::1777152199::0::1::::<><><>0<>0<><>::
 normal_and_quickplay_spells_full_list.txt::TextFile::-1::1775769356::0::1::::<><><>0<>0<><>::
 Normal_Tierlist_Cost_Benefit_Analysis.md::TextFile::-1::1775999480::0::1::::<><><>0<>0<><>::
 Packs_System.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
@@ -2569,7 +2569,7 @@ duel_monster.tscn::PackedScene::-1::1776468398::0::1::::<><><>0<>0<><>::
 ygo_cardpack_darken.gdshader::Shader::8531701279145985693::1775731858::0::1::::<><><>0<>0<><>::
 ygo_portrait_mask.gdshader::Shader::1125073097238614858::1775731858::0::1::::<><><>0<>0<><>::
 ygo_sealed_portrait_mask.gdshader::Shader::7998489910795504196::1775731858::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/::1777082038
+::res://YgoDuelistCode/::1777082304
 GlobalUsings.cs::CSharpScript::5003571129668753727::1777082038::0::1::::<><><>0<>0<><>::
 YgoDuelistPreviews.cs::CSharpScript::1919646254319156778::1775731862::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/audit/::1776411025
@@ -4499,7 +4499,7 @@ NetFullCombatStateYgoChecksumPatch.cs::CSharpScript::4869249385530671018::177707
 NetPlayCardActionHandMonsterStanceWirePatch.cs::CSharpScript::7019327766297300369::1776894627::0::1::::<><><>0<>0<><>::
 PlayCardActionMpHandMonsterBattleStancePatch.cs::CSharpScript::604686456565094205::1775846648::0::1::::<><><>0<>0<><>::
 PlayCardActionRemoteHandDuelMonsterFixPatch.cs::CSharpScript::6314914327488027301::1776850357::0::1::::<><><>0<>0<><>::
-PlayerChoiceSynchronizerStaleReceivePatch.cs::CSharpScript::5597728969184158532::1776065924::0::1::::<><><>0<>0<><>::
+PlayerChoiceSynchronizerStaleReceivePatch.cs::CSharpScript::5597728969184158532::1777151039::0::1::::<><><>0<>0<><>::
 YgoDuelistIconOutlineTexturePatch.cs::CSharpScript::5053432279786384980::1775772021::0::1::::<><><>0<>0<><>::
 YgoSpellTrapPlayCardMpResolver.cs::CSharpScript::8160151462068339262::1777074111::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForPlayers/::1775771344
@@ -4529,7 +4529,7 @@ YgoRelicInventoryRightClickPatch.cs::CSharpScript::400587442969204419::177610683
 ::res://YgoDuelistCode/Patches/PatchesForRestSite/::1775862816
 YgoCampfireRestSitePatches.cs::CSharpScript::1454065712297427891::1777074932::0::1::::<><><>0<>0<><>::
 YgoRestSiteMpHealSync.cs::CSharpScript::1355569748775434219::1776547572::0::1::::<><><>0<>0<><>::
-YgoSmithRestSiteOptionPatch.cs::CSharpScript::2500621191229723954::1777075710::0::1::::<><><>0<>0<><>::
+YgoSmithRestSiteOptionPatch.cs::CSharpScript::2500621191229723954::1777151088::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForRewards/::1775731861
 NSimpleCardSelectScreenCancelablePatch.cs::CSharpScript::165793800929947136::1775731861::0::1::::<><><>0<>0<><>::
 YgoCardRewardDescriptionPatch.cs::CSharpScript::4358270730026536294::1775731861::0::1::::<><><>0<>0<><>::
@@ -4590,14 +4590,14 @@ LegendaryFiendAtkPower.cs::CSharpScript::5712696943406316017::1776154138::0::1::
 LimiterRemovalPower.cs::CSharpScript::2384482974772007201::1777078844::0::1::::<><><>0<>0<><>::
 LimitRemovedPower.cs::CSharpScript::3607227981087433446::1775731861::0::1::::<><><>0<>0<><>::
 NecroticEvolutionPower.cs::CSharpScript::410002550844918454::1776484089::0::1::::<><><>0<>0<><>::
-NecroticRitualPower.cs::CSharpScript::7891277573136613564::1777078844::0::1::::<><><>0<>0<><>::
+NecroticRitualPower.cs::CSharpScript::7891277573136613564::1777151933::0::1::::<><><>0<>0<><>::
 NextActivatableEnergyDiscountPower.cs::CSharpScript::8699369885314959468::1776807836::0::1::::<><><>0<>0<><>::
 NextSpellDiscountPower.cs::CSharpScript::7144729927009179631::1776807838::0::1::::<><><>0<>0<><>::
 NextSpellDiscountPowerPlus.cs::CSharpScript::7329541118841181843::1776807841::0::1::::<><><>0<>0<><>::
 NextTrapDiscountPower.cs::CSharpScript::3324609861526380844::1776807839::0::1::::<><><>0<>0<><>::
 NextTrapDiscountPowerPlus.cs::CSharpScript::9157591320351502690::1776807854::0::1::::<><><>0<>0<><>::
 NightmareWheelPower.cs::CSharpScript::4396450482434853195::1777074075::0::1::::<><><>0<>0<><>::
-PumpkingRitualPower.cs::CSharpScript::5147271716658509363::1777078887::0::1::::<><><>0<>0<><>::
+PumpkingRitualPower.cs::CSharpScript::5147271716658509363::1777151933::0::1::::<><><>0<>0<><>::
 PyramidEnergyAtkBonusPower.cs::CSharpScript::4387927021003296676::1775731861::0::1::::<><><>0<>0<><>::
 PyramidEnergyDefBonusPower.cs::CSharpScript::3542704116580648958::1775731861::0::1::::<><><>0<>0<><>::
 RaDoomedPower.cs::CSharpScript::8494155503278645719::1775731861::0::1::::<><><>0<>0<><>::
@@ -4652,14 +4652,14 @@ YgoDuelistRelic.cs::CSharpScript::1362123596858446735::1773589494::0::1::::<><><
 ::res://YgoDuelistCode/RestSite/::1775703349
 ::res://YgoDuelistCode/Rewards/::1775731861
 YgoCampfireDeckEditUiReward.cs::CSharpScript::6724651277447641421::1775731861::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Services/::1777081545
+::res://YgoDuelistCode/Services/::1777082303
 ActivatedEffectTributeSelectionPayload.cs::CSharpScript::8872545235464063281::1775731861::0::1::::<><><>0<>0<><>::
 CardModelEnergyCache.cs::CSharpScript::6082268261041224344::1777073957::0::1::::<><><>0<>0<><>::
 ColdWaveSpellTrapLockGate.cs::CSharpScript::4441843039876981339::1776063803::0::1::::<><><>0<>0<><>::
 ConvulsionOfNatureReveal.cs::CSharpScript::3023396004894668801::1775731861::0::1::::<><><>0<>0<><>::
 EmergencyProvisionsPlayPayload.cs::CSharpScript::7010835968747601668::1775731861::0::1::::<><><>0<>0<><>::
 EnragedBattleOxService.cs::CSharpScript::4365140785502263655::1777078461::0::1::::<><><>0<>0<><>::
-EquipSpellGridSelect.cs::CSharpScript::498956540115197320::1777058660::0::1::::<><><>0<>0<><>::
+EquipSpellGridSelect.cs::CSharpScript::498956540115197320::1777151010::0::1::::<><><>0<>0<><>::
 EquipSpellPlayPayload.cs::CSharpScript::5106627234276642076::1775731861::0::1::::<><><>0<>0<><>::
 FairyOfSpringReturnedEquipLock.cs::CSharpScript::237312824346856433::1775731861::0::1::::<><><>0<>0<><>::
 FortifiedBeastsDuelMonsterHp.cs::CSharpScript::8243856441091266564::1777078461::0::1::::<><><>0<>0<><>::
@@ -4667,7 +4667,7 @@ FusionMaterialArchetypeIndex.cs::CSharpScript::7427489626271837717::1775731861::
 FusionMaterialSlotMatching.cs::CSharpScript::1554402703722385182::1775731861::0::1::::<><><>0<>0<><>::
 FusionSpellPlayPayload.cs::CSharpScript::2744736387327768765::1775835848::0::1::::<><><>0<>0<><>::
 FusionSummonSelection.cs::CSharpScript::3979603942486054667::1777073957::0::1::::<><><>0<>0<><>::
-GridCombatMpExpectation.cs::CSharpScript::2937452810282598245::1776065898::0::1::::<><><>0<>0<><>::
+GridCombatMpExpectation.cs::CSharpScript::2937452810282598245::1777150981::0::1::::<><><>0<>0<><>::
 MonsterEnergyCostCalculator.cs::CSharpScript::1293572645279284696::1776749022::0::1::::<><><>0<>0<><>::
 ObeliskActivatedTributePayload.cs::CSharpScript::1049001716102736951::1775731861::0::1::::<><><>0<>0<><>::
 PlayerCardCmd.cs::CSharpScript::4368961534393239732::1777073957::0::1::::<><><>0<>0<><>::
@@ -4684,7 +4684,7 @@ SecretPassPlayPayload.cs::CSharpScript::6310772028159575942::1775731861::0::1:::
 SevenWeaponsHunterState.cs::CSharpScript::9086169580212704214::1777078461::0::1::::<><><>0<>0<><>::
 SliferSkyDragonService.cs::CSharpScript::4124666475673802586::1777078461::0::1::::<><><>0<>0<><>::
 TailorOfTheFicklePlayPayload.cs::CSharpScript::2768140358153202292::1775731862::0::1::::<><><>0<>0<><>::
-TributeSummonGridSelect.cs::CSharpScript::5675038746720739607::1777073957::0::1::::<><><>0<>0<><>::
+TributeSummonGridSelect.cs::CSharpScript::5675038746720739607::1777151139::0::1::::<><><>0<>0<><>::
 TributeSummonPlayPayload.cs::CSharpScript::2191928419489268336::1775917398::0::1::::<><><>0<>0<><>::
 TributeSummonSelection.cs::CSharpScript::7599590929164813862::1777078886::0::1::::<><><>0<>0<><>::
 TrunkSideDeckEditorSession.cs::CSharpScript::8258857538257566088::1775731862::0::1::::<><><>0<>0<><>::

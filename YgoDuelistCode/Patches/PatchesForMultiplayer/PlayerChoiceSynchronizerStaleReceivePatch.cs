@@ -50,24 +50,34 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
             GD.Print($"[YgoDuelist][MP][PlayerChoice] recv prefix choiceId={choiceId} localNext={next} sender={player.NetId} result={result}");
 
         GridCombatMpExpectation.Active? gridExp = GridCombatMpExpectation.Pending.Value;
-        if (gridExp.HasValue
-            && player.NetId == gridExp.Value.OwnerNetId
-            && result.type == PlayerChoiceType.Index
-            && result.indexes != null)
+        if (gridExp.HasValue && player.NetId == gridExp.Value.OwnerNetId)
         {
-            int idxCount = result.indexes.Count;
-            if (idxCount < gridExp.Value.MinSelect || idxCount > gridExp.Value.MaxSelect)
+            if (result.type == PlayerChoiceType.Index && result.indexes != null)
             {
-                GD.PrintErr(
-                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (count={idxCount} expected [{gridExp.Value.MinSelect},{gridExp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
-                return false;
-            }
+                int idxCount = result.indexes.Count;
+                if (idxCount < gridExp.Value.MinSelect || idxCount > gridExp.Value.MaxSelect)
+                {
+                    GD.PrintErr(
+                        $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (count={idxCount} expected [{gridExp.Value.MinSelect},{gridExp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
+                    return false;
+                }
 
-            int rows = gridExp.Value.CandidateRowCount;
-            if (rows > 0 && result.indexes.Any(ix => ix < 0 || ix >= rows))
+                int rows = gridExp.Value.CandidateRowCount;
+                if (rows > 0 && result.indexes.Any(ix => ix < 0 || ix >= rows))
+                {
+                    GD.PrintErr(
+                        $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (out of bounds for rows={rows}) choiceId={choiceId} sender={player.NetId} indexes={string.Join(",", result.indexes)}");
+                    return false;
+                }
+            }
+            else if (result.type == PlayerChoiceType.CombatCard && gridExp.Value.AllowCombatCard)
+            {
+                // Expected combat-card wire.
+            }
+            else
             {
                 GD.PrintErr(
-                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (out of bounds for rows={rows}) choiceId={choiceId} sender={player.NetId} indexes={string.Join(",", result.indexes)}");
+                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote {result.type} while waiting for active grid choiceId={choiceId} sender={player.NetId} allowCombat={gridExp.Value.AllowCombatCard}");
                 return false;
             }
         }
@@ -160,26 +170,36 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
                 continue;
 
             NetPlayerChoiceResult net = task.Result;
-            if (net.type != PlayerChoiceType.Index || net.indexes == null)
-                continue;
-
-            int count = net.indexes.Count;
-            bool badCount = count < exp.Value.MinSelect || count > exp.Value.MaxSelect;
-            int rows = exp.Value.CandidateRowCount;
-            bool badRow = rows > 0 && net.indexes.Any(ix => ix < 0 || ix >= rows);
-            if (!badCount && !badRow)
-                continue;
-
-            list.RemoveAt(i);
-            if (badCount)
+            if (net.type == PlayerChoiceType.Index && net.indexes != null)
             {
-                GD.PrintErr(
-                    $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (count={count} expected [{exp.Value.MinSelect},{exp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
+                int count = net.indexes.Count;
+                bool badCount = count < exp.Value.MinSelect || count > exp.Value.MaxSelect;
+                int rows = exp.Value.CandidateRowCount;
+                bool badRow = rows > 0 && net.indexes.Any(ix => ix < 0 || ix >= rows);
+                if (!badCount && !badRow)
+                    continue;
+
+                list.RemoveAt(i);
+                if (badCount)
+                {
+                    GD.PrintErr(
+                        $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (count={count} expected [{exp.Value.MinSelect},{exp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
+                }
+                else
+                {
+                    GD.PrintErr(
+                        $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (out of bounds for rows={rows}) choiceId={choiceId} sender={player.NetId} indexes={string.Join(",", net.indexes)}");
+                }
+            }
+            else if (net.type == PlayerChoiceType.CombatCard && exp.Value.AllowCombatCard)
+            {
+                continue;
             }
             else
             {
+                list.RemoveAt(i);
                 GD.PrintErr(
-                    $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (out of bounds for rows={rows}) choiceId={choiceId} sender={player.NetId} indexes={string.Join(",", net.indexes)}");
+                    $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered {net.type} for active grid choiceId={choiceId} sender={player.NetId} allowCombat={exp.Value.AllowCombatCard}");
             }
         }
     }

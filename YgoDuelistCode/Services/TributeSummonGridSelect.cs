@@ -126,7 +126,8 @@ public static class TributeSummonGridSelect
                 OwnerNetId = player.NetId,
                 MinSelect = prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
-                CandidateRowCount = cards.Count
+                CandidateRowCount = cards.Count,
+                AllowCombatCard = true
             };
         }
 
@@ -245,7 +246,8 @@ public static class TributeSummonGridSelect
                 OwnerNetId = player.NetId,
                 MinSelect = prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
-                CandidateRowCount = cards.Count
+                CandidateRowCount = cards.Count,
+                AllowCombatCard = false
             };
         }
 

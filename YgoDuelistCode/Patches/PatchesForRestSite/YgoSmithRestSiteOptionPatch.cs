@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Models;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.RestSite;
 using MegaCrit.Sts2.Core.GameActions;
@@ -86,8 +87,37 @@ public static class YgoSmithRestSiteOptionOnSelectPatch
         }
         else
         {
-            result = (from i in (await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(player, choiceId)).AsIndexes()
-                select list[i]).ToList();
+            PlayerChoiceResult remoteResult =
+                await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(player, choiceId);
+            if (remoteResult.ChoiceType == PlayerChoiceType.Index)
+            {
+                List<int> indexes = remoteResult.AsIndexes().ToList();
+                if (indexes.Any(i => i < 0 || i >= list.Count))
+                {
+                    Godot.GD.PrintErr(
+                        $"[YgoDuelist][MP][RestSiteSmith] Remote Index out of range choiceId={choiceId} ownerNet={player.NetId} indexes=[{string.Join(",", indexes)}] candidates={list.Count}");
+                    return [];
+                }
+
+                result = indexes.Select(i => list[i]).ToList();
+            }
+            else if (remoteResult.ChoiceType == PlayerChoiceType.DeckCard)
+            {
+                List<CardModel> deckCards = remoteResult.AsDeckCards().ToList();
+                Godot.GD.PrintErr(
+                    $"[YgoDuelist][MP][RestSiteSmith] Received DeckCard wire for YGO smith choiceId={choiceId} ownerNet={player.NetId}; accepting deck-card fallback and matching into candidates.");
+                result = deckCards
+                    .Select(card => list.FirstOrDefault(candidate => ReferenceEquals(candidate, card) || candidate.Id == card.Id))
+                    .Where(card => card != null)
+                    .Cast<CardModel>()
+                    .ToList();
+            }
+            else
+            {
+                Godot.GD.PrintErr(
+                    $"[YgoDuelist][MP][RestSiteSmith] Unexpected PlayerChoiceType {remoteResult.ChoiceType} choiceId={choiceId} ownerNet={player.NetId}; treating as cancel.");
+                result = [];
+            }
         }
 
         return result;

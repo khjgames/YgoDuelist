@@ -21,6 +21,11 @@ public static class GridCombatMpExpectation
         /// Number of selectable rows in the grid snapshot for this wait (0 = skip per-index bounds checks).
         /// </summary>
         public int CandidateRowCount { get; init; }
+
+        /// <summary>
+        /// True when this wait accepts combat-card wire results. Indexed-only waits use false so stale card buffers are rejected.
+        /// </summary>
+        public bool AllowCombatCard { get; init; }
     }
 
     public static readonly AsyncLocal<Active?> Pending = new();

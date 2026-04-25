@@ -18,24 +18,37 @@ public static class YgoMonsterFlipEffectRunner
     /// </summary>
     public static void ScheduleIfFlippedOnField(AbstractMonsterCard card, bool wasFaceDownBefore, PlayerChoiceContext? choiceContext)
     {
-        if (!wasFaceDownBefore || card.FaceDown)
+        if (!MarkFlippedFaceUpOnField(card, wasFaceDownBefore))
             return;
-        if (!card.IsMutable)
-            return;
-        if (card is not BaseMonsterCard bm || bm.Owner == null)
-            return;
-        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(bm.Owner, bm))
-            return;
-        bm.ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline();
-        bm.FlippedThisTurn = true;
         if (card is not IMonsterFlipEffect flip)
             return;
 
         PlayerChoiceContext ctx = YgoChoiceContexts.Blocking(choiceContext);
-        TaskHelper.RunSafely(RunFlipAsync(flip, ctx, card));
+        TaskHelper.RunSafely(RunFlipEffectAsync(flip, ctx, card));
     }
 
-    private static async Task RunFlipAsync(IMonsterFlipEffect flip, PlayerChoiceContext ctx, AbstractMonsterCard self)
+    /// <summary>
+    /// Records shared "this monster flipped face-up" state after the caller has already changed
+    /// <see cref="AbstractMonsterCard.FaceDown"/> to false. This is separate from activating the optional flip effect
+    /// so prompt-based flips can become face-up before the synced choice resolves.
+    /// </summary>
+    public static bool MarkFlippedFaceUpOnField(AbstractMonsterCard card, bool wasFaceDownBefore)
+    {
+        if (!wasFaceDownBefore || card.FaceDown)
+            return false;
+        if (!card.IsMutable)
+            return false;
+        if (card is not BaseMonsterCard bm || bm.Owner == null)
+            return false;
+        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(bm.Owner, bm))
+            return false;
+
+        bm.ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline();
+        bm.FlippedThisTurn = true;
+        return true;
+    }
+
+    public static async Task RunFlipEffectAsync(IMonsterFlipEffect flip, PlayerChoiceContext ctx, AbstractMonsterCard self)
     {
         if (self is BaseMonsterCard monster && monster.Owner != null)
             await YgoPreviewGridSelection.ShowPreviewAsync(ctx, new[] { self }, monster.Owner, ResolvingFlipEffectPrompt);

@@ -32,26 +32,40 @@ public sealed class PumpkingRitualPower : YgoDuelistPower
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
-        if (player != Owner.Player || Amount <= 0)
-            return;
+        BaseMonsterCard? sourceCard = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(Owner);
+        Player? ownerPlayer = sourceCard?.Owner ?? Owner.PetOwner ?? Owner.Player;
 
-        Player? ownerPlayer = Owner.Player;
+        if (player != ownerPlayer || Amount <= 0)
+        {
+            Godot.GD.Print(
+                $"[YgoDuelist][PumpkingRitual] Skip turn-start ownerGate current={player?.NetId} resolvedOwner={ownerPlayer?.NetId} ownerPlayer={Owner.Player?.NetId} petOwner={Owner.PetOwner?.NetId} amount={Amount} source={sourceCard?.Id?.Entry}");
+            return;
+        }
+
         Creature? playerCreature = ownerPlayer?.Creature;
         if (ownerPlayer == null || playerCreature == null)
+        {
+            Godot.GD.Print(
+                $"[YgoDuelist][PumpkingRitual] Skip missing owner creature owner={ownerPlayer?.NetId}");
             return;
+        }
 
         bool castleUp = DuelMonsterFieldRegistry.OrderedFieldMonsters(ownerPlayer)
             .Any(m => m is Castle_of_Dark_Illusions && !m.FaceDown);
         if (!castleUp)
+        {
+            Godot.GD.Print(
+                $"[YgoDuelist][PumpkingRitual] Skip no face-up Castle owner={ownerPlayer.NetId} source={sourceCard?.Id?.Entry} amount={Amount}");
             return;
-
-        BaseMonsterCard? sourceCard = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(Owner);
+        }
 
         if (Owner.GetPower<NecroticEvolutionPower>() is { } evo)
             await PowerCmd.ModifyAmount(evo, 1m, playerCreature, sourceCard);
         else
             await PowerCmd.Apply<NecroticEvolutionPower>(Owner, 1m, playerCreature, sourceCard);
 
+        Godot.GD.Print(
+            $"[YgoDuelist][PumpkingRitual] Applied turn-start owner={ownerPlayer.NetId} source={sourceCard?.Id?.Entry} amountBefore={Amount}");
         await PowerCmd.Decrement(this);
     }
 }
