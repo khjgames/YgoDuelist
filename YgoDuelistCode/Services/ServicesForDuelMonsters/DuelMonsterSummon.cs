@@ -93,6 +93,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
     public static async Task<bool> TrySummonDuelMonster(Player player, BaseMonsterCard card, PlayerChoiceContext _, bool canAttackThisTurn = false)
     {
         if (player?.Creature == null
+            || player.PlayerCombatState == null
             || (!card.CanSummonDuelMonster && !card.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
             return false;
 

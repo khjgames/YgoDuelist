@@ -88,7 +88,7 @@ public static class NetFullCombatStateYgoChecksumPatch
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[YgoDuelist][MP][Checksum] Prefix reconcile failed: {ex.Message}");
+            GD.PrintErr($"[YgoDuelist][MP][Checksum] Prefix reconcile failed: {ex}");
         }
     }
 
