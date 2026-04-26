@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 
@@ -6,6 +7,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 public static class YgoIntentAttackDamage
 {
+    public static bool HasAttackIntent(Creature enemy) =>
+        enemy.Monster?.NextMove?.Intents?.Any(intent => intent is AttackIntent) == true;
+
     /// <summary>Sum of <see cref="AttackIntent"/> damage this enemy would deal to <paramref name="playerTarget"/> on its current move.</summary>
     public static int GetTotalAttackIntentDamage(Creature enemy, Creature playerTarget)
     {

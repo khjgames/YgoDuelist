@@ -57,7 +57,8 @@ public static class EquipSpellGridSelect
                 MinSelect = prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
                 CandidateRowCount = cards.Count,
-                AllowCombatCard = true
+                AllowCombatCard = true,
+                AllowIndex = true
             };
         }
 

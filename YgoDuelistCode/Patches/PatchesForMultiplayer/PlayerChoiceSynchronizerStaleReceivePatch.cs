@@ -52,7 +52,7 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
         GridCombatMpExpectation.Active? gridExp = GridCombatMpExpectation.Pending.Value;
         if (gridExp.HasValue && player.NetId == gridExp.Value.OwnerNetId)
         {
-            if (result.type == PlayerChoiceType.Index && result.indexes != null)
+            if (result.type == PlayerChoiceType.Index && result.indexes != null && gridExp.Value.AllowIndex)
             {
                 int idxCount = result.indexes.Count;
                 if (idxCount < gridExp.Value.MinSelect || idxCount > gridExp.Value.MaxSelect)
@@ -77,7 +77,7 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
             else
             {
                 GD.PrintErr(
-                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote {result.type} while waiting for active grid choiceId={choiceId} sender={player.NetId} allowCombat={gridExp.Value.AllowCombatCard}");
+                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote {result.type} while waiting for active grid choiceId={choiceId} sender={player.NetId} allowCombat={gridExp.Value.AllowCombatCard} allowIndex={gridExp.Value.AllowIndex}");
                 return false;
             }
         }
@@ -170,7 +170,7 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
                 continue;
 
             NetPlayerChoiceResult net = task.Result;
-            if (net.type == PlayerChoiceType.Index && net.indexes != null)
+            if (net.type == PlayerChoiceType.Index && net.indexes != null && exp.Value.AllowIndex)
             {
                 int count = net.indexes.Count;
                 bool badCount = count < exp.Value.MinSelect || count > exp.Value.MaxSelect;
@@ -199,7 +199,7 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
             {
                 list.RemoveAt(i);
                 GD.PrintErr(
-                    $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered {net.type} for active grid choiceId={choiceId} sender={player.NetId} allowCombat={exp.Value.AllowCombatCard}");
+                    $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered {net.type} for active grid choiceId={choiceId} sender={player.NetId} allowCombat={exp.Value.AllowCombatCard} allowIndex={exp.Value.AllowIndex}");
             }
         }
     }

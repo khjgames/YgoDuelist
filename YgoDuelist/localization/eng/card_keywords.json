@@ -150,10 +150,10 @@
   "20048.description": "At combat end, take damage equal to your Doom.",
 
   "20049.title": "Slifer's Pressure",
-  "20049.description": "Lose [red]5[/red] Strength until end of turn; before your turn ends, enemies that would attack you for [red]0[/red] gain [purple]10[/purple] Blight.",
+  "20049.description": "Lose [red]4[/red] Strength until end of turn; enemies that would attack you for [red]0[/red] gain [purple]10[/purple] Blight.",
 
   "20050.title": "Slifer's Pressure +",
-  "20050.description": "Lose [red]7[/red] Strength until end of turn; before your turn ends, enemies that would attack you for [red]0[/red] gain [purple]13[/purple] Blight.",
+  "20050.description": "Lose [red]6[/red] Strength until end of turn; enemies that would attack you for [red]0[/red] gain [purple]13[/purple] Blight.",
 
   "20051.title": "Activate Effect",
   "20051.description": "Can be activated on the field via command.",

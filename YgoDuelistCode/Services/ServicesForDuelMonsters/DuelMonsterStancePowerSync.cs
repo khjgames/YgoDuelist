@@ -39,6 +39,7 @@ public static class DuelMonsterStancePowerSync
 
     private static bool _loggedMissingMutablePowerList;
     private static bool _loggedMissingPowerOwnerField;
+    private static bool _loggedChecksumDirectAddFailed;
 
     /// <summary>Queue sync after card stance/face-down changed (e.g. keywords updated). No-op if card has no field summon.</summary>
     public static void RequestSyncIfSummoned(AbstractMonsterCard card)
@@ -163,12 +164,23 @@ public static class DuelMonsterStancePowerSync
         PowerModel proto = ModelDb.Power<T>();
         PowerModel power = proto.ToMutable();
         power.Applier = applier;
-        power.SetAmount(1, silent: true);
 
         if (TryGetMutablePowerList(pet) is { } powers && TrySetPowerOwner(power, pet))
         {
-            powers.Add(power);
-            return;
+            try
+            {
+                power.SetAmount(1, silent: true);
+                powers.Add(power);
+                return;
+            }
+            catch (Exception ex)
+            {
+                if (!_loggedChecksumDirectAddFailed)
+                {
+                    _loggedChecksumDirectAddFailed = true;
+                    GD.PrintErr($"[YgoDuelist][MP][DuelMonsterStancePowerSync] Direct checksum stance add failed ({ex.GetType().Name}); falling back to PowerModel ApplyInternal.");
+                }
+            }
         }
 
         power.ApplyInternal(pet, 1m, silent: true);

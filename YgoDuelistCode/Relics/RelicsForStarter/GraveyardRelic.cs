@@ -154,10 +154,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         {
             if (p.Creature?.Side != CombatSide.Player)
                 continue;
-            Slifer_the_Sky_Dragon? slifer = SliferSkyDragonService.GetControllingSlifer(p);
-            if (slifer == null)
-                continue;
-            await SliferSkyDragonService.ApplySliferPressureToEnemyAsync(ctx, p, creature, slifer);
+            await SliferSkyDragonService.ApplyAllSliferPressureToEnemyAsync(ctx, p, creature);
         }
     }
 

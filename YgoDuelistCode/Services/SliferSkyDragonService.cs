@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -11,27 +11,31 @@ using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 
-using YgoDuelist.YgoDuelistCode.Services;
-
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 public static class SliferSkyDragonService
 {
     public static Slifer_the_Sky_Dragon? GetControllingSlifer(Player? player)
     {
+        foreach (Slifer_the_Sky_Dragon slifer in GetControllingSlifers(player))
+            return slifer;
+        return null;
+    }
+
+    public static IEnumerable<Slifer_the_Sky_Dragon> GetControllingSlifers(Player? player)
+    {
         if (player?.PlayerCombatState == null)
-            return null;
+            yield break;
 
         foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
             if (!pet.IsAlive)
                 continue;
-            BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet);
-            if (src is IYgoSliferSkyDragonFieldMonster)
-                return (Slifer_the_Sky_Dragon)src;
+            if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is Slifer_the_Sky_Dragon slifer
+                && slifer is IYgoSliferSkyDragonFieldMonster
+                && !slifer.FaceDown)
+                yield return slifer;
         }
-
-        return null;
     }
 
     public static async Task ApplySliferPressureToEnemyAsync(
@@ -52,10 +56,12 @@ public static class SliferSkyDragonService
             await PowerCmd.Apply<SlifersPressureTemporaryStrengthPower>(enemy, strLoss, controller.Creature, slifer);
     }
 
-    public static async Task ApplySliferPressureToAllEnemiesAsync(PlayerChoiceContext ctx, Player player)
+    public static async Task ApplySliferPressureFromSliferToAllEnemiesAsync(
+        PlayerChoiceContext ctx,
+        Player player,
+        Slifer_the_Sky_Dragon slifer)
     {
-        Slifer_the_Sky_Dragon? slifer = GetControllingSlifer(player);
-        if (slifer == null || player.Creature?.CombatState == null)
+        if (player.Creature?.CombatState == null)
             return;
 
         foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(player.Creature.CombatState))
@@ -64,4 +70,14 @@ public static class SliferSkyDragonService
         }
     }
 
+    public static async Task ApplyAllSliferPressureToEnemyAsync(
+        PlayerChoiceContext ctx,
+        Player player,
+        Creature enemy)
+    {
+        foreach (Slifer_the_Sky_Dragon slifer in GetControllingSlifers(player))
+        {
+            await ApplySliferPressureToEnemyAsync(ctx, player, enemy, slifer);
+        }
+    }
 }

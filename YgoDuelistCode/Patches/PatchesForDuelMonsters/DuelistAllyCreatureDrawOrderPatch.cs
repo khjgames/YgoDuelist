@@ -1,11 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Rooms;
 using YgoDuelist.YgoDuelistCode.Models;
 using ByrdpipMonster = MegaCrit.Sts2.Core.Models.Monsters.Byrdpip;
 using YgoDuelistCharacter = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
@@ -24,6 +28,9 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 public static class DuelistAllyCreatureDrawOrder
 {
     private static string? _lastDebugSignature;
+    private static CanvasItem? _activeHoveredEnemyGui;
+    private static int _hoverEnemyGuiSerial;
+    private static readonly Dictionary<CanvasItem, HoverEnemyGuiRestoreState> HoverEnemyGuiRestoreStates = new();
 
     public static void Apply()
     {
@@ -120,6 +127,61 @@ public static class DuelistAllyCreatureDrawOrder
             ally.MoveChild(desired[i], i);
     }
 
+    public static void RefreshLayoutAfterDuelPetRosterChanged(string reason)
+    {
+        NCombatRoom? room = NCombatRoom.Instance;
+        if (room == null || !GodotObject.IsInstanceValid(room))
+            return;
+
+        ICombatRoomVisuals? visuals = Traverse.Create(room).Field<ICombatRoomVisuals>("_visuals").Value;
+        float scaling = visuals?.Encounter.GetCameraScaling() ?? 1f;
+        bool fullyCenterPlayers = visuals?.Encounter.FullyCenterPlayers ?? false;
+
+        List<NCreature> allies = room.CreatureNodes
+            .Where(n => n != null
+                && GodotObject.IsInstanceValid(n)
+                && (n.Entity.IsPlayer || n.Entity.PetOwner != null))
+            .ToList();
+
+        if (allies.Count == 0)
+            return;
+
+        NCombatRoom.PositionPlayersAndPets(allies, scaling, fullyCenterPlayers);
+        Apply();
+        GD.Print($"[YgoDuelist][DrawOrder] refreshed ally pet layout reason={reason} allies={allies.Count}");
+    }
+
+    public static void OnCreatureFocused(NCreature creature)
+    {
+        if (!IsLocalDuelistCombat())
+            return;
+
+        if (!IsEnemyCreature(creature))
+        {
+            ScheduleRestoreActiveHoveredEnemyGui();
+            return;
+        }
+
+        CanvasItem? gui = GetCreatureStateDisplay(creature);
+        if (gui == null)
+            return;
+
+        if (_activeHoveredEnemyGui != null && _activeHoveredEnemyGui != gui)
+            ScheduleRestoreHoveredEnemyGui(_activeHoveredEnemyGui);
+
+        RaiseHoveredEnemyGui(gui);
+    }
+
+    public static void OnCreatureUnfocused(NCreature creature)
+    {
+        if (!IsLocalDuelistCombat() || !IsEnemyCreature(creature))
+            return;
+
+        CanvasItem? gui = GetCreatureStateDisplay(creature);
+        if (gui != null && gui == _activeHoveredEnemyGui)
+            ScheduleRestoreHoveredEnemyGui(gui);
+    }
+
     private static void MoveAllyContainerAboveEnemyContainer(NCombatRoom room, Node ally)
     {
         Node? enemy = room.GetNodeOrNull<Node>("%EnemyContainer");
@@ -182,6 +244,88 @@ public static class DuelistAllyCreatureDrawOrder
         return branch;
     }
 
+    private static bool IsLocalDuelistCombat()
+    {
+        CombatState? combat = CombatManager.Instance?.DebugOnlyGetState();
+        if (combat == null)
+            return false;
+
+        Player? me = LocalContext.GetMe(combat.Players);
+        return me?.Character is YgoDuelistCharacter;
+    }
+
+    private static bool IsEnemyCreature(NCreature creature)
+    {
+        return GodotObject.IsInstanceValid(creature)
+            && creature.Entity.IsMonster
+            && creature.Entity.PetOwner == null
+            && creature.Entity.Player == null;
+    }
+
+    private static CanvasItem? GetCreatureStateDisplay(NCreature creature)
+    {
+        return GodotObject.IsInstanceValid(creature)
+            ? creature.GetNodeOrNull<NCreatureStateDisplay>("%HealthBar")
+            : null;
+    }
+
+    private static void RaiseHoveredEnemyGui(CanvasItem gui)
+    {
+        if (!GodotObject.IsInstanceValid(gui))
+            return;
+
+        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState state))
+        {
+            state = new HoverEnemyGuiRestoreState(gui.ZIndex, gui.ZAsRelative);
+            HoverEnemyGuiRestoreStates[gui] = state;
+        }
+
+        state.Serial = ++_hoverEnemyGuiSerial;
+        _activeHoveredEnemyGui = gui;
+        gui.ZAsRelative = false;
+        gui.ZIndex = Mathf.Max(1, state.ZIndex + 1);
+    }
+
+    private static void ScheduleRestoreActiveHoveredEnemyGui()
+    {
+        if (_activeHoveredEnemyGui != null)
+            ScheduleRestoreHoveredEnemyGui(_activeHoveredEnemyGui);
+    }
+
+    private static void ScheduleRestoreHoveredEnemyGui(CanvasItem gui)
+    {
+        if (!GodotObject.IsInstanceValid(gui))
+            return;
+
+        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState state))
+            return;
+
+        state.Serial = ++_hoverEnemyGuiSerial;
+        if (_activeHoveredEnemyGui == gui)
+            _activeHoveredEnemyGui = null;
+
+        TaskHelper.RunSafely(RestoreHoveredEnemyGuiAfterDelayAsync(gui, state.Serial));
+    }
+
+    private static async Task RestoreHoveredEnemyGuiAfterDelayAsync(CanvasItem gui, int serial)
+    {
+        if (!GodotObject.IsInstanceValid(gui))
+            return;
+
+        SceneTreeTimer timer = gui.GetTree().CreateTimer(0.2);
+        await gui.ToSignal(timer, SceneTreeTimer.SignalName.Timeout);
+
+        if (!GodotObject.IsInstanceValid(gui))
+            return;
+
+        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState state) || state.Serial != serial)
+            return;
+
+        gui.ZIndex = state.ZIndex;
+        gui.ZAsRelative = state.ZAsRelative;
+        HoverEnemyGuiRestoreStates.Remove(gui);
+    }
+
     private static void PrintDebugOnce(string reason, string details)
     {
         string signature = $"{reason}:{details}";
@@ -214,6 +358,19 @@ public static class DuelistAllyCreatureDrawOrder
 
         return string.Join(", ", parts);
     }
+
+    private sealed class HoverEnemyGuiRestoreState
+    {
+        public HoverEnemyGuiRestoreState(int zIndex, bool zAsRelative)
+        {
+            ZIndex = zIndex;
+            ZAsRelative = zAsRelative;
+        }
+
+        public int ZIndex { get; }
+        public bool ZAsRelative { get; }
+        public int Serial { get; set; }
+    }
 }
 
 [HarmonyPatch(typeof(NCombatRoom), nameof(NCombatRoom.PositionPlayersAndPets))]
@@ -224,6 +381,28 @@ public static class DuelistAllyCreatureDrawOrderAfterLayoutPatch
     public static void Postfix()
     {
         DuelistAllyCreatureDrawOrder.Apply();
+    }
+}
+
+[HarmonyPatch(typeof(NCreature), "OnFocus")]
+public static class DuelistHoveredEnemyGuiDrawOrderFocusPatch
+{
+    [HarmonyPostfix]
+    [HarmonyPriority(Priority.Last)]
+    public static void Postfix(NCreature __instance)
+    {
+        DuelistAllyCreatureDrawOrder.OnCreatureFocused(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(NCreature), "OnUnfocus")]
+public static class DuelistHoveredEnemyGuiDrawOrderUnfocusPatch
+{
+    [HarmonyPostfix]
+    [HarmonyPriority(Priority.Last)]
+    public static void Postfix(NCreature __instance)
+    {
+        DuelistAllyCreatureDrawOrder.OnCreatureUnfocused(__instance);
     }
 }
 

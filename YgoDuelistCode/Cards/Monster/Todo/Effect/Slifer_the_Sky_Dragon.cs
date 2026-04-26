@@ -20,7 +20,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 
-public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDragonFieldMonster, IYgoOwnerTurnStartFieldMonsterEffect, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
+public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDragonFieldMonster, IYgoOwnerTurnStartFieldMonsterEffect
 {
     private bool ShowSlifersPressurePlus => IsUpgradedOrPreviewActive;
 
@@ -52,7 +52,7 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDrag
     protected override int? TributeReleaseCountOverride => 3;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", 5m) });
+        base.CanonicalVars.Concat(new[] { new DynamicVar("Mgc2", 4m) });
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
@@ -72,7 +72,7 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDrag
     {
         if (Owner == null)
             return;
-        await SliferSkyDragonService.ApplySliferPressureToAllEnemiesAsync(choiceContext, Owner);
+        await SliferSkyDragonService.ApplySliferPressureFromSliferToAllEnemiesAsync(choiceContext, Owner, this);
     }
 
     protected override void OnUpgrade()
@@ -137,27 +137,8 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDrag
         return (atk - printedAtk, def - printedDef);
     }
 
-    public bool IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(Creature pet) =>
-        !FaceDown && pet.IsAlive;
-
-    public async Task TryResolveOwnerBeforeTurnEndFlushFieldMonsterEffectAsync(PlayerChoiceContext choiceContext, Player owner, Creature pet)
-    {
-        if (owner.Creature?.CombatState == null || FaceDown)
-            return;
-        int blight = (int)DynamicVars["Mgc"].BaseValue;
-        foreach (Creature enemy in YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(owner.Creature.CombatState))
-        {
-            bool hasPressure = enemy.HasPower<SlifersPressureTemporaryStrengthPower>() || enemy.HasPower<SlifersPressureTemporaryStrengthPowerPlus>();
-            if (!hasPressure)
-                continue;
-            if (YgoIntentAttackDamage.GetTotalAttackIntentDamage(enemy, owner.Creature) > 0)
-                continue;
-            await PowerCmd.Apply<BlightPower>(enemy, blight, owner.Creature, this);
-        }
-    }
-
     public bool IsOwnerTurnStartFieldMonsterEffectActive() => !FaceDown;
 
     public Task TryResolveOwnerTurnStartFieldMonsterEffectAsync(PlayerChoiceContext choiceContext, Player owner) =>
-        SliferSkyDragonService.ApplySliferPressureToAllEnemiesAsync(choiceContext, owner);
+        SliferSkyDragonService.ApplySliferPressureFromSliferToAllEnemiesAsync(choiceContext, owner, this);
 }

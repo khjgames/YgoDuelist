@@ -183,16 +183,7 @@ public static class DuelMonsterPetDeathPatch
         CombatState? combatState = pet.CombatState;
         if (combatState != null)
         {
-            var nCreature = NCombatRoom.Instance?.GetCreatureNode(pet);
-            if (nCreature != null)
-            {
-                GD.Print("[ZGO] DuelMonsterPetDeathPatch: removing NCreature node for dead duel monster.");
-                nCreature.Visible = false;
-                nCreature.Hitbox.Visible = false;
-                nCreature.Visuals.Bounds.Visible = false;
-                NCombatRoom.Instance.RemoveCreatureNode(nCreature);
-                nCreature.QueueFree();
-            }
+            RemoveDuelMonsterNodeIfPresent(pet, "death-tail");
 
             // Duel pets are ally monsters with PetOwner set and Player == null, so they are not in PlayerCreatures.
             if (combatState.ContainsCreature(pet))
@@ -202,6 +193,8 @@ public static class DuelMonsterPetDeathPatch
                 combatState.RemoveCreature(pet);
             }
         }
+
+        DuelistAllyCreatureDrawOrder.RefreshLayoutAfterDuelPetRosterChanged("death-tail");
 
         GD.Print(
             $"[YgoDuelist][MP][DuelDeath] deferred tail END pet={pet.Name} card={card.Id?.Entry} ownerNet={player.NetId}");
@@ -313,12 +306,16 @@ public static class DuelMonsterPetDeathPatch
         // Unregister first so DuelMonsterPetDeathPatch does not try to move the card to the graveyard again.
         await CreatureCmd.Kill(pet, force: true);
 
+        RemoveDuelMonsterNodeIfPresent(pet, "release-banished");
+
         CombatState? combatState = pet.CombatState;
         if (combatState != null && combatState.ContainsCreature(pet))
         {
             CombatManager.Instance.RemoveCreature(pet);
             combatState.RemoveCreature(pet);
         }
+
+        DuelistAllyCreatureDrawOrder.RefreshLayoutAfterDuelPetRosterChanged("release-banished");
     }
 
     /// <summary>
@@ -352,12 +349,31 @@ public static class DuelMonsterPetDeathPatch
 
         await CreatureCmd.Kill(pet, force: true);
 
+        RemoveDuelMonsterNodeIfPresent(pet, "release-hand");
+
         CombatState? combatState = pet.CombatState;
         if (combatState != null && combatState.ContainsCreature(pet))
         {
             CombatManager.Instance.RemoveCreature(pet);
             combatState.RemoveCreature(pet);
         }
+
+        DuelistAllyCreatureDrawOrder.RefreshLayoutAfterDuelPetRosterChanged("release-hand");
+    }
+
+    private static void RemoveDuelMonsterNodeIfPresent(Creature pet, string reason)
+    {
+        NCombatRoom? room = NCombatRoom.Instance;
+        var nCreature = room?.GetCreatureNode(pet);
+        if (room == null || nCreature == null || !GodotObject.IsInstanceValid(nCreature))
+            return;
+
+        GD.Print($"[ZGO] DuelMonsterPetDeathPatch: removing NCreature node for duel monster reason={reason}.");
+        nCreature.Visible = false;
+        nCreature.Hitbox.Visible = false;
+        nCreature.Visuals.Bounds.Visible = false;
+        room.RemoveCreatureNode(nCreature);
+        nCreature.QueueFree();
     }
 
     private static void TryClearOptionPileForFieldMonster(Player player, CardModel fieldMonsterCard, Creature pet)

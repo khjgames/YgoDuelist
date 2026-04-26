@@ -127,7 +127,8 @@ public static class TributeSummonGridSelect
                 MinSelect = prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
                 CandidateRowCount = cards.Count,
-                AllowCombatCard = true
+                AllowCombatCard = true,
+                AllowIndex = true
             };
         }
 
@@ -247,7 +248,8 @@ public static class TributeSummonGridSelect
                 MinSelect = prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
                 CandidateRowCount = cards.Count,
-                AllowCombatCard = false
+                AllowCombatCard = false,
+                AllowIndex = true
             };
         }
 

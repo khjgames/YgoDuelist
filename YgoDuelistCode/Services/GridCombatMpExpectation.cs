@@ -26,6 +26,11 @@ public static class GridCombatMpExpectation
         /// True when this wait accepts combat-card wire results. Indexed-only waits use false so stale card buffers are rejected.
         /// </summary>
         public bool AllowCombatCard { get; init; }
+
+        /// <summary>
+        /// True when this wait accepts index wire results. Vanilla hand-card selectors use combat-card wire only.
+        /// </summary>
+        public bool AllowIndex { get; init; }
     }
 
     public static readonly AsyncLocal<Active?> Pending = new();
