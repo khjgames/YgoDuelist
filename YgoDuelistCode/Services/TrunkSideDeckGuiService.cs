@@ -203,6 +203,15 @@ public static class TrunkSideDeckGuiService
             return cards.ToList();
 
         var context = YgoChoiceContexts.Blocking();
+        using IDisposable expectationScope = GridCombatMpExpectation.Push(new GridCombatMpExpectation.Active
+        {
+            OwnerNetId = player.NetId,
+            MinSelect = prefs.Cancelable ? 0 : prefs.MinSelect,
+            MaxSelect = prefs.MaxSelect,
+            CandidateRowCount = cards.Count,
+            AllowIndex = true,
+            AllowNegativeIndex = prefs.Cancelable
+        });
         uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
         await context.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
         List<CardModel> result;

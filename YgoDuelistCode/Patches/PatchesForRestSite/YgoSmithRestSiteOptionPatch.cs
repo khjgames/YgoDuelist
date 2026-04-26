@@ -65,6 +65,15 @@ public static class YgoSmithRestSiteOptionOnSelectPatch
         if (list.Count <= prefs.MinSelect && !prefs.RequireManualConfirmation)
             return list;
 
+        using IDisposable expectationScope = GridCombatMpExpectation.Push(new GridCombatMpExpectation.Active
+        {
+            OwnerNetId = player.NetId,
+            MinSelect = prefs.Cancelable ? 0 : prefs.MinSelect,
+            MaxSelect = prefs.MaxSelect,
+            CandidateRowCount = list.Count,
+            AllowIndex = true,
+            AllowNegativeIndex = prefs.Cancelable
+        });
         uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
         List<CardModel> result;
         if (ShouldSelectLocalCard(player))

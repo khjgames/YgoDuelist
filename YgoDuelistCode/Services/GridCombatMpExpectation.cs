@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -11,6 +12,25 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class GridCombatMpExpectation
 {
+    private sealed class Scope : IDisposable
+    {
+        private readonly Active? _previous;
+        private bool _disposed;
+
+        public Scope(Active? previous)
+        {
+            _previous = previous;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+            _disposed = true;
+            Pending.Value = _previous;
+        }
+    }
+
     public readonly struct Active
     {
         public ulong OwnerNetId { get; init; }
@@ -31,7 +51,39 @@ public static class GridCombatMpExpectation
         /// True when this wait accepts index wire results. Vanilla hand-card selectors use combat-card wire only.
         /// </summary>
         public bool AllowIndex { get; init; }
+
+        /// <summary>
+        /// True when this wait accepts deck-card wire results.
+        /// </summary>
+        public bool AllowDeckCard { get; init; }
+
+        /// <summary>
+        /// True when this wait accepts canonical-card wire results.
+        /// </summary>
+        public bool AllowCanonicalCard { get; init; }
+
+        /// <summary>
+        /// True when this wait accepts mutable-card wire results.
+        /// </summary>
+        public bool AllowMutableCard { get; init; }
+
+        /// <summary>
+        /// True when this wait accepts player wire results.
+        /// </summary>
+        public bool AllowPlayer { get; init; }
+
+        /// <summary>
+        /// True when an index result may contain -1 (vanilla skip/cancel sentinel).
+        /// </summary>
+        public bool AllowNegativeIndex { get; init; }
     }
 
     public static readonly AsyncLocal<Active?> Pending = new();
+
+    public static IDisposable Push(Active active)
+    {
+        Active? previous = Pending.Value;
+        Pending.Value = active;
+        return new Scope(previous);
+    }
 }

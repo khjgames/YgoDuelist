@@ -480,6 +480,15 @@ public static class YgoCardPackRewardFlow
         if (CardSelectCmd.Selector != null)
             return await ChoosePackViaRepresentativesCardScreenAsync(player, choiceContext, bundles, canSkip);
 
+        using IDisposable expectationScope = GridCombatMpExpectation.Push(new GridCombatMpExpectation.Active
+        {
+            OwnerNetId = player.NetId,
+            MinSelect = 1,
+            MaxSelect = 1,
+            CandidateRowCount = bundles.Count,
+            AllowIndex = true,
+            AllowNegativeIndex = canSkip
+        });
         uint choiceId = RunManager.Instance!.PlayerChoiceSynchronizer.ReserveChoiceId(player);
         await choiceContext.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
         try

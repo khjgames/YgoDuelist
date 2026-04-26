@@ -54,11 +54,10 @@ public static class EquipSpellGridSelect
             GridCombatMpExpectation.Pending.Value = new GridCombatMpExpectation.Active
             {
                 OwnerNetId = player.NetId,
-                MinSelect = prefs.MinSelect,
+                MinSelect = prefs.Cancelable ? 0 : prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
                 CandidateRowCount = cards.Count,
-                AllowCombatCard = true,
-                AllowIndex = true
+                AllowCombatCard = true
             };
         }
 

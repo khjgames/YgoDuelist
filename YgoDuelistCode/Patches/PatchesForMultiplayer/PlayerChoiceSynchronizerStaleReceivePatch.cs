@@ -38,6 +38,41 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
         return ids[slot];
     }
 
+    public static string? GetExpectationRejectReason(NetPlayerChoiceResult result, GridCombatMpExpectation.Active exp)
+    {
+        switch (result.type)
+        {
+            case PlayerChoiceType.Index:
+                if (!exp.AllowIndex)
+                    return "Index wire is not allowed";
+                if (result.indexes == null)
+                    return "Index wire had null indexes";
+                int idxCount = result.indexes.Count;
+                if (idxCount < exp.MinSelect || idxCount > exp.MaxSelect)
+                    return $"Index count={idxCount} outside [{exp.MinSelect},{exp.MaxSelect}]";
+                int rows = exp.CandidateRowCount;
+                if (rows > 0 && result.indexes.Any(ix => ix < 0 && !exp.AllowNegativeIndex || ix >= rows))
+                    return $"Index out of bounds for rows={rows} indexes={string.Join(",", result.indexes)}";
+                return null;
+
+            case PlayerChoiceType.CombatCard:
+                return exp.AllowCombatCard ? null : "CombatCard wire is not allowed";
+            case PlayerChoiceType.DeckCard:
+                return exp.AllowDeckCard ? null : "DeckCard wire is not allowed";
+            case PlayerChoiceType.CanonicalCard:
+                return exp.AllowCanonicalCard ? null : "CanonicalCard wire is not allowed";
+            case PlayerChoiceType.MutableCard:
+                return exp.AllowMutableCard ? null : "MutableCard wire is not allowed";
+            case PlayerChoiceType.Player:
+                return exp.AllowPlayer ? null : "Player wire is not allowed";
+            default:
+                return $"{result.type} wire is not allowed";
+        }
+    }
+
+    public static string DescribeExpectation(GridCombatMpExpectation.Active exp) =>
+        $"allowCombat={exp.AllowCombatCard} allowIndex={exp.AllowIndex} allowDeck={exp.AllowDeckCard} allowCanonical={exp.AllowCanonicalCard} allowMutable={exp.AllowMutableCard} allowPlayer={exp.AllowPlayer} min={exp.MinSelect} max={exp.MaxSelect} rows={exp.CandidateRowCount} allowNegativeIndex={exp.AllowNegativeIndex}";
+
     [HarmonyPrefix]
     public static bool Prefix(PlayerChoiceSynchronizer __instance, Player player, uint choiceId, NetPlayerChoiceResult result)
     {
@@ -49,35 +84,14 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
         if (VerboseReceiveLog)
             GD.Print($"[YgoDuelist][MP][PlayerChoice] recv prefix choiceId={choiceId} localNext={next} sender={player.NetId} result={result}");
 
-        GridCombatMpExpectation.Active? gridExp = GridCombatMpExpectation.Pending.Value;
-        if (gridExp.HasValue && player.NetId == gridExp.Value.OwnerNetId)
+        GridCombatMpExpectation.Active? exp = GridCombatMpExpectation.Pending.Value;
+        if (exp.HasValue && player.NetId == exp.Value.OwnerNetId)
         {
-            if (result.type == PlayerChoiceType.Index && result.indexes != null && gridExp.Value.AllowIndex)
-            {
-                int idxCount = result.indexes.Count;
-                if (idxCount < gridExp.Value.MinSelect || idxCount > gridExp.Value.MaxSelect)
-                {
-                    GD.PrintErr(
-                        $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (count={idxCount} expected [{gridExp.Value.MinSelect},{gridExp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
-                    return false;
-                }
-
-                int rows = gridExp.Value.CandidateRowCount;
-                if (rows > 0 && result.indexes.Any(ix => ix < 0 || ix >= rows))
-                {
-                    GD.PrintErr(
-                        $"[YgoDuelist][MP][PlayerChoice] Dropping remote Index (out of bounds for rows={rows}) choiceId={choiceId} sender={player.NetId} indexes={string.Join(",", result.indexes)}");
-                    return false;
-                }
-            }
-            else if (result.type == PlayerChoiceType.CombatCard && gridExp.Value.AllowCombatCard)
-            {
-                // Expected combat-card wire.
-            }
-            else
+            string? rejectReason = GetExpectationRejectReason(result, exp.Value);
+            if (rejectReason != null)
             {
                 GD.PrintErr(
-                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote {result.type} while waiting for active grid choiceId={choiceId} sender={player.NetId} allowCombat={gridExp.Value.AllowCombatCard} allowIndex={gridExp.Value.AllowIndex}");
+                    $"[YgoDuelist][MP][PlayerChoice] Dropping remote {result.type} while waiting for active choice choiceId={choiceId} sender={player.NetId}: {rejectReason}; {DescribeExpectation(exp.Value)}");
                 return false;
             }
         }
@@ -170,37 +184,15 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
                 continue;
 
             NetPlayerChoiceResult net = task.Result;
-            if (net.type == PlayerChoiceType.Index && net.indexes != null && exp.Value.AllowIndex)
-            {
-                int count = net.indexes.Count;
-                bool badCount = count < exp.Value.MinSelect || count > exp.Value.MaxSelect;
-                int rows = exp.Value.CandidateRowCount;
-                bool badRow = rows > 0 && net.indexes.Any(ix => ix < 0 || ix >= rows);
-                if (!badCount && !badRow)
-                    continue;
-
-                list.RemoveAt(i);
-                if (badCount)
-                {
-                    GD.PrintErr(
-                        $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (count={count} expected [{exp.Value.MinSelect},{exp.Value.MaxSelect}]) choiceId={choiceId} sender={player.NetId}");
-                }
-                else
-                {
-                    GD.PrintErr(
-                        $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered Index (out of bounds for rows={rows}) choiceId={choiceId} sender={player.NetId} indexes={string.Join(",", net.indexes)}");
-                }
-            }
-            else if (net.type == PlayerChoiceType.CombatCard && exp.Value.AllowCombatCard)
+            string? rejectReason = PlayerChoiceSynchronizerStaleReceivePatch.GetExpectationRejectReason(net, exp.Value);
+            if (rejectReason == null)
             {
                 continue;
             }
-            else
-            {
-                list.RemoveAt(i);
-                GD.PrintErr(
-                    $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered {net.type} for active grid choiceId={choiceId} sender={player.NetId} allowCombat={exp.Value.AllowCombatCard} allowIndex={exp.Value.AllowIndex}");
-            }
+
+            list.RemoveAt(i);
+            GD.PrintErr(
+                $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered {net.type} for active choice choiceId={choiceId} sender={player.NetId}: {rejectReason}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(exp.Value)}");
         }
     }
 }
