@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Patches;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -35,6 +36,19 @@ public static class YgoMerchantShopBundlePurchase
             return;
         }
 
+        Player? player = YgoMerchantShopBundleShared.GetMerchantEntryPlayer(entry);
+        if (player == null)
+        {
+            YgoMerchantShopBundleDiag.Log($"ScheduleGrantFromEntry: abort _player null offer={offerId}");
+            return;
+        }
+
+        if (YgoPlayerRunPiles.IsYgoRunPlayer(player))
+        {
+            YgoPlayerMinimumDeck.AddReceivedCardsFromPacksOrShop(player, 1);
+            YgoTopBarDeckCountTextPatch.RefreshDeckCountLabelForPlayer(player);
+        }
+
         if (!YgoMerchantShopBundleShared.TryGetBundlingTemplate(cr.Card, out YgoDuelistCard y))
         {
             if (diag)
@@ -51,12 +65,6 @@ public static class YgoMerchantShopBundlePurchase
             return;
         }
 
-        Player? player = YgoMerchantShopBundleShared.GetMerchantEntryPlayer(entry);
-        if (player == null)
-        {
-            YgoMerchantShopBundleDiag.Log($"ScheduleGrantFromEntry: abort _player null offer={offerId}");
-            return;
-        }
         YgoCardPackTags rowTagMask = YgoMerchantShopBundleShared.TryGetEntryTagMask(entry, out YgoCardPackTags mask)
             ? mask
             : YgoCardPackTags.None;
@@ -78,16 +86,22 @@ public static class YgoMerchantShopBundlePurchase
         {
             if (!GodotObject.IsInstanceValid(NGame.Instance))
                 return;
+            int grantedExtras = 0;
             if (grantExplicitBundle)
-                GrantBundledCardsBlocking(player, types, mainId, extraSelf, offerId);
+                grantedExtras += GrantBundledCardsBlocking(player, types, mainId, extraSelf, offerId);
             if (grantBulk
                 && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, player, y, rowTagMask, out CardModel? bulkTemplate)
                 && bulkTemplate != null)
-                GrantSingleTemplateBlocking(player, bulkTemplate, offerId, "bulkBundled");
+                grantedExtras += GrantSingleTemplateBlocking(player, bulkTemplate, offerId, "bulkBundled");
+            if (grantedExtras > 0 && YgoPlayerRunPiles.IsYgoRunPlayer(player))
+            {
+                YgoPlayerMinimumDeck.AddReceivedCardsFromPacksOrShop(player, grantedExtras);
+                YgoTopBarDeckCountTextPatch.RefreshDeckCountLabelForPlayer(player);
+            }
         }).CallDeferred();
     }
 
-    private static void GrantSingleTemplateBlocking(Player player, CardModel template, string offerIdForLog, string reason)
+    private static int GrantSingleTemplateBlocking(Player player, CardModel template, string offerIdForLog, string reason)
     {
         try
         {
@@ -100,24 +114,30 @@ public static class YgoMerchantShopBundlePurchase
                     $"[YgoDuelist][ShopBundle] {reason} card not added offer={offerIdForLog} template={template.Id.Entry}");
             }
             else
+            {
                 RunManager.Instance?.RewardSynchronizer?.SyncLocalObtainedCard(instance);
+                return 1;
+            }
         }
         catch (Exception ex)
         {
             MainFile.Logger.Error($"[YgoDuelist][ShopBundle] GrantSingleTemplateBlocking FATAL offer={offerIdForLog} {ex}");
         }
+
+        return 0;
     }
 
     /// <summary>
     /// Runs deferred on the main thread so <see cref="CardPileCmd.Add"/> is not invoked from inside merchant purchase continuations.
     /// </summary>
-    private static void GrantBundledCardsBlocking(
+    private static int GrantBundledCardsBlocking(
         Player player,
         Type[] bundleTypes,
         ModelId purchasedCanonicalId,
         bool bundleGrantsExtraCopyOfSelf,
         string offerIdForLog)
     {
+        int granted = 0;
         try
         {
             YgoMerchantShopBundleDiag.Log(
@@ -152,7 +172,10 @@ public static class YgoMerchantShopBundlePurchase
                         $"[YgoDuelist][ShopBundle] Bundle card not added to deck (vanilla Hook.ShouldAddToDeck returned false or pile rules failed). template={template.Id.Entry} offer={offerIdForLog}");
                 }
                 else
+                {
                     RunManager.Instance?.RewardSynchronizer?.SyncLocalObtainedCard(instance);
+                    granted++;
+                }
             }
 
             YgoMerchantShopBundleDiag.Log($"GrantNow: END offer={offerIdForLog}");
@@ -161,5 +184,7 @@ public static class YgoMerchantShopBundlePurchase
         {
             MainFile.Logger.Error($"[YgoDuelist][ShopBundle] GrantNow FATAL offer={offerIdForLog} {ex}");
         }
+
+        return granted;
     }
 }

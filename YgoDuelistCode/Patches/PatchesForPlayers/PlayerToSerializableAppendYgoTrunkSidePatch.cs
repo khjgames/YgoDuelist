@@ -34,11 +34,13 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
         int ec = YgoPlayerRunPiles.RunExtraDeckIfExists(__instance)?.Cards.Count ?? 0;
         ec = Math.Clamp(ec, 0, YgoSaveTrunkSideMarkerCard.MaxSerializedPileCount);
         int minDeck = YgoPlayerMinimumDeck.Get(__instance);
+        int minDeckReceivedCardProgress = YgoPlayerMinimumDeck.GetReceivedCardProgress(__instance);
         YgoPackRewardProgressState packProgress = YgoPackRewardProgress.For(__instance);
         int owedRare = packProgress.OwedRareCardVouchers;
         bool needTagBalance = packProgress.HasPackTagBalanceToPersist();
         bool needTrailer = tc > 0 || sc > 0 || ec > 0
             || minDeck > YgoPlayerMinimumDeck.StartingMinimum
+            || minDeckReceivedCardProgress > 0
             || owedRare > 0
             || needTagBalance;
         if (!needTrailer)
@@ -62,6 +64,13 @@ public static class PlayerToSerializableAppendYgoTrunkSidePatch
             intProps.Add(new SavedProperties.SavedProperty<int>(YgoSaveTrunkSideMarkerCard.ExtraDeckCountProp, ec));
         if (minDeck > YgoPlayerMinimumDeck.StartingMinimum)
             intProps.Add(new SavedProperties.SavedProperty<int>(YgoSaveTrunkSideMarkerCard.MinDeckSizeProp, minDeck));
+        if (minDeckReceivedCardProgress > 0)
+        {
+            intProps.Add(
+                new SavedProperties.SavedProperty<int>(
+                    YgoSaveTrunkSideMarkerCard.MinDeckReceivedCardProgressProp,
+                    minDeckReceivedCardProgress));
+        }
         if (owedRare > 0)
         {
             intProps.Add(

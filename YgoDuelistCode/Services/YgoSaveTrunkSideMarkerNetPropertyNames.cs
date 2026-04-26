@@ -16,6 +16,9 @@ public sealed class YgoSaveTrunkSideMarkerNetPropertyNames
     public int ygo_min_deck_size { get; set; }
 
     [SavedProperty]
+    public int ygo_min_deck_received_card_progress { get; set; }
+
+    [SavedProperty]
     public int ygo_owed_rare_vouchers { get; set; }
 
     [SavedProperty]

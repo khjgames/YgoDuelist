@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Localization.DynamicVars;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 
@@ -47,6 +48,7 @@ public sealed class Kuriboh : EffectMonsterCard
     }
 
     protected override bool SupportsHandEffectForm => true;
+    protected override int HandEffectMonsterEnergyCost => (int)DynamicVars["Mgc"].BaseValue;
     public override bool CanSummonDuelMonster => !IsHandEffectFormActive;
     public override int CurrentStarCost => IsHandEffectFormActive ? 0 : base.CurrentStarCost;
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
@@ -69,5 +71,9 @@ public sealed class Kuriboh : EffectMonsterCard
         await base.OnPlay(choiceContext, cardPlay);
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].BaseValue = 2m;
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Mgc"].BaseValue = 2m;
+    }
 }

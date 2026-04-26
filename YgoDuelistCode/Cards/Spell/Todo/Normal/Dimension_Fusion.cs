@@ -18,7 +18,9 @@ public sealed class Dimension_Fusion : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Banish | YgoCardPackTags.Spell;
+    //public override YgoCardPackTags PackTags => YgoCardPackTags.Banish;
+
+     public override float PackWeightMultiplier => 1.4f;
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

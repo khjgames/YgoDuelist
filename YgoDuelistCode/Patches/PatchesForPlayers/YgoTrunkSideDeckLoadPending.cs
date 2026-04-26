@@ -11,6 +11,8 @@ internal sealed class YgoTrunkSideDeckLoadPending
 
     public int LoadedMinimumDeckSize { get; set; }
 
+    public int LoadedMinimumDeckReceivedCardProgress { get; set; }
+
     public int LoadedOwedRareCardVouchers { get; set; }
 
     public string? LoadedPackTagBalance { get; set; }

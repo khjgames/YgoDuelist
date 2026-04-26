@@ -31,9 +31,9 @@ public static class YgoCardPackGenerator
     private const int Double_Tag_Fatigue = 4;
     private const int Triple_Tag_Fatigue = 3;
     
-    private const int Chosen_Triple_Tag_Fatigue_Relief = 1;
-    private const int Chosen_Double_Tag_Fatigue_Relief = 1;
-    private const int Chosen_Single_Tag_Fatigue_Relief = 2;
+    private const int Chosen_Triple_Tag_Fatigue_Relief = 2;
+    private const int Chosen_Double_Tag_Fatigue_Relief = 3;
+    private const int Chosen_Single_Tag_Fatigue_Relief = 6;
 
     /// <summary>After the player locks in a sealed pack, reduce fatigue on that pack’s tags (then Tetris).</summary>
     public static void ApplyChosenPackFatigueRelief(Player player, YgoCardPackTags tagMask)

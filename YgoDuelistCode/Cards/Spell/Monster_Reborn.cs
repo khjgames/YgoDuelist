@@ -36,7 +36,7 @@ public sealed class Monster_Reborn : BaseSpellCard, IYgoPrePlayCancelableGridSel
     /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
     /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
     /// </summary>
-    public override float PackWeightMultiplier => 1.3f;
+    public override float PackWeightMultiplier => 1.4f;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
     //public override Type[] BundledCards => new[]

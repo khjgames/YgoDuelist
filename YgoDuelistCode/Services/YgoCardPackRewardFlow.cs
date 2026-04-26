@@ -31,7 +31,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// </summary>
 public static class YgoCardPackRewardFlow
 {
-    public const int NeowBlessingPackSlots = 3;
+    public const int NeowBlessingPackSlots = 4;
 
     /// <summary>
     /// When <c>true</c>, pack choice uses <see cref="CardSelectCmd.FromChooseABundleScreen"/> (full visible bundles).
@@ -225,7 +225,7 @@ public static class YgoCardPackRewardFlow
         if (chosenBundleIndex >= 0 && chosenBundleIndex < packTagMasks.Count)
             YgoCardPackGenerator.ApplyChosenPackFatigueRelief(player, packTagMasks[chosenBundleIndex]);
 
-        YgoPlayerMinimumDeck.IncreaseAfterPackRewardConfirmed(player);
+        YgoPlayerMinimumDeck.AddReceivedCardsFromPacksOrShop(player, chosenPack.Count);
 
         // Deck assignment: no back button — player must finish splitting into deck vs remainder (side/trunk next).
         // Side assignment: Cancelable so back returns to the deck step (see SimpleCardSelectScreenCancelBackButtonPatch).
@@ -251,7 +251,7 @@ public static class YgoCardPackRewardFlow
         }
         catch (OperationCanceledException)
         {
-            YgoPlayerMinimumDeck.RevertLastPackOpenBump(player);
+            YgoPlayerMinimumDeck.RevertReceivedCardsFromPacksOrShop(player, chosenPack.Count);
             LogPackFlowPhase(player, "assign_deck_cancelled_back_to_choose_pack", "");
             goto PickBundle;
         }
@@ -390,7 +390,7 @@ public static class YgoCardPackRewardFlow
 
         player.Deck.InvokeCardAddFinished();
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
-        LogPackFlowPhase(player, "flow_end_success", "cards committed (min deck bumped at pack confirm)");
+        LogPackFlowPhase(player, "flow_end_success", "cards committed (min deck progress counted at pack confirm)");
         ClearPackOfferCache(reward);
         return true;
     }

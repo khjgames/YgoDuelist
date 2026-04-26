@@ -17,6 +17,7 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
 {
     public const string ExtraDeckCountProp = "ygo_extra_count";
     public const string MinDeckSizeProp = "ygo_min_deck_size";
+    public const string MinDeckReceivedCardProgressProp = "ygo_min_deck_received_card_progress";
     public const string OwedRareCardVouchersProp = "ygo_owed_rare_vouchers";
     public const string PackTagBalanceProp = "ygo_pack_tag_balance";
 
@@ -74,6 +75,20 @@ public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
         }
 
         return defaultMinimum;
+    }
+
+    public static int ReadMinimumDeckReceivedCardProgressOrDefault(SerializableCard marker)
+    {
+        if (marker.Props?.ints == null)
+            return 0;
+
+        foreach (SavedProperties.SavedProperty<int> p in marker.Props.ints)
+        {
+            if (p.name == MinDeckReceivedCardProgressProp)
+                return Math.Clamp(p.value, 0, YgoPlayerMinimumDeck.ReceivedCardsPerMinimumIncrease - 1);
+        }
+
+        return 0;
     }
 
     public static int ReadOwedRareCardVouchersOrDefault(SerializableCard marker)

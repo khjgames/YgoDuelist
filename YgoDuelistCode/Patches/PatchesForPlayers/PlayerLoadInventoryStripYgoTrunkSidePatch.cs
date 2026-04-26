@@ -58,6 +58,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         int loadedMinDeck = YgoSaveTrunkSideMarkerCard.ReadMinimumDeckSizeOrDefault(
             last,
             YgoPlayerMinimumDeck.StartingMinimum);
+        int loadedMinDeckReceivedCardProgress = YgoSaveTrunkSideMarkerCard.ReadMinimumDeckReceivedCardProgressOrDefault(last);
         int loadedOwedRare = YgoSaveTrunkSideMarkerCard.ReadOwedRareCardVouchersOrDefault(last);
         string? loadedPackTagBalance = YgoSaveTrunkSideMarkerCard.ReadPackTagBalanceOrNull(last);
 
@@ -75,6 +76,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         var p = new YgoTrunkSideDeckLoadPending
         {
             LoadedMinimumDeckSize = loadedMinDeck,
+            LoadedMinimumDeckReceivedCardProgress = loadedMinDeckReceivedCardProgress,
             LoadedOwedRareCardVouchers = loadedOwedRare,
             LoadedPackTagBalance = loadedPackTagBalance
         };
@@ -99,7 +101,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         pending = p;
         GD.Print(
             $"{logPrefix} trailer parsed netId={netId} extra={extraCount} trunk={trunkCount} side={sideCount} " +
-            $"minDeck={loadedMinDeck} owedRare={loadedOwedRare} remainingMainDeck={deck.Count}");
+            $"minDeck={loadedMinDeck} minDeckReceivedProgress={loadedMinDeckReceivedCardProgress} owedRare={loadedOwedRare} remainingMainDeck={deck.Count}");
         return true;
     }
 
@@ -116,7 +118,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         GD.Print(
             $"[YgoDuelist][SaveLoad] RestorePending {sourceTag} netId={player.NetId} " +
             $"extra={pending.Extra.Count} trunk={pending.Trunk.Count} side={pending.Side.Count} " +
-            $"minDeck={pending.LoadedMinimumDeckSize} owedRare={pending.LoadedOwedRareCardVouchers}");
+            $"minDeck={pending.LoadedMinimumDeckSize} minDeckReceivedProgress={pending.LoadedMinimumDeckReceivedCardProgress} owedRare={pending.LoadedOwedRareCardVouchers}");
         foreach (SerializableCard sc in pending.Extra)
         {
             CardModel card = player.RunState.LoadCard(sc, player);
@@ -137,6 +139,7 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
 
         TrunkSideDeckRelic.NotifyRunTrunkSideChanged(player);
         YgoPlayerMinimumDeck.SetLoadedFromSave(player, pending.LoadedMinimumDeckSize);
+        YgoPlayerMinimumDeck.SetReceivedCardProgressLoadedFromSave(player, pending.LoadedMinimumDeckReceivedCardProgress);
         YgoPackRewardProgress.SetOwedRareLoadedFromSave(player, pending.LoadedOwedRareCardVouchers);
         YgoPackRewardProgress.SetPackTagBalanceLoadedFromSave(player, pending.LoadedPackTagBalance);
     }
