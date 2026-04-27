@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Godot;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -10,11 +9,9 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Relics;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
@@ -50,11 +47,12 @@ public sealed class Spear_Cretin : EffectMonsterCard, IMonsterFlipEffect
 
     public override bool ReconcileDieForYouChecksumForPet(Creature pet, Player player)
     {
+        MonsterCommandState st = MonsterCommandRegistry.GetOrCreate(pet);
+        st.DieForYouForced = true;
+        st.DieForYouEnabled = true;
+
         if (!pet.HasPower<DieForYouPower>())
         {
-            MonsterCommandState st = MonsterCommandRegistry.GetOrCreate(pet);
-            st.DieForYouForced = true;
-            st.DieForYouEnabled = true;
             MonsterCommandRegistry.ApplyDieForYouSyncForChecksum(pet, player.Creature, this);
             GD.Print(
                 $"[YgoDuelist][MP][DieForYou] Reconciled Spear_Cretin forced DieForYouPower (playerNetId={player.NetId} petCombatId={pet.CombatId})");
@@ -67,27 +65,5 @@ public sealed class Spear_Cretin : EffectMonsterCard, IMonsterFlipEffect
     {
         await MonsterCommandRegistry.SetDieForYouForcedAsync(pet, true, player, this);
         NCombatRoom.Instance?.GetCreatureNode(pet)?.TrackBlockStatus(player.Creature);
-    }
-
-    public override async Task OnGraveyardRelicOwnerTurnStartForFieldPetAsync(
-        PlayerChoiceContext ctx,
-        Player player,
-        Creature pet,
-        GraveyardRelic relic)
-    {
-        string key = $"SPEAR_CRETIN_{pet.CombatId}";
-        if (!relic.TryConsumeAnnual(key))
-            return;
-        decimal maintenance = IsUpgraded ? 0m : 1m;
-        if (maintenance > 0m)
-            await CreatureCmd.Damage(
-                ctx,
-                pet,
-                maintenance,
-                ValueProp.Unblockable | ValueProp.Unpowered,
-                player.Creature,
-                this);
-        if (player.Creature != null)
-            await CreatureCmd.Heal(player.Creature, 1m);
     }
 }

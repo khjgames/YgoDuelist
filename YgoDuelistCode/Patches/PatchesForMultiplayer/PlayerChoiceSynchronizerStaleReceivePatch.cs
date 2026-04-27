@@ -71,10 +71,10 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
     }
 
     public static string DescribeExpectation(GridCombatMpExpectation.Active exp) =>
-        $"allowCombat={exp.AllowCombatCard} allowIndex={exp.AllowIndex} allowDeck={exp.AllowDeckCard} allowCanonical={exp.AllowCanonicalCard} allowMutable={exp.AllowMutableCard} allowPlayer={exp.AllowPlayer} min={exp.MinSelect} max={exp.MaxSelect} rows={exp.CandidateRowCount} allowNegativeIndex={exp.AllowNegativeIndex}";
+        $"expectedChoiceId={exp.ExpectedChoiceId?.ToString() ?? "?"} allowCombat={exp.AllowCombatCard} allowIndex={exp.AllowIndex} allowDeck={exp.AllowDeckCard} allowCanonical={exp.AllowCanonicalCard} allowMutable={exp.AllowMutableCard} allowPlayer={exp.AllowPlayer} min={exp.MinSelect} max={exp.MaxSelect} rows={exp.CandidateRowCount} allowNegativeIndex={exp.AllowNegativeIndex}";
 
     [HarmonyPrefix]
-    public static bool Prefix(PlayerChoiceSynchronizer __instance, Player player, uint choiceId, NetPlayerChoiceResult result)
+    public static bool Prefix(PlayerChoiceSynchronizer __instance, Player player, ref uint choiceId, NetPlayerChoiceResult result)
     {
         NetGameType net = RunManager.Instance.NetService.Type;
         if (net != NetGameType.Host && net != NetGameType.Client)
@@ -93,6 +93,20 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
                 GD.PrintErr(
                     $"[YgoDuelist][MP][PlayerChoice] Dropping remote {result.type} while waiting for active choice choiceId={choiceId} sender={player.NetId}: {rejectReason}; {DescribeExpectation(exp.Value)}");
                 return false;
+            }
+
+            if (exp.Value.ExpectedChoiceId is uint expectedChoiceId && choiceId != expectedChoiceId)
+            {
+                if (choiceId < expectedChoiceId)
+                {
+                    GD.PrintErr(
+                        $"[YgoDuelist][MP][PlayerChoice] Dropping stale valid-looking remote {result.type}: incoming choiceId={choiceId} is older than active expectedChoiceId={expectedChoiceId} sender={player.NetId}; {DescribeExpectation(exp.Value)} result={result}");
+                    return false;
+                }
+
+                GD.PrintErr(
+                    $"[YgoDuelist][MP][PlayerChoice] Remapping valid future remote {result.type} to active wait: incoming choiceId={choiceId} expectedChoiceId={expectedChoiceId} sender={player.NetId}; {DescribeExpectation(exp.Value)} result={result}");
+                choiceId = expectedChoiceId;
             }
         }
 
@@ -137,9 +151,20 @@ public static class PlayerChoiceSynchronizerReserveLogPatch
     [HarmonyPostfix]
     public static void Postfix(PlayerChoiceSynchronizer __instance, Player player, uint __result)
     {
+        NetGameType net = RunManager.Instance.NetService.Type;
+        GridCombatMpExpectation.Active? exp = GridCombatMpExpectation.Pending.Value;
+        if ((net == NetGameType.Host || net == NetGameType.Client)
+            && exp.HasValue
+            && exp.Value.OwnerNetId == player.NetId
+            && exp.Value.ExpectedChoiceId == null)
+        {
+            GridCombatMpExpectation.Pending.Value = GridCombatMpExpectation.WithExpectedChoiceId(exp.Value, __result);
+            GD.Print(
+                $"[YgoDuelist][MP][PlayerChoice] Bound active choice expectation to choiceId={__result} ownerNet={player.NetId}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(GridCombatMpExpectation.Pending.Value.Value)}");
+        }
+
         if (!VerboseReserveLog)
             return;
-        NetGameType net = RunManager.Instance.NetService.Type;
         if (net != NetGameType.Host && net != NetGameType.Client)
             return;
         uint next = PlayerChoiceSynchronizerStaleReceivePatch.GetNextChoiceId(__instance, player);
@@ -163,6 +188,14 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
         if (!exp.HasValue || player.NetId != exp.Value.OwnerNetId)
             return;
 
+        if (exp.Value.ExpectedChoiceId == null)
+        {
+            GridCombatMpExpectation.Pending.Value = GridCombatMpExpectation.WithExpectedChoiceId(exp.Value, choiceId);
+            exp = GridCombatMpExpectation.Pending.Value;
+            GD.Print(
+                $"[YgoDuelist][MP][PlayerChoice] Bound active choice expectation at WaitForRemoteChoice choiceId={choiceId} ownerNet={player.NetId}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(exp.Value)}");
+        }
+
         object? listObj = Traverse.Create(__instance).Field("_receivedChoices").GetValue();
         if (listObj is not IList list)
             return;
@@ -172,7 +205,7 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
             object item = list[i]!;
             uint cId = Traverse.Create(item).Field<uint>("choiceId").Value;
             ulong senderId = Traverse.Create(item).Field<ulong>("senderId").Value;
-            if (cId != choiceId || senderId != player.NetId)
+            if (senderId != player.NetId)
                 continue;
 
             object? tcsObj = Traverse.Create(item).Field("completionSource").GetValue();
@@ -185,6 +218,30 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
 
             NetPlayerChoiceResult net = task.Result;
             string? rejectReason = PlayerChoiceSynchronizerStaleReceivePatch.GetExpectationRejectReason(net, exp.Value);
+            if (cId != choiceId)
+            {
+                if (exp.Value.ExpectedChoiceId is not uint expectedChoiceId || choiceId != expectedChoiceId)
+                    continue;
+
+                if (cId < expectedChoiceId)
+                {
+                    list.RemoveAt(i);
+                    GD.PrintErr(
+                        $"[YgoDuelist][MP][PlayerChoice] Removed older pre-buffered {net.type} choiceId={cId} while active wait expects {expectedChoiceId} sender={player.NetId}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(exp.Value)}");
+                    continue;
+                }
+
+                if (rejectReason == null)
+                {
+                    var itemTraverse = Traverse.Create(item);
+                    itemTraverse.Field<uint>("choiceId").Value = choiceId;
+                    list[i] = itemTraverse.GetValue();
+                    GD.PrintErr(
+                        $"[YgoDuelist][MP][PlayerChoice] Remapped valid pre-buffered future {net.type} choiceId={cId} to active wait choiceId={choiceId} sender={player.NetId}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(exp.Value)}");
+                    continue;
+                }
+            }
+
             if (rejectReason == null)
             {
                 continue;

@@ -2,6 +2,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Runs;
+using YgoDuelist.YgoDuelistCode.Services;
 using YgoChar = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
@@ -27,5 +28,16 @@ public static class RunStateFromSerializableRestoreYgoTrailerPatch
                 $"extra={pending.Extra.Count} trunk={pending.Trunk.Count} side={pending.Side.Count}");
             PlayerLoadInventoryStripYgoTrunkSidePatch.Postfix(player, pending);
         }
+
+        YgoPackTagStatisticsLogger.PrintForRun(__result, nameof(RunState.FromSerializable));
+    }
+}
+
+[HarmonyPatch(typeof(RunState), nameof(RunState.CreateForNewRun))]
+public static class RunStateCreateForNewRunPackTagStatisticsPatch
+{
+    public static void Postfix(RunState __result)
+    {
+        YgoPackTagStatisticsLogger.PrintForRun(__result, nameof(RunState.CreateForNewRun));
     }
 }

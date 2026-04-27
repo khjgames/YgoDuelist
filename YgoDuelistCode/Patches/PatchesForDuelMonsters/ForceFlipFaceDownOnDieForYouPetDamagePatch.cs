@@ -42,7 +42,7 @@ public static class ForceFlipFaceDownOnDieForYouPetDamagePatch
         if (result.UnblockedDamage <= 0 || !target.HasPower<DieForYouPower>())
             return;
 
-        if (!FlipFaceDownOnPlayerEnemyAttackHelpers.TryGetEligibleFaceDownSourceCard(target, out var card))
+        if (!FlipFaceDownOnPlayerEnemyAttackHelpers.TryGetEligibleFaceDownSourceCard(target, requireAlive: false, out var card))
             return;
 
         FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpNow(card, choiceContext);

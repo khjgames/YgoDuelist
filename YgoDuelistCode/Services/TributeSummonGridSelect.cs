@@ -115,21 +115,23 @@ public static class TributeSummonGridSelect
         if (!prefs.RequireManualConfirmation && cards.Count <= prefs.MinSelect)
             return cards.ToList();
 
-        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
         bool localSelect = ShouldSelectLocalCard(player);
         NetGameType net = RunManager.Instance.NetService.Type;
         bool mpObserver = !localSelect && (net == NetGameType.Host || net == NetGameType.Client);
+        IDisposable? expectationScope = null;
         if (mpObserver)
         {
-            GridCombatMpExpectation.Pending.Value = new GridCombatMpExpectation.Active
+            expectationScope = GridCombatMpExpectation.Push(new GridCombatMpExpectation.Active
             {
                 OwnerNetId = player.NetId,
                 MinSelect = prefs.Cancelable ? 0 : prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
                 CandidateRowCount = cards.Count,
                 AllowCombatCard = true
-            };
+            });
         }
+
+        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
 
         try
         {
@@ -212,8 +214,7 @@ public static class TributeSummonGridSelect
         }
         finally
         {
-            if (mpObserver)
-                GridCombatMpExpectation.Pending.Value = null;
+            expectationScope?.Dispose();
         }
     }
 
@@ -236,12 +237,13 @@ public static class TributeSummonGridSelect
         if (!prefs.RequireManualConfirmation && cards.Count <= prefs.MinSelect)
             return cards.ToList();
 
-        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
         NetGameType net = RunManager.Instance.NetService.Type;
-        bool mpObserver = !ShouldSelectLocalCard(player) && (net == NetGameType.Host || net == NetGameType.Client);
+        bool localSelect = ShouldSelectLocalCard(player);
+        bool mpObserver = !localSelect && (net == NetGameType.Host || net == NetGameType.Client);
+        IDisposable? expectationScope = null;
         if (mpObserver)
         {
-            GridCombatMpExpectation.Pending.Value = new GridCombatMpExpectation.Active
+            expectationScope = GridCombatMpExpectation.Push(new GridCombatMpExpectation.Active
             {
                 OwnerNetId = player.NetId,
                 MinSelect = prefs.Cancelable ? 0 : prefs.MinSelect,
@@ -249,14 +251,16 @@ public static class TributeSummonGridSelect
                 CandidateRowCount = cards.Count,
                 AllowCombatCard = false,
                 AllowIndex = true
-            };
+            });
         }
+
+        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
 
         await context.SignalPlayerChoiceBegun(choiceBegunOptions);
         try
         {
             List<CardModel> result;
-            if (ShouldSelectLocalCard(player))
+            if (localSelect)
             {
                 result = await SelectLocalGridResultsAsync(cards, prefs, player, choiceId, syncCancelAsCombatWire: false);
 
@@ -320,8 +324,7 @@ public static class TributeSummonGridSelect
             }
             finally
             {
-                if (mpObserver)
-                    GridCombatMpExpectation.Pending.Value = null;
+                expectationScope?.Dispose();
             }
         }
     }

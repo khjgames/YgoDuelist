@@ -34,6 +34,7 @@ public static class GridCombatMpExpectation
     public readonly struct Active
     {
         public ulong OwnerNetId { get; init; }
+        public uint? ExpectedChoiceId { get; init; }
         public int MinSelect { get; init; }
         public int MaxSelect { get; init; }
 
@@ -86,4 +87,21 @@ public static class GridCombatMpExpectation
         Pending.Value = active;
         return new Scope(previous);
     }
+
+    public static Active WithExpectedChoiceId(Active active, uint choiceId) =>
+        new()
+        {
+            OwnerNetId = active.OwnerNetId,
+            ExpectedChoiceId = choiceId,
+            MinSelect = active.MinSelect,
+            MaxSelect = active.MaxSelect,
+            CandidateRowCount = active.CandidateRowCount,
+            AllowCombatCard = active.AllowCombatCard,
+            AllowIndex = active.AllowIndex,
+            AllowDeckCard = active.AllowDeckCard,
+            AllowCanonicalCard = active.AllowCanonicalCard,
+            AllowMutableCard = active.AllowMutableCard,
+            AllowPlayer = active.AllowPlayer,
+            AllowNegativeIndex = active.AllowNegativeIndex
+        };
 }

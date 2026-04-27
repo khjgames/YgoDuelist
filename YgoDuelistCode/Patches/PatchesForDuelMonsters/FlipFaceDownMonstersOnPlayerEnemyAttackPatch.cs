@@ -213,8 +213,13 @@ internal static class FlipFaceDownOnPlayerEnemyAttackHelpers
 {
     public static bool TryGetEligibleFaceDownSourceCard(Creature pet, out AbstractMonsterCard? card)
     {
+        return TryGetEligibleFaceDownSourceCard(pet, requireAlive: true, out card);
+    }
+
+    public static bool TryGetEligibleFaceDownSourceCard(Creature pet, bool requireAlive, out AbstractMonsterCard? card)
+    {
         card = null;
-        if (!pet.IsAlive)
+        if (requireAlive && !pet.IsAlive)
             return false;
         if (!MonsterCommandRegistry.PetHasUsedAnyCommandSlotThisTurn(pet))
             return false;

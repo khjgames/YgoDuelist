@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Rooms;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 using ByrdpipMonster = MegaCrit.Sts2.Core.Models.Monsters.Byrdpip;
 using YgoDuelistCharacter = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
 
@@ -133,6 +134,8 @@ public static class DuelistAllyCreatureDrawOrder
         if (room == null || !GodotObject.IsInstanceValid(room))
             return;
 
+        CombatState? combat = CombatManager.Instance?.DebugOnlyGetState();
+
         ICombatRoomVisuals? visuals = Traverse.Create(room).Field<ICombatRoomVisuals>("_visuals").Value;
         float scaling = visuals?.Encounter.GetCameraScaling() ?? 1f;
         bool fullyCenterPlayers = visuals?.Encounter.FullyCenterPlayers ?? false;
@@ -147,6 +150,12 @@ public static class DuelistAllyCreatureDrawOrder
             return;
 
         NCombatRoom.PositionPlayersAndPets(allies, scaling, fullyCenterPlayers);
+        foreach (Player player in YgoMpCombatOrder.PlayersSnapshotOrderedByNetId(combat?.Players))
+        {
+            if (player.Character is YgoDuelistCharacter)
+                DuelMonsterVisualLayout.ApplyForOwner(player);
+        }
+
         Apply();
         GD.Print($"[YgoDuelist][DrawOrder] refreshed ally pet layout reason={reason} allies={allies.Count}");
     }

@@ -45,21 +45,23 @@ public static class EquipSpellGridSelect
         if (!prefs.RequireManualConfirmation && cards.Count <= prefs.MinSelect)
             return cards.ToList();
 
-        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
         bool localSelect = ShouldSelectLocalCard(player);
         NetGameType net = RunManager.Instance.NetService.Type;
         bool mpObserver = !localSelect && (net == NetGameType.Host || net == NetGameType.Client);
+        IDisposable? expectationScope = null;
         if (mpObserver)
         {
-            GridCombatMpExpectation.Pending.Value = new GridCombatMpExpectation.Active
+            expectationScope = GridCombatMpExpectation.Push(new GridCombatMpExpectation.Active
             {
                 OwnerNetId = player.NetId,
                 MinSelect = prefs.Cancelable ? 0 : prefs.MinSelect,
                 MaxSelect = prefs.MaxSelect,
                 CandidateRowCount = cards.Count,
                 AllowCombatCard = true
-            };
+            });
         }
+
+        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(player);
 
         try
         {
@@ -141,8 +143,7 @@ public static class EquipSpellGridSelect
         }
         finally
         {
-            if (mpObserver)
-                GridCombatMpExpectation.Pending.Value = null;
+            expectationScope?.Dispose();
         }
     }
 

@@ -58,11 +58,12 @@ public sealed class Cure_Mermaid : EffectMonsterCard
 
     public override bool ReconcileDieForYouChecksumForPet(Creature pet, Player player)
     {
+        MonsterCommandState st = MonsterCommandRegistry.GetOrCreate(pet);
+        st.DieForYouForced = true;
+        st.DieForYouEnabled = true;
+
         if (!pet.HasPower<DieForYouPower>())
         {
-            MonsterCommandState st = MonsterCommandRegistry.GetOrCreate(pet);
-            st.DieForYouForced = true;
-            st.DieForYouEnabled = true;
             MonsterCommandRegistry.ApplyDieForYouSyncForChecksum(pet, player.Creature, this);
             GD.Print(
                 $"[YgoDuelist][MP][DieForYou] Reconciled Cure_Mermaid forced DieForYouPower (playerNetId={player.NetId} petCombatId={pet.CombatId})");

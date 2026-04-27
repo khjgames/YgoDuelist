@@ -17,8 +17,10 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 using YgoChar = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 using Godot;
 
@@ -287,8 +289,42 @@ public static class NetFullCombatStateYgoChecksumPatch
 
                 DuelMonsterStancePowerSync.ApplyStanceFromSourceCardSyncForChecksum(pet, amc, player.Creature);
                 SevenWeaponsHunterState.ApplySyncForChecksumIfHunter(pet, player);
+                ReconcileBigShieldGardnaFortifiedBeastPowerForChecksum(pet, player.Creature, amc);
             }
         }
+    }
+
+    private static void ReconcileBigShieldGardnaFortifiedBeastPowerForChecksum(
+        Creature pet,
+        Creature applier,
+        AbstractMonsterCard sourceCard)
+    {
+        if (CombatManager.Instance?.IsEnding == true)
+            return;
+        if (sourceCard is not Big_Shield_Gardna gardna)
+            return;
+
+        int amount = Math.Max(0, gardna.FortifiedBeastStacks);
+        FortifiedBeastPower? power = pet.GetPower<FortifiedBeastPower>();
+        if (amount <= 0)
+        {
+            power?.RemoveInternal();
+            return;
+        }
+
+        if (power != null)
+        {
+            if (power.Amount != amount)
+                power.SetAmount(amount, silent: true);
+            return;
+        }
+
+        PowerModel proto = ModelDb.Power<FortifiedBeastPower>();
+        PowerModel applied = proto.ToMutable();
+        applied.Applier = applier;
+        applied.ApplyInternal(pet, amount, silent: true);
+        GD.Print(
+            $"[YgoDuelist][MP][Checksum] Reconciled Big_Shield_Gardna FortifiedBeastPower petCombatId={pet.CombatId} stacks={amount}");
     }
 
     private static Player? FindPlayer(IRunState runState, ulong netId)
