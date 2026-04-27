@@ -64,6 +64,7 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
         ModelDb.Card<Rolled_4>(),
         ModelDb.Card<Rolled_5>(),
         ModelDb.Card<Rolled_6>(),
+        ModelDb.Card<Mausoleum_Lose_HP>(),
         ModelDb.Card<Fairy_Box_Upkeep_Take_Damage>(),
         ModelDb.Card<Fairy_Box_Upkeep_Destroy>(),
         ModelDb.Card<YgoTransientSpellOptionCommandCard>(),

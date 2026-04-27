@@ -24,6 +24,8 @@ public sealed class Mausoleum_Lose_HP : MonsterCommandCard, IYgoMausoleumHpTribu
 
     protected override bool IsPlayable => false;
 
+    public override bool UseAlternateUpgradedDescription => true;
+
     protected internal override string? CustomCommandEnergyTexturePath =>
         BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath;
 
@@ -33,4 +35,7 @@ public sealed class Mausoleum_Lose_HP : MonsterCommandCard, IYgoMausoleumHpTribu
     public int MausoleumGridSlot { get; internal set; }
 
     public override string PortraitPath => "mausoleum_of_the_emperor.png".CardImagePath();
+
+    internal override bool ShouldPatchTitleToCardsTitleUpgradedLoc(CardModel self) =>
+        self.IsUpgraded || self.UpgradePreviewType != CardUpgradePreviewType.None;
 }

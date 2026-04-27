@@ -175,6 +175,19 @@ public static class CardSelectCmdVanillaHandChoiceExpectationPatch
     [HarmonyPostfix]
     public static void FromDeckGenericPostfix(ExpectationState __state) => Restore(__state);
 
+    [HarmonyPatch(nameof(CardSelectCmd.FromDeckForRemoval))]
+    [HarmonyPrefix]
+    [HarmonyPriority(Priority.Last)]
+    public static void FromDeckForRemovalPrefix(Player player, CardSelectorPrefs prefs, Func<CardModel, bool>? filter, ref ExpectationState __state)
+    {
+        int rows = PileType.Deck.GetPile(player).Cards.Count(c => c.IsRemovable && (filter == null || filter(c)));
+        __state = TryInstallDeckCardExpectation(player, prefs.MinSelect, prefs.MaxSelect, rows, prefs.RequireManualConfirmation);
+    }
+
+    [HarmonyPatch(nameof(CardSelectCmd.FromDeckForRemoval))]
+    [HarmonyPostfix]
+    public static void FromDeckForRemovalPostfix(ExpectationState __state) => Restore(__state);
+
     private static System.Reflection.MethodBase FromDeckForEnchantmentTarget() =>
         AccessTools.Method(
             typeof(CardSelectCmd),

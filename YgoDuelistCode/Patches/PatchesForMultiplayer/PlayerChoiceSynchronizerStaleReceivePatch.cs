@@ -7,6 +7,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Models;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Runs;
@@ -24,6 +25,9 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 [HarmonyPatch(typeof(PlayerChoiceSynchronizer), "OnReceivePlayerChoice", typeof(Player), typeof(uint), typeof(NetPlayerChoiceResult))]
 public static class PlayerChoiceSynchronizerStaleReceivePatch
 {
+    private static readonly Dictionary<ulong, GridCombatMpExpectation.Active> ActiveRemoteWaits = new();
+    private static readonly object ActiveRemoteWaitsLock = new();
+
     /// <summary>Log every incoming remote choice (indexes) before filtering; very noisy.</summary>
     public static bool VerboseReceiveLog;
 
@@ -56,13 +60,33 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
                 return null;
 
             case PlayerChoiceType.CombatCard:
-                return exp.AllowCombatCard ? null : "CombatCard wire is not allowed";
+                if (!exp.AllowCombatCard)
+                    return "CombatCard wire is not allowed";
+                int combatCount = result.combatCards?.Count ?? 0;
+                return combatCount < exp.MinSelect || combatCount > exp.MaxSelect
+                    ? $"CombatCard count={combatCount} outside [{exp.MinSelect},{exp.MaxSelect}]"
+                    : null;
             case PlayerChoiceType.DeckCard:
-                return exp.AllowDeckCard ? null : "DeckCard wire is not allowed";
+                if (!exp.AllowDeckCard)
+                    return "DeckCard wire is not allowed";
+                int deckCount = result.deckCards?.Count ?? 0;
+                return deckCount < exp.MinSelect || deckCount > exp.MaxSelect
+                    ? $"DeckCard count={deckCount} outside [{exp.MinSelect},{exp.MaxSelect}]"
+                    : null;
             case PlayerChoiceType.CanonicalCard:
-                return exp.AllowCanonicalCard ? null : "CanonicalCard wire is not allowed";
+                if (!exp.AllowCanonicalCard)
+                    return "CanonicalCard wire is not allowed";
+                int canonicalCount = result.canonicalCards?.Count ?? 0;
+                return canonicalCount < exp.MinSelect || canonicalCount > exp.MaxSelect
+                    ? $"CanonicalCard count={canonicalCount} outside [{exp.MinSelect},{exp.MaxSelect}]"
+                    : null;
             case PlayerChoiceType.MutableCard:
-                return exp.AllowMutableCard ? null : "MutableCard wire is not allowed";
+                if (!exp.AllowMutableCard)
+                    return "MutableCard wire is not allowed";
+                int mutableCount = result.mutableCards?.Count ?? 0;
+                return mutableCount < exp.MinSelect || mutableCount > exp.MaxSelect
+                    ? $"MutableCard count={mutableCount} outside [{exp.MinSelect},{exp.MaxSelect}]"
+                    : null;
             case PlayerChoiceType.Player:
                 return exp.AllowPlayer ? null : "Player wire is not allowed";
             default:
@@ -72,6 +96,45 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
 
     public static string DescribeExpectation(GridCombatMpExpectation.Active exp) =>
         $"expectedChoiceId={exp.ExpectedChoiceId?.ToString() ?? "?"} allowCombat={exp.AllowCombatCard} allowIndex={exp.AllowIndex} allowDeck={exp.AllowDeckCard} allowCanonical={exp.AllowCanonicalCard} allowMutable={exp.AllowMutableCard} allowPlayer={exp.AllowPlayer} min={exp.MinSelect} max={exp.MaxSelect} rows={exp.CandidateRowCount} allowNegativeIndex={exp.AllowNegativeIndex}";
+
+    public static void TrackActiveRemoteWait(ulong ownerNetId, GridCombatMpExpectation.Active exp)
+    {
+        if (exp.ExpectedChoiceId == null)
+            return;
+
+        lock (ActiveRemoteWaitsLock)
+        {
+            ActiveRemoteWaits[ownerNetId] = exp;
+        }
+
+        GD.Print(
+            $"[YgoDuelist][MP][PlayerChoice] Tracking active remote wait ownerNet={ownerNetId}; {DescribeExpectation(exp)}");
+    }
+
+    public static void ClearActiveRemoteWait(ulong ownerNetId, uint choiceId)
+    {
+        lock (ActiveRemoteWaitsLock)
+        {
+            if (!ActiveRemoteWaits.TryGetValue(ownerNetId, out GridCombatMpExpectation.Active exp)
+                || exp.ExpectedChoiceId != choiceId)
+                return;
+
+            ActiveRemoteWaits.Remove(ownerNetId);
+        }
+
+        GD.Print(
+            $"[YgoDuelist][MP][PlayerChoice] Cleared active remote wait ownerNet={ownerNetId} choiceId={choiceId}");
+    }
+
+    private static GridCombatMpExpectation.Active? GetActiveRemoteWait(ulong ownerNetId)
+    {
+        lock (ActiveRemoteWaitsLock)
+        {
+            return ActiveRemoteWaits.TryGetValue(ownerNetId, out GridCombatMpExpectation.Active exp)
+                ? exp
+                : null;
+        }
+    }
 
     [HarmonyPrefix]
     public static bool Prefix(PlayerChoiceSynchronizer __instance, Player player, ref uint choiceId, NetPlayerChoiceResult result)
@@ -85,6 +148,9 @@ public static class PlayerChoiceSynchronizerStaleReceivePatch
             GD.Print($"[YgoDuelist][MP][PlayerChoice] recv prefix choiceId={choiceId} localNext={next} sender={player.NetId} result={result}");
 
         GridCombatMpExpectation.Active? exp = GridCombatMpExpectation.Pending.Value;
+        if (!exp.HasValue || player.NetId != exp.Value.OwnerNetId)
+            exp = GetActiveRemoteWait(player.NetId);
+
         if (exp.HasValue && player.NetId == exp.Value.OwnerNetId)
         {
             string? rejectReason = GetExpectationRejectReason(result, exp.Value);
@@ -196,6 +262,8 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
                 $"[YgoDuelist][MP][PlayerChoice] Bound active choice expectation at WaitForRemoteChoice choiceId={choiceId} ownerNet={player.NetId}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(exp.Value)}");
         }
 
+        PlayerChoiceSynchronizerStaleReceivePatch.TrackActiveRemoteWait(player.NetId, exp.Value);
+
         object? listObj = Traverse.Create(__instance).Field("_receivedChoices").GetValue();
         if (listObj is not IList list)
             return;
@@ -251,5 +319,13 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
             GD.PrintErr(
                 $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered {net.type} for active choice choiceId={choiceId} sender={player.NetId}: {rejectReason}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(exp.Value)}");
         }
+    }
+
+    [HarmonyPostfix]
+    public static void Postfix(Player player, uint choiceId, Task<PlayerChoiceResult> __result)
+    {
+        _ = __result.ContinueWith(
+            _ => PlayerChoiceSynchronizerStaleReceivePatch.ClearActiveRemoteWait(player.NetId, choiceId),
+            TaskScheduler.Default);
     }
 }
