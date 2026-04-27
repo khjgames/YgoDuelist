@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1776893513::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1777282569
-YgoDuelist.deps.json::JSON::-1::1777282569::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1777283394
+YgoDuelist.deps.json::JSON::-1::1777283394::0::1::::<><><>0<>0<><>::
 ::res://docs/::1775731862
 card_database_import.schema.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
@@ -21,7 +21,7 @@ Archetype_Assignments.md::TextFile::-1::1776187686::0::1::::<><><>0<>0<><>::
 Cardpack_Visuals.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
 cards_database.json::JSON::-1::1776037923::0::1::::<><><>0<>0<><>::
 Cards_Revised.md::TextFile::-1::1776106972::0::1::::<><><>0<>0<><>::
-Card_integration_playbook.md::TextFile::-1::1777282021::0::1::::<><><>0<>0<><>::
+Card_integration_playbook.md::TextFile::-1::1777283286::0::1::::<><><>0<>0<><>::
 Card_Library_Filtering.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
 Clarifying_Weighted_Tag_Selection.md::TextFile::-1::1776032743::0::1::::<><><>0<>0<><>::
 Darken_Shader.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
@@ -36,7 +36,7 @@ GraveyardRelic_CardHooks.md::TextFile::-1::1776206682::0::1::::<><><>0<>0<><>::
 Monster_Stat_Scaling_Balanced.md::TextFile::-1::1776459174::0::1::::<><><>0<>0<><>::
 Monster_Stat_Scaling_OLD_Balancing.md::TextFile::-1::1777017311::0::1::::<><><>0<>0<><>::
 Monster_Stat_Scaling_REVISED_Balancing.md::TextFile::-1::1775991994::0::1::::<><><>0<>0<><>::
-Multiplayer_playbook.md::TextFile::-1::1777282012::0::1::::<><><>0<>0<><>::
+Multiplayer_playbook.md::TextFile::-1::1777283303::0::1::::<><><>0<>0<><>::
 normal_and_quickplay_spells_full_list.txt::TextFile::-1::1775769356::0::1::::<><><>0<>0<><>::
 Normal_Tierlist_Cost_Benefit_Analysis.md::TextFile::-1::1775999480::0::1::::<><><>0<>0<><>::
 Packs_System.md::TextFile::-1::1775731850::0::1::::<><><>0<>0<><>::
@@ -4355,7 +4355,7 @@ EnchantmentModelCanEnchantYgoMonsterPatch.cs::CSharpScript::1581130152908540199:
 YgoCardLibraryGridStatSortPatch.cs::CSharpScript::7378002613587009863::1777276063::0::1::::<><><>0<>0<><>::
 YgoCardLibrarySidebarPatch.cs::CSharpScript::6211306507989716566::1776655804::0::1::::<><><>0<>0<><>::
 YgoCompendiumPackWeightDescriptionPatch.cs::CSharpScript::8944697912693276314::1777276067::0::1::::<><><>0<>0<><>::
-YgoMinimumDeckHarmonyPatches.cs::CSharpScript::3831963834334087557::1777074790::0::1::::<><><>0<>0<><>::
+YgoMinimumDeckHarmonyPatches.cs::CSharpScript::3831963834334087557::1777283320::0::1::::<><><>0<>0<><>::
 YgoNCardRarityTickboxTriStatePatch.cs::CSharpScript::8561131144883943831::1775731861::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Patches/PatchesForCards/::1776897831
 ActivateEffectCardTextPatch.cs::CSharpScript::7058823448135582154::1776402087::0::1::::<><><>0<>0<><>::
@@ -4709,7 +4709,7 @@ YgoBulkBundledResolver.cs::CSharpScript::296800376176964309::1776947100::0::1:::
 YgoBuyGridMerchantSlotChromeScale.cs::CSharpScript::490484606190224851::1775731862::0::1::::<><><>0<>0<><>::
 YgoCampfireDeckEditCharges.cs::CSharpScript::5927788960930940793::1777074790::0::1::::<><><>0<>0<><>::
 YgoCampfireDeckEditLayout.cs::CSharpScript::3235181462704118187::1775793489::0::1::::<><><>0<>0<><>::
-YgoCampfireDeckEditService.cs::CSharpScript::3092131585537067583::1777074932::0::1::::<><><>0<>0<><>::
+YgoCampfireDeckEditService.cs::CSharpScript::3092131585537067583::1777283276::0::1::::<><><>0<>0<><>::
 YgoCancelableConfirmGridPrefs.cs::CSharpScript::3300693368874129580::1775731862::0::1::::<><><>0<>0<><>::
 YgoCardGridChoice.cs::CSharpScript::1993316115974816946::1777081545::0::1::::<><><>0<>0<><>::
 YgoCardLibraryLayoutTuning.cs::CSharpScript::8101545935485669240::1775731862::0::1::::<><><>0<>0<><>::
@@ -4793,7 +4793,7 @@ YgoPerOwnerCombatCardIdAllocator.cs::CSharpScript::773661224213005235::177584227
 YgoPinchHopperGraveyard.cs::CSharpScript::6719818016992064331::1777073958::0::1::::<><><>0<>0<><>::
 YgoPlayCardQueueDeferral.cs::CSharpScript::529498096809774711::1777073958::0::1::::<><><>0<>0<><>::
 YgoPlayerCombatTurnStamp.cs::CSharpScript::6320798349451190696::1776190065::0::1::::<><><>0<>0<><>::
-YgoPlayerMinimumDeck.cs::CSharpScript::8086441463176602491::1777250019::0::1::::<><><>0<>0<><>::
+YgoPlayerMinimumDeck.cs::CSharpScript::8086441463176602491::1777283265::0::1::::<><><>0<>0<><>::
 YgoPlayerPiles.cs::CSharpScript::5284387995347468201::1777075683::0::1::::<><><>0<>0<><>::
 YgoPlayerRelicAccess.cs::CSharpScript::2088866697356495956::1777073957::0::1::::<><><>0<>0<><>::
 YgoPlayerRunPiles.cs::CSharpScript::641286456253879779::1777081545::0::1::::<><><>0<>0<><>::

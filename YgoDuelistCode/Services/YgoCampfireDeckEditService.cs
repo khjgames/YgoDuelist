@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -35,14 +36,27 @@ public static class YgoCampfireDeckEditService
     {
         YgoCampfireDeckEditCharges.EnsureInitializedForRestSiteUi(player);
         int minDeck = YgoPlayerMinimumDeck.Get(player);
-        if (player.Deck.Cards.Count <= minDeck)
-            return;
-
+        int deckCount = player.Deck.Cards.Count;
         int storeRem = YgoCampfireDeckEditCharges.GetStoreRemaining(player);
         int maxRemovable = GetMaxRemovableFromDeck(player);
+
+        GD.Print(
+            $"[YgoDuelist][DeckToTrunkMin] StoreToTrunk requested player={player.NetId} deck={deckCount} minDeck={minDeck} storeCharges={storeRem} maxRemovable={maxRemovable}");
+
+        if (player.Deck.Cards.Count <= minDeck)
+        {
+            GD.Print(
+                $"[YgoDuelist][DeckToTrunkMin] StoreToTrunk blocked at min player={player.NetId} deck={deckCount} minDeck={minDeck}");
+            return;
+        }
+
         int maxPick = Math.Min(Math.Min(3, storeRem), maxRemovable);
         if (maxPick < 1)
+        {
+            GD.Print(
+                $"[YgoDuelist][DeckToTrunkMin] StoreToTrunk blocked no capacity player={player.NetId} deck={deckCount} minDeck={minDeck} storeCharges={storeRem} maxRemovable={maxRemovable}");
             return;
+        }
 
         var prefs = new CardSelectorPrefs(
             new LocString("combat_messages", "YGODUELIST-CAMPFIRE_DECK_STORE.prompt"),
@@ -68,6 +82,9 @@ public static class YgoCampfireDeckEditService
 
         if (picked.Count == 0)
             return;
+
+        GD.Print(
+            $"[YgoDuelist][DeckToTrunkMin] StoreToTrunk moving player={player.NetId} picked={picked.Count} deckBefore={player.Deck.Cards.Count} minDeck={minDeck}");
 
         foreach (CardModel card in picked)
         {
