@@ -164,6 +164,22 @@ public static class PlayCardActionPrePlayCancelableGridPatch
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
 
+        if (card is BaseSpellCard spell)
+        {
+            target = await spell.TryResolveSpellTrapZonePlayTargetAsync(
+                action.Player,
+                target,
+                cancelable: true);
+
+            if (target == null && spell.CancelSpellTrapZonePlayWhenUnresolvedTargetAfterResolve)
+            {
+                GD.Print(
+                    $"[YgoDuelist][SpellTarget] cancel_no_target owner={action.Player?.NetId} card={card.Id?.Entry}");
+                action.Cancel();
+                return;
+            }
+        }
+        
         bool pileOk = TryResolveAllowedPrePlayPlaySource(action.Player, card, out string sourceTagBody);
         if (!pileOk)
         {

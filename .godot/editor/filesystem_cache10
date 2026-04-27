@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1776893513::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1777283394
-YgoDuelist.deps.json::JSON::-1::1777283394::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1777342227
+YgoDuelist.deps.json::JSON::-1::1777342227::0::1::::<><><>0<>0<><>::
 ::res://docs/::1775731862
 card_database_import.schema.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
@@ -2560,7 +2560,7 @@ character_icon_ygoduelist-ygo_duelist_outline.png::CompressedTexture2D::11381576
 ::res://YgoDuelist/localization/::1773513086
 ::res://YgoDuelist/localization/eng/::1776655443
 ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
-cards.json::JSON::-1::1777282335::0::1::::<><><>0<>0<><>::
+cards.json::JSON::-1::1777335437::0::1::::<><><>0<>0<><>::
 card_keywords.json::JSON::-1::1777236147::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 combat_messages.json::JSON::-1::1775767359::0::1::::<><><>0<>0<><>::
@@ -3929,7 +3929,7 @@ Spirit_Message_L.cs::CSharpScript::3872766026001656984::1775731860::0::1::::<><>
 Spirit_Message_N.cs::CSharpScript::8823336719197066671::1775731860::0::1::::<><><>0<>0<><>::
 Stumbling.cs::CSharpScript::2572923689018889424::1775731860::0::1::::<><><>0<>0<><>::
 Talisman_of_Trap_Sealing.cs::CSharpScript::7168250652394675157::1777076713::0::1::::<><><>0<>0<><>::
-The_A_Forces.cs::CSharpScript::3706684951460921070::1777077262::0::1::::<><><>0<>0<><>::
+The_A_Forces.cs::CSharpScript::3706684951460921070::1777341128::0::1::::<><><>0<>0<><>::
 The_Second_Sarcophagus.cs::CSharpScript::4154131216009680402::1775731860::0::1::::<><><>0<>0<><>::
 The_Third_Sarcophagus.cs::CSharpScript::7535110191301169832::1775731860::0::1::::<><><>0<>0<><>::
 Toon_World.cs::CSharpScript::3962475439455210127::1775731860::0::1::::<><><>0<>0<><>::
@@ -3997,7 +3997,7 @@ Book_of_Moon.cs::CSharpScript::3974027806030759412::1775731860::0::1::::<><><>0<
 Book_of_Taiyou.cs::CSharpScript::4402758450793893796::1775731860::0::1::::<><><>0<>0<><>::
 Brain_Control.cs::CSharpScript::2723875913605816211::1775731860::0::1::::<><><>0<>0<><>::
 Breath_of_Light.cs::CSharpScript::7163592244501153543::1776912609::0::1::::<><><>0<>0<><>::
-Burst_Stream_of_Destruction.cs::CSharpScript::626340133616334767::1777078957::0::1::::<><><>0<>0<><>::
+Burst_Stream_of_Destruction.cs::CSharpScript::626340133616334767::1777341481::0::1::::<><><>0<>0<><>::
 Card_Destruction.cs::CSharpScript::2552683780173855454::1777074870::0::1::::<><><>0<>0<><>::
 Change_of_Heart.cs::CSharpScript::2291317462230035836::1775731860::0::1::::<><><>0<>0<><>::
 Chaos_End.cs::CSharpScript::494677902329201044::1776960225::0::1::::<><><>0<>0<><>::
@@ -4069,7 +4069,7 @@ Ojama_Delta_Hurricane.cs::CSharpScript::8081045217104050183::1775731860::0::1:::
 Ookazi.cs::CSharpScript::5756112321089855529::1775731861::0::1::::<><><>0<>0<><>::
 Order_to_Charge.cs::CSharpScript::8973733463944293856::1775731861::0::1::::<><><>0<>0<><>::
 Painful_Choice.cs::CSharpScript::6245575670411581117::1775731861::0::1::::<><><>0<>0<><>::
-Poison_of_the_Old_Man.cs::CSharpScript::5367736209527600223::1777058925::0::1::::<><><>0<>0<><>::
+Poison_of_the_Old_Man.cs::CSharpScript::5367736209527600223::1777336525::0::1::::<><><>0<>0<><>::
 Polymerization.cs::CSharpScript::3061407675575531501::1775930339::0::1::::<><><>0<>0<><>::
 Primal_Seed.cs::CSharpScript::122163062603274056::1775731861::0::1::::<><><>0<>0<><>::
 Puppet_Ritual.cs::CSharpScript::2343669271931971465::1775731861::0::1::::<><><>0<>0<><>::
@@ -4196,7 +4196,7 @@ Skull_Invitation.cs::CSharpScript::7382357563511961974::1775731861::0::1::::<><>
 Skull_Lair.cs::CSharpScript::3740213994490721332::1775731861::0::1::::<><><>0<>0<><>::
 Solemn_Wishes.cs::CSharpScript::3933266051881135466::1775731861::0::1::::<><><>0<>0<><>::
 Soul_Demolition.cs::CSharpScript::7526485618343354850::1775731861::0::1::::<><><>0<>0<><>::
-Soul_Resurrection.cs::CSharpScript::8602664025129114882::1775731861::0::1::::<><><>0<>0<><>::
+Soul_Resurrection.cs::CSharpScript::8602664025129114882::1777341674::0::1::::<><><>0<>0<><>::
 Spellbinding_Circle.cs::CSharpScript::8258819666412361418::1775731861::0::1::::<><><>0<>0<><>::
 Talisman_of_Spell_Sealing.cs::CSharpScript::5567967111539789113::1776749687::0::1::::<><><>0<>0<><>::
 The_First_Monarch.cs::CSharpScript::1681283705509267249::1776112644::0::1::::<><><>0<>0<><>::
@@ -4458,7 +4458,7 @@ NTargetManagerStartTargetingOptionHolderPatch.cs::CSharpScript::6581711177621853
 PlayCardActionEquipSpellPatch.cs::CSharpScript::4977265310853627757::1777078772::0::1::::<><><>0<>0<><>::
 PlayCardActionFusionSpellPatch.cs::CSharpScript::131208647641779119::1775893530::0::1::::<><><>0<>0<><>::
 PlayCardActionIYgoPreSpendResourceFlowPatch.cs::CSharpScript::2357803936389055251::1776407374::0::1::::<><><>0<>0<><>::
-PlayCardActionPrePlayCancelableGridPatch.cs::CSharpScript::383208919142107853::1777074110::0::1::::<><><>0<>0<><>::
+PlayCardActionPrePlayCancelableGridPatch.cs::CSharpScript::383208919142107853::1777339553::0::1::::<><><>0<>0<><>::
 PlayCardActionRitualSpellPatch.cs::CSharpScript::2177062993898064953::1775893526::0::1::::<><><>0<>0<><>::
 PlayCardActionSecondHandPostPlayRefreshPatch.cs::CSharpScript::7779858772285453128::1775795539::0::1::::<><><>0<>0<><>::
 PlayCardActionTributeSelectionPatch.cs::CSharpScript::4775949227164205154::1775842914::0::1::::<><><>0<>0<><>::
@@ -4661,7 +4661,7 @@ YgoDuelistRelic.cs::CSharpScript::1362123596858446735::1773589494::0::1::::<><><
 ::res://YgoDuelistCode/RestSite/::1775703349
 ::res://YgoDuelistCode/Rewards/::1775731861
 YgoCampfireDeckEditUiReward.cs::CSharpScript::6724651277447641421::1775731861::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Services/::1777263062
+::res://YgoDuelistCode/Services/::1777336640
 ActivatedEffectTributeSelectionPayload.cs::CSharpScript::8872545235464063281::1775731861::0::1::::<><><>0<>0<><>::
 CardModelEnergyCache.cs::CSharpScript::6082268261041224344::1777073957::0::1::::<><><>0<>0<><>::
 ColdWaveSpellTrapLockGate.cs::CSharpScript::4441843039876981339::1776063803::0::1::::<><><>0<>0<><>::
@@ -4709,7 +4709,7 @@ YgoBulkBundledResolver.cs::CSharpScript::296800376176964309::1776947100::0::1:::
 YgoBuyGridMerchantSlotChromeScale.cs::CSharpScript::490484606190224851::1775731862::0::1::::<><><>0<>0<><>::
 YgoCampfireDeckEditCharges.cs::CSharpScript::5927788960930940793::1777074790::0::1::::<><><>0<>0<><>::
 YgoCampfireDeckEditLayout.cs::CSharpScript::3235181462704118187::1775793489::0::1::::<><><>0<>0<><>::
-YgoCampfireDeckEditService.cs::CSharpScript::3092131585537067583::1777283276::0::1::::<><><>0<>0<><>::
+YgoCampfireDeckEditService.cs::CSharpScript::3092131585537067583::1777342201::0::1::::<><><>0<>0<><>::
 YgoCancelableConfirmGridPrefs.cs::CSharpScript::3300693368874129580::1775731862::0::1::::<><><>0<>0<><>::
 YgoCardGridChoice.cs::CSharpScript::1993316115974816946::1777081545::0::1::::<><><>0<>0<><>::
 YgoCardLibraryLayoutTuning.cs::CSharpScript::8101545935485669240::1775731862::0::1::::<><><>0<>0<><>::
@@ -4803,7 +4803,7 @@ YgoPortionedSalvo.cs::CSharpScript::8915587711957869610::1776948489::0::1::::<><
 YgoPortionMath.cs::CSharpScript::4824699926378418457::1776880595::0::1::::<><><>0<>0<><>::
 YgoPortraitMaskResolver.cs::CSharpScript::8223602694789815965::1775731862::0::1::::<><><>0<>0<><>::
 YgoPowerOnlyMechanicKeywords.cs::CSharpScript::3875449825902710406::1776488804::0::1::::<><><>0<>0<><>::
-YgoPrePlayGridSelection.cs::CSharpScript::4631959071003521585::1777081544::0::1::::<><><>0<>0<><>::
+YgoPrePlayGridSelection.cs::CSharpScript::4631959071003521585::1777337664::0::1::::<><><>0<>0<><>::
 YgoPrePlayOptionIdPayload.cs::CSharpScript::4023898847990497428::1775731862::0::1::::<><><>0<>0<><>::
 YgoPrePlaySelectedCardPayload.cs::CSharpScript::318940891312607605::1775731862::0::1::::<><><>0<>0<><>::
 YgoPreviewGridSelection.cs::CSharpScript::6377924115514436291::1777081545::0::1::::<><><>0<>0<><>::
@@ -4818,7 +4818,7 @@ YgoSealedPackPortraitLayout.cs::CSharpScript::8300894549511085101::1775731862::0
 YgoSealmasterMeiseiGate.cs::CSharpScript::1883223700310268464::1777077313::0::1::::<><><>0<>0<><>::
 YgoSimpleGridSelection.cs::CSharpScript::542930761753389401::1777081545::0::1::::<><><>0<>0<><>::
 YgoSkillAttackPotionCardPoolFilter.cs::CSharpScript::968562364305478269::1776897614::0::1::::<><><>0<>0<><>::
-YgoSkillAttackPotionPackWeightedPick.cs::CSharpScript::3626094693487415585::1777276082::0::1::::<><><>0<>0<><>::
+YgoSkillAttackPotionPackWeightedPick.cs::CSharpScript::3626094693487415585::1777336640::0::1::::<><><>0<>0<><>::
 YgoSkullInvitationGraveyard.cs::CSharpScript::644935970993975461::1777073958::0::1::::<><><>0<>0<><>::
 YgoSpearCretinGraveyard.cs::CSharpScript::886175596863223466::1777075783::0::1::::<><><>0<>0<><>::
 YgoSpellCounterService.cs::CSharpScript::3501950524608184061::1775731862::0::1::::<><><>0<>0<><>::

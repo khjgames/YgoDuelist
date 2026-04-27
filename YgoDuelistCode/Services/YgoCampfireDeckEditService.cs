@@ -128,10 +128,15 @@ public static class YgoCampfireDeckEditService
             if (player.Deck.Cards.Count >= GetDeckCap(player))
                 break;
             if (!IsCampfireDeckEditEligible(chosen))
-                break;
+                continue;
 
             DetachFromTrunkOrSideIfNeeded(player, chosen);
-            await CardPileCmd.Add(chosen, PileType.Deck, source: chosen);
+            await CardPileCmd.Add(
+                chosen,
+                player.Deck,
+                CardPilePosition.Top,
+                chosen,
+                skipVisuals: false);
             added++;
         }
 

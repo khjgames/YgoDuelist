@@ -50,12 +50,27 @@ public static class YgoPrePlayGridSelection
         List<YgoTransientSpellOptionCommandCard> BuildOptionCards() =>
             BuildCanonicalCandidates<YgoTransientSpellOptionCommandCard>(options, rebuildCanonicalForRemoteApply);
 
-        YgoTransientSpellOptionCommandCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
-            YgoChoiceContexts.Blocking(),
-            player,
-            prefs,
-            BuildOptionCards);
-        if (chosen == null)
+        List<YgoTransientSpellOptionCommandCard> localOptions = BuildOptionCards();
+        if (localOptions.Count == 0)
+            return false;
+
+        IEnumerable<CardModel> picked;
+        try
+        {
+            picked = await TributeSummonGridSelect.FromSimpleGridIndexed(
+                YgoChoiceContexts.Blocking(),
+                localOptions.Cast<CardModel>().ToList(),
+                player,
+                prefs,
+                rebuildCanonicalForRemoteApply: () => BuildOptionCards().Cast<CardModel>().ToList());
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+
+        CardModel? selected = picked.FirstOrDefault();
+        if (selected is not YgoTransientSpellOptionCommandCard chosen)
             return false;
 
         YgoPrePlayOptionIdPayload.SetPending(sourceCard, chosen.OptionId);

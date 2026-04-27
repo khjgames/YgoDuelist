@@ -41,7 +41,6 @@ public sealed class The_A_Forces : BaseContinuousSpellCard
     protected override void OnUpgrade()
     {
         _atkPerMonster = PrintedAtkPerMonster + YgoStatUpgradeScaling.GetSpellTrapStatBonusUpgradeDelta(PrintedAtkPerMonster);
-        EnergyCost.UpgradeBy(-1);
         DynamicVars["Mgc"].BaseValue = _atkPerMonster;
     }
 }
