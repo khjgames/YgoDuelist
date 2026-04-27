@@ -2,7 +2,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
 /// Combined tier (0.4–2) for normal monster pack weighting from printed level/ATK/DEF
-/// (<see cref="Cards.Core.NormalMonsterCard.PackWeightMultiplier"/>).
+/// (<see cref="Cards.Core.NormalMonsterCard.PackWeightMultiplier"/>, before final adjustment).
 /// <c>max(ATK,DEF)*0.8 + min(ATK,DEF)*0.2</c> on scored efficiencies, then clamp.
 /// </summary>
 public static class YgoNormalMonsterPackTier

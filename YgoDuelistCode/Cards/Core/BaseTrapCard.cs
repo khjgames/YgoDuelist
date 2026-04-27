@@ -35,6 +35,16 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
         => (CardKeyword)(RaceKeywordBase + (int)race);
 
     public YgoCardType YgoCardType => YgoCardType.Trap;
+
+    public override float GetPackWeightMultiplierAdjusted(float packWeightBeforeAdjustments)
+    {
+        float packWeightMulti = packWeightBeforeAdjustments;
+        if (YgoCardType == YgoCardType.Trap) {
+            packWeightMulti += 0.25f; // increase the PackWeightMultiplier for Traps 25%
+        }
+        return packWeightMulti;
+    }
+
     public bool FaceDown { get; set; } = false;
     /// <summary>
     /// Facedown traps set into the spell/trap zone cannot be activated until your next turn start clears this (YGO set timing).

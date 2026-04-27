@@ -10,7 +10,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForCards;
 
 /// <summary>
-/// Random transform outcomes use <see cref="YgoDuelistCard.PackWeightMultiplier"/> like pack generation;
+/// Random transform outcomes use <see cref="YgoDuelistCard.AdjustedPackWeightMultiplier"/> like pack generation;
 /// vanilla cards in the pool stay at weight 1.
 /// </summary>
 public static class CardFactoryCreateRandomCardForTransformWeightedPatch

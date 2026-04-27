@@ -135,6 +135,7 @@ public static class YgoStatUpgradeScaling
         if (costCol == 1 && s == 13) return 1;
         if (costCol == 2 && s == 14) return 1;
         if (costCol == 2 && s >= 15 && s <= 17) return 1;
+        if (costCol == 2 && s == 18) return 1;
         if (costCol == 2 && s >= 18 && s <= 19) return 2;
         if (costCol == 2 && s >= 20 && s <= 21) return 2;
         if (costCol == 2 && s == 22) return 2;
@@ -361,8 +362,8 @@ public static class YgoStatUpgradeScaling
     {
         if (costCol == 1 && s == 12) return 3;
         if (costCol == 1 && s == 13) return 3;
-        if (costCol == 2 && s == 14) return 4;
-        if (costCol == 2 && s >= 15 && s <= 17) return 17 - s;
+        if (costCol == 2 && s == 14) return 6;
+        if (costCol == 2 && s >= 15 && s <= 17) return 19 - s;
         if (costCol == 2 && s >= 18 && s <= 19) return 22 - s;
         if (costCol == 2 && s >= 20 && s <= 21) return 25 - s;
         if (costCol == 2 && s == 22) return 4;

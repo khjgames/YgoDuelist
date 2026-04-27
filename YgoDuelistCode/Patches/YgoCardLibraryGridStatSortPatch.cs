@@ -58,7 +58,7 @@ public static class YgoCardLibraryGridStatSortPatch
         bool useAtk = state.PrimaryMonsterStatSort == YgoCardLibraryMonsterStatSortAxis.Atk;
 
         float PackWeightKey(CardModel c) =>
-            c is YgoDuelistCard y ? y.PackWeightMultiplier : 1f;
+            c is YgoDuelistCard y ? y.AdjustedPackWeightMultiplier : 1f;
 
         int StatKey(CardModel c)
         {

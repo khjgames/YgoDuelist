@@ -31,6 +31,16 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         => (CardKeyword)(RaceKeywordBase + (int)race);
 
     public YgoCardType YgoCardType => YgoCardType.Spell;
+
+    public override float GetPackWeightMultiplierAdjusted(float packWeightBeforeAdjustments)
+    {
+        float packWeightMulti = packWeightBeforeAdjustments;
+        if (YgoCardType == YgoCardType.Spell) {
+            packWeightMulti += 0.13f; // increase the PackWeightMultiplier for Spells 13%
+        }
+        return packWeightMulti;
+    }
+
     public bool FaceDown { get; set; } = false;
     public bool IsSetModeInHand { get; private set; } = false;
     public bool WasSetIntoSpellTrapZone { get; private set; } = false;

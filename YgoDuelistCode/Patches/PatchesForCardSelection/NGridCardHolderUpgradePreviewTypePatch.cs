@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForCardSelection;
 
@@ -14,7 +15,14 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForCardSelection;
 [HarmonyPatch(typeof(NGridCardHolder), nameof(NGridCardHolder.SetIsPreviewingUpgrade))]
 internal static class NGridCardHolderUpgradePreviewTypePatch
 {
-    private static void Postfix(NGridCardHolder __instance, bool showUpgradePreview)
+    private static void Prefix(NGridCardHolder __instance, bool showUpgradePreview, ref AbstractMonsterCard? __state)
+    {
+        if (!showUpgradePreview)
+            return;
+        __state = __instance.CardNode?.Model as AbstractMonsterCard;
+    }
+
+    private static void Postfix(NGridCardHolder __instance, bool showUpgradePreview, AbstractMonsterCard? __state)
     {
         if (!__instance.Visible)
             return;
@@ -29,6 +37,9 @@ internal static class NGridCardHolderUpgradePreviewTypePatch
 
         if (!baseCard.IsUpgradable)
             return;
+
+        if (__state != null && node.Model is AbstractMonsterCard previewMonster)
+            previewMonster.CopyDisplayFormFrom(__state);
 
         node.Model.UpgradePreviewType = CardUpgradePreviewType.Deck;
         node.ShowUpgradePreview();

@@ -199,6 +199,19 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     }
 
     /// <summary>
+    /// Copies only the preview/display form state. Used by card-grid upgraded clones so "View Upgrades" preserves
+    /// the monster mode the player cycled to with right-click.
+    /// </summary>
+    public void CopyDisplayFormFrom(AbstractMonsterCard source)
+    {
+        ApplyNetworkObserverHandPlayBattleState(
+            source.IsAttackBattlePosition,
+            source.IsHandEffectFormActive,
+            source.FaceDown,
+            source.WillSet);
+    }
+
+    /// <summary>
     /// Same position update as <see cref="SetBattlePositionFromDuelCommand"/>, and when the stance actually changes, runs the same hooks as
     /// <see cref="Command.Command_Change_Battle_Position"/> (<see cref="OnSwitchedFromDefenseToAttackFromCommandAsync"/> /
     /// <see cref="OnSwitchedFromAttackToDefenseFromCommandAsync"/>).

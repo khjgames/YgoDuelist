@@ -508,7 +508,7 @@ public static class YgoCardPackGenerator
     }
 
     private static float GetPackWeightMultiplier(CardModel model) =>
-        model is YgoDuelistCard y ? y.PackWeightMultiplier : 1f;
+        model is YgoDuelistCard y ? y.AdjustedPackWeightMultiplier : 1f;
 
     private static Dictionary<ModelId, int> CountIds(IEnumerable<CardModel> cards)
     {

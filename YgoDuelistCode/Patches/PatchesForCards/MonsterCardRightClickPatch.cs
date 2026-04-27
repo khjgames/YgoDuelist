@@ -193,6 +193,8 @@ internal static class MonsterCardRightClickPatch
 
         bool allowCanonicalUiPreview = holder is not NHandCardHolder;
         monster.ToggleAttackSkill(allowCanonicalUiPreview);
+        if (holder is NGridCardHolder && holder.CardModel is AbstractMonsterCard backingMonster && !ReferenceEquals(backingMonster, monster))
+            backingMonster.CopyDisplayFormFrom(monster);
 
         var cardNode = holder.CardNode;
         if (holder is NHandCardHolder handHolder)

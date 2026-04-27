@@ -53,6 +53,25 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
     public override int GetIntrinsicRecklessCombatSelfDamage() => GetEffectiveDuelMonsterLevel() >= 3 ? 1 : 0;
 
+    public override float GetPackWeightMultiplierAdjusted(float packWeightBeforeAdjustments)
+    {
+        float packWeightMulti = packWeightBeforeAdjustments;
+        if (YgoCardType == YgoCardType.Monster && DuelMonsterLevel <= 4){
+            packWeightMulti -= 0.06f; // drop the PackWeightMultiplier for level 4 and below Normal Monsters 6%
+        } else if (YgoCardType == YgoCardType.Monster && DuelMonsterLevel >= 5 && DuelMonsterLevel <= 6) {
+            packWeightMulti -= 0.09f; // drop the PackWeightMultiplier for level 5 and 6 Normal Monsters 9%
+        } else if (YgoCardType == YgoCardType.Monster && DuelMonsterLevel >= 7) {
+            packWeightMulti -= 0.03f; // drop the PackWeightMultiplier for level 7 and above Normal Monsters 3%
+        } else if (YgoCardType == YgoCardType.EffectMonster) {
+            packWeightMulti += 0.02f; // increase the PackWeightMultiplier for Effect Monsters 2%
+        } else if (YgoCardType == YgoCardType.FusionMonster) {
+            packWeightMulti += 0.08f; // increase the PackWeightMultiplier for Fusion Monsters 8%
+        } else if (YgoCardType == YgoCardType.RitualMonster) {
+            packWeightMulti += 0.10f; // increase the PackWeightMultiplier for Ritual Monsters 10%
+        }
+        return packWeightMulti;
+    }
+
     /// <inheritdoc cref="BaseMonsterCard.GetPackWeightMultiplierBase" />
     /// <remarks>
     /// Tier scoring applies only to true normal monsters (<see cref="YgoCardType.Monster"/>).
@@ -69,7 +88,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
     /// <summary>
     /// Auto-enable bulk bundling for low pack-weight true normal monsters.
     /// </summary>
-    public override bool BulkBundled => YgoCardType == YgoCardType.Monster && PackWeightMultiplier <= 0.64f;
+    public override bool BulkBundled => YgoCardType == YgoCardType.Monster && AdjustedPackWeightMultiplier <= 0.63f;
 
     protected override IEnumerable<DynamicVar> CanonicalVars
     {

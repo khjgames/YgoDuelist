@@ -7,14 +7,14 @@ using YgoDuelist.YgoDuelistCode.Cards;
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>
-/// Weighted draws for YGO skill/attack potions using each card's <see cref="YgoDuelistCard.PackWeightMultiplier"/>
+/// Weighted draws for YGO skill/attack potions using each card's <see cref="YgoDuelistCard.AdjustedPackWeightMultiplier"/>
 /// (same notion as pack generation in <see cref="YgoCardPackGenerator"/>).
 /// </summary>
 public static class YgoSkillAttackPotionPackWeightedPick
 {
     /// <summary>Non-positive weights would break <see cref="GrabBag{T}"/>; clamp to a tiny positive value.</summary>
     public static double GetSelectionWeight(CardModel c) =>
-        c is YgoDuelistCard y ? System.Math.Max((double)y.PackWeightMultiplier, 1e-9) : 1.0;
+        c is YgoDuelistCard y ? System.Math.Max((double)y.AdjustedPackWeightMultiplier, 1e-9) : 1.0;
 
     /// <summary>
     /// Up to <paramref name="count"/> distinct picks without replacement. Pool must already be in deterministic order

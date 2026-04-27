@@ -177,7 +177,7 @@ public static class YgoPackTagStatisticsLogger
     private static string AverageWeight(List<YgoDuelistCard> cards) =>
         cards.Count == 0
             ? "0.00"
-            : cards.Average(card => card.PackWeightMultiplier).ToString("0.00", CultureInfo.InvariantCulture);
+            : cards.Average(card => card.AdjustedPackWeightMultiplier).ToString("0.00", CultureInfo.InvariantCulture);
 
     private static string ToPackName(YgoCardPackTags tag) =>
         tag.ToString();

@@ -21,7 +21,7 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForCards;
 
 /// <summary>
 /// Transform preview cycles replacement candidates with probability proportional to
-/// <see cref="YgoDuelistCard.PackWeightMultiplier"/> instead of a flat shuffle.
+/// <see cref="YgoDuelistCard.AdjustedPackWeightMultiplier"/> instead of a flat shuffle.
 /// </summary>
 [HarmonyPatch(typeof(NTransformPreview), "CycleThroughCards")]
 public static class NTransformPreviewWeightedCyclePatch

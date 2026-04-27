@@ -40,6 +40,18 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     /// </summary>
     public virtual float PackWeightMultiplier => 1f;
 
+    public virtual float GetPackWeightMultiplierAdjusted(float packWeightBeforeAdjustments)
+    {
+        float packWeightMulti = packWeightBeforeAdjustments;
+
+        return packWeightMulti;
+    }
+
+    /// <summary>
+    /// Final pack-weight multiplier after card-type adjustments. Use this for selection logic, statistics, and UI display.
+    /// </summary>
+    public float AdjustedPackWeightMultiplier => GetPackWeightMultiplierAdjusted(PackWeightMultiplier);
+
     public virtual Type[] BundledCards => Array.Empty<Type>();
 
     /// <summary>

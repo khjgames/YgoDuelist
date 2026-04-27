@@ -6,7 +6,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 
 namespace YgoDuelist.YgoDuelistCode.Nodes.CardLibrary;
 
-/// <summary>Min/max text filter for <see cref="YgoDuelistCard.PackWeightMultiplier"/> on the compendium sidebar.</summary>
+/// <summary>Min/max text filter for <see cref="YgoDuelistCard.AdjustedPackWeightMultiplier"/> on the compendium sidebar.</summary>
 public sealed class YgoCardLibraryPackWeightRangeFilterState
 {
     public NCardViewSortButton? SortButton { get; set; }
@@ -22,7 +22,7 @@ public sealed class YgoCardLibraryPackWeightRangeFilterState
         if (!minBound.HasValue && !maxBound.HasValue)
             return true;
 
-        float w = card is YgoDuelistCard y ? y.PackWeightMultiplier : 1f;
+        float w = card is YgoDuelistCard y ? y.AdjustedPackWeightMultiplier : 1f;
         if (minBound.HasValue && w < minBound.Value)
             return false;
         if (maxBound.HasValue && w > maxBound.Value)

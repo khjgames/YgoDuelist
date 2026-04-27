@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
-using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -53,9 +53,9 @@ public static class YgoCompendiumPackWeightDescriptionPatch
         {
             if (CompendiumVisualDepth.Value <= 0)
                 return;
-            if (__instance is not BaseMonsterCard bm)
+            if (__instance is not YgoDuelistCard ygo)
                 return;
-            float m = bm.PackWeightMultiplier;
+            float m = ygo.AdjustedPackWeightMultiplier;
             if (m == 1f)
                 return;
             string s = m.ToString("0.###", CultureInfo.InvariantCulture);
