@@ -96,6 +96,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         {
             foreach (DynamicVar v in GetNormalMonsterCoreCanonicalVars())
                 yield return v;
+
             int executeDelta = PermanentAtkDeltaOnEnemyExecute;
             if (executeDelta != 0)
                 yield return new IntVar("Increase", executeDelta);
@@ -150,6 +151,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         {
             if (!base.IsPlayable)
                 return false;
+
             if (!CanSummonDuelMonster || Owner == null)
                 return true;
 
@@ -204,11 +206,14 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 || Owner?.Creature == null
                 || Owner.PlayerCombatState == null)
                 return;
+
             Creature? selfPet = YgoMpCombatOrder.FirstPetWhere(
                 Owner.PlayerCombatState,
                 p => DuelMonsterFieldRegistry.HasSourceCard(p, this));
+
             if (selfPet == null || !selfPet.IsAlive)
                 return;
+
             if (YgoMpDiagnostics.IsMultiplayer)
             {
                 YgoMpDiagnostics.VerbosePrint(
@@ -239,9 +244,11 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
             await BeforeAttackCombatActionAsync(choiceContext, cardPlay);
             WillSet = false;
+
             for (int i = 0; i < resolutionCount; i++)
             {
                 await ApplyRecklessSelfDamageIfAnyAsync(i, resolutionCount);
+
                 foreach (Creature t in attackTargets)
                 {
                     AttackCommand? attackCommand = await YgoPortionDamage.DealMonsterAttackToTargetAsync(
@@ -250,6 +257,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                         t,
                         atk,
                         "vfx/vfx_attack_slash");
+
                     if (attackCommand != null && !YgoPortionedSalvo.ShouldSkipMonsterPerHitCardHook(this))
                         await OnAfterMonsterAttackHitAsync(choiceContext, cardPlay, attackCommand);
                 }
@@ -260,14 +268,17 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             if (Owner != null && Owner.Creature != null)
             {
                 WillSet = false;
+
                 for (int i = 0; i < resolutionCount; i++)
                 {
                     await ApplyRecklessSelfDamageIfAnyAsync(i, resolutionCount);
+
                     await CreatureCmd.GainBlock(
                         Owner.Creature,
                         (decimal)def,
                         ValueProp.Move,
                         cardPlay);
+
                     await OnAfterGainBlockFromCombatActionAsync(choiceContext, cardPlay, def);
                 }
             }
@@ -298,6 +309,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         {
             int tribute = TributeReleaseCount;
             TributeSummonPendingResolution? tributePending = null;
+
             if (tribute > 0)
             {
                 if (!TributeSummonPlayPayload.TryTakePendingForManualPlay(choiceContext, this, out tributePending) || tributePending == null
@@ -309,16 +321,28 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                         tributePending.MausoleumHpLossTotal))
                 {
                     if (YgoPlayPayloadNetKey.TryGetKey(this, out ulong kOid, out uint kIdx))
+                    {
                         GD.PrintErr(
                             $"[YgoDuelist][MP][Tribute] OnPlay fallback (no kill/summon): key=({kOid},{kIdx}) card={Id?.Entry} pendingNull={tributePending == null}");
+                    }
+
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);
+
                     if (!ShouldSkipCombatActionAfterSummon(cardPlay))
                     {
                         await ApplyNarrowPassHandSummonCombatPaymentAsync(choiceContext);
                         await CombatAction(choiceContext, cardPlay);
                     }
+
                     return;
                 }
+
+                List<BaseMonsterCard> tributeMonsters = YgoMpCombatOrder
+                    .CreatureListOrderedByCombatId(tributePending.Pets)
+                    .Select(pet => DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet))
+                    .Where(monster => monster != null)
+                    .Cast<BaseMonsterCard>()
+                    .ToList();
 
                 await OnBeforeTributeMaterialsReleased(choiceContext, cardPlay, tributePending);
 
@@ -331,12 +355,37 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                     int nextHp = Owner.Creature.CurrentHp - hpLoss;
                     if (nextHp < 0)
                         nextHp = 0;
+
                     await CreatureCmd.SetCurrentHp(Owner.Creature, nextHp);
                 }
-            }
 
-            OnBeforeDuelMonsterSummon(choiceContext, cardPlay, tributePending);
-            await DuelMonsterSummon.TrySummonDuelMonster(Owner, this, choiceContext, SpecialSummonGrantsImmediateCommandsThisTurn);
+                OnBeforeDuelMonsterSummon(choiceContext, cardPlay, tributePending);
+
+                bool summoned = await DuelMonsterSummon.TrySummonDuelMonster(
+                    Owner,
+                    this,
+                    choiceContext,
+                    SpecialSummonGrantsImmediateCommandsThisTurn);
+
+                if (summoned)
+                {
+                    await YgoTributeSummonCardHooks.DispatchOnTributeSummonedMonsterAsync(
+                        choiceContext,
+                        Owner,
+                        this,
+                        tributeMonsters);
+                }
+            }
+            else
+            {
+                OnBeforeDuelMonsterSummon(choiceContext, cardPlay, tributePending);
+
+                await DuelMonsterSummon.TrySummonDuelMonster(
+                    Owner,
+                    this,
+                    choiceContext,
+                    SpecialSummonGrantsImmediateCommandsThisTurn);
+            }
         }
 
         if (Owner == null)
@@ -395,6 +444,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             MonsterEnergyCostCalculator.GetMonsterPlayEnergy(
                 DuelMonsterLevel, YgoCardType, BaseAtk, true, false, DuelMonsterStatsAreUnknown),
             BaseAtk);
+
         int defBonus = YgoStatUpgradeScaling.GetMonsterPrintedLineUpgradeDelta(
             DuelMonsterLevel,
             YgoCardType,
@@ -402,13 +452,16 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 DuelMonsterLevel, YgoCardType, BaseDef, false, false, DuelMonsterStatsAreUnknown),
             BaseDef,
             isDefenseLine: true);
+
         int mgcBonus = YgoStatUpgradeScaling.GetMonsterMgcUpgradeDelta(
             DuelMonsterLevel, YgoCardType, BaseMgc, DuelMonsterStatsAreUnknown);
+
         DynamicVars.Damage.UpgradeValueBy(atkBonus);
         DynamicVars["Def"].UpgradeValueBy(defBonus);
         // Use ContainsKey: get_Block throws KeyNotFoundException if BlockVar was omitted from canonical vars.
         if (DynamicVars.ContainsKey("Block"))
             DynamicVars["Block"].UpgradeValueBy(defBonus);
+
         DynamicVars["Mgc"].UpgradeValueBy(mgcBonus);
         SyncPermanentExecuteIncreaseVar();
     }
@@ -445,13 +498,16 @@ public abstract class NormalMonsterCard : BaseMonsterCard
 
         List<BaseMonsterCard> field;
         if (card.IsCanonical)
+        {
             field = new List<BaseMonsterCard> { monster };
+        }
         else
         {
             var owner = card.Owner;
             field = DuelMonsterFieldRegistry
                 .GetFieldMonsters(owner)?
                 .ToList() ?? new List<BaseMonsterCard>();
+
             if (!field.Contains(monster))
                 field.Add(monster);
         }

@@ -18,13 +18,56 @@ public static class SpellTrapHandHolderMouseReleasedPatch
     {
         if (inputEvent is not InputEventMouseButton e || e.ButtonIndex != MouseButton.Right)
             return;
+
         SpellTrapCardRightClickPatch.TryToggleSpellTrapAndRefresh(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(NCardHolder), "OnMouseReleased")]
+public static class NonHandSpellTrapHolderMouseReleasedAltPatch
+{
+    public static void Prefix(NCardHolder __instance, InputEvent inputEvent)
+    {
+        if (__instance is NHandCardHolder)
+            return;
+
+        if (!ShouldToggleSpellTrapBeforeAltPressed(__instance, inputEvent))
+            return;
+
+        SpellTrapCardRightClickPatch.TryToggleSpellTrapAndRefresh(__instance);
+    }
+
+    private static bool ShouldToggleSpellTrapBeforeAltPressed(NCardHolder holder, InputEvent inputEvent)
+    {
+        if (holder.CardNode == null)
+            return false;
+
+        var t = Traverse.Create(holder);
+
+        if (!t.Field<bool>("_isHovered").Value)
+            return false;
+
+        var currentPress = t.Field<InputEventMouseButton?>("_currentPressedAction").Value;
+        if (currentPress == null)
+            return false;
+
+        if (!t.Field<bool>("_isClickable").Value)
+            return false;
+
+        if (inputEvent is not InputEventMouseButton emb)
+            return false;
+
+        if (emb.ButtonIndex != currentPress.ButtonIndex)
+            return false;
+
+        return emb.ButtonIndex == MouseButton.Right;
     }
 }
 
 internal static class SpellTrapCardRightClickPatch
 {
-    private static readonly MethodInfo? NCardReload = typeof(NCard).GetMethod("Reload", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly MethodInfo? NCardReload =
+        typeof(NCard).GetMethod("Reload", BindingFlags.NonPublic | BindingFlags.Instance);
 
     public static void TryToggleSpellTrapAndRefresh(NCardHolder holder)
     {
@@ -41,8 +84,34 @@ internal static class SpellTrapCardRightClickPatch
         {
             if (spell.Pile?.Type != PileType.Hand)
                 return;
+
             if (spell.Pile?.Type == SpellTrapZonePile.CustomType)
                 return;
+
+            if (spell is IYgoGraveEffectDisplayForm graveForm
+                && graveForm.SupportsGraveEffectDisplayForm)
+            {
+                // Regular -> Set
+                if (!spell.IsSetModeInHand && !graveForm.IsGraveEffectDisplayFormActive)
+                {
+                    spell.ToggleSetSkillModeInHand();
+                }
+                // Set -> Grave Effect
+                else if (spell.IsSetModeInHand)
+                {
+                    spell.ToggleSetSkillModeInHand();
+                    graveForm.ToggleGraveEffectDisplayForm();
+                }
+                // Grave Effect -> Regular
+                else if (graveForm.IsGraveEffectDisplayFormActive)
+                {
+                    graveForm.ToggleGraveEffectDisplayForm();
+                }
+
+                RefreshHolder(holder);
+                return;
+            }
+
             spell.ToggleSetSkillModeInHand();
             RefreshHolder(holder);
             return;
@@ -53,8 +122,10 @@ internal static class SpellTrapCardRightClickPatch
             // Trap cards are always set mode in hand; no right-click toggle.
             if (trap.Pile?.Type != PileType.Hand)
                 return;
+
             if (trap.Pile?.Type == SpellTrapZonePile.CustomType)
                 return;
+
             RefreshHolder(holder);
         }
     }
@@ -82,21 +153,28 @@ internal static class SpellTrapCardRightClickPatch
     internal static void RefreshHolder(NCardHolder holder)
     {
         var cardNode = holder.CardNode;
+
         if (holder is NHandCardHolder handHolder)
         {
             var tree = handHolder.GetTree();
             if (tree == null)
                 return;
+
             void OnNextFrame()
             {
                 tree.ProcessFrame -= OnNextFrame;
+
                 if (!GodotObject.IsInstanceValid(handHolder))
                     return;
+
                 handHolder.UpdateCard();
+
                 if (cardNode != null && GodotObject.IsInstanceValid(cardNode) && NCardReload != null)
                     NCardReload.Invoke(cardNode, null);
+
                 NPlayerHand.Instance?.CallDeferred(new StringName("ForceRefreshCardIndices"));
             }
+
             tree.ProcessFrame += OnNextFrame;
             return;
         }
@@ -104,6 +182,7 @@ internal static class SpellTrapCardRightClickPatch
         if (cardNode != null)
         {
             cardNode.UpdateVisuals(cardNode.DisplayingPile, CardPreviewMode.Normal);
+
             if (NCardReload != null)
                 NCardReload.Invoke(cardNode, null);
         }

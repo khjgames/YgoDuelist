@@ -75,6 +75,20 @@ public static class DuelMonsterPetDeathPatch
 
             AbstractMonsterCard? abstractMonster = card as AbstractMonsterCard;
             MonsterCommandState? cmdState = MonsterCommandRegistry.TryGet(pet, out MonsterCommandState st) ? st : null;
+
+            // 🔥 Fix: Die For You fallback → treat as battle kill
+            if (cmdState != null
+                && !cmdState.DestroyedByEnemyBattleDamage
+                && cmdState.DieForYouRedirectedBattleDamageDealer is Creature dealer
+                && dealer.Side == CombatSide.Enemy)
+            {
+                cmdState.DestroyedByEnemyBattleDamage = true;
+                cmdState.BattleDamageKillerEnemy = dealer;
+
+                GD.Print(
+                    $"[YgoDuelist][BattleDeath] DieForYou fallback battle kill pet={pet.Name} killer={dealer.Name}");
+            }
+
             var ctx = new DuelMonsterPetDeathContext(player, pet, cmdState);
 
             if (abstractMonster != null)

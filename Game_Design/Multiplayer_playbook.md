@@ -30,6 +30,7 @@ Treat these as **guilty until proven innocent** in any code path that runs durin
 - `zone.Cards.FirstOrDefault` / `First()` for **“pick one”** when ties are possible — sort by stable key (e.g. `CardId.Entry`) then take first.
 - Raw `CardSelectCmd.FromSimpleGrid(...)` for **combat-path preview/confirmation-only grids** (`MinSelect = MaxSelect = 0`, manual confirm) — route through a synced helper so stale buffered `Index` choices cannot satisfy a later preview prompt.
 - Raw `CardSelectCmd.FromSimpleGrid(...)` for **combat-path singleton activation prompts** or **deck / graveyard / hand candidate grids** that are ordinary `CardModel` lists — route through synced grid helpers with a stable candidate rebuild (`YgoMpCombatOrder.CardsSnapshotOrderedForMp(...)` + combat wire) instead of vanilla index resolution.
+- Open-coding **multi-pile owner search** (concatenate hand + GY + deck + … then grid + move) without the shared ordered union + selection path — use **`YgoPileSearchSelection`** so every peer rebuilds the same candidate sequence and moves cards in stable order.
 - Re-introducing per-card graveyard patch dispatch (e.g. `CardPileAddInternal*` calling `YgoSomeNamedCardGraveyard` directly) after `IYgoOnAddedToYgoGraveyardPile` already exists — that splits one timing across many bespoke code paths and is harder to audit for parity.
 - Repeating ad-hoc `new BlockingPlayerChoiceContext()` creation in every file for the same activation/search/cleanup flow — centralize on `YgoChoiceContexts.Blocking(...)` so choice-context semantics stay searchable and consistent.
 - Repeating raw `PileType.*.GetPile(player)` / custom-pile `.GetPile(player)` lookups throughout gameplay code when a shared accessor exists — centralize on `YgoPlayerPiles` so pile ownership resolution stays searchable and consistent across cards/services/patches.
@@ -169,6 +170,7 @@ Fix hits by **routing through helpers**, not one-off copies of the same three li
 68. **Deck-removal selectors are deck-card wire too:** Wellspring Bathe reproduced a non-combat choice-counter drift: host ktechrobo waited for remote choice id `7`, while client khjgames sent the actual removal as choice id `16` (`DeckCard 2`). The central vanilla selector expectation patch covered deck upgrade/transform/generic selectors but missed explicit `CardSelectCmd.FromDeckForRemoval` coverage. `CardSelectCmdVanillaHandChoiceExpectationPatch` now wraps `FromDeckForRemoval` as `AllowDeckCard`.
 69. **Choice expectations must outlive async selector yield:** A Harmony postfix on an `async Task` selector runs as soon as the selector reaches its first incomplete await, not when the UI choice completes. That means an `AsyncLocal` expectation can be gone while the remote player is still choosing, so a live future choice id cannot be remapped even though pre-buffer cleanup worked. `PlayerChoiceSynchronizerStaleReceivePatch` now tracks the active remote wait contract from `WaitForRemoteChoice` until that wait task completes, and `OnReceivePlayerChoice` consults that registry after the transient `AsyncLocal`. The same guard now validates card-result counts for `CombatCard`, `DeckCard`, `CanonicalCard`, and `MutableCard` wires, not just `Index` wires.
 70. **Minimum-deck guard belongs on Deck-to-Trunk, not event removal:** Do not globally filter `CardSelectCmd.FromDeckForRemoval` for YGO minimum size. Wellspring and other event/card-removal flows should still open the removal grid and then lower the YGO minimum if the card leaves main deck/trunk/side/extra storage. Only “move YgoDuelistCard from Deck to Trunk” should block at `deck.Count <= YgoPlayerMinimumDeck.Get(player)`, because the card remains in YGO storage and the current minimum should not decrease. The campfire store-to-trunk flow logs this boundary with `[YgoDuelist][DeckToTrunkMin]`.
+71. **Multi-pile search + linked-trap special summon helpers:** Added **`YgoPileSearchSelection`** so cards that search several owner piles (hand, GY, deck, banished, zones, etc.) build candidates and post-pick moves only through **`YgoMpCombatOrder.CardsSnapshotOrderedForMp`** and **`YgoPlayerPiles`**, and run combat grids through **`YgoOrderedCardSelection`** — fixes the class where ad-hoc pile concatenation or raw enumeration made host/client disagree on row order or which card satisfied a filter. **`YgoLinkedSpecialSummonSelection`** centralizes continuous-trap “pick monster from piles → pre-play payload → resolve special summon → attach **`IYgoSpellTrapEquipLink`**” with the same stable **`BuildMonsterCandidates`** rebuild for remote apply (`Call_of_the_Haunted`, `Soul_Resurrection`).
 
 Re-grep `FirstOrDefault` after `.Pets` (including line breaks), `Pets.ToList()`, `Pets.Any`, `foreach` + `PlayerCombatState.Pets`, **`foreach (var` + `HittableEnemies`**, **`HittableEnemies` + `.Where` / `.ToList` without helpers**, and `async void` + `Hook.` after new work. **Draw pile** `FirstOrDefault` for “mill top” stays pile order (do not re-sort by net id — that would change game semantics). Remaining `.Pets` uses (e.g. `.Where` LINQ chains) still need case-by-case review if they imply “first” without `OrderBy(CombatId)`.
 
@@ -211,6 +213,8 @@ Goal: **cover interaction classes**, not every card name.
 | UI vs simulation (disposed nodes) | `NHealthBarDisposedChildrenGuardPatch` (when pet dies under UI) |
 | Verbose MP prints | `YgoMpDiagnostics` |
 | Deterministic pet + combat-card ordering | `YgoMpCombatOrder` |
+| Multi-pile search ordering + selection wire | `YgoPileSearchSelection` |
+| Linked trap special summon pre-play + resolve | `YgoLinkedSpecialSummonSelection` |
 
 ## Relationship to `Card_integration_playbook.md`
 
@@ -261,6 +265,8 @@ The tables below merge those threads with the broader MP work already captured h
 | **Reckless / `FirstOrDefault` on pets** | `Pets.FirstOrDefault(...)` without `OrderBy(CombatId)` when multiple pets tie the predicate → different pet took Reckless self-damage → 1 HP drift with matching `[fp]` (checksum 167). |
 | **Needle Ball / Die For You** | Self-hit used `ValueProp.Move` **without** `Unpowered` → treated as powered → `DieForYouPower` + `Hook.ModifyUnblockedDamageTarget` order diverged (checksum 127). |
 | **Narrow Pass “first active”** | `GetFirstActive` depended on raw pile order when multiple tax cards could qualify. |
+| **Multi-pile search without stable union** | Concatenating or enumerating several piles for one grid without **`CardsSnapshotOrderedForMp`** on each slice and on the merged candidate list can make the same logical pool map to different row indices across peers after state changes. |
+| **Linked trap revive + pre-play** | Per-trap copies of pile scans + `FromSimpleGrid` + summon without a shared **`rebuildCanonicalForRemoteApply`** tied to the same ordered monster pool risk the same drift class as other pre-play pile grids. |
 | **UI vs simulation** | `NCardPlayQueue.TweenCardForCancellation` on disposed `NCard`; `NHealthBar.RefreshBlockUi` after pet `QueueFree` (ObjectDisposed on controls). |
 | **Content / tooling** | Malformed BBCode (`[gold]...->...` under `[center]`) crashed Neow UI before combat MP; duplicate model registration warnings (e.g. `RelatedCards` self-loop). |
 | **Log noise mistaken for MP** | Godot exit RID/shader/text leaks; `NeowDraft TaskCanceledException` on teardown; filter these when triaging **gameplay** divergence. |
@@ -293,6 +299,8 @@ The tables below merge those threads with the broader MP work already captured h
 | **UI guards** | `NCardPlayQueueSkipDisposedTweenCancellationPatch`; `NHealthBarDisposedChildrenGuardPatch`. |
 | **Localization** | Copycat-style arrows: avoid raw `>` inside nested BBCode; use a Unicode arrow in `cards.json`. |
 | **Model registration** | Avoid `RelatedCards` that re-register the same type twice (e.g. Gravekeeper’s Guard). |
+| **Multi-pile search → move** | **`YgoPileSearchSelection`**: ordered candidate build + **`YgoOrderedCardSelection`** + ordered **`CardPileCmd.Add`** for chosen cards (`Fusion_Sage`, `King_of_the_Swamp`). |
+| **GY special summon continuous traps** | **`YgoLinkedSpecialSummonSelection`**: stable **`BuildMonsterCandidates`**, pre-play payload + matching rebuild, resolve through **`DuelMonsterSummon.TrySummonDuelMonsterSpecial`**, then **`AttachLinkedTrapIfPending`** (`Call_of_the_Haunted`, `Soul_Resurrection`). |
 
 ### Process lessons (these threads)
 

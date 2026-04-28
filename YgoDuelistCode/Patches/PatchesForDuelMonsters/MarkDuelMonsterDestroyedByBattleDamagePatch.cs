@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Services;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -33,7 +34,11 @@ public static class MarkDuelMonsterDestroyedByBattleDamagePatch
         if (!target.IsPet || dealer == null || dealer.Side != CombatSide.Enemy)
             return;
 
-        if (!props.HasFlag(ValueProp.Move))
+        bool isBattle =
+            props.HasFlag(ValueProp.Move)
+            || target.HasPower<DieForYouPower>();
+
+        if (!isBattle)
             return;
 
         if (!result.WasTargetKilled)

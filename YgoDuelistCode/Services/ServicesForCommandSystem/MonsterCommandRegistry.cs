@@ -67,6 +67,9 @@ public sealed class MonsterCommandState
     /// <summary><see cref="Cards.Monster.Todo.Effect.Goddess_of_Whim"/>: 1.0 = none, 2.0 = double, 0.5 = halve printed ATK this turn.</summary>
     public decimal GoddessOfWhimAtkMultiplierThisTurn = 1m;
 
+    /// <summary>Enemy whose powered attack was redirected to this pet by Die For You.</summary>
+    public Creature? DieForYouRedirectedBattleDamageDealer;
+
     /// <summary>Set when this pet was killed by enemy combat damage (Move); read before <see cref="MonsterCommandRegistry.Clear"/>.</summary>
     public bool DestroyedByEnemyBattleDamage;
 

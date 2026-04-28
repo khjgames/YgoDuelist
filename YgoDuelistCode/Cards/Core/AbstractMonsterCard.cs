@@ -58,6 +58,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     private static CardKeyword SplinterKeyword => (CardKeyword)20044;
     private static CardKeyword BlightKeyword => (CardKeyword)20045;
     private static CardKeyword PortionKeyword => (CardKeyword)20059;
+    private static CardKeyword NamedFusionMaterialSubstituteKeyword => (CardKeyword)20061;
 
     public abstract YgoCardType YgoCardType { get; }
     public bool FaceDown { get; set; } = false;
@@ -538,6 +539,14 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
         yield return PortionKeyword;
     }
 
+    private IEnumerable<CardKeyword> GetNamedFusionMaterialSubstituteKeywordsFromMonster()
+    {
+        if (this is not IFusionMaterialSubstitute monster)
+            yield break;
+        if (monster.CanSubstituteAsFusionMaterial)
+            yield return NamedFusionMaterialSubstituteKeyword;
+    }
+
     private IEnumerable<CardKeyword> GetYgoArchetypeKeywords() =>
         YgoMonsterArchetypeKeywords.KeywordsForMonsterType(GetType());
 
@@ -559,6 +568,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
                 keywords.Add(kw);
             keywords.AddRange(GetSplinterBlightKeywordsFromMonster());
             keywords.AddRange(GetPortionKeywordsFromMonster());
+            keywords.AddRange(GetNamedFusionMaterialSubstituteKeywordsFromMonster());
             keywords.AddRange(GetYgoArchetypeKeywords());
             return keywords;
         }

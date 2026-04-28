@@ -8,12 +8,15 @@ using YgoDuelist.YgoDuelistCode.Extensions;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards;
@@ -21,7 +24,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards;
 [Pool(typeof(YgoDuelistCardPool))]
 public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity, TargetType target) :
     CustomCardModel(cost, type, rarity, target),
-    IYgoNHandPlayPhaseHighlightOverride
+    IYgoNHandPlayPhaseHighlightOverride,
+    IYgoGraveEffectDisplayForm
 {
     protected internal bool IsUpgradedOrPreviewActive =>
         IsUpgraded || UpgradePreviewType != CardUpgradePreviewType.None;
@@ -35,7 +39,7 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual int ShopPriceModifier => 0;
 
     /// <summary>
-    /// Multiplier for YGO pack reward weighted picks (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// Multiplier for YGO pack reward weighted picks (<see cref="YgoCardPackGenerator"/>).
     /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
     /// </summary>
     public virtual float PackWeightMultiplier => 1f;
@@ -83,7 +87,7 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual bool BundleGrantsExtraCopyOfSelf => false;
 
     /// <summary>
-    /// When true, pack rewards may add tag-matched same-rarity bonus cards (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoBulkBundledResolver"/>),
+    /// When true, pack rewards may add tag-matched same-rarity bonus cards (<see cref="YgoBulkBundledResolver"/>),
     /// and the YGO merchant shows a stacked preview + extra grant like explicit <see cref="BundledCards"/>.
     /// </summary>
     public virtual bool BulkBundled => false;
@@ -104,7 +108,7 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual bool UsesCombatHandDescription => false;
 
     /// <summary>
-    /// When set, <see cref="YgoDuelist.YgoDuelistCode.Patches.YgoDuelistCustomFrameHsvPatch"/> replaces the pool frame shader with this H/S/V (same convention as <see cref="Character.YgoDuelistCardPool"/>).
+    /// When set, <see cref="YgoDuelistCustomFrameHsvPatch"/> replaces the pool frame shader with this H/S/V (same convention as <see cref="Character.YgoDuelistCardPool"/>).
     /// </summary>
     public virtual (float H, float S, float V)? CustomFrameTintHsv => null;
 
@@ -118,7 +122,7 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public virtual bool CardShowsRecklessKeyword => false;
 
     /// <summary>
-    /// 2–5: damage from this card's attack command is dealt in that many hits (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPortionDamage"/>).
+    /// 2–5: damage from this card's attack command is dealt in that many hits (see <see cref="YgoPortionDamage"/>).
     /// One logical attack for relic aggregation. 0 = off.
     /// </summary>
     public virtual int CardDamagePortionCount => 0;
@@ -188,6 +192,54 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
         return new LocString("cards", Id.Entry + suffix);
     }
 
+    private bool _graveEffectDisplayFormActive;
+
+    public virtual bool SupportsGraveEffectDisplayForm => false;
+
+    public bool IsGraveEffectDisplayFormActive =>
+        SupportsGraveEffectDisplayForm && _graveEffectDisplayFormActive;
+
+    public void ToggleGraveEffectDisplayForm(bool allowCanonicalUiPreview = false)
+    {
+        if (IsCanonical && !allowCanonicalUiPreview)
+            return;
+
+        if (!SupportsGraveEffectDisplayForm)
+            return;
+
+        _graveEffectDisplayFormActive = !_graveEffectDisplayFormActive;
+        CardModelEnergyCache.Invalidate(this);
+    }
+
+    public void CopyGraveEffectDisplayFormFrom(IYgoGraveEffectDisplayForm source)
+    {
+        if (!SupportsGraveEffectDisplayForm)
+            return;
+
+        _graveEffectDisplayFormActive = source.IsGraveEffectDisplayFormActive;
+        CardModelEnergyCache.Invalidate(this);
+    }
+
+    public LocString GetGraveEffectDescriptionLocString()
+    {
+        if (IsGraveEffectDisplayFormActive)
+            return new LocString("cards", Id.Entry + ".description_grave_effect");
+
+        if (UsesCombatHandDescription)
+            return GetCombatHandDescriptionLocString();
+
+        return Description;
+    }
+    
+    public virtual Task OnTributeSummonedMonster(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        BaseMonsterCard summonedMonster,
+        IReadOnlyList<BaseMonsterCard> tributeMonsters)
+    {
+        return Task.CompletedTask;
+    }
+    
     private bool IsInHandDuringCombat()
     {
         if (CombatManager.Instance?.IsInProgress != true)

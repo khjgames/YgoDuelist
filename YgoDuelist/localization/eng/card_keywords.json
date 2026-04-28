@@ -183,6 +183,9 @@
   "20059.description": "This card's attack damage is dealt across multiple hits that sum to the full amount.",
 
   "20060.title": "Union-Fusion Monster",
-  "20060.description": "Cannot be Fusion Summoned. Must be Special Summoned by banishing exact field materials."
+  "20060.description": "Cannot be Fusion Summoned. Must be Special Summoned by banishing exact field materials.",
+
+  "20061.title": "Named-Fusion-Material-Substitute",
+  "20061.description": "This card can be used as a substitute this card for any [blue]1[/blue] Named-Fusion-Material Monster, but the other Fusion-Material(s) must be the correct one(s)."
 
 }

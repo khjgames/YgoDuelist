@@ -61,16 +61,18 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     public override Task BeforeCombatStart()
     {
+        YgoCombatEndLifecycle.ResetDedupForNewCombat();
         SubscribeToGraveyardPile();
         return Task.CompletedTask;
     }
 
-    public override Task AfterCombatEnd(CombatRoom _)
+    public override async Task AfterCombatEnd(CombatRoom room)
     {
+        await YgoCombatEndLifecycle.RunEndOfCombatCleanupIfNeededAsync(room);
+
         UnsubscribeFromGraveyardPile();
         _sanctuaryHalveNextSpillToPlayer = false;
         YgoPortionedSalvo.ClearAll();
-        return Task.CompletedTask;
     }
 
     /// <summary>At the start of your turn, set your star count to 1 (from the graveyard).</summary>
@@ -165,10 +167,6 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             await MonsterCommandRegistry.ResolveOwnerTurnEndFieldCleanupAsync(choiceContext, Owner);
             MonsterCommandRegistry.ClearPerTurnExtrasForPlayer(Owner);
         }
-
-        if (side == CombatSide.Player && Owner?.Creature != null
-            && Owner.Creature.GetPower<AncientChantRaTributeBuffPower>() is { } ancientChantBuff)
-            await PowerCmd.Remove(ancientChantBuff);
     }
 
     /// <summary>Once-per-turn (annual) gate keyed by string; returns true the first call each player turn.</summary>

@@ -102,6 +102,10 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
     {
         if (Pile?.Type != PileType.Hand)
             return;
+
+        if (this is IYgoGraveEffectDisplayForm grave && grave.IsGraveEffectDisplayFormActive)
+            grave.ToggleGraveEffectDisplayForm();
+
         IsSetModeInHand = !IsSetModeInHand;
     }
 

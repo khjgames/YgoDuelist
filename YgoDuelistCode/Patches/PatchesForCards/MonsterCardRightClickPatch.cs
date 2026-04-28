@@ -172,6 +172,9 @@ internal static class MonsterCardRightClickPatch
         if (card is AbstractMonsterCard monster)
             return monster.GetDescriptionLocString();
 
+        if (card is IYgoGraveEffectDisplayForm { IsGraveEffectDisplayFormActive: true } graveForm)
+            return graveForm.GetGraveEffectDescriptionLocString();
+        
         if (card is YgoDuelistCard { UsesCombatHandDescription: true } ygoHandDesc)
             return ygoHandDesc.GetCombatHandDescriptionLocString();
 

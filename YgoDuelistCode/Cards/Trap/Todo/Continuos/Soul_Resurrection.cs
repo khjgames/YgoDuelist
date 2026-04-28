@@ -1,48 +1,90 @@
 using YgoDuelist.YgoDuelistCode.Cards;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
 
-public sealed class Soul_Resurrection : BaseTrapCard
+public sealed class Soul_Resurrection : BaseContinuousTrapCard, IYgoSpellTrapEquipLink, IYgoPrePlayCancelableGridSelection
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new DynamicVar[]
-        {
-            new DynamicVar("Mgc", 5m),
-        };
+    private static readonly YgoSearchPile[] SummonPiles =
+    [
+        YgoSearchPile.Graveyard
+    ];
+
+    private BaseMonsterCard? _equipLinkedMonster;
+    private uint _equipLinkedPetCombatId;
+    private BaseMonsterCard? _pendingLinkAfterZone;
 
     public Soul_Resurrection()
-        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapContinuous)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
-    // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Normal | YgoCardPackTags.Trap;
-    // You will always see bundled cards when RNG rolls this card, but not the other way around.
-    //public override Type[] BundledCards => new[]
-    //{
-    //    typeof(This_Card),
-    //    typeof(Another_Bundled_Card)
-    //};
 
-    // You will see these related cards more often with this card in your deck or side deck.
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Normal | YgoCardPackTags.Trap;
+
     public override Type[] RelatedCards => new[]
     {
         typeof(Soul_Resurrection),
     };
 
-    protected override Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
-        Task.CompletedTask;
+    public BaseMonsterCard? EquipLinkedMonster
+    {
+        get
+        {
+            YgoSpellTrapEquipLinkRegistry.TryRebindEquipLinkIfNeeded(this);
+            return _equipLinkedMonster;
+        }
+    }
+
+    public uint EquipLinkedPetCombatId => _equipLinkedPetCombatId;
+
+    public void SetEquipLinkedMonster(BaseMonsterCard? monster) => _equipLinkedMonster = monster;
+
+    public void SetEquipLinkedPetCombatId(uint petCombatId) => _equipLinkedPetCombatId = petCombatId;
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Mgc"].UpgradeValueBy(-2m);
+        EnergyCost.UpgradeBy(-1);
+    }
+
+    protected override bool IsPlayable =>
+        base.IsPlayable &&
+        YgoLinkedSpecialSummonSelection.CanPlay(
+            Owner,
+            SummonPiles,
+            c => c is NormalMonsterCard);
+
+    public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard) =>
+        await YgoLinkedSpecialSummonSelection.TryPrepareSingleMonsterAsync(
+            player,
+            sourceCard,
+            SummonPiles,
+            SelectionScreenPrompt,
+            c => c is NormalMonsterCard);
+
+    protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        _pendingLinkAfterZone = await YgoLinkedSpecialSummonSelection.TryResolvePreparedSpecialSummonAsync(
+            choiceContext,
+            Owner,
+            this,
+            SummonPiles,
+            c => c is NormalMonsterCard);
+    }
+
+    protected override Task OnAfterContinuousTrapEnteredSpellTrapZoneAsync(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay)
+    {
+        YgoLinkedSpecialSummonSelection.AttachLinkedTrapIfPending(this, ref _pendingLinkAfterZone);
+        return Task.CompletedTask;
     }
 }

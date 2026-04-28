@@ -46,7 +46,8 @@ public enum YgoCardPackTags : long // up to 64 flags
     WinCon = 1L << 25,
     God = 1L << 26,
     Bundled = 1L << 27,
-    Starter = 1L << 28
+    Starter = 1L << 28,
+    MultiplayerSafe = 1L << 29
 }
 
 /// <summary>

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
@@ -19,10 +20,14 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
 
-public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatureBurstStreamSpell
+public sealed class Burst_Stream_of_Destruction
+    : BaseSpellCard, IYgoNeowSignatureBurstStreamSpell, IYgoPlayCardActionPreSpendResourceFlow
 {
     private static readonly LocString BlueEyesSelectionPrompt =
         new("combat_messages", "BURST_STREAM_PICK_BLUE_EYES");
+
+    private static readonly Dictionary<CardModel, Creature> PendingResolvedTargets = new();
+    private static readonly object PendingGate = new();
 
     public override bool UseAlternateUpgradedDescription => true;
 
@@ -45,12 +50,38 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
 
     protected override Type[] PreviewReferencedCardTypes => new[] { typeof(Blue_Eyes_White_Dragon) };
 
+    public async Task<bool> TryPreparePreSpendPlayAsync(PlayCardAction action, Player player, CardModel self)
+    {
+        Creature? targetFromAction = null;
+        if (player.Creature?.CombatState != null)
+            targetFromAction = await player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
+
+        Creature? resolved = await TryResolveSpellTrapZonePlayTargetAsync(
+            player,
+            targetFromAction,
+            cancelable: true);
+
+        if (resolved == null || !IsValidTargetForSpellTrapZonePlay(resolved))
+            return false;
+
+        lock (PendingGate)
+            PendingResolvedTargets[self] = resolved;
+
+        return true;
+    }
+
+    public void ClearPreSpendPlayState(CardModel self)
+    {
+        lock (PendingGate)
+            PendingResolvedTargets.Remove(self);
+    }
+
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)
             return;
 
-        Creature? targetCreature = cardPlay.Target;
+        Creature? targetCreature = cardPlay.Target ?? TryPeekPendingResolvedTarget(this);
         if (targetCreature == null || !targetCreature.IsAlive)
             return;
 
@@ -67,6 +98,12 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
             await CreatureCmd.Damage(choiceContext, enemy, dmg, ValueProp.Unpowered, Owner.Creature, this);
     }
 
+    private static Creature? TryPeekPendingResolvedTarget(CardModel source)
+    {
+        lock (PendingGate)
+            return PendingResolvedTargets.TryGetValue(source, out Creature target) ? target : null;
+    }
+
     public static async Task<Creature?> PickBlueEyesOnFieldAsync(Player player, bool cancelable)
     {
         if (player.PlayerCombatState == null)
@@ -80,11 +117,12 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
 
         if (blueEyesPets.Count == 0)
             return null;
+
         if (blueEyesPets.Count == 1)
             return blueEyesPets[0];
 
         return await YgoCreatureProxySelection.TryChooseSingleCreatureAsync(
-            YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking(),
+            YgoChoiceContexts.Blocking(),
             player,
             blueEyesPets,
             BlueEyesSelectionPrompt,
@@ -95,6 +133,7 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
     {
         if (targetFromAction != null)
             return targetFromAction;
+
         return await PickBlueEyesOnFieldAsync(player, cancelable);
     }
 
@@ -102,8 +141,10 @@ public sealed class Burst_Stream_of_Destruction : BaseSpellCard, IYgoNeowSignatu
     {
         if (target == null || !target.IsAlive || Owner?.Creature == null)
             return false;
+
         if (DuelMonsterFieldRegistry.GetSourceMonster<Blue_Eyes_White_Dragon>(target) is null)
             return false;
+
         return target.Side == Owner.Creature.Side;
     }
 }

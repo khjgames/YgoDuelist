@@ -25,11 +25,6 @@ public static class YgoBanishedService
         if (pile == null)
             return;
 
-        if (card is IYgoApplyAncientChantPowerWhenBanishedFromGraveyard chant
-            && card.Pile?.Type == GraveyardPile.CustomType
-            && player.Creature != null)
-            await chant.ApplyPowerWhenBanishedFromGraveyardAsync(player);
-
         await CardPileCmd.Add(
             new CardModel[] { card },
             pile,

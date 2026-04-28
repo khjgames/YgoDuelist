@@ -3,7 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
-/// <summary>Combat-scoped counters for passive powers; cleared in <see cref="Patches.YgoCombatEndClearPatch"/>.</summary>
+/// <summary>Combat-scoped counters for passive powers; cleared in <see cref="YgoCombatEndLifecycle"/>.</summary>
 public static class YgoDuelistPassivePowerState
 {
     private static readonly Dictionary<Player, int> AccumulatedSpiritsLossesThisTurn = new();
