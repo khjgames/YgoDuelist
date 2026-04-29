@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.ValueProps;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 

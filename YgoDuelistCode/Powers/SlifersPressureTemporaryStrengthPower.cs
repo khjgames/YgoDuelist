@@ -6,7 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Services;
 

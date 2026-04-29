@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 

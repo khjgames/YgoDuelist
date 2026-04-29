@@ -1,5 +1,5 @@
 """
-Rewrite Fusion Monster C# files under Monster/Todo/Fusion: stats from cards_database.json and
+Rewrite Fusion Monster C# files under Monster/Done/Fusion: stats from cards_database.json and
 FusionMaterialTypes from the fusion recipe line (quoted names + \"+\"), same pattern as Black_Skull_Dragon.
 
 Resolves material card names via the database (official name -> image stem -> class name) and
@@ -171,7 +171,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
-namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
+namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
 
 public sealed class {cls} : FusionMonsterCard
 {{
@@ -206,7 +206,7 @@ def main() -> None:
     stem_norm_to_class = scan_stem_norm_to_monster_class()
     cls_to_ns = scan_class_to_namespace()
 
-    todo_fusion = CARDS_CS_ROOT / "Monster" / "Todo" / "Fusion"
+    fusion_dir = CARDS_CS_ROOT / "Monster" / "Done" / "Fusion"
     updated = 0
     skipped = 0
     errors: list[str] = []
@@ -219,7 +219,7 @@ def main() -> None:
             continue
         stem = fn[:-4]
         cls = stem_to_class_name(stem)
-        path = todo_fusion / f"{cls}.cs"
+        path = fusion_dir / f"{cls}.cs"
         if not path.exists():
             skipped += 1
             continue

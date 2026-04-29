@@ -68,7 +68,7 @@
         <Folder Include="YgoDuelistCode\Cards\Spell\Todo\Field\" />
         <Folder Include="YgoDuelistCode\Cards\Spell\Todo\Normal\" />
         <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Continuos\" />
-        <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Equip\" />
+        <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Linked\" />
         <Folder Include="YgoDuelistCode\Cards\Trap\Todo\Normal\" />
         <Folder Include="YgoDuelist\images\card_portraits\big\" />
         <Folder Include="YgoDuelist\images\powers\big\" />

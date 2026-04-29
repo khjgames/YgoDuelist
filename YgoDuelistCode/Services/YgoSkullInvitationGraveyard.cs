@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Continuos;
 using YgoDuelist.YgoDuelistCode.Piles;
 namespace YgoDuelist.YgoDuelistCode.Services;
 

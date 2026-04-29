@@ -1,0 +1,25 @@
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Models;
+
+namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Token;
+
+public sealed class Kuriboh_Token : YgoTokenNormalMonster
+{
+    public Kuriboh_Token()
+        : base(
+            cost: 0,
+            type: CardType.Skill,
+            rarity: CardRarity.Common,
+            target: TargetType.AnyEnemy,
+            duelMonsterLevel: 1,
+            duelMonsterAttribute: DuelMonsterAttribute.Dark,
+            baseAtk: 3,
+            baseDef: 2,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Fiend)
+    {
+    }
+
+    public override int TokenAlternatePortraitCount => 3;
+}

@@ -10,7 +10,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForCommandSystem;
 
-/// <summary>Advances 7 Weapons stacks for <see cref="YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.The_Hunter_with_7_Weapons"/> when the controlling player plays any card.</summary>
+/// <summary>Advances 7 Weapons stacks for <see cref="YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.The_Hunter_with_7_Weapons"/> when the controlling player plays any card.</summary>
 [HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardPlayed))]
 public static class SevenWeaponsAfterCardPlayedPatch
 {

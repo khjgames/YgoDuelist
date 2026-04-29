@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Saves.Runs;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Field;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;

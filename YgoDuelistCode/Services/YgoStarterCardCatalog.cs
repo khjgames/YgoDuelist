@@ -9,12 +9,12 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Equip;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Field;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Field;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Field;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Services;

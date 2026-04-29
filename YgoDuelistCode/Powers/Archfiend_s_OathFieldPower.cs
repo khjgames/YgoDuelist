@@ -11,10 +11,10 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Normal;
-using YgoDuelist.YgoDuelistCode.Cards.Trap.Todo.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;

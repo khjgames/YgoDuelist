@@ -300,7 +300,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
-namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Fusion;
+namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
 
 public sealed class {cls} : FusionMonsterCard
 {{
@@ -328,7 +328,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 
-namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
+namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Ritual;
 
 public sealed class {cls} : RitualMonsterCard
 {{
@@ -499,10 +499,10 @@ def main() -> None:
                 rel = Path("Monster") / "Todo" / "Normal" / f"{cls}.cs"
             elif kind == "fusion":
                 body = render_fusion_monster(cls, level, attr, race, atk, deff)
-                rel = Path("Monster") / "Todo" / "Fusion" / f"{cls}.cs"
+                rel = Path("Monster") / "Done" / "Fusion" / f"{cls}.cs"
             elif kind == "ritual":
                 body = render_ritual_monster(cls, level, attr, race, atk, deff)
-                rel = Path("Monster") / "Todo" / "Ritual" / f"{cls}.cs"
+                rel = Path("Monster") / "Done" / "Ritual" / f"{cls}.cs"
             else:
                 body = render_effect_monster(cls, level, attr, race, atk, deff)
                 rel = Path("Monster") / "Todo" / "Effect" / f"{cls}.cs"

@@ -1,5 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Players;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Continuos;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 

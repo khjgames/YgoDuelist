@@ -3,7 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Continuos;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Continuos;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 

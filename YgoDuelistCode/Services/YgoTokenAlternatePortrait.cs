@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using BaseLib.Extensions;
 using MegaCrit.Sts2.Core.Entities.Players;
 using YgoDuelist.YgoDuelistCode.Cards;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Token;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Token;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Extensions;
 

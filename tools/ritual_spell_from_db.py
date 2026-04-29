@@ -126,7 +126,7 @@ def parse_ritual_spell_spec(desc: str, name_to_cls: dict[str, str]) -> RitualSpe
 
 
 def render_ritual_spell_cs(spell_class_name: str, spec: RitualSpellSpec) -> str:
-    monster_ns = "YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual"
+    monster_ns = "YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Ritual"
     import_lines = [
         "using MegaCrit.Sts2.Core.Entities.Cards;",
         "using MegaCrit.Sts2.Core.Models;",

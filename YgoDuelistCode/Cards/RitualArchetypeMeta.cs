@@ -1,7 +1,7 @@
 using System;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Ritual;
-using YgoDuelist.YgoDuelistCode.Cards.Spell.Todo.Ritual;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Ritual;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Ritual;
 
 namespace YgoDuelist.YgoDuelistCode.Cards;
 
