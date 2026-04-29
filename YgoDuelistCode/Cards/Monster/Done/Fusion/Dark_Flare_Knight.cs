@@ -2,7 +2,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -10,8 +9,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
 
 public sealed class Dark_Flare_Knight : FusionMonsterCard
 {
-    protected override Type[] PreviewReferencedCardTypes =>
-        YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Mirage_Knight));
+   // protected override Type[] PreviewReferencedCardTypes =>
+        //YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Mirage_Knight));
 
     public Dark_Flare_Knight()
         : base(
@@ -37,5 +36,5 @@ public sealed class Dark_Flare_Knight : FusionMonsterCard
     public override float PackWeightMultiplier => 1.10f;
 
 
-    public override Type[] BundledCards => new[] { typeof(Mirage_Knight) };
+    //public override Type[] BundledCards => new[] { typeof(Mirage_Knight) };
 }

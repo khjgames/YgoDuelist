@@ -29,7 +29,7 @@ python tools/generate_card_inventory_md.py
 | `Dark_Snake_Syndrome` | `YgoDuelistCode/Cards/Spell/Todo/Continuos/Dark_Snake_Syndrome.cs` | 3 (2) cost, damages target enemy for 1, doubling each turn, capped at 64. |
 | `Dust_Barrier` | `YgoDuelistCode/Cards/Spell/Todo/Continuos/Dust_Barrier.cs` | 1 (0) cost, Normal monsters are unaffected by most debuffs (strength, dex, weakened, frail ), This card only lasts 2 turns. |
 | `Stumbling` | `YgoDuelistCode/Cards/Spell/Todo/Continuos/Stumbling.cs` | 1 cost, every turn: all enemies lose 1 temp strength, newly summoned monsters can only defend. |
-| `Talisman_of_Trap_Sealing` | `YgoDuelistCode/Cards/Spell/Todo/Continuos/Talisman_of_Trap_Sealing.cs` | 0 cost, uncommon, Once per turn you can exhaust two status/curse cards in your hand. |
+| `Talisman_of_Trap_Sealing` | `YgoDuelistCode/Cards/Spell/Done/Continuos/Talisman_of_Trap_Sealing.cs` | 0 cost, uncommon, Once per turn you can exhaust two status/curse cards in your hand. |
 | `The_A_Forces` | `YgoDuelistCode/Cards/Spell/Todo/Continuos/The_A_Forces.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 | `Yellow_Luster_Shield` | `YgoDuelistCode/Cards/Spell/Todo/Continuos/Yellow_Luster_Shield.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 
@@ -152,7 +152,7 @@ python tools/generate_card_inventory_md.py
 | `Royal_Decree` | `YgoDuelistCode/Cards/Trap/Todo/Continuos/Royal_Decree.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 | `Shadow_Spell` | `YgoDuelistCode/Cards/Trap/Todo/Continuos/Shadow_Spell.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 | `Spellbinding_Circle` | `YgoDuelistCode/Cards/Trap/Todo/Continuos/Spellbinding_Circle.cs` | 1 (0) cost, every turn: enemy loses 1 temp strength & gains 1 spell bound. (Spellbound effect: enemy takes 1 damage per stack, same time as poison) |
-| `Talisman_of_Spell_Sealing` | `YgoDuelistCode/Cards/Trap/Todo/Continuos/Talisman_of_Spell_Sealing.cs` | 0 cost, uncommon, Once per turn gain 2 temporary artifact. |
+| `Talisman_of_Spell_Sealing` | `YgoDuelistCode/Cards/Trap/Done/Continuos/Talisman_of_Spell_Sealing.cs` | 0 cost, uncommon, Once per turn gain 2 temporary artifact. |
 | `Toggle_Die_For_You` | `YgoDuelistCode/Cards/Command/Toggle_Die_For_You.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |
 | `Tornado_Wall` | `YgoDuelistCode/Cards/Trap/Todo/Continuos/Tornado_Wall.cs` | Every turn. All enemies lose 1 temp strength. |
 | `Type_Zero_Magic_Crusher` | `YgoDuelistCode/Cards/Trap/Todo/Continuos/Type_Zero_Magic_Crusher.cs` | +2, +3 if 15+, +4 if 22+, +5 if 29+ |

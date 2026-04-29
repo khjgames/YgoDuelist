@@ -9,7 +9,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
-/// <summary>While <see cref="Cards.Trap.Todo.Continuos.Talisman_of_Spell_Sealing"/> is active: once per turn at turn start, gain 2 Artifact until end of turn.</summary>
+/// <summary>While <see cref="Cards.Trap.Done.Continuos.Talisman_of_Spell_Sealing"/> is active: once per turn at turn start, gain 2 Artifact until end of turn.</summary>
 public sealed class TalismanSpellSealingFieldPower : YgoDuelistPower
 {
     public override PowerType Type => PowerType.Buff;

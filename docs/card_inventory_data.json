@@ -56,7 +56,7 @@
     },
     {
       "className": "Talisman_of_Trap_Sealing",
-      "file": "YgoDuelistCode/Cards/Spell/Todo/Continuos/Talisman_of_Trap_Sealing.cs",
+      "file": "YgoDuelistCode/Cards/Spell/Done/Continuos/Talisman_of_Trap_Sealing.cs",
       "directBase": "BaseContinuousSpellCard",
       "kind": "ContinuousSpell",
       "hasNonTemplateLogic": true,
@@ -938,7 +938,7 @@
     },
     {
       "className": "Talisman_of_Spell_Sealing",
-      "file": "YgoDuelistCode/Cards/Trap/Todo/Continuos/Talisman_of_Spell_Sealing.cs",
+      "file": "YgoDuelistCode/Cards/Trap/Done/Continuos/Talisman_of_Spell_Sealing.cs",
       "directBase": "BaseContinuousTrapCard",
       "kind": "Other",
       "hasNonTemplateLogic": true,

@@ -1,14 +1,10 @@
 using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
@@ -45,7 +41,7 @@ public sealed class Legion_the_Fiend_Jester : EffectMonsterCard, IYgoLegionFiend
         typeof(Dark_Magician_Girl),
         typeof(Skilled_Dark_Magician),
         typeof(Dark_Magician_of_Chaos),
-        typeof(Toon_Dark_Magician_Girl),
+        //typeof(Toon_Dark_Magician_Girl),
         typeof(Dark_Magic_Attack),
     ];
 
