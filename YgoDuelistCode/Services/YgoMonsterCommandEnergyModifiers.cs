@@ -1,6 +1,9 @@
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Powers;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -20,12 +23,27 @@ public static class YgoMonsterCommandEnergyModifiers
     /// <summary>Command Attack row: discounts for the attack command (not the monster&apos;s current field stance), then field-wide adds.</summary>
     public static int GetFieldCommandAttackEnergyCost(NormalMonsterCard source)
     {
+        if (TryGetPetForFieldSource(source, out Creature? pet) && pet.GetPower<FleetingFollowupPower>() != null)
+            return 0;
+
         int baseCost = source.DuelMonsterAttackPlayEnergy;
         int discount = source.GetDuelMonsterAttackPlayEnergyDiscountForFieldCommand();
         int after = discount <= 0 ? baseCost : baseCost - discount;
         if (after < 0)
             after = 0;
         return after + SumFieldWideMonsterCommandEnergyAdd(source.Owner);
+    }
+
+    private static bool TryGetPetForFieldSource(NormalMonsterCard source, out Creature? pet)
+    {
+        pet = null;
+        Player? owner = source.Owner;
+        if (owner?.PlayerCombatState == null)
+            return false;
+        pet = YgoMpCombatOrder.FirstPetWhere(
+            owner.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, source));
+        return pet != null;
     }
 
     /// <summary>Command Defend row: discounts for the defend command (not the monster&apos;s current field stance), then field-wide adds.</summary>

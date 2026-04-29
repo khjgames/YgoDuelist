@@ -11,6 +11,8 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -30,7 +32,14 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
 
         if (source is IGraveyardOptionalDeckSpecialSummon gy)
         {
-            TaskHelper.RunSafely(RunAsync(player, source, gy.GraveyardActivatePrompt, gy.GraveyardSummonPrompt, gy.IsGraveyardDeckSummonCandidate));
+            TaskHelper.RunSafely(
+                RunAsync(
+                    player,
+                    source,
+                    gy.GraveyardActivatePrompt,
+                    gy.GraveyardSummonPrompt,
+                    gy.IsGraveyardDeckSummonCandidate,
+                    gy.GraveyardSummonSearchHandAndDeck));
             return;
         }
 
@@ -39,7 +48,14 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
         if (!YgoBattleDeathMarkedCards.Consume(source))
             return;
 
-        TaskHelper.RunSafely(RunAsync(player, source, bd.BattleDeathActivatePrompt, bd.BattleDeathSummonPrompt, bd.IsBattleDeathDeckSummonCandidate));
+        TaskHelper.RunSafely(
+            RunAsync(
+                player,
+                source,
+                bd.BattleDeathActivatePrompt,
+                bd.BattleDeathSummonPrompt,
+                bd.IsBattleDeathDeckSummonCandidate,
+                bd.BattleDeathSummonSearchHandAndDeck));
     }
 
     private static List<CardModel> BuildDeckCandidates(Player player, Func<BaseMonsterCard, bool> isCandidate)
@@ -55,12 +71,36 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
             .ToList();
     }
 
+    private static List<CardModel> BuildHandAndDeckCandidates(Player player, Func<BaseMonsterCard, bool> isCandidate)
+    {
+        List<BaseMonsterCard> merged = YgoPlayerPiles.OrderedCardsOfTypeFromPiles<BaseMonsterCard>(
+            player,
+            YgoPlayerPiles.Hand,
+            YgoPlayerPiles.Draw);
+        return merged.Where(isCandidate).Cast<CardModel>().ToList();
+    }
+
+    private static List<CardModel> BuildSummonCandidates(
+        Player player,
+        Func<BaseMonsterCard, bool> isCandidate,
+        bool searchHandAndDeck) =>
+        searchHandAndDeck
+            ? BuildHandAndDeckCandidates(player, isCandidate)
+            : BuildDeckCandidates(player, isCandidate);
+
+    private static void ApplySummonTargetVisualFromSource(BaseMonsterCard source, BaseMonsterCard chosen)
+    {
+        if (source is Apprentice_Magician && chosen is AbstractMonsterCard am)
+            am.ApplyNetworkObserverHandPlayBattleState(false, false, true, false);
+    }
+
     private static async Task RunAsync(
         Player player,
         BaseMonsterCard source,
         LocString activatePrompt,
         LocString summonPrompt,
-        Func<BaseMonsterCard, bool> isCandidate)
+        Func<BaseMonsterCard, bool> isCandidate,
+        bool searchHandAndDeck)
     {
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
@@ -81,17 +121,42 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
             Cancelable = true
         };
 
-        List<BaseMonsterCard> BuildTypedDeckCandidates() =>
-            BuildDeckCandidates(player, isCandidate).OfType<BaseMonsterCard>().ToList();
+        List<BaseMonsterCard> BuildTypedCandidates() =>
+            BuildSummonCandidates(player, isCandidate, searchHandAndDeck).OfType<BaseMonsterCard>().ToList();
 
         BaseMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
             ctx,
             player,
             summonPrefs,
-            BuildTypedDeckCandidates);
+            BuildTypedCandidates);
         if (chosen == null)
             return;
 
-        await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, ctx);
+        CardPile? hand = YgoPlayerPiles.Hand(player);
+        CardPile? draw = YgoPlayerPiles.Draw(player);
+        bool inHand = hand != null && hand.Cards.Contains(chosen);
+        bool inDraw = draw != null && draw.Cards.Contains(chosen);
+        if (searchHandAndDeck)
+        {
+            if (!inHand && !inDraw)
+                return;
+        }
+        else if (!inDraw)
+            return;
+
+        ApplySummonTargetVisualFromSource(source, chosen);
+
+        bool mirageFromDarkFlare = source is Dark_Flare_Knight && chosen is Mirage_Knight;
+        if (mirageFromDarkFlare)
+            YgoDarkFlareKnightMirageKnightSummonState.EnterSummonBypass();
+        try
+        {
+            await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, ctx);
+        }
+        finally
+        {
+            if (mirageFromDarkFlare)
+                YgoDarkFlareKnightMirageKnightSummonState.ExitSummonBypass();
+        }
     }
 }

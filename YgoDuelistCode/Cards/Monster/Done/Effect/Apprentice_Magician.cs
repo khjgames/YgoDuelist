@@ -17,9 +17,13 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
-public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMonster
+public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMonster, IBattleDeathOptionalDeckSpecialSummon
 {
     private static readonly LocString SelectPrompt = new("cards", "YGODUELIST-APPRENTICE_MAGICIAN.select_spell_counter_target");
+    private static readonly LocString BattleDeathActivatePromptLoc =
+        new("cards", "YGODUELIST-APPRENTICE_MAGICIAN.activate_destroyed_by_battle");
+    private static readonly LocString BattleDeathSummonPromptLoc =
+        new("cards", "YGODUELIST-APPRENTICE_MAGICIAN.summon_spellcaster_fd");
 
     [SavedProperty]
     public int SpellCounters { get; set; }
@@ -41,6 +45,15 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark | YgoCardPackTags.Spell;
+
+    LocString IBattleDeathOptionalDeckSpecialSummon.BattleDeathActivatePrompt => BattleDeathActivatePromptLoc;
+
+    LocString IBattleDeathOptionalDeckSpecialSummon.BattleDeathSummonPrompt => BattleDeathSummonPromptLoc;
+
+    bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
+        m.DuelMonsterRace == DuelMonsterRace.Spellcaster
+        && m.DuelMonsterLevel <= 2
+        && m.CanSummonDuelMonster;
 
     public int CurrentSpellCounters => SpellCounters;
 

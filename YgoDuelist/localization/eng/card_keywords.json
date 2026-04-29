@@ -186,6 +186,18 @@
   "20060.description": "Cannot be Fusion Summoned. Must be Special Summoned by banishing exact field materials.",
 
   "20061.title": "Named-Fusion-Material-Substitute",
-  "20061.description": "This card can be used as a substitute this card for any [blue]1[/blue] Named-Fusion-Material Monster, but the other Fusion-Material(s) must be the correct one(s)."
+  "20061.description": "This card can be used as a substitute this card for any [blue]1[/blue] Named-Fusion-Material Monster, but the other Fusion-Material(s) must be the correct one(s).",
+
+  "20062.title": "Unyielding",
+  "20062.description": "This monster's HP cannot drop below a minimum from Die For You spill damage (powered enemy Move hits redirected to this pet). Stacks set that minimum.",
+
+  "20063.title": "Magic Protection",
+  "20063.description": "While on the field, this card cannot be targeted or destroyed by Spell or Trap card effects that destroy.",
+
+  "20064.title": "Monster Protection",
+  "20064.description": "While on the field, this card cannot be targeted or destroyed by Monster effects that destroy.",
+
+  "20065.title": "Brick",
+  "20065.description": "This card starts each combat in your discard pile and is never shuffled into your draw pile."
 
 }

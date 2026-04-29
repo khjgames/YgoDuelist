@@ -360,6 +360,11 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     public virtual bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => false;
 
     /// <summary>
+    /// When true, <see cref="DuelMonsterSummon.TrySummonDuelMonsterSpecial"/> refuses this card (Cannot be Special Summoned).
+    /// </summary>
+    public virtual bool BlocksSpecialDuelMonsterSummon => false;
+
+    /// <summary>
     /// When true, <see cref="DuelMonsterSummon.TrySummonDuelMonster"/> treats this hand summon like a special summon
     /// (Command Attack/Defend available the turn it hits the field). Default follows normal/tribute stiff/fatigue rules.
     /// </summary>

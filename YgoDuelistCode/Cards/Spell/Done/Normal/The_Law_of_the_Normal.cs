@@ -75,7 +75,12 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
         CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);
         if (zone != null && zone.Cards.Count > 0)
         {
-            List<CardModel> zoneCards = YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards);
+            List<CardModel> zoneCards = YgoDuelMonsterDestructionRules
+                .FilterSpellTrapZoneCardsForMassDestroy(
+                    player,
+                    YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards),
+                    YgoDestructionSourceKind.SpellEffect)
+                .ToList();
             await CardPileCmd.Add(zoneCards, gy, CardPilePosition.Top, this, false);
             YgoSpellTrapZoneBridge.SyncFromZonePile(player);
             YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(player);
@@ -88,7 +93,9 @@ public sealed class The_Law_of_the_Normal : BaseSpellCard
                 continue;
             Creature? pet = TributeSummonSelection.ResolvePetForFieldCard(player, m);
             if (pet != null && pet.IsAlive)
-                await CreatureCmd.Kill(pet, force: true);
+                await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
+                    YgoDestructionSourceKind.SpellEffect,
+                    pet);
         }
 
         CardPile? monsterPile = YgoPlayerPiles.MonsterZone(player);

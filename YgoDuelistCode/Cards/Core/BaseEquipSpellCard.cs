@@ -166,4 +166,9 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
         pile?.Type == SpellTrapZonePile.CustomType && !FaceDown && EquippedMonster != null
             ? BaseFieldSpellCard.ActiveFaceUpZoneEnergyOrbPath
             : null;
+
+    /// <summary>Invoked after <see cref="YgoEquipSpellRegistry.Attach"/> binds this equip to a field monster.</summary>
+    protected internal virtual void OnAfterAttachedToFieldMonster(BaseMonsterCard equippedMonster)
+    {
+    }
 }

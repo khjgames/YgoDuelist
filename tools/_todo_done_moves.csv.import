@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://jgy2fvfwph4g"
+
+[deps]
+
+files=["res://tools/_todo_done_moves.Rel.translation", "res://tools/_todo_done_moves.Kind.translation", "res://tools/_todo_done_moves.Linked.translation"]
+
+source_file="res://tools/_todo_done_moves.csv"
+dest_files=["res://tools/_todo_done_moves.Rel.translation", "res://tools/_todo_done_moves.Kind.translation", "res://tools/_todo_done_moves.Linked.translation"]
+
+[params]
+
+compress=true
+delimiter=0

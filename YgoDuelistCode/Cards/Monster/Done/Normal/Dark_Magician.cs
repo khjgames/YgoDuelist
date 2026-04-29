@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
@@ -24,6 +25,12 @@ public sealed class Dark_Magician : NormalMonsterCard
     {
     }
 
+    /// <summary>
+    /// Set to true when <see cref="Time_Wizard"/>'s activate effect resolves with a correct coin call while this
+    /// <see cref="Dark_Magician"/> was on the field. Used for <see cref="YgoDuelist.YgoDuelistCode.Cards.Command.Special_Summon_Dark_Sage"/>.
+    /// </summary>
+    public bool SurvivedTimeMagic { get; set; }
+
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
         YgoCardPackTags.Spellcaster |
@@ -37,5 +44,5 @@ public sealed class Dark_Magician : NormalMonsterCard
     //};
 
 
-    public override Type[] RelatedCards => GetRelatedCards();
+    public override Type[] RelatedCards => GetRelatedCards(typeof(Dark_Sage), typeof(Time_Wizard));
 }

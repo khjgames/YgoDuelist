@@ -49,6 +49,8 @@ public partial class YgoCommandCardPool : CustomCardPoolModel
         ModelDb.Card<Activate_Shackles>(),
         ModelDb.Card<Activate_Shackles_Plus>(),
         ModelDb.Card<Special_Summon_Egyptian_God_Slime>(),
+        ModelDb.Card<Special_Summon_Wall_Shadow>(),
+        ModelDb.Card<Special_Summon_Dark_Sage>(),
         ModelDb.Card<Special_Summon_XY_Dragon_Cannon>(),
         ModelDb.Card<Special_Summon_XZ_Tank_Cannon>(),
         ModelDb.Card<Special_Summon_YZ_Tank_Dragon>(),

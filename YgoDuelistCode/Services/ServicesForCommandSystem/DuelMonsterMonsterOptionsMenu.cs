@@ -10,6 +10,8 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
+using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Equip;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
 
@@ -106,6 +108,26 @@ public static class DuelMonsterMonsterOptionsMenu
             Special_Summon_Egyptian_God_Slime slimeCmd = combatState.CreateCard<Special_Summon_Egyptian_God_Slime>(player);
             slimeCmd.InitializeSource(monsterCard, pet);
             commands.Add(slimeCmd);
+        }
+
+        if (monsterCard is Labyrinth_Wall labyrinthWall
+            && Magical_Labyrinth.IsFaceUpEquippedTo(labyrinthWall)
+            && Special_Summon_Wall_Shadow.BuildWallShadowHandOrDeckCandidates(player).Count > 0
+            && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 1))
+        {
+            Special_Summon_Wall_Shadow wallShadowCmd = combatState.CreateCard<Special_Summon_Wall_Shadow>(player);
+            wallShadowCmd.InitializeSource(monsterCard, pet);
+            commands.Add(wallShadowCmd);
+        }
+
+        if (monsterCard is Dark_Magician darkMagician
+            && darkMagician.SurvivedTimeMagic
+            && Special_Summon_Dark_Sage.BuildDarkSageHandOrDeckCandidates(player).Count > 0
+            && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 1))
+        {
+            Special_Summon_Dark_Sage darkSageCmd = combatState.CreateCard<Special_Summon_Dark_Sage>(player);
+            darkSageCmd.InitializeSource(monsterCard, pet);
+            commands.Add(darkSageCmd);
         }
 
         if (monsterCard is BaseMonsterCard material

@@ -243,7 +243,8 @@ public static class DuelMonsterPetDeathPatch
         Player player,
         BaseMonsterCard card,
         CardPile monsterDestination,
-        CardPile graveyardForEquips)
+        CardPile graveyardForEquips,
+        CardPilePosition monsterInsertPosition = CardPilePosition.Top)
     {
         IReadOnlyList<BaseEquipSpellCard> equips = YgoEquipSpellRegistry.TakeAllEquipsFromMonster(card);
         foreach (BaseEquipSpellCard eq in equips)
@@ -281,10 +282,61 @@ public static class DuelMonsterPetDeathPatch
             await CardPileCmd.Add(
                 new CardModel[] { card },
                 monsterDestination,
-                CardPilePosition.Top,
+                monsterInsertPosition,
                 card,
                 false);
         }
+    }
+
+    /// <summary>
+    /// Removes a live duel monster from the field by moving its source card to the draw pile (bottom). Equips and
+    /// equip-link traps go to the graveyard. Does not run pet-death hooks; the pet is killed after unregister so the
+    /// card is not relocated to the graveyard by <see cref="Postfix"/>.
+    /// </summary>
+    public static async Task ReleaseLiveFieldMonsterToDrawPileAsync(
+        Player player,
+        Creature pet,
+        BaseMonsterCard fieldCard,
+        CardPile drawPile,
+        CardPile graveyardForEquips)
+    {
+        if (player?.PlayerCombatState == null || pet == null || fieldCard == null)
+            return;
+        if (!pet.IsAlive)
+            return;
+        if (!DuelMonsterFieldRegistry.HasSourceCard(pet, fieldCard))
+            return;
+
+        TryClearOptionPileForFieldMonster(player, fieldCard, pet);
+
+        if (graveyardForEquips == null)
+            return;
+
+        await MoveEquipsToGraveyardThenMonsterToPileAsync(
+            player,
+            fieldCard,
+            drawPile,
+            graveyardForEquips,
+            CardPilePosition.Bottom);
+
+        DuelMonsterFieldRegistry.UnregisterPet(pet);
+        MonsterCommandRegistry.Clear(pet);
+
+        if (player.Creature != null)
+            await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
+
+        await CreatureCmd.Kill(pet, force: true);
+
+        RemoveDuelMonsterNodeIfPresent(pet, "release-draw");
+
+        CombatState? combatState = pet.CombatState;
+        if (combatState != null && combatState.ContainsCreature(pet))
+        {
+            CombatManager.Instance.RemoveCreature(pet);
+            combatState.RemoveCreature(pet);
+        }
+
+        DuelistAllyCreatureDrawOrder.RefreshLayoutAfterDuelPetRosterChanged("release-draw");
     }
 
     /// <summary>

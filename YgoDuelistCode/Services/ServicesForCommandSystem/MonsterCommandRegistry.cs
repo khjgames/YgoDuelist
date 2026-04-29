@@ -64,6 +64,9 @@ public sealed class MonsterCommandState
     /// <summary><see cref="Cards.Monster.Todo.Effect.Catapult_Turtle"/>: once per turn activated tribute Blight.</summary>
     public bool CatapultTurtleActivatedThisTurn;
 
+    /// <summary>Gear Golem the Moving Fortress: attacks apply full Blight this turn after paying activated cost.</summary>
+    public bool GearGolemFullBlightAttacksThisTurn;
+
     /// <summary><see cref="Cards.Monster.Todo.Effect.Goddess_of_Whim"/>: 1.0 = none, 2.0 = double, 0.5 = halve printed ATK this turn.</summary>
     public decimal GoddessOfWhimAtkMultiplierThisTurn = 1m;
 
@@ -309,6 +312,10 @@ public static class MonsterCommandRegistry
                 continue;
             if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard card)
                 await card.OnOwnerTurnEndFieldCleanupAsync(ctx, player, pet);
+            if (pet.GetPower<FleetingFollowupPower>() != null)
+                await PowerCmd.Remove<FleetingFollowupPower>(pet);
+            if (pet.GetPower<ForgivingMaidenEndTurnUnyieldingPower>() != null)
+                await PowerCmd.Remove<ForgivingMaidenEndTurnUnyieldingPower>(pet);
         }
     }
 
@@ -332,6 +339,7 @@ public static class MonsterCommandRegistry
             s.GrayWingDoubleAttackThisTurn = false;
             s.TyrantDragonDoubleAttackThisTurn = false;
             s.CatapultTurtleActivatedThisTurn = false;
+            s.GearGolemFullBlightAttacksThisTurn = false;
             s.GoddessOfWhimAtkMultiplierThisTurn = 1m;
         }
 

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
@@ -73,6 +75,18 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
                 }
                 else if (newPile.Type != SpellTrapZonePile.CustomType)
                     YgoSpellTrapEquipLinkRegistry.Detach(card);
+            }
+
+            if (from == SpellTrapZonePile.CustomType && newPile.Type != SpellTrapZonePile.CustomType
+                && card.Owner != null
+                && YgoSarcophagusChain.IsSarcophagusPiece(card))
+            {
+                Player owner = card.Owner;
+                TaskHelper.RunSafely(
+                    YgoSarcophagusChain.OnSarcophagusPieceRemovedFromFieldAsync(
+                        YgoChoiceContexts.Blocking(),
+                        owner,
+                        card));
             }
         }
     }

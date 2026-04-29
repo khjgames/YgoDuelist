@@ -75,7 +75,9 @@ public sealed class LimiterRemovalPower : YgoDuelistPower
             if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is not BaseMonsterCard src
                 || src.DuelMonsterRace != DuelMonsterRace.Machine)
                 continue;
-            await CreatureCmd.Kill(pet, force: true);
+            await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
+                YgoDestructionSourceKind.SpellEffect,
+                pet);
         }
 
         await PowerCmd.Decrement(this);

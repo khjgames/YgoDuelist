@@ -109,7 +109,9 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
         {
             if (!pet.IsAlive || DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
-            await CreatureCmd.Kill(pet, force: true);
+            await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
+                YgoDestructionSourceKind.MonsterEffect,
+                pet);
         }
 
         CardPile? gy = YgoPlayerPiles.Graveyard(Owner);
@@ -118,7 +120,13 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
         if (gy != null && hand != null && hand.Cards.Count > 0)
             await CardPileCmd.Add(YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards), gy, CardPilePosition.Top, this, false);
         if (gy != null && zone != null && zone.Cards.Count > 0)
-            await CardPileCmd.Add(YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards), gy, CardPilePosition.Top, this, false);
+        {
+            IEnumerable<CardModel> zoneToGy = YgoDuelMonsterDestructionRules.FilterSpellTrapZoneCardsForMassDestroy(
+                Owner,
+                YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards),
+                YgoDestructionSourceKind.MonsterEffect);
+            await CardPileCmd.Add(zoneToGy, gy, CardPilePosition.Top, this, false);
+        }
     }
 
     protected override void OnUpgrade()

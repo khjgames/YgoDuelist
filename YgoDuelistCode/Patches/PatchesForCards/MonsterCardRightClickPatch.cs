@@ -57,6 +57,7 @@ public static class MonsterCardHandPatch
         if (holder is not NHandCardHolder handHolder)
             return;
         MonsterCardRightClickPatch.TryToggleMonsterAndRefresh(handHolder);
+        SpellTrapCardRightClickPatch.TryToggleSpellTrapAndRefresh(handHolder);
     }
 }
 
@@ -127,6 +128,7 @@ public static class NonHandCardHolderGuiInputAltPatch
         if (!inputEvent.IsActionPressed(MegaInput.accept))
             return;
         MonsterCardRightClickPatch.TryToggleMonsterAndRefresh(__instance);
+        SpellTrapCardRightClickPatch.TryToggleSpellTrapAndRefresh(__instance);
     }
 }
 

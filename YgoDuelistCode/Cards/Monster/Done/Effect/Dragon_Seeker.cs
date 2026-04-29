@@ -78,7 +78,9 @@ public sealed class Dragon_Seeker : EffectMonsterCard, IMonsterFlipEffect
         if (!chosen.IsAlive)
             return;
 
-        await CreatureCmd.Kill(chosen, force: true);
+        await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
+            YgoDestructionSourceKind.MonsterEffect,
+            chosen);
 
         int bonus = (int)DynamicVars["Mgc"].BaseValue;
         if (bonus <= 0)

@@ -45,7 +45,6 @@ Ceremonial_Bell.cs
 Chaosrider_Gustaph.cs
 Chaos_Command_Magician.cs
 Chaos_Daedalus.cs
-Chaos_Emperor_Dragon_Envoy_of_the_End.cs
 Chaos_Sorcerer.cs
 Cipher_Soldier.cs
 Cobra_Jar.cs
@@ -66,9 +65,7 @@ Dark_Eyes_Illusionist.cs
 Dark_Jeroid.cs
 Dark_Magician_Girl.cs
 Dark_Magician_of_Chaos.cs
-Dark_Necrofear.cs
 Dark_Ruler_Ha_Des.cs
-Dark_Sage.cs
 Dark_Zebra.cs
 Delg_the_Dark_Monarch.cs
 Desertapir.cs
@@ -90,17 +87,13 @@ Electromagnetic_Bagworm.cs
 Elephant_Statue_of_Blessing.cs
 Elephant_Statue_of_Disaster.cs
 Enraged_Battle_Ox.cs
-Exodia_Necross.cs
-Exodia_the_Forbidden_One.cs
 Fairy_King_Truesdale.cs
-Fenrir.cs
 Fiber_Jar.cs
 Fire_Sorcerer.cs
 Flying_Kamakiri_1.cs
 Freed_the_Brave_Wanderer.cs
 Freed_the_Matchless_General.cs
 Frontier_Wiseman.cs
-Fushioh_Richie.cs
 Fushi_No_Tori.cs
 Gale_Dogra.cs
 Gale_Lizard.cs
@@ -132,7 +125,6 @@ Gravekeeper_s_Spear_Soldier.cs
 Gravekeeper_s_Spy.cs
 Grave_Protector.cs
 Gray_Wing.cs
-Great_Dezard.cs
 Great_Moth.cs
 Greenkappa.cs
 Gren_Maju_Da_Eiza.cs
@@ -205,7 +197,6 @@ Manticore_of_Darkness.cs
 Man_Eater_Bug.cs
 Man_Thro_Tro.cs
 Marauding_Captain.cs
-Maryokutai.cs
 Masked_Beast_Des_Gardius.cs
 Mataza_the_Zapper.cs
 Mazera_DeVille.cs
@@ -276,7 +267,6 @@ Senju_of_the_Thousand_Hands.cs
 Serpentine_Princess.cs
 Shadowknight_Archfiend.cs
 Shining_Angel.cs
-Silpheed.cs
 Sinister_Serpent.cs
 Skelengel.cs
 Skilled_Dark_Magician.cs
@@ -293,7 +283,6 @@ Spear_Dragon.cs
 Spell_Canceller.cs
 Spirit_of_Flames.cs
 Spirit_of_the_Breeze.cs
-Spirit_of_the_Pharaoh.cs
 Spirit_Ryu.cs
 Steel_Scorpion.cs
 Strike_Ninja.cs
@@ -337,7 +326,6 @@ Two_Thousand_Needles.cs
 Tyrant_Dragon.cs
 UFO_Turtle.cs
 Ultimate_Obedient_Fiend.cs
-Valkyrion_the_Magna_Warrior.cs
 Vampire_Lady.cs
 Vampire_Lord.cs
 Vampiric_Orchis.cs
@@ -378,7 +366,6 @@ Dragoness_the_Wicked_Knight.cs
 Dragon_Master_Knight.cs
 Egyptian_God_Slime.cs
 Empress_Judge.cs
-Five_Headed_Dragon.cs
 Flame_Ghost.cs
 Flame_Swordsman.cs
 Flower_Wolf.cs

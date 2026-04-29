@@ -18,4 +18,7 @@ public interface IYgoNHandPlayPhaseHighlightOverride
 public static class YgoNHandPlayPhaseHighlightColors
 {
     public static readonly Color FusionStylePurple = new(0.78f, 0.42f, 1f, 0.98f);
+
+    /// <summary>Spell/Trap zone activatable glow (e.g. Call of the Mummy).</summary>
+    public static readonly Color CallOfTheMummyYellow = new(1f, 0.92f, 0.22f, 0.98f);
 }

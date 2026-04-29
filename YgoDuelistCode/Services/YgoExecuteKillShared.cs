@@ -21,6 +21,18 @@ public static class YgoExecuteKillShared
     /// <summary><see cref="DamageResult.TotalDamage"/> plus <see cref="DamageResult.OverkillDamage"/> (full hit size for execute math).</summary>
     public static int FullIncomingDamage(DamageResult r) => r.TotalDamage + r.OverkillDamage;
 
+    /// <summary>True if this attack chain killed at least one enemy creature.</summary>
+    public static bool AnyEnemyExecutedKill(AttackCommand command)
+    {
+        foreach (DamageResult r in command.Results)
+        {
+            if (r.Receiver.Side == CombatSide.Enemy && r.WasTargetKilled)
+                return true;
+        }
+
+        return false;
+    }
+
     public static bool PlayerControlsAtLeastTwoFiendsOnField(Player player)
     {
         int fiends = 0;

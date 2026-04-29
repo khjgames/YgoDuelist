@@ -54,11 +54,13 @@ public sealed class Dark_Hole : BaseSpellCard
             await CreatureCmd.Damage(choiceContext, enemy, dmg, ValueProp.Unpowered, Owner.Creature, this);
         }
 
-        foreach (var pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
         {
             if (pet == null || !pet.IsAlive)
                 continue;
-            await CreatureCmd.Kill(pet, force: true);
+            await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
+                YgoDestructionSourceKind.SpellEffect,
+                pet);
         }
     }
 

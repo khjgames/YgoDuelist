@@ -1406,7 +1406,7 @@
     },
     {
       "className": "Contract_with_Exodia",
-      "file": "YgoDuelistCode/Cards/Spell/Todo/Normal/Contract_with_Exodia.cs",
+      "file": "YgoDuelistCode/Cards/Spell/Done/Normal/Contract_with_Exodia.cs",
       "directBase": "BaseSpellCard",
       "kind": "Spell",
       "hasNonTemplateLogic": true,
@@ -4486,7 +4486,7 @@
     },
     {
       "className": "Chaos_Emperor_Dragon_Envoy_of_the_End",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Chaos_Emperor_Dragon_Envoy_of_the_End.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Chaos_Emperor_Dragon_Envoy_of_the_End.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
       "hasNonTemplateLogic": false,
@@ -4684,10 +4684,10 @@
     },
     {
       "className": "Dark_Necrofear",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Dark_Necrofear.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Dark_Necrofear.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
-      "hasNonTemplateLogic": false,
+      "hasNonTemplateLogic": true,
       "fusionExtraBeyondMaterials": false,
       "ritualExtraBeyondSpell": false
     },
@@ -4702,7 +4702,7 @@
     },
     {
       "className": "Dark_Sage",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Dark_Sage.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Dark_Sage.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
       "hasNonTemplateLogic": false,
@@ -4927,7 +4927,7 @@
     },
     {
       "className": "Exodia_Necross",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Exodia_Necross.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Exodia_Necross.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
       "hasNonTemplateLogic": false,
@@ -4936,7 +4936,7 @@
     },
     {
       "className": "Exodia_the_Forbidden_One",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Exodia_the_Forbidden_One.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Exodia_the_Forbidden_One.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
       "hasNonTemplateLogic": false,
@@ -4963,7 +4963,7 @@
     },
     {
       "className": "Fenrir",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Fenrir.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Fenrir.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
       "hasNonTemplateLogic": false,
@@ -5053,10 +5053,10 @@
     },
     {
       "className": "Fushioh_Richie",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Fushioh_Richie.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Fushioh_Richie.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
-      "hasNonTemplateLogic": false,
+      "hasNonTemplateLogic": true,
       "fusionExtraBeyondMaterials": false,
       "ritualExtraBeyondSpell": false
     },
@@ -5340,6 +5340,15 @@
       "ritualExtraBeyondSpell": false
     },
     {
+      "className": "Endless_Decay",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Endless_Decay.cs",
+      "directBase": "EffectMonsterCard",
+      "kind": "EffectMonster",
+      "hasNonTemplateLogic": true,
+      "fusionExtraBeyondMaterials": false,
+      "ritualExtraBeyondSpell": false
+    },
+    {
       "className": "Gray_Wing",
       "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Gray_Wing.cs",
       "directBase": "EffectMonsterCard",
@@ -5350,10 +5359,10 @@
     },
     {
       "className": "Great_Dezard",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Great_Dezard.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Great_Dezard.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
-      "hasNonTemplateLogic": false,
+      "hasNonTemplateLogic": true,
       "fusionExtraBeyondMaterials": false,
       "ritualExtraBeyondSpell": false
     },
@@ -6160,10 +6169,10 @@
     },
     {
       "className": "Maryokutai",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Maryokutai.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Maryokutai.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
-      "hasNonTemplateLogic": false,
+      "hasNonTemplateLogic": true,
       "fusionExtraBeyondMaterials": false,
       "ritualExtraBeyondSpell": false
     },
@@ -6952,7 +6961,7 @@
     },
     {
       "className": "Silpheed",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Silpheed.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Silpheed.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
       "hasNonTemplateLogic": false,
@@ -7159,10 +7168,10 @@
     },
     {
       "className": "Spirit_of_the_Pharaoh",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Spirit_of_the_Pharaoh.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Spirit_of_the_Pharaoh.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
-      "hasNonTemplateLogic": false,
+      "hasNonTemplateLogic": true,
       "fusionExtraBeyondMaterials": false,
       "ritualExtraBeyondSpell": false
     },
@@ -7465,10 +7474,10 @@
     },
     {
       "className": "Time_Wizard",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Time_Wizard.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Time_Wizard.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
-      "hasNonTemplateLogic": false,
+      "hasNonTemplateLogic": true,
       "fusionExtraBeyondMaterials": false,
       "ritualExtraBeyondSpell": false
     },
@@ -7618,10 +7627,10 @@
     },
     {
       "className": "Valkyrion_the_Magna_Warrior",
-      "file": "YgoDuelistCode/Cards/Monster/Todo/Effect/Valkyrion_the_Magna_Warrior.cs",
+      "file": "YgoDuelistCode/Cards/Monster/Done/Effect/Valkyrion_the_Magna_Warrior.cs",
       "directBase": "EffectMonsterCard",
       "kind": "EffectMonster",
-      "hasNonTemplateLogic": false,
+      "hasNonTemplateLogic": true,
       "fusionExtraBeyondMaterials": false,
       "ritualExtraBeyondSpell": false
     },

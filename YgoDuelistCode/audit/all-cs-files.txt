@@ -142,7 +142,7 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Ceremonial_Bell.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Chaos_Command_Magician.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Chaos_Daedalus.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Chaos_Emperor_Dragon_Envoy_of_the_End.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Chaos_Emperor_Dragon_Envoy_of_the_End.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Chaos_Necromancer.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Chaos_Sorcerer.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Chaosrider_Gustaph.cs
@@ -174,9 +174,9 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Dark_Jeroid.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Dark_Magician_Girl.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Dark_Magician_of_Chaos.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Dark_Necrofear.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Dark_Necrofear.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Dark_Sage.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Dark_Ruler_Ha_Des.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Dark_Sage.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Dark_Zebra.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Darklord_Marie.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Delg_the_Dark_Monarch.cs
@@ -206,11 +206,11 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Exarion_Universe.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Exiled_Force.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Exodia_Necross.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Exodia_the_Forbidden_One.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Exodia_the_Forbidden_One.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fairy_Guardian.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fairy_King_Truesdale.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fear_from_the_Dark.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fenrir.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Fenrir.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fiber_Jar.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fire_Princess.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fire_Sorcerer.cs
@@ -220,7 +220,7 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Freed_the_Matchless_General.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Frontier_Wiseman.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fushi_No_Tori.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Fushioh_Richie.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Fushioh_Richie.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Gaia_The_Fierce_Knight_Origin.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Gale_Dogra.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Gale_Lizard.cs
@@ -254,8 +254,10 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Gravekeeper_s_Guard.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Gravekeeper_s_Spear_Soldier.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Gravekeeper_s_Spy.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Endless_Decay.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Gray_Wing.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Great_Dezard.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Great_Dezard.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Maryokutai.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Great_Maju_Garzett.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Great_Moth.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Greenkappa.cs
@@ -350,7 +352,6 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Manju_of_the_Ten_Thousand_Hands.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Manticore_of_Darkness.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Marauding_Captain.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Maryokutai.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Mask_of_Darkness.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Masked_Beast_Des_Gardius.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Masked_Sorcerer.cs
@@ -443,7 +444,8 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Shadow_Ghoul.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Shadowknight_Archfiend.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Shining_Angel.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Silpheed.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Silpheed.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Spirit_of_the_Pharaoh.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Sinister_Serpent.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Skelengel.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Skilled_Dark_Magician.cs
@@ -464,7 +466,6 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Spirit_Caller.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Spirit_of_Flames.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Spirit_of_the_Breeze.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Spirit_of_the_Pharaoh.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Spirit_Reaper.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Spirit_Ryu.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Stealth_Bird.cs
@@ -510,7 +511,7 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Throwstone_Unit.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Thunder_Dragon.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Thunder_Nyan_Nyan.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Time_Wizard.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Time_Wizard.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Timeater.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Toon_Dark_Magician_Girl.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Toon_Mermaid.cs
@@ -530,7 +531,7 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\UFO_Turtle.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Ultimate_Obedient_Fiend.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Unshaven_Angler.cs
-C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Valkyrion_the_Magna_Warrior.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Done\Effect\Valkyrion_the_Magna_Warrior.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Vampire_Lady.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Vampire_Lord.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Cards\Monster\Todo\Effect\Vampiric_Orchis.cs
@@ -1948,6 +1949,7 @@ C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDue
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Powers\StiffPower.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Powers\StumblingFieldPower.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Powers\SuperRejuvenationPower.cs
+C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Powers\YgoDeferredDrawNextTurnPower.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Powers\TalismanSpellSealingFieldPower.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Powers\TalismanTrapSealingFieldPower.cs
 C:\Users\khjga\AppData\Roaming\coe5\mods\Godot Mods\Slay The Spire 2 Mods\YgoDuelist\YgoDuelistCode\Powers\TornadoWallFieldPower.cs

@@ -18,6 +18,7 @@ public static class YgoPowerOnlyMechanicKeywords
     public static readonly CardKeyword PumpkingRitual = (CardKeyword)20056;
     public static readonly CardKeyword NecroticEvolution = (CardKeyword)20057;
     public static readonly CardKeyword NecroticRitual = (CardKeyword)20058;
+    public static readonly CardKeyword ChaoticEvolution = (CardKeyword)20059;
 
     private static readonly HashSet<CardKeyword> OmitFromChips =
     [
@@ -28,6 +29,7 @@ public static class YgoPowerOnlyMechanicKeywords
         PumpkingRitual,
         NecroticEvolution,
         NecroticRitual,
+        ChaoticEvolution,
     ];
 
     /// <summary>Strip power-only mechanic ids after composing keyword lists (e.g. archetype unions that might include these).</summary>

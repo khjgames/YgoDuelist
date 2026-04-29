@@ -64,8 +64,12 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
         YgoMpDiagnostics.VerbosePrint(
             "CyberJar",
             $"OnFlippedFaceUp kill order ownerNet={player.NetId} combatIds=[{string.Join(",", duelPets.ConvertAll(p => p.CombatId.ToString()))}]");
-        foreach (Creature pet in duelPets)
-            await CreatureCmd.Kill(pet, force: true);
+        foreach (Creature pet in YgoDuelMonsterDestructionRules.FilterPetsForMassKill(
+                     duelPets,
+                     YgoDestructionSourceKind.MonsterEffect))
+            await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
+                YgoDestructionSourceKind.MonsterEffect,
+                pet);
 
         int revealCount = IsUpgraded ? 6 : 5;
         CardPile draw = pcs.DrawPile;

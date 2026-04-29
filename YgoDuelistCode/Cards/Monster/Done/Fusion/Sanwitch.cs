@@ -22,7 +22,7 @@ public sealed class Sanwitch : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Spellcaster,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Sangan),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Witch_of_the_Black_Forest))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Witch_of_the_Black_Forest))
     {
     }
     

@@ -23,7 +23,7 @@ public sealed class Wodan_the_Resident_of_the_Forest : EffectMonsterCard
             baseAtk: 9,
             baseDef: 12,
             baseMgc: 2,
-            duelMonsterRace: DuelMonsterRace.Plant)
+            duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
 

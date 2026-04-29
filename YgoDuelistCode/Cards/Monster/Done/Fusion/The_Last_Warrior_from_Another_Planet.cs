@@ -35,7 +35,7 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
             baseMgc: 1,
             duelMonsterRace: DuelMonsterRace.Warrior,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Zombyra_the_Dark),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Maryokutai))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Maryokutai))
     {
     }
 
@@ -146,8 +146,12 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
                     ApplyPermanentSummonAbsorbDefDelta(flatBonus);
                 }
 
-                foreach (Creature pet in petsToKill)
-                    await CreatureCmd.Kill(pet, force: true);
+                foreach (Creature pet in YgoDuelMonsterDestructionRules.FilterPetsForMassKill(
+                             petsToKill,
+                             YgoDestructionSourceKind.MonsterEffect))
+                    await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
+                        YgoDestructionSourceKind.MonsterEffect,
+                        pet);
             });
 
     private void ApplyPermanentSummonAbsorbDefDelta(int delta)

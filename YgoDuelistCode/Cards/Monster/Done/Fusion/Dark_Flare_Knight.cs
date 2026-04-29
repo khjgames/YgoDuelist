@@ -1,16 +1,19 @@
+using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
-using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
-using YgoDuelist.YgoDuelistCode.Services;
+using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
 
-public sealed class Dark_Flare_Knight : FusionMonsterCard
+/// <summary>When destroyed by battle: optional Special Summon <see cref="Mirage_Knight"/> from hand or deck — <see cref="YgoDuelist.YgoDuelistCode.Services.YgoGraveyardOptionalDeckSpecialSummon"/>.</summary>
+public sealed class Dark_Flare_Knight : FusionMonsterCard, IBattleDeathOptionalDeckSpecialSummon
 {
-   // protected override Type[] PreviewReferencedCardTypes =>
-        //YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Mirage_Knight));
+    private static readonly LocString ActivatePrompt = new("cards", "YGODUELIST-DARK_FLARE_KNIGHT.activate_destroyed_by_battle");
+    private static readonly LocString SummonPrompt = new("cards", "YGODUELIST-DARK_FLARE_KNIGHT.summon_mirage_knight");
 
     public Dark_Flare_Knight()
         : base(
@@ -28,13 +31,17 @@ public sealed class Dark_Flare_Knight : FusionMonsterCard
             typeof(Flame_Swordsman))
     {
     }
-    
-    /// <summary>
-    /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
-    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
-    /// </summary>
+
     public override float PackWeightMultiplier => 1.10f;
 
+    public override Type[] RelatedCards => new[] { typeof(Dark_Flare_Knight), typeof(Mirage_Knight) };
 
-    //public override Type[] BundledCards => new[] { typeof(Mirage_Knight) };
+    LocString IBattleDeathOptionalDeckSpecialSummon.BattleDeathActivatePrompt => ActivatePrompt;
+
+    LocString IBattleDeathOptionalDeckSpecialSummon.BattleDeathSummonPrompt => SummonPrompt;
+
+    bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
+        m is Mirage_Knight;
+
+    bool IBattleDeathOptionalDeckSpecialSummon.BattleDeathSummonSearchHandAndDeck => true;
 }

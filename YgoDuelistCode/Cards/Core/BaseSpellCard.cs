@@ -27,6 +27,8 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
     private static CardKeyword RecklessKeyword => (CardKeyword)20043;
     private static CardKeyword PortionKeyword => (CardKeyword)20059;
 
+    private static CardKeyword BrickKeyword => (CardKeyword)20065;
+
     private static CardKeyword RaceToKeyword(DuelMonsterRace race)
         => (CardKeyword)(RaceKeywordBase + (int)race);
 
@@ -124,6 +126,9 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         FaceDown = false;
     }
 
+    /// <summary>Continuous spells placed by card effects (e.g. Sarcophagus chain) use the same face-up prep as normal activation.</summary>
+    internal void YgoPrepareFaceUpContinuousFromCardEffect() => PrepareSpellForActiveFieldZone();
+
     /// <summary>Spell/Trap zone play when action has no target id (Burst Stream, Diffusion Wave).</summary>
     public virtual Task<Creature?> TryResolveSpellTrapZonePlayTargetAsync(Player player, Creature? targetFromAction, bool cancelable) =>
         Task.FromResult(targetFromAction);
@@ -170,7 +175,7 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         {
             RaceToKeyword(DuelMonsterRace),
             SetKeyword,
-        }.Concat(GetFaceDownKeyword()).Concat(GetCycleSpellKeywordWhenEligible()).Concat(GetSplinterBlightKeywords()).Concat(GetPortionKeywords());
+        }.Concat(GetFaceDownKeyword()).Concat(GetCycleSpellKeywordWhenEligible()).Concat(GetSplinterBlightKeywords()).Concat(GetPortionKeywords()).Concat(GetBrickKeywordWhenEligible());
 
     private IEnumerable<CardKeyword> GetSplinterBlightKeywords()
     {
@@ -187,6 +192,13 @@ public abstract class BaseSpellCard : YgoDuelistCard, IYgoCard
         if (CardDamagePortionCount < 2)
             yield break;
         yield return PortionKeyword;
+    }
+
+    private IEnumerable<CardKeyword> GetBrickKeywordWhenEligible()
+    {
+        if (this is not IYgoBrickCard)
+            yield break;
+        yield return BrickKeyword;
     }
 
     private IEnumerable<CardKeyword> GetFaceDownKeyword()

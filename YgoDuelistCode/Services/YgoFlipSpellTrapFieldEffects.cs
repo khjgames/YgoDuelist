@@ -66,9 +66,15 @@ public static class YgoFlipSpellTrapFieldEffects
         }
     }
 
+    public static Task<bool> TrySendSpellTrapOnFieldToGraveyardAsync(
+        CardModel spellOrTrapOnField,
+        CardModel effectSourceCard) =>
+        TrySendSpellTrapOnFieldToGraveyardAsync(spellOrTrapOnField, effectSourceCard, InferDestructionSourceKind(effectSourceCard));
+
     public static async Task<bool> TrySendSpellTrapOnFieldToGraveyardAsync(
         CardModel spellOrTrapOnField,
-        CardModel effectSourceCard)
+        CardModel effectSourceCard,
+        YgoDestructionSourceKind destructionKind)
     {
         Player? owner = spellOrTrapOnField.Owner;
         if (owner == null)
@@ -79,6 +85,8 @@ public static class YgoFlipSpellTrapFieldEffects
         CardPile? zone = YgoPlayerPiles.SpellTrapZone(owner);
         if (zone == null || !zone.Cards.Contains(spellOrTrapOnField))
             return false;
+        if (YgoDuelMonsterDestructionRules.FieldSpellTrapZoneCardResistsDestroy(owner, spellOrTrapOnField, destructionKind))
+            return false;
 
         await CardPileCmd.Add(
             new[] { spellOrTrapOnField },
@@ -88,6 +96,14 @@ public static class YgoFlipSpellTrapFieldEffects
             false);
         return true;
     }
+
+    private static YgoDestructionSourceKind InferDestructionSourceKind(CardModel effectSourceCard) =>
+        effectSourceCard switch
+        {
+            BaseTrapCard => YgoDestructionSourceKind.TrapEffect,
+            BaseSpellCard => YgoDestructionSourceKind.SpellEffect,
+            _ => YgoDestructionSourceKind.MonsterEffect,
+        };
 
     /// <summary>
     /// Returns a spell/trap from the owner's spell/trap zone to their hand. Equip-link registry entries are

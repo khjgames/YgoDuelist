@@ -531,6 +531,9 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         LegendaryFiendAtkPower? legendaryFiend = GetSourcePetLegendaryFiendAtkPower();
         if (legendaryFiend != null)
             atk += (int)legendaryFiend.Amount;
+        ExodiaNecrossAtkPower? exodiaNecrossAtk = GetSourcePetExodiaNecrossAtkPower();
+        if (exodiaNecrossAtk != null)
+            atk += (int)exodiaNecrossAtk.Amount;
         BazooSoulEaterTempAtkPower? bazooTemp = GetSourcePetBazooSoulEaterTempAtkPower();
         if (bazooTemp != null)
             atk += (int)bazooTemp.Amount;
@@ -548,6 +551,22 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             int n = (int)necroticEvolution.Amount;
             atk += n;
             def += n;
+        }
+
+        ChaoticEvolutionPower? chaoticEvolution = GetSourcePetChaoticEvolutionPower();
+        if (chaoticEvolution != null)
+        {
+            int c = (int)chaoticEvolution.Amount;
+            atk += c;
+            def += c;
+        }
+
+        GilferPowerPower? gilfer = GetSourcePetGilferPowerPower();
+        if (gilfer != null)
+        {
+            int g = (int)gilfer.Amount;
+            atk += g;
+            def += g;
         }
 
         GearfriedIronKnightPower? gearfriedPow = GetSourcePetGearfriedIronKnightPower();
@@ -850,6 +869,21 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         return null;
     }
 
+    private ExodiaNecrossAtkPower? GetSourcePetExodiaNecrossAtkPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
+        {
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
+                continue;
+            return pet.GetPower<ExodiaNecrossAtkPower>();
+        }
+
+        return null;
+    }
+
     private BazooSoulEaterTempAtkPower? GetSourcePetBazooSoulEaterTempAtkPower()
     {
         if (IsCanonical || Owner?.PlayerCombatState == null)
@@ -890,6 +924,36 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
             return pet.GetPower<NecroticEvolutionPower>();
+        }
+
+        return null;
+    }
+
+    private ChaoticEvolutionPower? GetSourcePetChaoticEvolutionPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
+        {
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
+                continue;
+            return pet.GetPower<ChaoticEvolutionPower>();
+        }
+
+        return null;
+    }
+
+    private GilferPowerPower? GetSourcePetGilferPowerPower()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
+        {
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
+                continue;
+            return pet.GetPower<GilferPowerPower>();
         }
 
         return null;

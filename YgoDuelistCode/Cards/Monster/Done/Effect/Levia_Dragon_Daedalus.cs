@@ -85,13 +85,21 @@ public sealed class Levia_Dragon_Daedalus : EffectMonsterCard, IMonsterActivated
                 continue;
             if (DuelMonsterFieldRegistry.HasSourceCard(pet, this))
                 continue;
-            await CreatureCmd.Kill(pet, force: true);
+            await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
+                YgoDestructionSourceKind.MonsterEffect,
+                pet);
         }
 
         CardPile? zone = YgoPlayerPiles.SpellTrapZone(Owner);
         CardPile? gy = YgoPlayerPiles.Graveyard(Owner);
         if (zone != null && gy != null)
-            await CardPileCmd.Add(YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards), gy, CardPilePosition.Top, this, false);
+        {
+            IEnumerable<CardModel> zoneToGy = YgoDuelMonsterDestructionRules.FilterSpellTrapZoneCardsForMassDestroy(
+                Owner,
+                YgoMpCombatOrder.CardsSnapshotOrderedForMp(zone.Cards),
+                YgoDestructionSourceKind.MonsterEffect);
+            await CardPileCmd.Add(zoneToGy, gy, CardPilePosition.Top, this, false);
+        }
     }
 
     protected override void OnUpgrade()

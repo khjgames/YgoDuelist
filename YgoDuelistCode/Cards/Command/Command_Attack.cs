@@ -117,6 +117,8 @@ public sealed class Command_Attack : MonsterCommandCard
             await YgoNarrowPassField.ApplyMonsterCommandLifePaymentIfActiveAsync(choiceContext, player, pet);
             if (!skipRegistryCommit)
                 await MonsterCommandRegistry.CommitMonsterCommandAfterPlay(pet, isAttackCommand: true, player.Creature, SourceMonster);
+            if (pet.GetPower<FleetingFollowupPower>() != null)
+                await PowerCmd.Remove<FleetingFollowupPower>(pet);
         }
 
         bool stealthBirdWasFaceDownDefense =

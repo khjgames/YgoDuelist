@@ -83,7 +83,17 @@ internal static class SpellTrapCardRightClickPatch
         if (holder.CardNode?.Model is BaseSpellCard spell)
         {
             if (spell.Pile?.Type != PileType.Hand)
+            {
+                if (spell is IYgoGraveEffectDisplayForm graveNonHand
+                    && graveNonHand.SupportsGraveEffectDisplayForm)
+                {
+                    bool allowCanonicalPreview = holder is not NHandCardHolder;
+                    graveNonHand.ToggleGraveEffectDisplayForm(allowCanonicalPreview);
+                    RefreshHolder(holder);
+                }
+
                 return;
+            }
 
             if (spell.Pile?.Type == SpellTrapZonePile.CustomType)
                 return;

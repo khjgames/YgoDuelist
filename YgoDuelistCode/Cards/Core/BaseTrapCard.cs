@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -79,6 +80,15 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        bool usedSetThisTurnBypass =
+            SetThisTurn
+            && Pile?.Type == SpellTrapZonePile.CustomType
+            && WasSetIntoSpellTrapZone
+            && FaceDown;
+
+        if (usedSetThisTurnBypass)
+            await HastenTrapPower.TryConsumeOnEarlySetActivationAsync(this);
+
         ColdWaveSpellTrapLockGate.MarkPlayerUsedSpellTrapThisTurn(Owner);
         SetThisTurn = false;
         WasSetIntoSpellTrapZone = false;
@@ -125,7 +135,7 @@ public abstract class BaseTrapCard : YgoDuelistCard, IYgoCard
                 && Pile?.Type == SpellTrapZonePile.CustomType
                 && WasSetIntoSpellTrapZone
                 && FaceDown)
-                return false;
+                return HastenTrapPower.CanActivateEarlyFromSetThisTurn(this);
 
             return true;
         }

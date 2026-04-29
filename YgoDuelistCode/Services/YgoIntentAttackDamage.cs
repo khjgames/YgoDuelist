@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
-
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 public static class YgoIntentAttackDamage

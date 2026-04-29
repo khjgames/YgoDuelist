@@ -1,0 +1,29 @@
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Models;
+
+namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
+
+/// <summary>Effect monster shell; gameplay to be implemented later.</summary>
+public sealed class Exodia_the_Forbidden_One : EffectMonsterCard
+{
+    public Exodia_the_Forbidden_One()
+        : base(
+            cost: 1,
+            type: CardType.Attack,
+            rarity: CardRarity.Common,
+            target: TargetType.AnyEnemy,
+            duelMonsterLevel: 3,
+            duelMonsterAttribute: DuelMonsterAttribute.Dark,
+            baseAtk: 10,
+            baseDef: 10,
+            baseMgc: 0,
+            duelMonsterRace: DuelMonsterRace.Spellcaster)
+    {
+    }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.WinCon;
+}

@@ -1,14 +1,21 @@
-using YgoDuelist.YgoDuelistCode.Cards;
 using System;
+using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
 public sealed class Spirit_Reaper : EffectMonsterCard
 {
+    private static readonly CardKeyword UnyieldingKeyword = (CardKeyword)20062;
+
     public Spirit_Reaper()
         : base(
             cost: 1,
@@ -23,19 +30,29 @@ public sealed class Spirit_Reaper : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Zombie)
     {
     }
-    // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter;
-    // You will always see bundled cards when RNG rolls this card, but not the other way around.
-    //public override Type[] BundledCards => new[]
-    //{
-    //    typeof(This_Card),
-    //    typeof(Another_Bundled_Card)
-    //};
 
-    // You will see these related cards more often with this card in your deck or side deck.
-    public override Type[] RelatedCards => new[]
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+
+    public override Type[] RelatedCards => new[] { typeof(Spirit_Reaper) };
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords
     {
-        typeof(Spirit_Reaper),
-    };
+        get
+        {
+            foreach (CardKeyword kw in base.CanonicalKeywords)
+                yield return kw;
+            yield return UnyieldingKeyword;
+        }
+    }
 
+    protected internal override async System.Threading.Tasks.Task OnSummoned(
+        Player player,
+        PlayerChoiceContext choiceContext,
+        Creature duelMonsterPet)
+    {
+        await base.OnSummoned(player, choiceContext, duelMonsterPet);
+        decimal stacks = IsUpgradedOrPreviewActive ? 4m : 3m;
+        await YgoDuelMonsterProtectionSummon.ApplyUnyieldingAsync(player, duelMonsterPet, stacks);
+    }
 }

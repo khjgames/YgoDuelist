@@ -20,7 +20,7 @@ public sealed class Dark_Balter_the_Terrible : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Fiend,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Possessed_Dark_Soul),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Frontier_Wiseman))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Frontier_Wiseman))
     {
     }
     

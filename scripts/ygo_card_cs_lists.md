@@ -60,7 +60,6 @@
     Ceremonial_Bell.cs
     Chaos_Command_Magician.cs
     Chaos_Daedalus.cs
-    Chaos_Emperor_Dragon_Envoy_of_the_End.cs
     Chaos_Necromancer.cs
     Chaos_Sorcerer.cs
     Chaosrider_Gustaph.cs
@@ -90,9 +89,7 @@
     Dark_Jeroid.cs
     Dark_Magician_Girl.cs
     Dark_Magician_of_Chaos.cs
-    Dark_Necrofear.cs
     Dark_Ruler_Ha_Des.cs
-    Dark_Sage.cs
     Dark_Zebra.cs
     Darklord_Marie.cs
     Delg_the_Dark_Monarch.cs
@@ -121,11 +118,9 @@
     Exarion_Universe.cs
     Exiled_Force.cs
     Exodia_Necross.cs
-    Exodia_the_Forbidden_One.cs
     Fairy_Guardian.cs
     Fairy_King_Truesdale.cs
     Fear_from_the_Dark.cs
-    Fenrir.cs
     Fiber_Jar.cs
     Fire_Princess.cs
     Fire_Sorcerer.cs
@@ -135,7 +130,6 @@
     Freed_the_Matchless_General.cs
     Frontier_Wiseman.cs
     Fushi_No_Tori.cs
-    Fushioh_Richie.cs
     Gale_Dogra.cs
     Gale_Lizard.cs
     Garuda_the_Wind_Spirit.cs
@@ -168,7 +162,6 @@
     Gravekeeper_s_Spear_Soldier.cs
     Gravekeeper_s_Spy.cs
     Gray_Wing.cs
-    Great_Dezard.cs
     Great_Maju_Garzett.cs
     Great_Moth.cs
     Greenkappa.cs
@@ -259,7 +252,6 @@
     Manju_of_the_Ten_Thousand_Hands.cs
     Manticore_of_Darkness.cs
     Marauding_Captain.cs
-    Maryokutai.cs
     Mask_of_Darkness.cs
     Masked_Beast_Des_Gardius.cs
     Masked_Sorcerer.cs
@@ -348,7 +340,6 @@
     Shadow_Ghoul.cs
     Shadowknight_Archfiend.cs
     Shining_Angel.cs
-    Silpheed.cs
     Sinister_Serpent.cs
     Skelengel.cs
     Skilled_Dark_Magician.cs
@@ -369,7 +360,6 @@
     Spirit_Caller.cs
     Spirit_of_Flames.cs
     Spirit_of_the_Breeze.cs
-    Spirit_of_the_Pharaoh.cs
     Spirit_Reaper.cs
     Spirit_Ryu.cs
     Stealth_Bird.cs
@@ -410,7 +400,6 @@
     Throwstone_Unit.cs
     Thunder_Dragon.cs
     Thunder_Nyan_Nyan.cs
-    Time_Wizard.cs
     Timeater.cs
     Toon_Dark_Magician_Girl.cs
     Toon_Mermaid.cs
@@ -430,7 +419,6 @@
     UFO_Turtle.cs
     Ultimate_Obedient_Fiend.cs
     Unshaven_Angler.cs
-    Valkyrion_the_Magna_Warrior.cs
     Vampire_Lady.cs
     Vampire_Lord.cs
     Vampiric_Orchis.cs

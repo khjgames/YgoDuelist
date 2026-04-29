@@ -68,6 +68,7 @@ public static class MonsterCommandTurnResetPatch
         ColdWaveSpellTrapLockGate.ResetSpellTrapUsageForPlayerTurnStart(combatPlayer);
         LegionFiendJesterSpellcasterConduit.ResetForPlayer(combatPlayer);
         ReactorSlimeSummonGate.ResetForPlayer(combatPlayer);
+        YgoFushiohRichieSummonGate.ResetForPlayer(combatPlayer);
 
         BaseTrapCard.ClearSetThisTurnForFacedownSetTrapsInZone(combatPlayer);
 

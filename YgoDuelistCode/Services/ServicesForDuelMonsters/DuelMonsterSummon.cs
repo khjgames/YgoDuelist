@@ -60,7 +60,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
     /// Ritual, fusion, Monster Reborn, and similar: the pet is not marked as having used Command this turn, so Attack/Defend are allowed.
     /// </summary>
     public static Task<bool> TrySummonDuelMonsterSpecial(Player player, BaseMonsterCard card, PlayerChoiceContext ctx) =>
-        TrySummonDuelMonster(player, card, ctx, canAttackThisTurn: true);
+        TrySummonDuelMonster(player, card, ctx, canAttackThisTurn: true, isSpecialSummonRoute: true);
 
     /// <summary>
     /// In co-op, <see cref="Creature.CombatState"/> on a remote peer’s <see cref="Player.Creature"/> can be unset while
@@ -90,11 +90,19 @@ namespace YgoDuelist.YgoDuelistCode.Services;
     /// and adds it as a pet. Returns true if a summon was added.
     /// </summary>
     /// <param name="canAttackThisTurn">If <c>true</c>, Command Attack/Defend may be used this turn. If <c>false</c> (normal/tribute default), they are exhausted (stiff/fatigued) this turn.</param>
-    public static async Task<bool> TrySummonDuelMonster(Player player, BaseMonsterCard card, PlayerChoiceContext _, bool canAttackThisTurn = false)
+    public static async Task<bool> TrySummonDuelMonster(
+        Player player,
+        BaseMonsterCard card,
+        PlayerChoiceContext _,
+        bool canAttackThisTurn = false,
+        bool isSpecialSummonRoute = false)
     {
         if (player?.Creature == null
             || player.PlayerCombatState == null
             || (!card.CanSummonDuelMonster && !card.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
+            return false;
+
+        if (isSpecialSummonRoute && card.BlocksSpecialDuelMonsterSummon)
             return false;
 
         CombatState? combatState = ResolveCombatStateForPlayerSummon(player);
@@ -102,6 +110,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
             return false;
 
         if (!ReactorSlimeSummonGate.AllowsSummon(player, card))
+            return false;
+
+        if (!YgoFushiohRichieSummonGate.AllowsSpecialSummon(player, card))
             return false;
 
         if (CountLiveDuelMonsters(player) >= MaxDuelMonstersPerPlayer)
@@ -168,6 +179,10 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
         await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
 
+        await global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Frontier_Wiseman.SyncBoardAfterAnyDuelSummonAsync(
+            YgoChoiceContexts.Blocking(),
+            player);
+
         await EnragedBattleOxService.SyncPlayerPowerAsync(player);
 
         LegionFiendJesterSpellcasterConduit.RegisterWaivedSummonAfterNormalSpellcasterSummon(
@@ -175,6 +190,9 @@ namespace YgoDuelist.YgoDuelistCode.Services;
             card,
             canAttackThisTurn,
             legionCountBeforeSummon);
+
+        if (card.GetType() == typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Fushioh_Richie))
+            YgoFushiohRichieSummonGate.Consume(player);
 
         return true;
     }

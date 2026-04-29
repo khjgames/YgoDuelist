@@ -66,7 +66,7 @@ public static class YgoCardArchetypeRegistry
         typeof(Magician_of_Black_Chaos),
         typeof(Dark_Paladin),
         typeof(Dark_Flare_Knight),
-        //typeof(Dark_Sage),
+        typeof(Dark_Sage),
         typeof(Dark_Magic_Attack),
         typeof(Double_Summon),
         typeof(Mausoleum_of_the_Emperor),

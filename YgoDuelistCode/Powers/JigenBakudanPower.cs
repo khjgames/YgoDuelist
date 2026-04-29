@@ -109,7 +109,7 @@ public sealed class JigenBakudanPower : YgoDuelistPower
         }
 
         foreach (Creature pet in pets)
-            await CreatureCmd.Kill(pet, force: true);
+            await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(YgoDestructionSourceKind.TrapEffect, pet);
 
         int dmgEach = _isPlus ? (totalAtk * 3) / 4 : totalAtk / 2;
         if (dmgEach > 0)

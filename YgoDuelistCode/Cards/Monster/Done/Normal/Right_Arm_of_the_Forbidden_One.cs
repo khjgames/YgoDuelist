@@ -26,7 +26,8 @@ public sealed class Right_Arm_of_the_Forbidden_One : NormalMonsterCard
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
         YgoCardPackTags.Spellcaster |
-        YgoCardPackTags.Normal;
+        YgoCardPackTags.Normal |
+        YgoCardPackTags.WinCon;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
     //public override Type[] BundledCards => new[]

@@ -62,7 +62,10 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     public override Task BeforeCombatStart()
     {
         YgoCombatEndLifecycle.ResetDedupForNewCombat();
+        YgoSoulOfPurityAndLightTurnPulseDedup.ClearAll();
         SubscribeToGraveyardPile();
+        if (Owner != null)
+            YgoBrickCardBootstrap.StripBricksFromPlayerCombatPiles(Owner);
         return Task.CompletedTask;
     }
 

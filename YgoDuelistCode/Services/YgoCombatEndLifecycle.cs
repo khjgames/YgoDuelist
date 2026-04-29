@@ -75,8 +75,10 @@ public static class YgoCombatEndLifecycle
         NormalSummonTracker.ClearAll();
         LegionFiendJesterSpellcasterConduit.ClearAll();
         ReactorSlimeSummonGate.ClearAll();
+        YgoFushiohRichieSummonGate.ClearAll();
         YgoTotalDefenseShogunDeferredBlock.ClearAll();
         YgoPlayerCombatTurnStamp.ClearAll();
+        YgoSoulOfPurityAndLightTurnPulseDedup.ClearAll();
         YgoSanganNameLock.ClearAll();
         YgoBattleDeathMarkedCards.ClearAll();
         TributeSummonPlayPayload.ClearAll();

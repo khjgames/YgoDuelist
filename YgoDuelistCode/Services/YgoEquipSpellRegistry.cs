@@ -37,6 +37,7 @@ public static class YgoEquipSpellRegistry
             EquipToMonster[equip] = monster;
             equip.SetEquippedMonster(monster);
             equip.SetEquippedTargetPetCombatId(YgoDuelMonsterPetBinding.TryFindPetCombatIdForFieldMonster(monster));
+            equip.OnAfterAttachedToFieldMonster(monster);
         }
     }
 
