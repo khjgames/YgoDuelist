@@ -22,7 +22,7 @@ public sealed class Dark_Blade_the_Dragon_Knight : FusionMonsterCard
             baseMgc: 0,
             duelMonsterRace: DuelMonsterRace.Warrior,
             typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal.Dark_Blade),
-            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Todo.Effect.Pitch_Dark_Dragon))
+            typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Pitch_Dark_Dragon))
     {
     }
     

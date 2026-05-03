@@ -87,6 +87,7 @@ public static class NetFullCombatStateYgoChecksumPatch
             ReconcileDuelPetDieForYouBeforeSnapshot(runState);
             ReconcileDuelPetStancePowersBeforeSnapshot(runState);
             YgoDuelistPowerChecksumReconcile.ReconcileAll(runState, VerboseChecksumLog);
+            YgoUnionLimboRegistry.ReconcileForMpChecksumSnapshot(runState);
         }
         catch (Exception ex)
         {
@@ -238,6 +239,9 @@ public static class NetFullCombatStateYgoChecksumPatch
         CardPile? banished = YgoPlayerPiles.Banished(player);
         if (banished != null)
             ReconcileFaceDownKeywordsOnPileCards(banished, ref monsters, ref traps);
+        CardPile? limbo = YgoPlayerPiles.Limbo(player);
+        if (limbo != null)
+            ReconcileFaceDownKeywordsOnPileCards(limbo, ref monsters, ref traps);
     }
 
     private static void ReconcileDuelPetDieForYouBeforeSnapshot(IRunState runState)
@@ -348,6 +352,7 @@ public static class NetFullCombatStateYgoChecksumPatch
         CardPile? field = YgoPlayerPiles.Field(player);
         CardPile? extra = YgoPlayerPiles.ExtraDeck(player);
         CardPile? banished = YgoPlayerPiles.Banished(player);
+        CardPile? limbo = YgoPlayerPiles.Limbo(player);
         TryAppendYgoOptionPileForChecksum(ref ps, opt);
         TryAppendPile(ref ps, st);
         TryAppendPile(ref ps, gy);
@@ -355,14 +360,15 @@ public static class NetFullCombatStateYgoChecksumPatch
         TryAppendPile(ref ps, field);
         TryAppendPile(ref ps, extra);
         TryAppendPile(ref ps, banished);
+        TryAppendPile(ref ps, limbo);
         if (VerboseChecksumLog)
         {
             int added = ps.piles.Count - before;
             GD.Print(
                 $"[YgoDuelist][MP][Checksum] YGO zones serialized +{added} pile row(s) netId={player.NetId} " +
-                $"(nulls: opt={opt == null} st={st == null} gy={gy == null} mon={mon == null} field={field == null} extra={extra == null} banished={banished == null}; " +
+                $"(nulls: opt={opt == null} st={st == null} gy={gy == null} mon={mon == null} field={field == null} extra={extra == null} banished={banished == null} limbo={limbo == null}; " +
                 $"counts: opt={opt?.Cards.Count ?? -1} (menu commands excluded from checksum) st={st?.Cards.Count ?? -1} gy={gy?.Cards.Count ?? -1} mon={mon?.Cards.Count ?? -1} " +
-                $"field={field?.Cards.Count ?? -1} extra={extra?.Cards.Count ?? -1} banished={banished?.Cards.Count ?? -1})");
+                $"field={field?.Cards.Count ?? -1} extra={extra?.Cards.Count ?? -1} banished={banished?.Cards.Count ?? -1} limbo={limbo?.Cards.Count ?? -1})");
         }
     }
 

@@ -41,6 +41,9 @@ public static class YgoPlayerPiles
     public static CardPile? Banished(Player? player) =>
         player == null ? null : BanishedPile.CustomType.GetPile(player);
 
+    public static CardPile? Limbo(Player? player) =>
+        player == null ? null : LimboPile.CustomType.GetPile(player);
+
     public static CardPile? MonsterZone(Player? player) =>
         player == null ? null : MonsterPile.CustomType.GetPile(player);
 

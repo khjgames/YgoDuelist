@@ -35,6 +35,7 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
             return;
 
         bool toGraveyard = newPile.Type == GraveyardPile.CustomType;
+        bool toLimbo = newPile.Type == LimboPile.CustomType;
 
         foreach ((CardModel card, PileType? from) in __state)
         {
@@ -49,7 +50,8 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
 
             if (card is BaseEquipSpellCard eq)
             {
-                if (!toGraveyard)
+                bool leaveZoneToLimboUnion = toLimbo && eq is IYgoUnionEquipSpell;
+                if (!toGraveyard && !leaveZoneToLimboUnion)
                     continue;
 
                 YgoEquipSpellRegistry.Detach(eq);
@@ -57,6 +59,16 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
                 {
                     YgoFieldSpellStatAggregator.RefreshMonsterSummonKeywords(eq.Owner);
                     YgoSpellTrapZoneAfterPlayUi.ScheduleSpellTrapSecondHandRepublishIfZoneViewActive(eq.Owner);
+                }
+
+                if (toGraveyard
+                    && eq is IYgoUnionEquipSpell
+                    && eq.Owner is Player unionPl
+                    && YgoUnionLimboRegistry.TryGetByEquip(eq, out BaseMonsterCard? limboMon, out _, out _)
+                    && limboMon != null
+                    && limboMon.Pile?.Type == LimboPile.CustomType)
+                {
+                    TaskHelper.RunSafely(YgoUnionLimboDestroyed.AfterEquipArrivedInGraveyardFromZoneAsync(unionPl, eq, limboMon));
                 }
 
                 continue;

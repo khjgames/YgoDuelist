@@ -385,6 +385,48 @@ public static class DuelMonsterPetDeathPatch
     }
 
     /// <summary>
+    /// Removes a live duel monster from the field by moving its source card to the Limbo pile (Union-Effect equip material).
+    /// Equips and equip-link traps go to the graveyard.
+    /// </summary>
+    public static async Task ReleaseLiveFieldMonsterToLimboAsync(Player player, Creature pet, BaseMonsterCard fieldCard)
+    {
+        if (player?.PlayerCombatState == null || pet == null || fieldCard == null)
+            return;
+        if (!pet.IsAlive)
+            return;
+        if (!DuelMonsterFieldRegistry.HasSourceCard(pet, fieldCard))
+            return;
+
+        TryClearOptionPileForFieldMonster(player, fieldCard, pet);
+
+        CardPile? limbo = YgoPlayerPiles.Limbo(player);
+        CardPile? graveyard = CustomPiles.GetCustomPile(player.PlayerCombatState, GraveyardPile.CustomType);
+        if (limbo == null || graveyard == null)
+            return;
+
+        await MoveEquipsToGraveyardThenMonsterToPileAsync(player, fieldCard, limbo, graveyard);
+
+        DuelMonsterFieldRegistry.UnregisterPet(pet);
+        MonsterCommandRegistry.Clear(pet);
+
+        if (player.Creature != null)
+            await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
+
+        await CreatureCmd.Kill(pet, force: true);
+
+        RemoveDuelMonsterNodeIfPresent(pet, "release-limbo");
+
+        CombatState? combatState = pet.CombatState;
+        if (combatState != null && combatState.ContainsCreature(pet))
+        {
+            CombatManager.Instance.RemoveCreature(pet);
+            combatState.RemoveCreature(pet);
+        }
+
+        DuelistAllyCreatureDrawOrder.RefreshLayoutAfterDuelPetRosterChanged("release-limbo");
+    }
+
+    /// <summary>
     /// Removes a live duel monster from the field by moving its source card to hand. Equips and equip-link traps on that
     /// monster are sent to the graveyard (same pile moves as bounce-to-hand on death). Does not run pet-death hooks
     /// (<see cref="AbstractMonsterCard.OnPetDiedBeforeOptionPileHandlingAsync"/>, destruction powers, etc.).

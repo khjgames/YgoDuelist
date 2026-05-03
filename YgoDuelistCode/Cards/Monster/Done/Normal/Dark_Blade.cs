@@ -43,5 +43,4 @@ public sealed class Dark_Blade : NormalMonsterCard
     //    typeof(This_Card),
     //    typeof(Another_Bundled_Card)
     //};
-
 }

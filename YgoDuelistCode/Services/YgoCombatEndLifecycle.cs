@@ -94,12 +94,15 @@ public static class YgoCombatEndLifecycle
         SecretPassPlayPayload.ClearAll();
         FairyOfSpringReturnedEquipLock.ClearAll();
         YgoEquipSpellRegistry.ClearAll();
+        YgoUnionLimboRegistry.ClearAll();
         YgoSpellTrapEquipLinkRegistry.ClearAll();
         YgoCurseOfDarknessSpellHook.ClearAll();
         YgoDesCounterblowThornsSync.ClearAll();
 
         foreach (Player p in cs.Players)
             await YgoBanishedService.RemoveAllFromCombat(p);
+        foreach (Player p in cs.Players)
+            await YgoLimboService.RemoveAllFromCombat(p);
     }
 
     private static async Task FlushPendingRaRebirthsAsync()

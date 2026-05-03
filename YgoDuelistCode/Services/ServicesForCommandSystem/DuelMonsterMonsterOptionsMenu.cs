@@ -12,6 +12,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Equip;
+using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
 
@@ -198,6 +199,16 @@ public static class DuelMonsterMonsterOptionsMenu
                     continue;
                 extra.InitializeSource(monsterCard, pet);
                 commands.Add(extra);
+            }
+        }
+
+        foreach (BaseEquipSpellCard eq in YgoEquipSpellRegistry.GetEquipsForMonster(monsterCard))
+        {
+            if (eq is IYgoUnionEquipUnequipMonsterOption unequipSrc)
+            {
+                MonsterCommandCard unequip = unequipSrc.CreateUnequipMonsterOption(combatState, player);
+                unequip.InitializeSource(monsterCard, pet);
+                commands.Add(unequip);
             }
         }
 

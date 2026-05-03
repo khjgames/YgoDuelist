@@ -256,12 +256,13 @@ public static class YgoSpellTrapZoneBridge
 
         PileType equipFrom = card.Pile?.Type ?? PileType.None;
         bool fromGraveyard = equipFrom == GraveyardPile.CustomType;
-        if (equipFrom == PileType.Hand || equipFrom == PileType.Play || fromGraveyard)
+        bool fromLimbo = equipFrom == LimboPile.CustomType;
+        if (equipFrom == PileType.Hand || equipFrom == PileType.Play || fromGraveyard || fromLimbo)
         {
             if (!HasSpaceForSetOrPlay(player, card))
                 return;
 
-            if (fromGraveyard)
+            if (fromGraveyard || fromLimbo)
                 card.PrepareFaceUpForZoneFromGraveyard();
 
             await CardPileCmd.Add(
