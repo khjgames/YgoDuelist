@@ -27,8 +27,8 @@ public sealed class Fairy_King_Truesdale : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+
     public override YgoCardArchetype CardArchetypes => YgoCardArchetype.GenericAllMonstersContinuousStatBoost;
 
     public override Type[] RelatedCards => new[] { typeof(Fairy_King_Truesdale) };

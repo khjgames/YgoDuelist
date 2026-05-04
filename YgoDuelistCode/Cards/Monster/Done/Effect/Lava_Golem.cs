@@ -34,7 +34,7 @@ public sealed class Lava_Golem : EffectMonsterCard, IMonsterActivatedEffect, IMo
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fire | YgoCardPackTags.Fiend | YgoCardPackTags.Burn;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire | YgoCardPackTags.Fiend | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Lava_Golem) };
 

@@ -30,8 +30,8 @@ public sealed class Hoshiningen : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Fiend;
+
     public override Type[] RelatedCards => GetRelatedCards();
 
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)

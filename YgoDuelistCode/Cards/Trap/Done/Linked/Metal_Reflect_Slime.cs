@@ -29,7 +29,7 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.God;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.God;
 
     protected override Type[] PreviewReferencedCardTypes =>
         YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Metal_Reflect_Slime_Trap_Monster));

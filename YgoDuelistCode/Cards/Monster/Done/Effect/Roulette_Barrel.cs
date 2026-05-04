@@ -36,8 +36,7 @@ public sealed class Roulette_Barrel : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Machine | YgoCardPackTags.Chance | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Machine | YgoCardPackTags.Chance | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Roulette_Barrel) };
 

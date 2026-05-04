@@ -27,7 +27,7 @@ public sealed class Fusion_Sage : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Fusion | YgoCardPackTags.Spell | YgoCardPackTags.Draw | YgoCardPackTags.Bundled;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fusion | YgoCardPackTags.Spell | YgoCardPackTags.Draw | YgoCardPackTags.Bundled;
 
     public override Type[] RelatedCards => new[] { typeof(Fusion_Sage), typeof(Polymerization) };
 

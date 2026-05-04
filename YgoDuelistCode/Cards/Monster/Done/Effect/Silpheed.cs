@@ -42,7 +42,7 @@ public sealed class Silpheed : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Wind | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Wind | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Silpheed) };
 

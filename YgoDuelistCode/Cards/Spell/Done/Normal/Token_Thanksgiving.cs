@@ -26,7 +26,7 @@ public sealed class Token_Thanksgiving : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Heal | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Heal | YgoCardPackTags.Spell;
 
     protected override async Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

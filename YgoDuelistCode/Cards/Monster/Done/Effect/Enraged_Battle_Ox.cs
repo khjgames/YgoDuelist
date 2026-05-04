@@ -29,8 +29,8 @@ public sealed class Enraged_Battle_Ox : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+
     public override Type[] RelatedCards => new[] { typeof(Enraged_Battle_Ox) };
 
     protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>

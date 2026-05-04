@@ -26,7 +26,7 @@ public sealed class Black_Luster_Soldier : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Black_Luster_Ritual), typeof(Black_Luster_Soldier) };
 }

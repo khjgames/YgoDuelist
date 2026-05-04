@@ -27,7 +27,7 @@ public sealed class Mermaid_Knight : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
 
     public override Type[] RelatedCards => new[] { typeof(Mermaid_Knight), typeof(Umi), typeof(A_Legendary_Ocean) };
 

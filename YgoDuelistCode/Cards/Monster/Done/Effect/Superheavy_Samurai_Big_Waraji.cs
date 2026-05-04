@@ -31,8 +31,7 @@ public sealed class Superheavy_Samurai_Big_Waraji : EffectMonsterCard, IDoubleTr
         RequiredRace = DuelMonsterRace.Machine
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Machine;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Machine;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Superheavy_Samurai_Big_Waraji), DoubleTributeTargetSpec);

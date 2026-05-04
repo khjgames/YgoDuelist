@@ -25,7 +25,7 @@ public sealed class Cost_Down : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards => new[] { typeof(Cost_Down) };
 

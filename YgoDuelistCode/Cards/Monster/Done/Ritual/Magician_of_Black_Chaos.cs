@@ -26,7 +26,7 @@ public sealed class Magician_of_Black_Chaos : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Black_Magic_Ritual), typeof(Magician_of_Black_Chaos) };
 }

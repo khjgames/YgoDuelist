@@ -29,8 +29,7 @@ public sealed class Des_Volstgalph : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Des_Volstgalph) };
 

@@ -32,7 +32,7 @@ public sealed class Castle_of_Dark_Illusions : EffectMonsterCard, IMonsterFlipEf
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
 
     public override YgoCardArchetype CardArchetypes => YgoCardArchetype.ZombieBoost;
 

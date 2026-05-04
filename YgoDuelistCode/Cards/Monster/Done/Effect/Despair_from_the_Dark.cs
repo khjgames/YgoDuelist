@@ -39,8 +39,8 @@ public sealed class Despair_from_the_Dark : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+
     public override Type[] RelatedCards => new[] { typeof(Despair_from_the_Dark) };
 
     public override void OnMovedToGraveyardFromHandOrField(PileType from)

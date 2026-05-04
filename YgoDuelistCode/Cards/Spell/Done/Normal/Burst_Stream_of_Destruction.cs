@@ -38,8 +38,7 @@ public sealed class Burst_Stream_of_Destruction
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light | YgoCardPackTags.Dragon | YgoCardPackTags.Bundled;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light | YgoCardPackTags.Dragon | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Blue_Eyes_White_Dragon) };
 

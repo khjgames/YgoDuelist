@@ -23,7 +23,7 @@ public sealed class Sword_Hunter : EffectMonsterCard
     {
     }
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
 
     public override int PermanentAtkDeltaOnEnemyExecute => IsUpgraded ? 4 : 3;
 

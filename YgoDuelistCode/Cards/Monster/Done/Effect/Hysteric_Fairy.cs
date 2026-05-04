@@ -36,8 +36,7 @@ public sealed class Hysteric_Fairy : EffectMonsterCard, IMonsterActivatedEffect,
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Heal | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Heal | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards => new[] { typeof(Hysteric_Fairy) };
 

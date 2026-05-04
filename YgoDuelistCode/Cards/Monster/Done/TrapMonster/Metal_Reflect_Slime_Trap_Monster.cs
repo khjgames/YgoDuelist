@@ -24,7 +24,7 @@ public sealed class Metal_Reflect_Slime_Trap_Monster : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
     public override bool CanSummonDuelMonster => false;
 

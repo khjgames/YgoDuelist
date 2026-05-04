@@ -24,8 +24,7 @@ public sealed class Total_Defense_Shogun : EffectMonsterCard, IYgoDeferredBlockF
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Warrior | YgoCardPackTags.Dark;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Warrior | YgoCardPackTags.Dark;
 
     public override Type[] RelatedCards => new[] { typeof(Total_Defense_Shogun) };
 

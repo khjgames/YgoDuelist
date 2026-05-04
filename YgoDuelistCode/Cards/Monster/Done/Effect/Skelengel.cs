@@ -27,8 +27,7 @@ public sealed class Skelengel : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Skelengel) };
 

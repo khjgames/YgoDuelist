@@ -36,7 +36,7 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource, IYgoCa
 
     public bool RequiresPlayerFusionTargetSelection => false;
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Fusion | YgoCardPackTags.Spell | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fusion | YgoCardPackTags.Spell | YgoCardPackTags.Banish;
 
     /// <summary>
     /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).

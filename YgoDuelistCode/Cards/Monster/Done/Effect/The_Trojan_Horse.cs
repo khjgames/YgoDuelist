@@ -31,7 +31,7 @@ public sealed class The_Trojan_Horse : EffectMonsterCard, IDoubleTributeMaterial
         RequiredAttribute = DuelMonsterAttribute.Earth
     };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(The_Trojan_Horse), DoubleTributeTargetSpec);

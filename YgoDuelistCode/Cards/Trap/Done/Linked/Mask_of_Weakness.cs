@@ -41,7 +41,7 @@ public sealed class Mask_of_Weakness : BaseTrapCard,
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Trap;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Trap;
 
     public override Type[] RelatedCards => new[]
     {

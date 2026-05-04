@@ -37,8 +37,7 @@ public sealed class Chaosrider_Gustaph : EffectMonsterCard, IMonsterActivatedEff
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Warrior | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Warrior | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Chaosrider_Gustaph) };
 

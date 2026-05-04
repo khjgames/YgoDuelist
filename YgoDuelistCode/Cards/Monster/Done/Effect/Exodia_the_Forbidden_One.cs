@@ -24,6 +24,5 @@ public sealed class Exodia_the_Forbidden_One : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.WinCon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.WinCon;
 }

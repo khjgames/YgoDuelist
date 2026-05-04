@@ -27,7 +27,7 @@ public sealed class Egyptian_God_Slime : FusionMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.God;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.God;
 
     public static bool PlayerHasSlimeInExtraDeck(Player player)
     {

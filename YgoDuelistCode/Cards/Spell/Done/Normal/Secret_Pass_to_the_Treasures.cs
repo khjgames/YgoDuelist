@@ -30,7 +30,7 @@ public sealed class Secret_Pass_to_the_Treasures : BaseSpellCard, IYgoPlayCardAc
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {

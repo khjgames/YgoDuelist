@@ -24,7 +24,7 @@ public sealed class Beautiful_Headhuntress : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth |
         YgoCardPackTags.Warrior |
         YgoCardPackTags.Normal;
 

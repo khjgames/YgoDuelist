@@ -39,8 +39,7 @@ public sealed class Goddess_of_Whim : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Chance;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Chance;
 
     public override Type[] RelatedCards => new[]
     {

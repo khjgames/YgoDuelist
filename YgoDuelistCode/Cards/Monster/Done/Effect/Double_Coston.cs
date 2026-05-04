@@ -32,8 +32,7 @@ public sealed class Double_Coston : EffectMonsterCard, IDoubleTributeMaterial
         RequiredAttribute = DuelMonsterAttribute.Dark
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Double_Coston), DoubleTributeTargetSpec);

@@ -26,7 +26,7 @@ public sealed class Multiplication_of_Ants : BaseSpellCard, IYgoPrePlayCancelabl
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Insect | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Insect | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards => new[] { typeof(Multiplication_of_Ants), typeof(Army_Ant_Token) };
 

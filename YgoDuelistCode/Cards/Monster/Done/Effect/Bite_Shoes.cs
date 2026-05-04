@@ -35,7 +35,7 @@ public sealed class Bite_Shoes : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override Type[] RelatedCards => new[] { typeof(Bite_Shoes) };
 

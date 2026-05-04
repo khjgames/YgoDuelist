@@ -30,7 +30,7 @@ public sealed class Raigeki_Break : BaseTrapCard, IYgoPrePlayCancelableGridSelec
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Trap;
 
     // You will see these related cards more often with this card in your deck or side deck.
     public override Type[] RelatedCards => new[]

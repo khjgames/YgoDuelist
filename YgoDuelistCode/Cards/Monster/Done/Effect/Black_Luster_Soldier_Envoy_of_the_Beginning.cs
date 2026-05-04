@@ -55,8 +55,7 @@ public sealed class Black_Luster_Soldier_Envoy_of_the_Beginning : EffectMonsterC
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Dark | YgoCardPackTags.Warrior | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Dark | YgoCardPackTags.Warrior | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Black_Luster_Soldier_Envoy_of_the_Beginning), typeof(Black_Luster_Soldier) };
 

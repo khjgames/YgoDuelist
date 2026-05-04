@@ -23,8 +23,7 @@ public sealed class Asura_Priest : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Spellcaster;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Spellcaster;
 
     public override Type[] RelatedCards => new[] { typeof(Asura_Priest) };
 

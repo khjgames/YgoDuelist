@@ -29,8 +29,8 @@ public sealed class Tyrant_Dragon : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fire | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
+
     public override Type[] RelatedCards => new[] { typeof(Tyrant_Dragon) };
 
     public int ActivatedEffectEnergyCost => 1;

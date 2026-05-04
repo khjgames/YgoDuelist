@@ -31,8 +31,7 @@ public sealed class Don_Turtle : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Draw;
     public override Type[] RelatedCards => new[] { typeof(Don_Turtle) };
 
     public override bool BundleGrantsExtraCopyOfSelf => true;

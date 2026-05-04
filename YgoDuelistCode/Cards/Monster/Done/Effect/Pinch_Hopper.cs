@@ -26,8 +26,7 @@ public sealed class Pinch_Hopper : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Insect | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Insect | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Pinch_Hopper) };
 }

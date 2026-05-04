@@ -24,8 +24,9 @@ public sealed class Winged_Dragon_Guardian_of_the_Fortress_1 : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Wind |
-        YgoCardPackTags.Dragon |        YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Wind |
+        YgoCardPackTags.Dragon |
+        YgoCardPackTags.Normal;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
     //public override Type[] BundledCards => new[]

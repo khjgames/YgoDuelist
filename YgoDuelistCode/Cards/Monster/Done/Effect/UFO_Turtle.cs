@@ -36,7 +36,7 @@ public sealed class UFO_Turtle : EffectMonsterCard, IBattleDeathOptionalDeckSpec
     bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
         m.DuelMonsterAttribute == DuelMonsterAttribute.Fire && m.BaseAtk <= 15 && m.CanSummonDuelMonster;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Machine;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Machine;
+
     public override Type[] RelatedCards => new[] { typeof(UFO_Turtle) };
 }

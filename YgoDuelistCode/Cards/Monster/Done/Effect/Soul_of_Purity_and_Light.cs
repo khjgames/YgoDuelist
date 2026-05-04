@@ -45,7 +45,7 @@ public sealed class Soul_of_Purity_and_Light : EffectMonsterCard, IYgoOwnerTurnS
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Light | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Soul_of_Purity_and_Light) };
 

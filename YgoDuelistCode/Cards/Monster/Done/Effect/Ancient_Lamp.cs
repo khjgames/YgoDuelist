@@ -38,8 +38,7 @@ public sealed class Ancient_Lamp : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Wind | YgoCardPackTags.Spellcaster;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Wind | YgoCardPackTags.Spellcaster;
 
     public override Type[] RelatedCards => new[] { typeof(Ancient_Lamp), typeof(La_Jinn_the_Mystical_Genie_of_the_Lamp) };
 

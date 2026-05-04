@@ -29,8 +29,7 @@ public sealed class Sacred_Crane : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Sacred_Crane) };
 

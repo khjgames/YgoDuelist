@@ -28,7 +28,7 @@ public sealed class Fusion_Sword_Murasame_Blade : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Spell | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Warrior;
 
     public override Type[] RelatedCards => new[] { typeof(Fusion_Sword_Murasame_Blade) };
 

@@ -29,7 +29,7 @@ public sealed class Makyura_the_Destructor : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Warrior | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Warrior | YgoCardPackTags.Trap;
 
     public override Type[] RelatedCards => new[] { typeof(Makyura_the_Destructor) };
 

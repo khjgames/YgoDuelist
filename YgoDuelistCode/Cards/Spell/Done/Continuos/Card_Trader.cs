@@ -25,7 +25,7 @@ public sealed class Card_Trader : BaseContinuousSpellCard, IYgoOwnerTurnStartSpe
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards => new[] { typeof(Card_Trader) };
 

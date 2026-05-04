@@ -40,8 +40,7 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Lekunga), typeof(Lekunga_Token) };
 

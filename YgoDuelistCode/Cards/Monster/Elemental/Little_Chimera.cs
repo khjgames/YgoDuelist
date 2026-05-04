@@ -30,8 +30,8 @@ public sealed class Little_Chimera : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Fire;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Fire;
+
     public override Type[] RelatedCards => GetRelatedCards();
 
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)

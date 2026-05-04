@@ -22,7 +22,7 @@ public sealed class The_First_Monarch : BaseContinuousTrapCard, IYgoSpellTrapEqu
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Trap;
 
     protected override Type[] PreviewReferencedCardTypes =>
         YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(The_First_Monarch_Trap_Monster));

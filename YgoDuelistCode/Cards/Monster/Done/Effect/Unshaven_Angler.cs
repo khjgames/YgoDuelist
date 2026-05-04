@@ -31,8 +31,7 @@ public sealed class Unshaven_Angler : EffectMonsterCard, IDoubleTributeMaterial
         RequiredAttribute = DuelMonsterAttribute.Water
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Unshaven_Angler), DoubleTributeTargetSpec);

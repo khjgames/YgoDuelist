@@ -19,8 +19,7 @@ public sealed class Archfiend_s_Oath : BaseContinuousSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Spell | YgoCardPackTags.Draw | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Draw | YgoCardPackTags.Fiend;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {

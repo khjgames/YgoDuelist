@@ -25,7 +25,7 @@ public sealed class Elephant_Statue_of_Blessing : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Elephant_Statue_of_Blessing) };
 

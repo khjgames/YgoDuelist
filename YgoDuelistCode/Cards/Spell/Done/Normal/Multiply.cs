@@ -28,8 +28,8 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
     }
     public override Type[] BundledCards => new[] { typeof(Kuriboh) };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Spell | YgoCardPackTags.Bundled;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Spell | YgoCardPackTags.Bundled;
+
     public override Type[] RelatedCards => new[] { typeof(Multiply), typeof(Kuriboh_Token) };
 
     protected override Type[] PreviewReferencedCardTypes =>

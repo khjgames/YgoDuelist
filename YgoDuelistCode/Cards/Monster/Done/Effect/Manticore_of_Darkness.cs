@@ -41,8 +41,7 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard, IYgoOwnerBeforeTu
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fire | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Manticore_of_Darkness) };
 

@@ -25,8 +25,7 @@ public sealed class The_Agent_of_Wisdom_Mercury : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(The_Agent_of_Wisdom_Mercury), typeof(The_Sanctuary_in_the_Sky) };
 

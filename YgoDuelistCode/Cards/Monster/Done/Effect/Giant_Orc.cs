@@ -30,8 +30,8 @@ public sealed class Giant_Orc : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Fiend | YgoCardPackTags.Dark;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Fiend | YgoCardPackTags.Dark;
+
     public override Type[] RelatedCards => new[] { typeof(Giant_Orc) };
 
     protected override async Task OnAfterMonsterAttackHitAsync(

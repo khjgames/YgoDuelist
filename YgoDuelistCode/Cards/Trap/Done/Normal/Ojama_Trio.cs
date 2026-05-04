@@ -26,7 +26,7 @@ public sealed class Ojama_Trio : BaseTrapCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Trap;
 
     public override Type[] RelatedCards => new[] { typeof(Ojama_Trio), typeof(Ojama_Token) };
 

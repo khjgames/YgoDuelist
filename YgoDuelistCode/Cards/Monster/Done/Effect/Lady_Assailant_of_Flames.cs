@@ -34,8 +34,7 @@ public sealed class Lady_Assailant_of_Flames : EffectMonsterCard, IMonsterFlipEf
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Banish | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Banish | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Lady_Assailant_of_Flames) };
 

@@ -28,8 +28,8 @@ public sealed class Black_Tyranno : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+
     public override Type[] RelatedCards => new[] { typeof(Black_Tyranno) };
 
     public override bool CardShowsBlightKeyword => true;

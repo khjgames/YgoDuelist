@@ -47,8 +47,7 @@ public sealed class Chaos_Emperor_Dragon_Envoy_of_the_End : EffectMonsterCard, I
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Light | YgoCardPackTags.Dragon | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Light | YgoCardPackTags.Dragon | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Chaos_Emperor_Dragon_Envoy_of_the_End), typeof(Chaos_Sorcerer) };
 

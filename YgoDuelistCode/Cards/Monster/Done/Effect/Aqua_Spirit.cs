@@ -35,8 +35,7 @@ public sealed class Aqua_Spirit : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Aqua_Spirit) };
 

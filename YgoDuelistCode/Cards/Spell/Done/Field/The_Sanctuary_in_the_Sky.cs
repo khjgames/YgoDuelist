@@ -21,7 +21,7 @@ public sealed class The_Sanctuary_in_the_Sky : BaseFieldSpellCard, IYgoOwnerTurn
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light;
 
     public YgoOwnerTurnStartSpellTrapDispatchPhase OwnerTurnStartSpellTrapDispatchPhase =>
         YgoOwnerTurnStartSpellTrapDispatchPhase.BeforeOwnerFieldPetHooks;

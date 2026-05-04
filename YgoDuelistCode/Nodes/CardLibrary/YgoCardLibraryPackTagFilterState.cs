@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Nodes.CardLibrary;
 
@@ -17,7 +18,10 @@ public sealed class YgoCardLibraryPackTagFilterState
 
     public bool Matches(CardModel card)
     {
-        YgoCardPackTags tags = card is YgoDuelistCard y ? y.PackTags : YgoCardPackTags.None;
+        // Declared tags: used for the "None" row (author did not set pack themes on the class).
+        YgoCardPackTags declared = card is YgoDuelistCard yd ? yd.PackTags : YgoCardPackTags.None;
+        // Effective tags: matches packs / multiplayer pools (MultiplayerSafe and fusion-material profiles are computed).
+        YgoCardPackTags effective = card is YgoDuelistCard ye ? YgoPackCardCatalog.GetEffectivePackTags(ye) : YgoCardPackTags.None;
         var includeOrParts = new List<Func<bool>>();
         var requireAndParts = new List<Func<bool>>();
         var excludeParts = new List<Func<bool>>();
@@ -27,13 +31,13 @@ public sealed class YgoCardLibraryPackTagFilterState
             switch (NoneToggle.RowState)
             {
                 case CardLibraryFilterTriState.Include:
-                    includeOrParts.Add(() => tags == YgoCardPackTags.None);
+                    includeOrParts.Add(() => declared == YgoCardPackTags.None);
                     break;
                 case CardLibraryFilterTriState.RequireAnd:
-                    requireAndParts.Add(() => tags == YgoCardPackTags.None);
+                    requireAndParts.Add(() => declared == YgoCardPackTags.None);
                     break;
                 case CardLibraryFilterTriState.Exclude:
-                    excludeParts.Add(() => tags == YgoCardPackTags.None);
+                    excludeParts.Add(() => declared == YgoCardPackTags.None);
                     break;
             }
         }
@@ -45,19 +49,19 @@ public sealed class YgoCardLibraryPackTagFilterState
                 case CardLibraryFilterTriState.Include:
                 {
                     YgoCardPackTags captured = flag;
-                    includeOrParts.Add(() => (tags & captured) != 0);
+                    includeOrParts.Add(() => (effective & captured) != 0);
                     break;
                 }
                 case CardLibraryFilterTriState.RequireAnd:
                 {
                     YgoCardPackTags captured = flag;
-                    requireAndParts.Add(() => (tags & captured) != 0);
+                    requireAndParts.Add(() => (effective & captured) != 0);
                     break;
                 }
                 case CardLibraryFilterTriState.Exclude:
                 {
                     YgoCardPackTags captured = flag;
-                    excludeParts.Add(() => (tags & captured) != 0);
+                    excludeParts.Add(() => (effective & captured) != 0);
                     break;
                 }
             }

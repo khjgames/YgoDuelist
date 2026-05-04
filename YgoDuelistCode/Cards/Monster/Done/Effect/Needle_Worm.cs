@@ -30,7 +30,7 @@ public sealed class Needle_Worm : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Insect | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Insect | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Needle_Worm) };
 

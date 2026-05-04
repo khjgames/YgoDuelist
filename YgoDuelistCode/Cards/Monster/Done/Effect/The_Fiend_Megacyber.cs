@@ -30,7 +30,7 @@ public sealed class The_Fiend_Megacyber : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter;
 
     public override Type[] RelatedCards => new[]
     {

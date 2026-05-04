@@ -43,8 +43,7 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark | YgoCardPackTags.Spell;
 
     LocString IBattleDeathOptionalDeckSpecialSummon.BattleDeathActivatePrompt => BattleDeathActivatePromptLoc;
 

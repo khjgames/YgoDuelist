@@ -32,8 +32,7 @@ public sealed class Big_Eye : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override Type[] RelatedCards => new[] { typeof(Big_Eye) };
 

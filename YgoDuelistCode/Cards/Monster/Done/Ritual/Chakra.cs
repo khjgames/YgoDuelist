@@ -26,7 +26,7 @@ public sealed class Chakra : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Resurrection_of_Chakra), typeof(Chakra) };
 }

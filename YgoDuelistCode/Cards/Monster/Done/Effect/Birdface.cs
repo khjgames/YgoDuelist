@@ -35,8 +35,7 @@ public sealed class Birdface : EffectMonsterCard, IBattleDeathOptionalDeckSpecia
     bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
         m is Harpie_Lady;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Wind | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Wind | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Birdface), typeof(Harpie_Lady) };
 }

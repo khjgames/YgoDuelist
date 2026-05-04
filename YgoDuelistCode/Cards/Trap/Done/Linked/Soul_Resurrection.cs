@@ -27,8 +27,8 @@ public sealed class Soul_Resurrection : BaseContinuousTrapCard, IYgoSpellTrapEqu
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Normal | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Normal | YgoCardPackTags.Trap;
+
     public override Type[] RelatedCards => new[]
     {
         typeof(Soul_Resurrection),

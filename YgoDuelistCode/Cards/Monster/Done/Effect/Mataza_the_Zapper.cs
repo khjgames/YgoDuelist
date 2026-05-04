@@ -24,7 +24,7 @@ public sealed class Mataza_the_Zapper : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
 
     public override Type[] RelatedCards => new[] { typeof(Mataza_the_Zapper) };
 

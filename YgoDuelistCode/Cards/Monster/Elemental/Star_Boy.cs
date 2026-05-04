@@ -30,8 +30,8 @@ public sealed class Star_Boy : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+
     public override Type[] RelatedCards => GetRelatedCards();
 
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)

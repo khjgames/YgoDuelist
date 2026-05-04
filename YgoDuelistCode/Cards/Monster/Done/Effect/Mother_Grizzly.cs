@@ -35,7 +35,7 @@ public sealed class Mother_Grizzly : EffectMonsterCard, IBattleDeathOptionalDeck
     bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
         m.DuelMonsterAttribute == DuelMonsterAttribute.Water && m.BaseAtk <= 15 && m.CanSummonDuelMonster;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Warrior;
+
     public override Type[] RelatedCards => new[] { typeof(Mother_Grizzly) };
 }

@@ -36,7 +36,7 @@ public sealed class Troop_Dragon : EffectMonsterCard, IBattleDeathOptionalDeckSp
     bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
         m is Troop_Dragon && m.CanSummonDuelMonster;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Dragon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Dragon;
+
     public override Type[] RelatedCards => new[] { typeof(Troop_Dragon) };
 }

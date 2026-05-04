@@ -23,7 +23,7 @@ public sealed class Tailor_of_the_Fickle : BaseSpellCard, IYgoPlayCardActionPreS
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
     protected override bool IsPlayable =>
         base.IsPlayable

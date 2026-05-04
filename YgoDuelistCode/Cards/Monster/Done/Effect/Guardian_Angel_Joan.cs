@@ -31,8 +31,7 @@ public sealed class Guardian_Angel_Joan : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Heal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Heal;
 
     public override Type[] RelatedCards => new[] { typeof(Guardian_Angel_Joan) };
 

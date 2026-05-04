@@ -24,8 +24,7 @@ public sealed class Left_Arm_of_the_Forbidden_One : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None |
-        YgoCardPackTags.Dark |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark |
         YgoCardPackTags.Spellcaster |
         YgoCardPackTags.Normal |
         YgoCardPackTags.WinCon;

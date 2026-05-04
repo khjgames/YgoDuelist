@@ -40,7 +40,7 @@ public sealed class Spirit_of_Flames : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Fire | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Spirit_of_Flames) };
 

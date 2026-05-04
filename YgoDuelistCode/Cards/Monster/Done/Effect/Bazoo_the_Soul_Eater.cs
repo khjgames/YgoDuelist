@@ -40,8 +40,7 @@ public sealed class Bazoo_the_Soul_Eater : EffectMonsterCard, IMonsterActivatedE
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Banish;
 
     public override YgoCardArchetype CardArchetypes => YgoCardArchetype.GrowthType;
 

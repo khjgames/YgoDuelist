@@ -38,8 +38,7 @@ public sealed class Breaker_the_Magical_Warrior : EffectMonsterCard, IMonsterAct
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards => new[] { typeof(Breaker_the_Magical_Warrior) };
 

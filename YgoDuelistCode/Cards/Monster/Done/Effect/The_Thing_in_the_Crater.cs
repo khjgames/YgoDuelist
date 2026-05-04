@@ -35,7 +35,7 @@ public sealed class The_Thing_in_the_Crater : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Fire;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire;
 
     public override Type[] RelatedCards => new[] { typeof(The_Thing_in_the_Crater) };
 

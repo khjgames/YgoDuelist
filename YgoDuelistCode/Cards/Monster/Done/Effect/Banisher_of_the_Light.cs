@@ -27,8 +27,7 @@ public sealed class Banisher_of_the_Light : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Banisher_of_the_Light) };
 }

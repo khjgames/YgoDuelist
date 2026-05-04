@@ -37,7 +37,7 @@ public sealed class Elephant_Statue_of_Disaster : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Elephant_Statue_of_Disaster), typeof(Elephant_Statue_of_Blessing) };
 

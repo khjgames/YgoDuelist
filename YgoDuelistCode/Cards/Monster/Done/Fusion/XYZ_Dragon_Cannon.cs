@@ -36,7 +36,7 @@ public sealed class Xyz_Dragon_Cannon : FusionMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => base.PackTags | YgoCardPackTags.Bundled;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | base.PackTags | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Xy_Dragon_Cannon), typeof(Xz_Tank_Cannon), typeof(Yz_Tank_Dragon) };
 

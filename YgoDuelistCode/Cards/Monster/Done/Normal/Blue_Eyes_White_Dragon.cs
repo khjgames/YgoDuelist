@@ -25,7 +25,7 @@ public sealed class Blue_Eyes_White_Dragon : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Light |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light |
         YgoCardPackTags.Dragon |
         YgoCardPackTags.Normal;
 

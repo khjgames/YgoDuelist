@@ -37,8 +37,8 @@ public sealed class Gravekeeper_s_Chief : EffectMonsterCard, IMonsterActivatedEf
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+
     public override Type[] RelatedCards => new[] { typeof(Gravekeeper_s_Chief) };
 
     public int ActivatedEffectEnergyCost => 1;

@@ -31,8 +31,7 @@ public sealed class Graceful_Dice : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Burn | YgoCardPackTags.Chance;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Burn | YgoCardPackTags.Chance;
 
     public override Type[] RelatedCards => new[] { typeof(Graceful_Dice) };
 

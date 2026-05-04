@@ -26,7 +26,7 @@ public sealed class Crab_Turtle : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Turtle_Oath), typeof(Crab_Turtle) };
 }

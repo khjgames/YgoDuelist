@@ -36,7 +36,7 @@ public sealed class Mystic_Tomato : EffectMonsterCard, IBattleDeathOptionalDeckS
     bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
         m.DuelMonsterAttribute == DuelMonsterAttribute.Dark && m.BaseAtk <= 15 && m.CanSummonDuelMonster;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Normal;
+
     public override Type[] RelatedCards => new[] { typeof(Mystic_Tomato) };
 }

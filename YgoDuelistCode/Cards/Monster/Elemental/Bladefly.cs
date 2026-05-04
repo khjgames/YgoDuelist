@@ -30,8 +30,8 @@ public sealed class Bladefly : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
+
     public override Type[] RelatedCards => GetRelatedCards();
 
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)

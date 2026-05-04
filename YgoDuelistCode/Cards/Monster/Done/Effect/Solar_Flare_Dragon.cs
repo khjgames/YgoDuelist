@@ -38,8 +38,8 @@ public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerBeforeTurnE
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Fire;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Fire;
+
     public override Type[] RelatedCards => new[] { typeof(Solar_Flare_Dragon) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

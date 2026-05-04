@@ -26,7 +26,7 @@ public abstract class FlatAttributeFieldSpell : BaseFieldSpellCard
         : base(1, CardRarity.Common, TargetType.Self)
     {
         _attribute = attribute;
-        _packTags = YgoCardPackTags.Starter | YgoCardPackTags.Spell | packTags;
+        _packTags = YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | packTags;
     }
 
     public sealed override YgoCardPackTags PackTags => _packTags;

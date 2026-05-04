@@ -28,8 +28,7 @@ public sealed class Command_Knight : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Warrior;
 
     protected override IEnumerable<DynamicVar> CanonicalVars
     {

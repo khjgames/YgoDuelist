@@ -29,8 +29,8 @@ public sealed class Spear_Dragon : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dragon | YgoCardPackTags.Wind | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dragon | YgoCardPackTags.Wind | YgoCardPackTags.Burn;
+
     public override Type[] RelatedCards => new[] { typeof(Spear_Dragon) };
 
     public override bool AttackDealsBlightedDamage => true;

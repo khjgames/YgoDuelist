@@ -26,7 +26,7 @@ public sealed class Riryoku : BaseSpellCard, IYgoPlayCardActionPreSpendResourceF
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {

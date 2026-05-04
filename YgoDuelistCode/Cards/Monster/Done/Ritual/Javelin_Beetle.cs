@@ -26,7 +26,7 @@ public sealed class Javelin_Beetle : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Insect | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Insect | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Javelin_Beetle_Pact), typeof(Javelin_Beetle) };
 }

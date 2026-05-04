@@ -35,8 +35,7 @@ public sealed class An_Owl_of_Luck : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards => new[] { typeof(An_Owl_of_Luck) };
 

@@ -28,8 +28,7 @@ public sealed class Extra_Foolish_Burial : BaseSpellCard, IYgoPrePlayCancelableG
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Draw | YgoCardPackTags.Spell | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Draw | YgoCardPackTags.Spell | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Extra_Foolish_Burial) };
 

@@ -38,7 +38,7 @@ public sealed class Insect_Princess : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Insect_Princess), typeof(Insect_Queen) };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {

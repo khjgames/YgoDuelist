@@ -36,8 +36,8 @@ public sealed class Pumpking_the_King_of_Ghosts : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+
     public override YgoCardArchetype CardArchetypes => YgoCardArchetype.ZombieBoost;
 
     public override Type[] RelatedCards => GetRelatedCards();

@@ -26,7 +26,7 @@ public sealed class Dark_Master_Zorc : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Contract_with_the_Dark_Master), typeof(Dark_Master_Zorc) };
 }

@@ -35,5 +35,5 @@ public sealed class Pyramid_Turtle : EffectMonsterCard, IBattleDeathOptionalDeck
     bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
         m.DuelMonsterRace == DuelMonsterRace.Zombie && m.BaseDef <= 20 && m.CanSummonDuelMonster;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Zombie;}
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Zombie;
+}

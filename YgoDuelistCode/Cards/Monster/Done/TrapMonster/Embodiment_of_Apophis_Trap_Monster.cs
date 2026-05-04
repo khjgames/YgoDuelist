@@ -24,7 +24,7 @@ public sealed class Embodiment_of_Apophis_Trap_Monster : NormalMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
     public override bool CanSummonDuelMonster => false;
 

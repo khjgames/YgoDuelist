@@ -38,8 +38,7 @@ public sealed class Helping_Robo_for_Combat : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Machine | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Machine | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Helping_Robo_for_Combat) };
 

@@ -21,6 +21,6 @@ public sealed class W_Wing_Catapult : NormalMonsterCard
             duelMonsterRace: DuelMonsterRace.Machine)
     {
     }
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
 }

@@ -24,7 +24,7 @@ public sealed class Skull_Dice : BaseTrapCard
     {
     }
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Chance | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Chance | YgoCardPackTags.Trap;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
     //public override Type[] BundledCards => new[]

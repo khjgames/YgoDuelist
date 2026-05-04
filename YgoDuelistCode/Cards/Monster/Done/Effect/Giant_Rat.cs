@@ -35,7 +35,7 @@ public sealed class Giant_Rat : EffectMonsterCard, IBattleDeathOptionalDeckSpeci
     bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
         m.DuelMonsterAttribute == DuelMonsterAttribute.Earth && m.BaseAtk <= 15 && m.CanSummonDuelMonster;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
+
     public override Type[] RelatedCards => new[] { typeof(Giant_Rat) };
 }

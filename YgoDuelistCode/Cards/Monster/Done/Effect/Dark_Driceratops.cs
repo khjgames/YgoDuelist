@@ -24,8 +24,8 @@ public sealed class Dark_Driceratops : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+
     public override Type[] RelatedCards => new[] { typeof(Dark_Driceratops) };
 
     public override bool CardShowsSplinterKeyword => true;

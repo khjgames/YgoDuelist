@@ -33,8 +33,7 @@ public sealed class Totem_Dragon : EffectMonsterCard, IDoubleTributeMaterial
         RequiredRace = DuelMonsterRace.Dragon
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Dragon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Dragon;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Totem_Dragon), DoubleTributeTargetSpec);

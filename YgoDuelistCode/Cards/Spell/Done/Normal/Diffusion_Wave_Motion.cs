@@ -32,8 +32,7 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard, IYgoNeowSignatureDark
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light | YgoCardPackTags.Spellcaster;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light | YgoCardPackTags.Spellcaster;
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null

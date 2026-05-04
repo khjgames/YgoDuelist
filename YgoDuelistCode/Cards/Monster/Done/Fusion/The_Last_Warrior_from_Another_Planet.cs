@@ -39,8 +39,7 @@ public sealed class The_Last_Warrior_from_Another_Planet : FusionMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Warrior | YgoCardPackTags.Earth | base.PackTags;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Warrior | YgoCardPackTags.Earth | base.PackTags;
 
     public override Type[] RelatedCards => new[] { typeof(The_Last_Warrior_from_Another_Planet) };
 

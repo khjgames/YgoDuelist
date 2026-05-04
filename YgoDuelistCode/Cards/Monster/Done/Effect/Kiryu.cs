@@ -34,8 +34,8 @@ public sealed class Kiryu : EffectMonsterCard, IUnionEffectMonster, IMonsterOpti
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Dragon | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Dragon | YgoCardPackTags.Normal;
+
     protected override Type[] PreviewReferencedCardTypes =>
         YgoPreviewReferenceOrder.LeadingThenMerged(
             GetType(),

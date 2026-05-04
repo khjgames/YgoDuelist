@@ -26,7 +26,7 @@ public sealed class Performance_of_Sword : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Commencement_Dance), typeof(Performance_of_Sword) };
 }

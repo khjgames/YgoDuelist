@@ -23,7 +23,7 @@ public sealed class Dragged_Down_into_the_Grave : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell;
 
     protected override bool IsPlayable =>
         base.IsPlayable

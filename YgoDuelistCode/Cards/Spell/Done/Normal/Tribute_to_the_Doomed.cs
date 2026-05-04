@@ -29,8 +29,8 @@ public sealed class Tribute_to_the_Doomed : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Burn;
+
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null

@@ -31,7 +31,7 @@ public sealed class Kaiser_Sea_Horse : EffectMonsterCard, IDoubleTributeMaterial
         RequiredAttribute = DuelMonsterAttribute.Light
     };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Kaiser_Sea_Horse), DoubleTributeTargetSpec);

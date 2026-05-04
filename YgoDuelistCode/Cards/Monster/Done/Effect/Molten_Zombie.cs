@@ -31,8 +31,7 @@ public sealed class Molten_Zombie : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fire | YgoCardPackTags.Zombie;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire | YgoCardPackTags.Zombie;
 
     public override Type[] RelatedCards => new[] { typeof(Molten_Zombie) };
 

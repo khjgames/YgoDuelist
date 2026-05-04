@@ -25,8 +25,7 @@ public sealed class Maha_Vailo : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Spellcaster;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Spellcaster;
 
     protected override (int atk, int def) GetSecondaryStats()
     {

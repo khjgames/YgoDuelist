@@ -29,8 +29,7 @@ public sealed class Dark_Zebra : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth;
 
     public override bool IsCommandAttackPlayable(Player? owner, Creature? pet)
     {

@@ -31,8 +31,7 @@ public sealed class Chronomaly_Mayan_Machine : EffectMonsterCard, IDoubleTribute
         RequiredRace = DuelMonsterRace.Machine
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Machine;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Machine;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Chronomaly_Mayan_Machine), DoubleTributeTargetSpec);

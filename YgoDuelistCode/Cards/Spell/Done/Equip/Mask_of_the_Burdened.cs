@@ -21,7 +21,7 @@ public sealed class Mask_of_the_Burdened : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Spell;
 
     public override bool CardShowsRecklessKeyword => true;
 

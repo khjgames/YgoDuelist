@@ -37,8 +37,7 @@ public sealed class Exodia_Necross : EffectMonsterCard, IYgoTurnStartAtkGrowthFr
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.WinCon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.WinCon;
 
     public override Type[] RelatedCards => new[] { typeof(Exodia_Necross), typeof(Contract_with_Exodia) };
 

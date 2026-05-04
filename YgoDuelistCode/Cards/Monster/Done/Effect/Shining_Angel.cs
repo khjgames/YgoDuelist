@@ -36,7 +36,7 @@ public sealed class Shining_Angel : EffectMonsterCard, IBattleDeathOptionalDeckS
     bool IBattleDeathOptionalDeckSpecialSummon.IsBattleDeathDeckSummonCandidate(BaseMonsterCard m) =>
         m.DuelMonsterAttribute == DuelMonsterAttribute.Light && m.BaseAtk <= 15 && m.CanSummonDuelMonster;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Normal;
+
     public override Type[] RelatedCards => new[] { typeof(Shining_Angel) };
 }

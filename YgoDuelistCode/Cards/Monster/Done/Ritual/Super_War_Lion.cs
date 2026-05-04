@@ -26,7 +26,7 @@ public sealed class Super_War_Lion : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Earth | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(War_Lion_Ritual), typeof(Super_War_Lion) };
 }

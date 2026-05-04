@@ -35,7 +35,7 @@ public sealed class Gellenduo : EffectMonsterCard, IDoubleTributeMaterial
         RequiredRace = DuelMonsterRace.Fairy
     };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Gellenduo), DoubleTributeTargetSpec);

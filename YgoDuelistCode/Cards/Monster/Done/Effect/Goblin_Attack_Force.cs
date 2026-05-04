@@ -31,8 +31,8 @@ public sealed class Goblin_Attack_Force : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Warrior | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Warrior | YgoCardPackTags.Earth;
+
     public override Type[] RelatedCards => new[] { typeof(Goblin_Attack_Force) };
 
     protected override async Task OnAfterMonsterAttackHitAsync(

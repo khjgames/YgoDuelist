@@ -36,8 +36,8 @@ public sealed class Gravekeeper_s_Spy : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+
     public override Type[] RelatedCards => new[] { typeof(Gravekeeper_s_Spy) };
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)

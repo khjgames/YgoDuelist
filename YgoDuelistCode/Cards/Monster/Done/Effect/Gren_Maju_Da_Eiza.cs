@@ -25,8 +25,7 @@ public sealed class Gren_Maju_Da_Eiza : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fire | YgoCardPackTags.Fiend | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire | YgoCardPackTags.Fiend | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Gren_Maju_Da_Eiza) };
 

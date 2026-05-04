@@ -38,8 +38,8 @@ public sealed class Dark_Cat_with_White_Tail : EffectMonsterCard, IMonsterFlipEf
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get

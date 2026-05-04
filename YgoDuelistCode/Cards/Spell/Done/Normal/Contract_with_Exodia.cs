@@ -21,8 +21,7 @@ public sealed class Contract_with_Exodia : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Spell | YgoCardPackTags.Dark | YgoCardPackTags.WinCon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Dark | YgoCardPackTags.WinCon;
 
     public override Type[] RelatedCards => new[]
     {

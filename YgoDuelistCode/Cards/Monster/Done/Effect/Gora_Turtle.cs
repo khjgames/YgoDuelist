@@ -36,8 +36,7 @@ public sealed class Gora_Turtle : EffectMonsterCard, IYgoTurnStartWeakFromAttack
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Water;
     public int AttackIntentWeakThreshold => (int)DynamicVars["Mgc"].BaseValue;
 
     public bool IsOwnerTurnStartFieldMonsterEffectActive() => !FaceDown;

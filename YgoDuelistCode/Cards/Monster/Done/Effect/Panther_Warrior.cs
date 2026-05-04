@@ -45,8 +45,8 @@ public sealed class Panther_Warrior : EffectMonsterCard,
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+
     public override Type[] RelatedCards => new[] { typeof(Panther_Warrior) };
 
     public bool IsOwnerTurnStartFieldMonsterEffectActive() =>

@@ -23,8 +23,8 @@ public sealed class Super_Rejuvenation : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Spell | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Draw;
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get

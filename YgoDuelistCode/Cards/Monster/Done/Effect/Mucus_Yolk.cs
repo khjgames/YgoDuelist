@@ -23,8 +23,7 @@ public sealed class Mucus_Yolk : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Burn;
     public override Type[] RelatedCards => new[] { typeof(Mucus_Yolk) };
 
     public override bool CardShowsBlightKeyword => true;

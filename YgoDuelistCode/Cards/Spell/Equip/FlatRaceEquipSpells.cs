@@ -48,14 +48,8 @@ public abstract class FlatRaceEquipSpell : BaseEquipSpellCard
         new StatEffectTotal(_bonusAtk, _bonusDef);
 
     /// <summary>Sealed pack tags: same race→bit mapping as <see cref="FusionMonsterCard"/>.</summary>
-    public override YgoCardPackTags PackTags
-    {
-        get
-        {
-            YgoCardPackTags raceTag = RaceToPackTag(_requiredRace);
-            return YgoCardPackTags.Starter | YgoCardPackTags.Spell | raceTag;
-        }
-    }
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | RaceToPackTag(_requiredRace);
 
     private static YgoCardPackTags RaceToPackTag(DuelMonsterRace race) =>
         race switch

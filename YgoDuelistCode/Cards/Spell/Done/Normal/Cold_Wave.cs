@@ -39,8 +39,8 @@ public sealed class Cold_Wave : BaseSpellCard
         }
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Spell;
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get

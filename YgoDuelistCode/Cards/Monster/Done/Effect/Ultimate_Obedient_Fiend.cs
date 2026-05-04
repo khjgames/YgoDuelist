@@ -29,7 +29,7 @@ public sealed class Ultimate_Obedient_Fiend : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Fire | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire | YgoCardPackTags.Fiend;
 
     /// <summary>
     /// Attack from hand (summon+combat) and field Command Attack require an empty hand and no other monsters on the field.

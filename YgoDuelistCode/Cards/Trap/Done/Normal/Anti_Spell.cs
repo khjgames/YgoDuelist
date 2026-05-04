@@ -31,8 +31,7 @@ public sealed class Anti_Spell : BaseTrapCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Trap | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Trap | YgoCardPackTags.Spell;
 
     protected override bool IsPlayable =>
         base.IsPlayable

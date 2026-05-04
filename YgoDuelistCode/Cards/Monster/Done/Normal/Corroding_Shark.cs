@@ -24,7 +24,7 @@ public sealed class Corroding_Shark : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark |
         YgoCardPackTags.Zombie |
         YgoCardPackTags.Normal;
 

@@ -31,7 +31,7 @@ public sealed class Flame_Ruler : EffectMonsterCard, IDoubleTributeMaterial
         RequiredAttribute = DuelMonsterAttribute.Fire
     };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Fire;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Fire;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Flame_Ruler), DoubleTributeTargetSpec);

@@ -31,7 +31,7 @@ public sealed class Whirlwind_Prodigy : EffectMonsterCard, IDoubleTributeMateria
         RequiredAttribute = DuelMonsterAttribute.Wind
     };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Wind;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Whirlwind_Prodigy), DoubleTributeTargetSpec);

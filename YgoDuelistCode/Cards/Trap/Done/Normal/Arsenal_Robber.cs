@@ -22,8 +22,7 @@ public sealed class Arsenal_Robber : BaseTrapCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Trap | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Trap | YgoCardPackTags.Draw;
 
     protected override bool IsPlayable =>
         base.IsPlayable

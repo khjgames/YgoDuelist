@@ -32,8 +32,7 @@ public sealed class Keeper_of_the_Shrine : EffectMonsterCard, IDoubleTributeMate
         RequiredRace = DuelMonsterRace.Dragon
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Dragon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Dragon;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Keeper_of_the_Shrine), DoubleTributeTargetSpec);

@@ -39,7 +39,7 @@ public sealed class Dark_Dust_Spirit : EffectMonsterCard,
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Zombie;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Zombie;
 
     public override Type[] RelatedCards => new[] { typeof(Dark_Dust_Spirit) };
 

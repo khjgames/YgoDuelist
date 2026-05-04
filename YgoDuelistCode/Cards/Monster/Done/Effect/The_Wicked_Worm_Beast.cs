@@ -37,8 +37,8 @@ public sealed class The_Wicked_Worm_Beast : EffectMonsterCard, IYgoOwnerBeforeTu
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
+
     public override Type[] RelatedCards => new[] { typeof(The_Wicked_Worm_Beast) };
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>

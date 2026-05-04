@@ -36,8 +36,8 @@ public sealed class Gray_Wing : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
+
     public override Type[] RelatedCards => new[] { typeof(Gray_Wing) };
 
     public int ActivatedEffectEnergyCost => 0;

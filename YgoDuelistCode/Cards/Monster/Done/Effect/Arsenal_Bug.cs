@@ -29,8 +29,7 @@ public sealed class Arsenal_Bug : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Insect;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Insect;
 
     public override Type[] RelatedCards => new[] { typeof(Arsenal_Bug) };
 

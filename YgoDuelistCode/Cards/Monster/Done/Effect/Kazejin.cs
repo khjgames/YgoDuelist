@@ -33,8 +33,8 @@ public sealed class Kazejin : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Wind | YgoCardPackTags.Spellcaster;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Wind | YgoCardPackTags.Spellcaster;
+
     public override Type[] RelatedCards => new[] { typeof(Kazejin) };
 
     private bool ShowConsumableShacklesPlusPowerHover => IsUpgradedOrPreviewActive;

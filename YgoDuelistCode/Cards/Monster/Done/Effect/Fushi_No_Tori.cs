@@ -39,7 +39,7 @@ public sealed class Fushi_No_Tori : EffectMonsterCard,
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Fire | YgoCardPackTags.Heal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fire | YgoCardPackTags.Heal;
 
     public override Type[] RelatedCards => new[] { typeof(Fushi_No_Tori) };
 

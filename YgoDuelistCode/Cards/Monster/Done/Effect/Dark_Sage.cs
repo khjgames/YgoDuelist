@@ -41,8 +41,7 @@ public sealed class Dark_Sage : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
     public override Type[] RelatedCards =>
         new[] { typeof(Dark_Sage), typeof(Dark_Magician), typeof(Time_Wizard) };
 

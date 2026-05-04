@@ -26,7 +26,7 @@ public sealed class Compulsory_Evacuation_Device : BaseTrapCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Trap;
 
     public override Type[] RelatedCards => new[]
     {

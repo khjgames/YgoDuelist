@@ -23,7 +23,7 @@ public sealed class A_Legendary_Ocean : BaseFieldSpellCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
 
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target)
     {

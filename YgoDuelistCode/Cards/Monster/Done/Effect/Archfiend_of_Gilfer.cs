@@ -40,8 +40,7 @@ public sealed class Archfiend_of_Gilfer : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override void OnMovedToGraveyardFromHandOrField(PileType from)
     {

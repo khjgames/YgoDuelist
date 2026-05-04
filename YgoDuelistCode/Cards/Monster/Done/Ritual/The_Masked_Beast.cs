@@ -28,7 +28,7 @@ public sealed class The_Masked_Beast : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
 
     /// <summary>Ritual spell bundled with the monster when sold in the YGO merchant (see <see cref="YgoDuelistCard.BundledCards"/>).</summary>
     public override Type[] BundledCards => new[] { typeof(Curse_of_the_Masked_Beast) };

@@ -33,8 +33,8 @@ public sealed class Suijin : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+
     public override Type[] RelatedCards => new[] { typeof(Suijin) };
 
     private bool ShowConsumableShacklesPlusPowerHover => IsUpgradedOrPreviewActive;

@@ -37,8 +37,7 @@ public sealed class Berfomet : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override Type[] RelatedCards => new[] { typeof(Berfomet), typeof(Gazelle_the_King_of_Mythical_Beasts) };
 

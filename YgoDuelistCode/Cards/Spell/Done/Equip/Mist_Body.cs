@@ -23,7 +23,7 @@ public sealed class Mist_Body : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards => new[] { typeof(Mist_Body) };
 

@@ -43,8 +43,7 @@ public sealed class Dark_Necrofear : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Dark_Necrofear) };
 

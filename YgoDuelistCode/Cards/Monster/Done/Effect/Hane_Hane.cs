@@ -34,8 +34,8 @@ public sealed class Hane_Hane : EffectMonsterCard, IMonsterFlipEffect
 
     public override bool UseAlternateUpgradedDescription => true;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+
     public override Type[] RelatedCards => new[] { typeof(Hane_Hane) };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

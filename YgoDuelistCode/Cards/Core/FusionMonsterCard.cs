@@ -189,7 +189,7 @@ public abstract class FusionMonsterCard : EffectMonsterCard
         get
         {
             YgoCardPackTags profile = PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
-            return YgoCardPackTags.Fusion | profile;
+            return YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fusion | profile;
         }
     }
 

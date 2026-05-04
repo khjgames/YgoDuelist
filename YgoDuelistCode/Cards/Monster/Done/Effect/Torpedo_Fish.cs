@@ -28,8 +28,8 @@ public sealed class Torpedo_Fish : EffectMonsterCard, IYgoPetDebuffPowerAmountRe
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+
     public override Type[] RelatedCards => new[] { typeof(Torpedo_Fish), typeof(Umi) };
 
     public bool TryZeroIncomingDebuffPowerAmount(

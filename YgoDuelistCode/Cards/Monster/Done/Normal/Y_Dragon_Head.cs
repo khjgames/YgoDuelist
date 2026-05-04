@@ -22,6 +22,6 @@ public sealed class Y_Dragon_Head : NormalMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
 }

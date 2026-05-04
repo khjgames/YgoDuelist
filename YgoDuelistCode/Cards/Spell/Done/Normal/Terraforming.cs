@@ -25,7 +25,7 @@ public sealed class Terraforming : BaseSpellCard, IYgoPrePlayCancelableGridSelec
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Spell | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Draw;
 
     protected override bool IsPlayable =>
         base.IsPlayable && Owner != null && BuildFieldSpellCandidates(Owner).Count > 0;

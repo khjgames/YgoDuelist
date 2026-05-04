@@ -29,7 +29,7 @@ public sealed class Boar_Soldier : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Boar_Soldier) };
 

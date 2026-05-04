@@ -18,8 +18,7 @@ public sealed class Limiter_Removal : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Spell | YgoCardPackTags.Machine;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Machine;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {

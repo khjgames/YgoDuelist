@@ -47,8 +47,7 @@ public sealed class Time_Wizard : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Chance;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Burn | YgoCardPackTags.Chance;
 
     public override Type[] RelatedCards =>
         new[]

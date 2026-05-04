@@ -32,7 +32,7 @@ public sealed class Vw_Tiger_Catapult : FusionMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => base.PackTags | YgoCardPackTags.Bundled;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | base.PackTags | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Vwxyz_Dragon_Catapult_Cannon) };
 

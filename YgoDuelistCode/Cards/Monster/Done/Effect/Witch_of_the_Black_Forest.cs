@@ -39,8 +39,8 @@ public sealed class Witch_of_the_Black_Forest : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Draw;
+
     public override Type[] RelatedCards => new[] { typeof(Witch_of_the_Black_Forest) };
 
     public override void OnMovedToGraveyardFromHandOrField(PileType from)

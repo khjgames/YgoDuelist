@@ -33,8 +33,7 @@ public sealed class Sangan : EffectMonsterCard, IFieldToGraveyardDeckSearchEffec
 
     bool IFieldToGraveyardDeckSearchEffect.FieldToGraveyardSearchApplyNameLock => true;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Sangan) };
 }

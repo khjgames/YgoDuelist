@@ -38,8 +38,8 @@ public sealed class Reaper_of_the_Cards : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Trap;
+
     public override Type[] RelatedCards => new[] { typeof(Reaper_of_the_Cards) };
 
     private bool ShowNextTrapDiscountPlus => IsUpgradedOrPreviewActive;

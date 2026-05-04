@@ -35,8 +35,8 @@ public sealed class The_Agent_of_Creation_Venus : EffectMonsterCard, IMonsterAct
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Draw;
+
     public override Type[] RelatedCards => new[] { typeof(The_Agent_of_Creation_Venus), typeof(Mystical_Shine_Ball) };
 
     protected override Type[] PreviewReferencedCardTypes =>

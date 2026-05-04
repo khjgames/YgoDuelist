@@ -29,7 +29,7 @@ public sealed class Penguin_Knight : EffectMonsterCard, IYgoAfterMonsterMovedToG
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Water | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Penguin_Knight) };
 

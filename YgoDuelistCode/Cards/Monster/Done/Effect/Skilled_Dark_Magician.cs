@@ -42,8 +42,8 @@ public sealed class Skilled_Dark_Magician : EffectMonsterCard, IMonsterActivated
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark | YgoCardPackTags.Spell;
+
     public override Type[] RelatedCards => new[] { typeof(Skilled_Dark_Magician), typeof(Dark_Magician) };
 
     public int CurrentSpellCounters => SpellCounters;

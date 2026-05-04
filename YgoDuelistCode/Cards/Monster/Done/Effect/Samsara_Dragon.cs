@@ -33,8 +33,7 @@ public sealed class Samsara_Dragon : EffectMonsterCard, IDoubleTributeMaterial
         RequiredRace = DuelMonsterRace.Dragon
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Dragon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Dragon;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Samsara_Dragon), DoubleTributeTargetSpec);

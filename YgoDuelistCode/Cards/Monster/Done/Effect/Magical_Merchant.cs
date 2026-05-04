@@ -34,8 +34,7 @@ public sealed class Magical_Merchant : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Insect | YgoCardPackTags.Draw | YgoCardPackTags.Spell | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Insect | YgoCardPackTags.Draw | YgoCardPackTags.Spell | YgoCardPackTags.Trap;
 
     public override Type[] RelatedCards => new[] { typeof(Magical_Merchant) };
 

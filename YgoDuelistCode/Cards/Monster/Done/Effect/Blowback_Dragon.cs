@@ -35,8 +35,7 @@ public sealed class Blowback_Dragon : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Machine | YgoCardPackTags.Chance;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Machine | YgoCardPackTags.Chance;
 
     public override Type[] RelatedCards => new[] { typeof(Blowback_Dragon), typeof(Barrel_Dragon) };
 

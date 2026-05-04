@@ -41,8 +41,7 @@ public sealed class Cyber_Stein : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fusion | YgoCardPackTags.Machine | YgoCardPackTags.Dark;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fusion | YgoCardPackTags.Machine | YgoCardPackTags.Dark;
 
     public override Type[] RelatedCards => new[] { typeof(Cyber_Stein) };
 

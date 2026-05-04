@@ -35,8 +35,8 @@ public sealed class Dark_Jeroid : EffectMonsterCard
     /// Summon applies Weak to an enemy (chosen target or deterministic pick).
     protected override TargetType NonAttackPlayTargetType => TargetType.AnyEnemy;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
+
     protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)

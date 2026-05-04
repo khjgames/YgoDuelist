@@ -27,6 +27,6 @@ public sealed class Gravekeeper_s_Spear_Soldier : EffectMonsterCard
     public override bool AttackDealsSplinterDamage => true;
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
 
 }

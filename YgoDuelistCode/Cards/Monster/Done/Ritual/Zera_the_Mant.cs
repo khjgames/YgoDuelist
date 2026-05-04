@@ -26,7 +26,7 @@ public sealed class Zera_the_Mant : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Zera_Ritual), typeof(Zera_the_Mant) };
 }

@@ -41,8 +41,7 @@ public sealed class Gale_Dogra : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fusion | YgoCardPackTags.Insect | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fusion | YgoCardPackTags.Insect | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Gale_Dogra) };
 

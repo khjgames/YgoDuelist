@@ -21,11 +21,11 @@ public static class YgoPackCardCatalog
 {
     /// <summary>
     /// Declared <see cref="YgoDuelistCard.PackTags"/> plus implicit tags for monsters that are named fusion materials
-    /// elsewhere (<see cref="FusionMaterialArchetypeIndex"/>): Fusion, attribute/race profile, and Normal/Ritual subtype when applicable.
+    /// elsewhere (<see cref="FusionMaterialArchetypeIndex"/>): <see cref="YgoCardPackTags.MultiplayerSafe"/> (multiplayer procedural pools),
+    /// then Fusion, attribute/race profile, and Normal/Ritual subtype when applicable.
     /// Strike/Defend and <see cref="BaseYgoPowerCard"/> keep <see cref="YgoCardPackTags.None"/> as declared tags (potion / library rules);
-    /// for pool gates they still gain <see cref="YgoCardPackTags.MultiplayerSafe"/> here when declared tags are <c>None</c>.
-    /// Templates missing <see cref="YgoCardPackTags.MultiplayerSafe"/> on <see cref="YgoDuelistCard.PackTags"/> may still receive it via
-    /// <see cref="YgoMultiplayerSafePackRules.ShouldAugmentMultiplayerSafe"/> (explicit pick list from <c>tools/generate_user_mp_safe_explicit.py</c> + Draw / Elemental / monarch / Gravekeeper / trap-monster / <see cref="IDoubleTributeMaterial"/> / high-tier true normal rules).
+    /// for multiplayer procedural pools they still gain <see cref="YgoCardPackTags.MultiplayerSafe"/> here when declared tags are <c>None</c>.
+    /// Other templates must declare <see cref="YgoCardPackTags.MultiplayerSafe"/> on <see cref="YgoDuelistCard.PackTags"/> to appear in multiplayer procedural pools (unless they are named fusion materials).
     /// </summary>
     public static YgoCardPackTags GetEffectivePackTags(YgoDuelistCard y)
     {
@@ -34,12 +34,10 @@ public static class YgoPackCardCatalog
         if (tags == YgoCardPackTags.None && HasImplicitMultiplayerSafeEffectiveTag(y))
             tags |= YgoCardPackTags.MultiplayerSafe;
 
-        if ((tags & YgoCardPackTags.MultiplayerSafe) == 0 && YgoMultiplayerSafePackRules.ShouldAugmentMultiplayerSafe(y, t))
-            tags |= YgoCardPackTags.MultiplayerSafe;
-
         if (!FusionMaterialArchetypeIndex.IsNamedFusionMaterial(t))
             return tags;
 
+        tags |= YgoCardPackTags.MultiplayerSafe;
         tags |= YgoCardPackTags.Fusion;
         if (y is AbstractMonsterCard m)
         {

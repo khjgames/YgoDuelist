@@ -40,8 +40,8 @@ public sealed class Nimble_Momonga : EffectMonsterCard
 
     protected override bool UsesBattleDeathGraveyardMark => true;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Earth | YgoCardPackTags.Draw | YgoCardPackTags.Bundled;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Draw | YgoCardPackTags.Bundled;
+
     public override Type[] RelatedCards => new[] { typeof(Nimble_Momonga) };
 
     public override bool BundleGrantsExtraCopyOfSelf => true;

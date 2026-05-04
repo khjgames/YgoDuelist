@@ -33,7 +33,7 @@ public sealed class Ryu_Kishin_Clown : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override Type[] RelatedCards => new[] { typeof(Ryu_Kishin_Clown) };
 

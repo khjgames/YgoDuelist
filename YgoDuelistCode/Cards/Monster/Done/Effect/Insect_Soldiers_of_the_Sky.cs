@@ -28,8 +28,8 @@ public sealed class Insect_Soldiers_of_the_Sky : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
+
     public override Type[] RelatedCards => new[] { typeof(Insect_Soldiers_of_the_Sky) };
 
     protected override (int atk, int def) GetSecondaryStats()

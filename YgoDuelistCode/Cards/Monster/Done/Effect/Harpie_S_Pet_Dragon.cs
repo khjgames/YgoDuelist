@@ -26,8 +26,8 @@ public sealed class Harpie_S_Pet_Dragon : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Wind | YgoCardPackTags.Dragon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Wind | YgoCardPackTags.Dragon;
+
     public override Type[] RelatedCards => new[] { typeof(Harpie_S_Pet_Dragon), typeof(Harpie_Lady) };
 
     protected override Type[] PreviewReferencedCardTypes =>

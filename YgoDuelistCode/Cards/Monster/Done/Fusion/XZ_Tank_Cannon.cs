@@ -34,7 +34,7 @@ public sealed class Xz_Tank_Cannon : FusionMonsterCard
     {
     }
     
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
     public override bool CanBeFusionSummoned => false;
 

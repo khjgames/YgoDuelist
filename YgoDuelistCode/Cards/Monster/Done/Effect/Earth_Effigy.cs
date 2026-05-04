@@ -33,8 +33,8 @@ public sealed class Earth_Effigy : EffectMonsterCard, IDoubleTributeMaterial
         RequiredAttribute = DuelMonsterAttribute.Earth
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
+
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Earth_Effigy), DoubleTributeTargetSpec);
 }

@@ -36,7 +36,7 @@ public sealed class King_of_the_Swamp : EffectMonsterCard, IFusionMaterialSubsti
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Fusion;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Fusion;
 
     public override Type[] RelatedCards => new[]
     {

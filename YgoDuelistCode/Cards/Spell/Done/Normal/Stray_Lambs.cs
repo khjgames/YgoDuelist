@@ -19,7 +19,7 @@ public sealed class Stray_Lambs : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Stray_Lambs), typeof(Lamb_Token) };
 

@@ -39,8 +39,7 @@ public sealed class Flying_Kamakiri_1 : EffectMonsterCard, IGraveyardOptionalDec
     bool IGraveyardOptionalDeckSpecialSummon.IsGraveyardDeckSummonCandidate(BaseMonsterCard m) =>
         m.DuelMonsterAttribute == DuelMonsterAttribute.Wind && m.BaseAtk <= 15 && m.CanSummonDuelMonster;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Insect;
 
     public override Type[] RelatedCards => new[] { typeof(Flying_Kamakiri_1), typeof(Flying_Kamakiri_2) };
 }

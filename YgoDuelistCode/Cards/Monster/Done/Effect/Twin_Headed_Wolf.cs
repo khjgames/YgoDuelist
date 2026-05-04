@@ -27,8 +27,8 @@ public sealed class Twin_Headed_Wolf : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+
     public override Type[] RelatedCards => new[] { typeof(Twin_Headed_Wolf) };
 
     protected override (int atk, int def) GetSecondaryStats()

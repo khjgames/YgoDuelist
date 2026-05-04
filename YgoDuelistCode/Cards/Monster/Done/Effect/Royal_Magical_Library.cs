@@ -34,8 +34,8 @@ public sealed class Royal_Magical_Library : EffectMonsterCard, IMonsterActivated
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spellcaster | YgoCardPackTags.Light | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spellcaster | YgoCardPackTags.Light | YgoCardPackTags.Spell;
+
     public override Type[] RelatedCards => new[] { typeof(Royal_Magical_Library) };
 
     public int CurrentSpellCounters => SpellCounters;

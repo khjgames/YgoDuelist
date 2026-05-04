@@ -27,7 +27,7 @@ public sealed class Call_of_the_Haunted : BaseContinuousTrapCard, IYgoSpellTrapE
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Trap;
 
     public override float PackWeightMultiplier => 1.3f;
 

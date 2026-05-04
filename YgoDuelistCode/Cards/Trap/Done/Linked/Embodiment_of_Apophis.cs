@@ -22,7 +22,7 @@ public sealed class Embodiment_of_Apophis : BaseContinuousTrapCard, IYgoSpellTra
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Trap;
 
     protected override Type[] PreviewReferencedCardTypes =>
         YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Embodiment_of_Apophis_Trap_Monster));

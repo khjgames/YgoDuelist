@@ -40,8 +40,8 @@ public sealed class Newdoria : EffectMonsterCard
 
     protected override bool UsesBattleDeathGraveyardMark => true;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Burn;
+
     public override Type[] RelatedCards => new[] { typeof(Newdoria) };
 
     public override void OnMovedToGraveyardFromHandOrField(PileType from)

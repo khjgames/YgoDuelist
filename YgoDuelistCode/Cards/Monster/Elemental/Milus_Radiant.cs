@@ -30,8 +30,8 @@ public sealed class Milus_Radiant : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+
     public override Type[] RelatedCards => GetRelatedCards();
 
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)

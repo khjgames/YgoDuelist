@@ -37,8 +37,7 @@ public sealed class Monster_Eye : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fusion | YgoCardPackTags.Fiend | YgoCardPackTags.Dark;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fusion | YgoCardPackTags.Fiend | YgoCardPackTags.Dark;
 
     public override Type[] RelatedCards => new[]
     {

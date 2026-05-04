@@ -45,7 +45,7 @@ public sealed class Fenrir : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Water | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Fenrir) };
 

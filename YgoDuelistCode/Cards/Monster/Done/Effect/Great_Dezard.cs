@@ -42,8 +42,7 @@ public sealed class Great_Dezard : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
     public override Type[] RelatedCards => new[] { typeof(Great_Dezard), typeof(Fushioh_Richie) };
 
     public int ActivatedEffectEnergyCost => 1;

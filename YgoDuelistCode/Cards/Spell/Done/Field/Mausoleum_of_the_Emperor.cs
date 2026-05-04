@@ -15,7 +15,7 @@ public sealed class Mausoleum_of_the_Emperor : BaseFieldSpellCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Normal;
+        YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Normal;
 
     public override bool UseAlternateUpgradedDescription => true;
 

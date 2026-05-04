@@ -36,7 +36,7 @@ public sealed class Vwxyz_Dragon_Catapult_Cannon : FusionMonsterCard
     {
     }
     
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
     public override bool CanBeFusionSummoned => false;
 

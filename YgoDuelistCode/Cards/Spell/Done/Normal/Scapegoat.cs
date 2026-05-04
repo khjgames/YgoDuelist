@@ -19,7 +19,7 @@ public sealed class Scapegoat : BaseSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards => new[] { typeof(Scapegoat), typeof(Sheep_Token) };
 

@@ -36,7 +36,7 @@ public sealed class Lady_Panther : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Lady_Panther) };
 

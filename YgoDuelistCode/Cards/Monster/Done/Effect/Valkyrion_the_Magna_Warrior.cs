@@ -57,7 +57,7 @@ public sealed class Valkyrion_the_Magna_Warrior : EffectMonsterCard, IMonsterAct
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
 
     public override Type[] RelatedCards =>
         new[]

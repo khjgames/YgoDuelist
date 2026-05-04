@@ -42,8 +42,8 @@ public sealed class Night_Assailant : EffectMonsterCard, IMonsterFlipEffect, IYg
 
     public override bool UseAlternateUpgradedDescription => true;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
+
     public override Type[] RelatedCards => new[] { typeof(Night_Assailant) };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

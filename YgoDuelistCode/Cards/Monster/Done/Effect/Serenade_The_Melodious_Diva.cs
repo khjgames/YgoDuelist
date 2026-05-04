@@ -32,7 +32,7 @@ public sealed class Serenade_The_Melodious_Diva : EffectMonsterCard, IDoubleTrib
         RequiredRace = DuelMonsterRace.Fairy
     };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Serenade_The_Melodious_Diva), DoubleTributeTargetSpec);

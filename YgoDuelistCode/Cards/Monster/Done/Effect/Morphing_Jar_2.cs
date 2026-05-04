@@ -31,8 +31,8 @@ public sealed class Morphing_Jar_2 : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw;
+
     protected override bool StumblingBlocksHandSummonInAttackPosition => false;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

@@ -51,8 +51,7 @@ public sealed class Chaos_Daedalus : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Chaos_Daedalus), typeof(Chaos_Sorcerer) };
 

@@ -34,7 +34,7 @@ public sealed class Yz_Tank_Dragon : FusionMonsterCard
     {
     }
     
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
     public override bool CanBeFusionSummoned => false;
 

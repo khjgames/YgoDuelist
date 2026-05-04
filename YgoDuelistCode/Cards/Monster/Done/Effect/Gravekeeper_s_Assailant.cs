@@ -32,8 +32,8 @@ public sealed class Gravekeeper_s_Assailant : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth;
+
     public override Type[] RelatedCards => new[] { typeof(Gravekeeper_s_Assailant), typeof(Necrovalley) };
 
     protected override void OnUpgrade()

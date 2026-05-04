@@ -45,7 +45,7 @@ public sealed class Garuda_the_Wind_Spirit : EffectMonsterCard, IMonsterActivate
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Wind | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Wind | YgoCardPackTags.Banish;
 
     public override Type[] RelatedCards => new[] { typeof(Garuda_the_Wind_Spirit) };
 

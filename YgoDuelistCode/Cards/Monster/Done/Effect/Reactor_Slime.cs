@@ -34,7 +34,7 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, 
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.God;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.God;
 
     public override Type[] RelatedCards => new[] { typeof(Reactor_Slime), typeof(Slime_Token) };
 

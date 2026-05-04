@@ -36,7 +36,7 @@ public sealed class Mirage_Knight : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Light | YgoCardPackTags.Warrior | YgoCardPackTags.Banish;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Warrior | YgoCardPackTags.Banish;
 
     public override bool AttackDealsBlightedDamage => true;
 

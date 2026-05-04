@@ -37,7 +37,7 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
     public override Type[] RelatedCards => new[] { typeof(Ocean_Dragon_Lord_Neo_Daedalus), typeof(Levia_Dragon_Daedalus) };
 

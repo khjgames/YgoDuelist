@@ -26,8 +26,8 @@ public sealed class Reinforcement_of_the_Army : BaseSpellCard, IYgoPrePlayCancel
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Spell | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Spell | YgoCardPackTags.Warrior;
+
     public override Type[] RelatedCards => new[] { typeof(Reinforcement_of_the_Army) };
 
     protected override bool IsPlayable =>

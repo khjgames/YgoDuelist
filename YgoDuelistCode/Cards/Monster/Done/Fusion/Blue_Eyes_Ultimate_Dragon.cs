@@ -29,7 +29,7 @@ public sealed class Blue_Eyes_Ultimate_Dragon : FusionMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => base.PackTags | YgoCardPackTags.Bundled;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | base.PackTags | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Blue_Eyes_White_Dragon) };
 }

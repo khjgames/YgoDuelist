@@ -19,7 +19,7 @@ public sealed class Magical_Labyrinth : BaseEquipSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell;
 
     public override Type[] RelatedCards =>
         new[] { typeof(Magical_Labyrinth), typeof(Labyrinth_Wall), typeof(Wall_Shadow) };

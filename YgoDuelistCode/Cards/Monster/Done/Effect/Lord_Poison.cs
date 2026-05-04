@@ -26,8 +26,7 @@ public sealed class Lord_Poison : EffectMonsterCard
 
     protected override bool UsesBattleDeathGraveyardMark => true;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Water | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Lord_Poison) };
 }

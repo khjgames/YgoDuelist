@@ -20,7 +20,7 @@ public abstract class FlatSymmetricRaceFieldSpell : BaseFieldSpellCard
     protected FlatSymmetricRaceFieldSpell(YgoCardPackTags packTags)
         : base(1, CardRarity.Common, TargetType.Self)
     {
-        _packTags = YgoCardPackTags.Starter | YgoCardPackTags.Spell | packTags;
+        _packTags = YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | packTags;
     }
 
     public sealed override YgoCardPackTags PackTags => _packTags;
@@ -91,7 +91,7 @@ public abstract class FlatBuffDebuffRaceFieldSpell : BaseFieldSpellCard
     protected FlatBuffDebuffRaceFieldSpell(YgoCardPackTags packTags)
         : base(1, CardRarity.Common, TargetType.Self)
     {
-        _packTags = YgoCardPackTags.Starter | YgoCardPackTags.Spell | packTags;
+        _packTags = YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Spell | packTags;
     }
 
     public sealed override YgoCardPackTags PackTags => _packTags;

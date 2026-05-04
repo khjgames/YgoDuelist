@@ -40,8 +40,8 @@ public sealed class Granmarg_the_Rock_Monarch : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth;
+
     public override Type[] RelatedCards => new[] { typeof(Granmarg_the_Rock_Monarch) };
 
     protected override void OnBeforeDuelMonsterSummon(

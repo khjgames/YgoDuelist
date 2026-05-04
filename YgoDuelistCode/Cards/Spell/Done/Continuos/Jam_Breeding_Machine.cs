@@ -19,8 +19,8 @@ public sealed class Jam_Breeding_Machine : BaseContinuousSpellCard, IYgoOwnerTur
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Spell | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Ocean;
+
     public override Type[] RelatedCards => new[] { typeof(Jam_Breeding_Machine), typeof(Slime_Token) };
 
     protected override Type[] PreviewReferencedCardTypes =>

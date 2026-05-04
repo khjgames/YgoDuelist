@@ -32,7 +32,7 @@ public sealed class Rose_Witch : EffectMonsterCard, IDoubleTributeMaterial
         RequiredRace = DuelMonsterRace.Plant
     };
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Earth;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Rose_Witch), DoubleTributeTargetSpec);

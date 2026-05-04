@@ -28,8 +28,8 @@ public sealed class Amphibious_Bugroth_MK_3 : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Water | YgoCardPackTags.Machine | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Machine | YgoCardPackTags.Ocean;
+
     public override Type[] RelatedCards => new[] { typeof(Amphibious_Bugroth_MK_3), typeof(Umi), typeof(A_Legendary_Ocean) };
 
     public override bool AttackDealsBlightedDamage =>

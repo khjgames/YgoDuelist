@@ -34,8 +34,7 @@ public sealed class Wind_Effigy : EffectMonsterCard, IDoubleTributeMaterial
         RequiredAttribute = DuelMonsterAttribute.Wind
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Normal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Normal;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Wind_Effigy), DoubleTributeTargetSpec);

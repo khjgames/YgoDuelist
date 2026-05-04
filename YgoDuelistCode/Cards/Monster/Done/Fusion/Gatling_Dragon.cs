@@ -41,8 +41,7 @@ public sealed class Gatling_Dragon : FusionMonsterCard, IMonsterActivatedEffect
 
     public override float PackWeightMultiplier => 1.13f;
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Dark | YgoCardPackTags.Machine | YgoCardPackTags.Chance;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Machine | YgoCardPackTags.Chance;
 
     public override Type[] RelatedCards => new[] { typeof(Gatling_Dragon), typeof(Barrel_Dragon), typeof(Blowback_Dragon) };
 

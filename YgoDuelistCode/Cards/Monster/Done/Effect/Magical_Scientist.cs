@@ -41,8 +41,7 @@ public sealed class Magical_Scientist : EffectMonsterCard, IMonsterActivatedEffe
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fusion | YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fusion | YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark;
 
     public override Type[] RelatedCards => new[] { typeof(Magical_Scientist) };
 

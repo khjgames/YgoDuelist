@@ -37,8 +37,8 @@ public sealed class Woodland_Sprite : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Burn | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Burn | YgoCardPackTags.Spell;
+
     public override Type[] RelatedCards => new[] { typeof(Woodland_Sprite) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

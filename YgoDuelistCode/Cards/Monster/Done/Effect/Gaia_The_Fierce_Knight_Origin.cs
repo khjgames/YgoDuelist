@@ -32,8 +32,7 @@ public sealed class Gaia_The_Fierce_Knight_Origin : EffectMonsterCard, IDoubleTr
         RequiredRace = DuelMonsterRace.Warrior
     };
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
 
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Gaia_The_Fierce_Knight_Origin), DoubleTributeTargetSpec);

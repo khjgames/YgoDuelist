@@ -44,7 +44,7 @@ public sealed class Fushioh_Richie : EffectMonsterCard, IMonsterActivatedEffect,
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
 
     public override Type[] RelatedCards => new[] { typeof(Fushioh_Richie), typeof(Great_Dezard) };
 

@@ -38,8 +38,7 @@ public sealed class Five_Headed_Dragon : FusionMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Fusion | YgoCardPackTags.Dragon | YgoCardPackTags.Dark;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Fusion | YgoCardPackTags.Dragon | YgoCardPackTags.Dark;
 
     public override Type[] RelatedCards => new[] { typeof(Five_Headed_Dragon) };
 

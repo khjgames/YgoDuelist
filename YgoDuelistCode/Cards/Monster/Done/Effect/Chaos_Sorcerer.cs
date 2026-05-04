@@ -47,8 +47,7 @@ public sealed class Chaos_Sorcerer : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Dark | YgoCardPackTags.Banish | YgoCardPackTags.Spellcaster;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Dark | YgoCardPackTags.Banish | YgoCardPackTags.Spellcaster;
 
     public override Type[] RelatedCards => new[] { typeof(Chaos_Sorcerer) };
 

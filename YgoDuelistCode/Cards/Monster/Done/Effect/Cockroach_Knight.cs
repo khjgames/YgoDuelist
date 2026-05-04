@@ -28,8 +28,7 @@ public sealed class Cockroach_Knight : EffectMonsterCard, IYgoOnAddedToYgoGravey
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Earth | YgoCardPackTags.Insect;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Insect;
 
     public override Type[] RelatedCards => new[] { typeof(Cockroach_Knight) };
 

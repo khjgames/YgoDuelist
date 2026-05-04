@@ -30,7 +30,7 @@ public sealed class Outstanding_Dog_Marron : EffectMonsterCard, IYgoOnAddedToYgo
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Draw;
 
     public override Type[] RelatedCards => new[] { typeof(Outstanding_Dog_Marron) };
 

@@ -30,8 +30,8 @@ public sealed class Cave_Dragon : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Wind | YgoCardPackTags.Dragon;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Wind | YgoCardPackTags.Dragon;
+
     public override Type[] RelatedCards => new[] { typeof(Cave_Dragon) };
 
     public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => true;

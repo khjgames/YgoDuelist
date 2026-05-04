@@ -41,8 +41,7 @@ public sealed class The_Forgiving_Maiden : EffectMonsterCard, IMonsterActivatedE
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Starter | YgoCardPackTags.Heal;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Starter | YgoCardPackTags.Heal;
 
     public override Type[] RelatedCards =>
         new[]

@@ -38,8 +38,8 @@ public sealed class Armed_Ninja : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+
     public override Type[] RelatedCards => new[] { typeof(Armed_Ninja) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

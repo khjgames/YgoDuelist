@@ -22,6 +22,6 @@ public sealed class Z_Metal_Tank : NormalMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
 }

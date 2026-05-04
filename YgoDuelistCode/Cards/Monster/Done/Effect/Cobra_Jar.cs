@@ -28,7 +28,7 @@ public sealed class Cobra_Jar : EffectMonsterCard, IMonsterFlipEffect
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Burn;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Cobra_Jar), typeof(Poisonous_Snake_Token) };
 

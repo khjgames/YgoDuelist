@@ -36,8 +36,8 @@ public sealed class Zaborg_the_Thunder_Monarch : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Burn | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Burn | YgoCardPackTags.Spell;
+
     public override Type[] RelatedCards => new[] { typeof(Zaborg_the_Thunder_Monarch) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

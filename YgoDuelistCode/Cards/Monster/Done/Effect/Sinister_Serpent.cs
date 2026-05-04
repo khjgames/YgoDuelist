@@ -32,8 +32,8 @@ public sealed class Sinister_Serpent : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
+
     public override Type[] RelatedCards => new[] { typeof(Sinister_Serpent) };
 
     public override void OnAfterPileMoveCompleted(Player? player, PileType? from, PileType newPileType)

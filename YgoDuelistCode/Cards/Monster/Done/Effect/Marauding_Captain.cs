@@ -35,7 +35,7 @@ public sealed class Marauding_Captain : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Warrior;
 
     public override Type[] RelatedCards => new[] { typeof(Marauding_Captain) };
 

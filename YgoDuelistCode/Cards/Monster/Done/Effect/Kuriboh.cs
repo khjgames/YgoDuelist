@@ -32,8 +32,8 @@ public sealed class Kuriboh : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Draw;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Draw;
+
     public override Type[] RelatedCards => new[] { typeof(Kuriboh) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
