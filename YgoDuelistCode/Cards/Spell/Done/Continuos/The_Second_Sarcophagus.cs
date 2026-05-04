@@ -26,7 +26,6 @@ public sealed class The_Second_Sarcophagus : BaseContinuousSpellCard, IYgoBrickC
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Spell | YgoCardPackTags.Zombie | YgoCardPackTags.Trap;
-
     public override Type[] RelatedCards =>
         new[]
         {

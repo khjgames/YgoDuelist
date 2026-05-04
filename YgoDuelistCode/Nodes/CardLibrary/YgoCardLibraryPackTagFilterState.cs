@@ -18,7 +18,8 @@ public sealed class YgoCardLibraryPackTagFilterState
     public bool Matches(CardModel card)
     {
         YgoCardPackTags tags = card is YgoDuelistCard y ? y.PackTags : YgoCardPackTags.None;
-        var includeParts = new List<Func<bool>>();
+        var includeOrParts = new List<Func<bool>>();
+        var requireAndParts = new List<Func<bool>>();
         var excludeParts = new List<Func<bool>>();
 
         if (NoneToggle != null)
@@ -26,7 +27,10 @@ public sealed class YgoCardLibraryPackTagFilterState
             switch (NoneToggle.RowState)
             {
                 case CardLibraryFilterTriState.Include:
-                    includeParts.Add(() => tags == YgoCardPackTags.None);
+                    includeOrParts.Add(() => tags == YgoCardPackTags.None);
+                    break;
+                case CardLibraryFilterTriState.RequireAnd:
+                    requireAndParts.Add(() => tags == YgoCardPackTags.None);
                     break;
                 case CardLibraryFilterTriState.Exclude:
                     excludeParts.Add(() => tags == YgoCardPackTags.None);
@@ -41,7 +45,13 @@ public sealed class YgoCardLibraryPackTagFilterState
                 case CardLibraryFilterTriState.Include:
                 {
                     YgoCardPackTags captured = flag;
-                    includeParts.Add(() => (tags & captured) != 0);
+                    includeOrParts.Add(() => (tags & captured) != 0);
+                    break;
+                }
+                case CardLibraryFilterTriState.RequireAnd:
+                {
+                    YgoCardPackTags captured = flag;
+                    requireAndParts.Add(() => (tags & captured) != 0);
                     break;
                 }
                 case CardLibraryFilterTriState.Exclude:
@@ -59,16 +69,16 @@ public sealed class YgoCardLibraryPackTagFilterState
                 return false;
         }
 
-        if (includeParts.Count == 0)
+        bool needOr = includeOrParts.Count > 0;
+        bool needAnd = requireAndParts.Count > 0;
+
+        if (!needOr && !needAnd)
             return true;
 
-        foreach (Func<bool> p in includeParts)
-        {
-            if (p())
-                return true;
-        }
+        bool orOk = !needOr || includeOrParts.Exists(p => p());
+        bool andOk = !needAnd || requireAndParts.TrueForAll(p => p());
 
-        return false;
+        return orOk && andOk;
     }
 
     public void ResetToDefaults()

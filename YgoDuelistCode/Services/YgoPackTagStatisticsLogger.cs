@@ -21,6 +21,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 public static class YgoPackTagStatisticsLogger
 {
     private const string Prefix = "[YgoDuelist][PackStats]";
+    private const string MultiplayerStatsPrefix = "[MULTIPLAYER_STATS]";
 
     private static readonly object Gate = new();
     private static readonly ConditionalWeakTable<RunState, PrintedMarker> PrintedRuns = new();
@@ -56,38 +57,79 @@ public static class YgoPackTagStatisticsLogger
     private static string BuildReport(Player player, string source)
     {
         YgoCardPackTags[] printedTags = GetPrintedPackTags().ToArray();
-        Dictionary<YgoCardPackTags, List<YgoDuelistCard>> pools = printedTags.ToDictionary(
-            tag => tag,
-            tag => YgoPackCardCatalog.GetUnlockedPool(player, tag).OfType<YgoDuelistCard>().ToList());
+        Dictionary<YgoCardPackTags, List<YgoDuelistCard>> pools = BuildPools(player, printedTags, filter: null);
+        Dictionary<YgoCardPackTags, List<YgoDuelistCard>> mpPools = BuildPools(player, printedTags, IsEffectiveMultiplayerSafe);
 
+        var sb = new StringBuilder();
+        AppendPackStatsSection(
+            sb,
+            Prefix,
+            printedTags,
+            pools,
+            $"Run pack tag statistics source={source} playerNetId={player.NetId}");
+
+        sb.AppendLine();
+        AppendPackStatsSection(
+            sb,
+            MultiplayerStatsPrefix,
+            printedTags,
+            mpPools,
+            $"Pack tag statistics restricted to cards with MultiplayerSafe in GetEffectivePackTags (same layout as {Prefix}; counts subset for comparison) source={source} playerNetId={player.NetId}");
+
+        return sb.ToString().TrimEnd();
+    }
+
+    private static Dictionary<YgoCardPackTags, List<YgoDuelistCard>> BuildPools(
+        Player player,
+        YgoCardPackTags[] printedTags,
+        Func<YgoDuelistCard, bool>? filter)
+    {
+        return printedTags.ToDictionary(
+            tag => tag,
+            tag =>
+            {
+                List<YgoDuelistCard> list = YgoPackCardCatalog.GetUnlockedPool(player, tag).OfType<YgoDuelistCard>().ToList();
+                if (filter != null)
+                    list = list.Where(filter).ToList();
+                return list;
+            });
+    }
+
+    private static bool IsEffectiveMultiplayerSafe(YgoDuelistCard card) =>
+        (YgoPackCardCatalog.GetEffectivePackTags(card) & YgoCardPackTags.MultiplayerSafe) != 0;
+
+    private static void AppendPackStatsSection(
+        StringBuilder sb,
+        string linePrefix,
+        YgoCardPackTags[] printedTags,
+        Dictionary<YgoCardPackTags, List<YgoDuelistCard>> pools,
+        string headerLine)
+    {
         int totalEntries = pools.Values.Sum(pool => pool.Count);
         int uniqueCards = pools.Values.SelectMany(pool => pool).Select(card => card.Id).Distinct().Count();
 
-        var sb = new StringBuilder();
-        AppendLine(sb, $"Run pack tag statistics source={source} playerNetId={player.NetId}");
-        AppendLine(sb, "Excluded pack tags: None, Starter, Normal");
-        AppendLine(sb, $"Total number of card entries in all printed pack pools: {totalEntries}");
-        AppendLine(sb, $"Unique cards appearing in printed pack pools: {uniqueCards}");
+        AppendLine(sb, linePrefix, headerLine);
+        AppendLine(sb, linePrefix, "Excluded pack tags: None, Starter, Normal");
+        AppendLine(sb, linePrefix, $"Total number of card entries in all printed pack pools: {totalEntries}");
+        AppendLine(sb, linePrefix, $"Unique cards appearing in printed pack pools: {uniqueCards}");
 
         foreach (YgoCardPackTags tag in printedTags)
         {
             List<YgoDuelistCard> pool = pools[tag];
-            AppendLine(sb, "");
-            AppendLine(sb, $"{ToPackName(tag)} pack");
-            AppendLine(sb, $"total number of cards in the pack pool: {pool.Count}");
+            AppendLine(sb, linePrefix, "");
+            AppendLine(sb, linePrefix, $"{ToPackName(tag)} pack");
+            AppendLine(sb, linePrefix, $"total number of cards in the pack pool: {pool.Count}");
 
-            AppendMonsterBucket(sb, "fusion monsters", pool, c => c is AbstractMonsterCard m && m.YgoCardType == YgoCardType.FusionMonster);
-            AppendMonsterBucket(sb, "ritual monsters", pool, c => c is AbstractMonsterCard m && m.YgoCardType == YgoCardType.RitualMonster);
-            AppendMonsterBucket(sb, "normal monsters", pool, c => IsRegularMonster(c, YgoCardType.Monster));
-            AppendMonsterBucket(sb, "effect monsters", pool, c => IsRegularMonster(c, YgoCardType.EffectMonster));
-            AppendSimpleBucket(sb, "spells", pool, c => IsPlainSpell(c));
-            AppendSimpleBucket(sb, "ritual spells", pool, c => c is RitualSpellCard || GetCardRace(c) == DuelMonsterRace.SpellRitual);
-            AppendSimpleBucket(sb, "token spells", pool, c => IsTokenSpell(c));
-            AppendMonsterBucket(sb, "trap monsters", pool, IsTrapMonster);
-            AppendSimpleBucket(sb, "traps", pool, c => GetCardType(c) == YgoCardType.Trap);
+            AppendMonsterBucket(sb, linePrefix, "fusion monsters", pool, c => c is AbstractMonsterCard m && m.YgoCardType == YgoCardType.FusionMonster);
+            AppendMonsterBucket(sb, linePrefix, "ritual monsters", pool, c => c is AbstractMonsterCard m && m.YgoCardType == YgoCardType.RitualMonster);
+            AppendMonsterBucket(sb, linePrefix, "normal monsters", pool, c => IsRegularMonster(c, YgoCardType.Monster));
+            AppendMonsterBucket(sb, linePrefix, "effect monsters", pool, c => IsRegularMonster(c, YgoCardType.EffectMonster));
+            AppendSimpleBucket(sb, linePrefix, "spells", pool, c => IsPlainSpell(c));
+            AppendSimpleBucket(sb, linePrefix, "ritual spells", pool, c => c is RitualSpellCard || GetCardRace(c) == DuelMonsterRace.SpellRitual);
+            AppendSimpleBucket(sb, linePrefix, "token spells", pool, c => IsTokenSpell(c));
+            AppendMonsterBucket(sb, linePrefix, "trap monsters", pool, IsTrapMonster);
+            AppendSimpleBucket(sb, linePrefix, "traps", pool, c => GetCardType(c) == YgoCardType.Trap);
         }
-
-        return sb.ToString().TrimEnd();
     }
 
     private static IEnumerable<YgoCardPackTags> GetPrintedPackTags()
@@ -105,6 +147,7 @@ public static class YgoPackTagStatisticsLogger
 
     private static void AppendMonsterBucket(
         StringBuilder sb,
+        string linePrefix,
         string label,
         List<YgoDuelistCard> pool,
         Func<YgoDuelistCard, bool> predicate)
@@ -112,6 +155,7 @@ public static class YgoPackTagStatisticsLogger
         List<YgoDuelistCard> cards = pool.Where(predicate).ToList();
         AppendLine(
             sb,
+            linePrefix,
             $"{label}: {CountAndPoolPercent(cards.Count, pool.Count)} " +
             $"({LevelBandText(cards, 1, 4, "Levels 1-4")} | " +
             $"{LevelBandText(cards, 5, 6, "Levels 5-6")} | " +
@@ -121,6 +165,7 @@ public static class YgoPackTagStatisticsLogger
 
     private static void AppendSimpleBucket(
         StringBuilder sb,
+        string linePrefix,
         string label,
         List<YgoDuelistCard> pool,
         Func<YgoDuelistCard, bool> predicate)
@@ -128,6 +173,7 @@ public static class YgoPackTagStatisticsLogger
         List<YgoDuelistCard> cards = pool.Where(predicate).ToList();
         AppendLine(
             sb,
+            linePrefix,
             $"{label}: {CountAndPoolPercent(cards.Count, pool.Count)} " +
             $"Average PackWeightMultiplier for those cards: {AverageWeight(cards)}");
     }
@@ -182,8 +228,8 @@ public static class YgoPackTagStatisticsLogger
     private static string ToPackName(YgoCardPackTags tag) =>
         tag.ToString();
 
-    private static void AppendLine(StringBuilder sb, string line) =>
-        sb.Append(Prefix).Append(' ').AppendLine(line);
+    private static void AppendLine(StringBuilder sb, string linePrefix, string line) =>
+        sb.Append(linePrefix).Append(' ').AppendLine(line);
 
     private sealed class PrintedMarker
     {

@@ -38,6 +38,5 @@ public sealed class Troop_Dragon : EffectMonsterCard, IBattleDeathOptionalDeckSp
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Dragon;
-
     public override Type[] RelatedCards => new[] { typeof(Troop_Dragon) };
 }

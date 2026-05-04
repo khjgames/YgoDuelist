@@ -184,7 +184,14 @@ public abstract class FusionMonsterCard : EffectMonsterCard
     }
 
     /// <summary>Pack filtering: fusion frame plus attribute and race-derived tags (see <see cref="PackTagsForFusionProfile"/>).</summary>
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Fusion | PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
+    public override YgoCardPackTags PackTags
+    {
+        get
+        {
+            YgoCardPackTags profile = PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
+            return YgoCardPackTags.Fusion | profile;
+        }
+    }
 
     /// <summary>Maps printed attribute/race to <see cref="YgoCardPackTags"/> bits for card packs.</summary>
     internal static YgoCardPackTags PackTagsForFusionProfile(DuelMonsterAttribute attribute, DuelMonsterRace race)

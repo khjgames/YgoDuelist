@@ -40,7 +40,6 @@ public sealed class Twin_Headed_Behemoth : EffectMonsterCard, IYgoOwnerBeforeTur
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Dragon;
-
     public override Type[] RelatedCards => new[] { typeof(Twin_Headed_Behemoth) };
 
     internal void MarkEndPhaseReviveEligible(int ownerTurnStamp) => _gyReviveEligibleStamp = ownerTurnStamp;

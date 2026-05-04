@@ -29,7 +29,6 @@ public sealed class Des_Kangaroo : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
-
     protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature == null)

@@ -37,7 +37,6 @@ public sealed class The_Agent_of_Creation_Venus : EffectMonsterCard, IMonsterAct
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Light | YgoCardPackTags.Draw;
-
     public override Type[] RelatedCards => new[] { typeof(The_Agent_of_Creation_Venus), typeof(Mystical_Shine_Ball) };
 
     protected override Type[] PreviewReferencedCardTypes =>
@@ -98,7 +97,7 @@ public sealed class The_Agent_of_Creation_Venus : EffectMonsterCard, IMonsterAct
     }
 
     private static List<Mystical_Shine_Ball> BuildShineBallCandidates(Player player) => YgoPlayerPiles
-        .OrderedCardsOfTypeFromPiles<Mystical_Shine_Ball>(player, YgoPlayerPiles.Hand, YgoPlayerPiles.Draw)
+        .OrderedCardsOfTypeFromHandDrawDiscard<Mystical_Shine_Ball>(player)
         .Where(m => m.CanSummonDuelMonster)
         .ToList();
 

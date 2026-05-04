@@ -37,6 +37,5 @@ public sealed class Mother_Grizzly : EffectMonsterCard, IBattleDeathOptionalDeck
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Warrior;
-
     public override Type[] RelatedCards => new[] { typeof(Mother_Grizzly) };
 }

@@ -32,7 +32,6 @@ public sealed class Gilasaurus : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw;
-
     public override Type[] RelatedCards => new[] { typeof(Gilasaurus) };
 
     protected override bool SupportsHandEffectForm => true;

@@ -37,7 +37,6 @@ public sealed class Spear_Cretin : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
-
     public override Type[] RelatedCards => new[] { typeof(Spear_Cretin) };
 
     public Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self) =>

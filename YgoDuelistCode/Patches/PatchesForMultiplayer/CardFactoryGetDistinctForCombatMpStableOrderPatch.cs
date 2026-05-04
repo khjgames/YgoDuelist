@@ -55,8 +55,9 @@ public static class CardFactoryGetDistinctForCombatMpStableOrderPatch
 
     private static IEnumerable<CardModel> FilterForPlayerCount(IRunState runState, IEnumerable<CardModel> options)
     {
-        if (runState.Players.Count > 1)
-            return options.Where(c => c.MultiplayerConstraint != CardMultiplayerConstraint.SingleplayerOnly);
-        return options.Where(c => c.MultiplayerConstraint != CardMultiplayerConstraint.MultiplayerOnly);
+        IEnumerable<CardModel> filtered = runState.Players.Count > 1
+            ? options.Where(c => c.MultiplayerConstraint != CardMultiplayerConstraint.SingleplayerOnly)
+            : options.Where(c => c.MultiplayerConstraint != CardMultiplayerConstraint.MultiplayerOnly);
+        return filtered.Where(c => !YgoPackCardCatalog.IsYgoBlockedFromMultiplayerProceduralPools(runState, c));
     }
 }

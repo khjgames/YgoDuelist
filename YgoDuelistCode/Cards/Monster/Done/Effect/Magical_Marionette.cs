@@ -32,7 +32,6 @@ public sealed class Magical_Marionette : EffectMonsterCard, IYgoSpellCounterMons
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
-
     public override Type[] RelatedCards => new[] { typeof(Magical_Marionette) };
 
     public int CurrentSpellCounters => SpellCounters;

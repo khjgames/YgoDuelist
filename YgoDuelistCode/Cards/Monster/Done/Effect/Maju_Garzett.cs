@@ -33,7 +33,6 @@ public sealed class Maju_Garzett : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
-
     public override Type[] RelatedCards => new[] { typeof(Maju_Garzett) };
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

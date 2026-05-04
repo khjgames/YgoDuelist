@@ -49,7 +49,6 @@ public sealed class Lightray_Daedalus : EffectMonsterCard, IMonsterActivatedEffe
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Light | YgoCardPackTags.Water | YgoCardPackTags.Ocean;
-
     public override Type[] RelatedCards => new[] { typeof(Lightray_Daedalus), typeof(Levia_Dragon_Daedalus) };
 
     protected override bool SupportsHandEffectForm => true;

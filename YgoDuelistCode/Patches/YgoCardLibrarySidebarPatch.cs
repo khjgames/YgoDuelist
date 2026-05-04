@@ -400,7 +400,7 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
                 label,
                 null,
                 hoverLoc,
-                triStateRarity: true);
+                quadStatePackTag: true);
             gui.ConnectChanged(Dirty);
             cat.ToggleColumn.AddChild(gui.Root);
             return gui;

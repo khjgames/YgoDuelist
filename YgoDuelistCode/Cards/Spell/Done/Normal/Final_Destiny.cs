@@ -37,7 +37,6 @@ public sealed class Final_Destiny : BaseSpellCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Draw | YgoCardPackTags.Burn;
-
     public override bool CardShowsBlightKeyword => true;
 
     protected override bool IsPlayable =>

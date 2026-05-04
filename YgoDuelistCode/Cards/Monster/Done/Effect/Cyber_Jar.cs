@@ -39,7 +39,6 @@ public sealed class Cyber_Jar : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
-
     protected override bool StumblingBlocksHandSummonInAttackPosition => false;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

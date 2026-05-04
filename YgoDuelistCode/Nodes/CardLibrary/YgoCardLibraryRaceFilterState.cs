@@ -30,6 +30,7 @@ public sealed class YgoCardLibraryRaceFilterState
             switch (gui.RowState)
             {
                 case CardLibraryFilterTriState.Include:
+                case CardLibraryFilterTriState.RequireAnd:
                 {
                     DuelMonsterRace captured = r;
                     includeParts.Add(x => x == captured);

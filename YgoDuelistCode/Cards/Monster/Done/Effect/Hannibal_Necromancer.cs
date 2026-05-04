@@ -43,7 +43,6 @@ public sealed class Hannibal_Necromancer : EffectMonsterCard, IMonsterActivatedE
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Spellcaster | YgoCardPackTags.Dark | YgoCardPackTags.Spell;
-
     public override Type[] RelatedCards => new[] { typeof(Hannibal_Necromancer) };
 
     public int CurrentSpellCounters => SpellCounters;

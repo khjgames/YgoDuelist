@@ -34,7 +34,6 @@ public sealed class Graceful_Charity : BaseSpellCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Draw | YgoCardPackTags.Spell;
-
     public override Type[] RelatedCards => new[]
     {
         typeof(Graceful_Charity),

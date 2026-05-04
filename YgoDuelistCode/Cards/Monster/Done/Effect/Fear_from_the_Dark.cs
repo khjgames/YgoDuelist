@@ -15,7 +15,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
 /// <summary>
-/// Effect monster with printed ATK/DEF. When sent from hand or draw pile to the Graveyard, Special Summons itself.
+/// Effect monster with printed ATK/DEF. When sent from hand, draw pile, or discard pile to the Graveyard, Special Summons itself.
 /// </summary>
 public sealed class Fear_from_the_Dark : EffectMonsterCard, IYgoAfterMonsterMovedToGraveyardFromHandOrDraw
 {
@@ -36,7 +36,6 @@ public sealed class Fear_from_the_Dark : EffectMonsterCard, IYgoAfterMonsterMove
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
-
     public override Type[] RelatedCards => new[]
     {
         typeof(Fear_from_the_Dark),

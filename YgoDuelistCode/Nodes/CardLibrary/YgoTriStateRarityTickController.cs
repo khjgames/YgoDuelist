@@ -1,7 +1,6 @@
 using Godot;
 using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
 
@@ -40,18 +39,14 @@ internal sealed class YgoTriStateRarityTickController
         visuals.AddChild(wrap);
         _excludeGlyph = new Label
         {
-            Text = "✕",
+            Text = "✖",
             Visible = false,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center
         };
         MegaLabel rowLabel = _box.GetNode<MegaLabel>("Label");
         Font? baseFont = rowLabel.GetThemeFont("font") ?? ThemeDB.FallbackFont;
-        _excludeGlyph.AddThemeFontOverride("font", baseFont);
-        _excludeGlyph.AddThemeFontSizeOverride("font_size", 24);
-        _excludeGlyph.AddThemeColorOverride("font_color", StsColors.gold);
-        _excludeGlyph.AddThemeConstantOverride("outline_size", 4);
-        _excludeGlyph.AddThemeColorOverride("font_outline_color", StsColors.rewardLabelGoldOutline);
+        YgoCardLibraryOverlayGlyphStyle.ApplyExcludeOverlayGlyph(_excludeGlyph, baseFont);
         wrap.AddChild(_excludeGlyph);
         _overlayAdded = true;
         ApplyVisuals();

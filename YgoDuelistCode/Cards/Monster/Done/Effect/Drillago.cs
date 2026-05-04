@@ -29,7 +29,6 @@ public sealed class Drillago : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Machine | YgoCardPackTags.Dark | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Drillago) };
 
     public override bool CardShowsBlightKeyword => true;

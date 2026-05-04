@@ -38,6 +38,5 @@ public sealed class Mystic_Tomato : EffectMonsterCard, IBattleDeathOptionalDeckS
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Normal;
-
     public override Type[] RelatedCards => new[] { typeof(Mystic_Tomato) };
 }

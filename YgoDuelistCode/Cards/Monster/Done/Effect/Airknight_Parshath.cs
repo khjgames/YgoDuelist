@@ -31,7 +31,6 @@ public sealed class Airknight_Parshath : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Airknight_Parshath) };
 
     public override bool CardShowsSplinterKeyword => true;

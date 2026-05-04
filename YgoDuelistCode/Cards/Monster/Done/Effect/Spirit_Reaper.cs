@@ -33,7 +33,6 @@ public sealed class Spirit_Reaper : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
-
     public override Type[] RelatedCards => new[] { typeof(Spirit_Reaper) };
 
     public override IEnumerable<CardKeyword> CanonicalKeywords

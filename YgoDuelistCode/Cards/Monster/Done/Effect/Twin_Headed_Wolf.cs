@@ -10,6 +10,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 /// <summary>While you control another Fiend monster, this card gains {Mgc} ATK and DEF.</summary>
 public sealed class Twin_Headed_Wolf : EffectMonsterCard
 {
+    public override int AttackPortionCount => 2;
+
     public Twin_Headed_Wolf()
         : base(
             cost: 1,
@@ -27,7 +29,6 @@ public sealed class Twin_Headed_Wolf : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
-
     public override Type[] RelatedCards => new[] { typeof(Twin_Headed_Wolf) };
 
     protected override (int atk, int def) GetSecondaryStats()

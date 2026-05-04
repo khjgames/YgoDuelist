@@ -56,6 +56,17 @@ public static class YgoPlayerPiles
     public static bool HasOtherHandCard(Player? player, CardModel self) =>
         Hand(player)?.Cards.Any(c => !ReferenceEquals(c, self)) == true;
 
+    /// <summary>
+    /// YGO wording &quot;from your hand or Deck&quot; in this mod: main-deck cards in hand, draw pile, or discard pile (not Graveyard / Extra Deck / banished).
+    /// </summary>
+    public static List<CardModel> OrderedCardsFromHandDrawDiscard(Player? player) =>
+        OrderedCardsFromPiles(player, Hand, Draw, Discard);
+
+    /// <inheritdoc cref="OrderedCardsFromHandDrawDiscard" />
+    public static List<TCard> OrderedCardsOfTypeFromHandDrawDiscard<TCard>(Player? player)
+        where TCard : CardModel =>
+        OrderedCardsFromPiles(player, Hand, Draw, Discard).OfType<TCard>().ToList();
+
     public static List<CardModel> OrderedCardsFromPiles(
         Player? player,
         params Func<Player?, CardPile?>[] pileGetters)

@@ -1,8 +1,8 @@
 {
   "CONDUIT_COUNT.title": "Conduit",
   "CONDUIT_COUNT.description": "Your current Conduit {conduitIcon} count.\n\nThe Duelist's monsters may require {conduitIcon} to play.",
-  "PACK_TAG_FILTER_ROW": "Pack tag filter\n\nFilter compendium cards by YgoDuelist pack tags.",
-  "PACK_TAG_FILTER_NONE": "No pack tags\n\nOR filter: include cards whose pack tags are empty (no tag flags set).",
+  "PACK_TAG_FILTER_ROW": "Pack tag filter\n\nClick to cycle: off → OR (✓) → AND (O) → NOT (✕).\nOR rows combine with OR; every O row must match together; NOT rows hide matches first.",
+  "PACK_TAG_FILTER_NONE": "No pack tags\n\nOR (✓): include only cards with no pack tags.\nAND (O): require empty pack tags together with other O rows.\nNOT (✕): hide cards with no pack tags.",
   "PACK_TAG_FILTER_Earth": "Earth\n\nOR filter: include cards tagged Earth (attribute / pack grouping).",
   "PACK_TAG_FILTER_Water": "Water\n\nOR filter: include cards tagged Water (attribute / pack grouping).",
   "PACK_TAG_FILTER_Wind": "Wind\n\nOR filter: include cards tagged Wind (attribute / pack grouping).",

@@ -36,7 +36,6 @@ public sealed class Tornado_Bird : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Wind;
-
     public override Type[] RelatedCards => new[] { typeof(Tornado_Bird) };
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)

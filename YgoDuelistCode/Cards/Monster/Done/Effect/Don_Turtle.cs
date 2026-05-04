@@ -33,8 +33,11 @@ public sealed class Don_Turtle : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Draw;
-
     public override Type[] RelatedCards => new[] { typeof(Don_Turtle) };
+
+    public override bool BundleGrantsExtraCopyOfSelf => true;
+
+    public override Type[] BundledCards => new[] { typeof(Don_Turtle) };
 
     protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
         await RunOnSummonedAsync(

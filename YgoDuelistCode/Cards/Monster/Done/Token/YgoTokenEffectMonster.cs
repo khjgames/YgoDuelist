@@ -2,6 +2,7 @@ using BaseLib.Extensions;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -27,6 +28,8 @@ public abstract class YgoTokenEffectMonster : EffectMonsterCard, IYgoTokenMonste
         : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace)
     {
     }
+
+    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
 
     public override bool CanSummonDuelMonster => false;
 

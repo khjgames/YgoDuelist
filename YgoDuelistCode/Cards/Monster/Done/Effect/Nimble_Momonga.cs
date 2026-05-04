@@ -42,7 +42,6 @@ public sealed class Nimble_Momonga : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Earth | YgoCardPackTags.Draw | YgoCardPackTags.Bundled;
-
     public override Type[] RelatedCards => new[] { typeof(Nimble_Momonga) };
 
     public override bool BundleGrantsExtraCopyOfSelf => true;

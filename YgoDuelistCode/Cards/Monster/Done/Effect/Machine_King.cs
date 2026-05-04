@@ -30,7 +30,6 @@ public sealed class Machine_King : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Machine;
-
     protected override (int atk, int def) GetSecondaryStats()
     {
         if (Owner == null)

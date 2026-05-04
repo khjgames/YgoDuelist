@@ -39,7 +39,6 @@ public sealed class Needle_Ball : EffectMonsterCard, IMonsterActivatedEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get

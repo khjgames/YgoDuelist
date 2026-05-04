@@ -38,7 +38,6 @@ public sealed class Revival_Jam : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Water | YgoCardPackTags.Ocean;
-
     public override Type[] RelatedCards => new[] { typeof(Revival_Jam) };
 
     public override void OnMovedToGraveyardFromHandOrField(PileType from)

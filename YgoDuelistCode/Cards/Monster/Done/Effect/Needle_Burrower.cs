@@ -31,7 +31,6 @@ public sealed class Needle_Burrower : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Insect | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Needle_Burrower) };
 
     public override Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs) =>

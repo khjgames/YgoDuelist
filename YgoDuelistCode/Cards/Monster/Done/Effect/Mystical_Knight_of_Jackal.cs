@@ -41,7 +41,6 @@ public sealed class Mystical_Knight_of_Jackal : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Light | YgoCardPackTags.Warrior;
-
     public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
     {
         if (!YgoExecuteKillShared.AnyEnemyExecutedKill(command))

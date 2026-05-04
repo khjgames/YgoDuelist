@@ -32,7 +32,6 @@ public sealed class Legion_the_Fiend_Jester : EffectMonsterCard, IYgoLegionFiend
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Spellcaster | YgoCardPackTags.Normal;
-
     public override Type[] RelatedCards =>
     [
         typeof(Legion_the_Fiend_Jester),

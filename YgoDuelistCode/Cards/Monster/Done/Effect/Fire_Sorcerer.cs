@@ -37,7 +37,6 @@ public sealed class Fire_Sorcerer : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Fire | YgoCardPackTags.Spellcaster;
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get

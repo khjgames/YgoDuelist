@@ -47,7 +47,8 @@ public static class YgoBulkBundledResolver
                 && unlocked.Contains(c.Id)
                 && c is YgoDuelistCard y
                 && y.BulkBundled
-                && (YgoPackCardCatalog.GetEffectivePackTags(y) & activeContextTags) != 0)
+                && (YgoPackCardCatalog.GetEffectivePackTags(y) & activeContextTags) != 0
+                && !YgoPackCardCatalog.IsYgoBlockedFromMultiplayerProceduralPools(player, c))
             .OrderBy(c => c.Id.Entry, StringComparer.Ordinal)
             .ToList();
     }

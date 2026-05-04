@@ -25,7 +25,8 @@ public sealed class Pitch_Dark_Dragon_Union_Equip : BaseEquipSpellCard, IYgoUnio
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Spell | YgoCardPackTags.None;
 
     public override Type[] RelatedCards => new[] { typeof(Pitch_Dark_Dragon_Union_Equip), typeof(Pitch_Dark_Dragon) };
 

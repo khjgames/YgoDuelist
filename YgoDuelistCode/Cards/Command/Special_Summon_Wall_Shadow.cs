@@ -25,7 +25,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
 /// <summary>
 /// Command on <see cref="Labyrinth_Wall"/> while equipped with face-up <see cref="Magical_Labyrinth"/>:
-/// Tribute this monster; Special Summon <see cref="Wall_Shadow"/> from the hand or draw pile.
+/// Tribute this monster; Special Summon <see cref="Wall_Shadow"/> from the hand, draw pile, or discard pile.
 /// </summary>
 public sealed class Special_Summon_Wall_Shadow : MonsterCommandCard, IYgoNHandPlayPhaseHighlightOverride
 {
@@ -82,25 +82,8 @@ public sealed class Special_Summon_Wall_Shadow : MonsterCommandCard, IYgoNHandPl
         return YgoNHandPlayPhaseHighlightColors.FusionStylePurple;
     }
 
-    public static List<Wall_Shadow> BuildWallShadowHandOrDeckCandidates(Player player)
-    {
-        var list = new List<Wall_Shadow>();
-        CardPile? hand = YgoPlayerPiles.Hand(player);
-        if (hand != null)
-        {
-            list.AddRange(
-                YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards).OfType<Wall_Shadow>());
-        }
-
-        CardPile? draw = YgoPlayerPiles.Draw(player);
-        if (draw != null)
-        {
-            list.AddRange(
-                YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards).OfType<Wall_Shadow>());
-        }
-
-        return list;
-    }
+    public static List<Wall_Shadow> BuildWallShadowHandOrDeckCandidates(Player player) =>
+        YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Wall_Shadow>(player);
 
     protected override bool IsPlayable
     {
@@ -157,7 +140,9 @@ public sealed class Special_Summon_Wall_Shadow : MonsterCommandCard, IYgoNHandPl
             return;
 
         CardPile? pickedPile = picked.Pile;
-        if (pickedPile != YgoPlayerPiles.Hand(player) && pickedPile != YgoPlayerPiles.Draw(player))
+        if (pickedPile != YgoPlayerPiles.Hand(player)
+            && pickedPile != YgoPlayerPiles.Draw(player)
+            && pickedPile != YgoPlayerPiles.Discard(player))
             return;
 
         await DuelMonsterPetDeathPatch.MoveEquipsToGraveyardThenMonsterToPileAsync(

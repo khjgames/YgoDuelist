@@ -37,6 +37,5 @@ public sealed class Giant_Rat : EffectMonsterCard, IBattleDeathOptionalDeckSpeci
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
-
     public override Type[] RelatedCards => new[] { typeof(Giant_Rat) };
 }

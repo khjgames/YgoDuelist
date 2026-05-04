@@ -20,7 +20,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
 /// <summary>
 /// Cannot be Normal Summoned/Set. Special Summon only via <see cref="YgoDuelist.YgoDuelistCode.Cards.Command.Special_Summon_Dark_Sage"/>
-/// on <see cref="Dark_Magician"/> with <see cref="Dark_Magician.SurvivedTimeMagic"/>. On summon: add 1 Spell from your Deck to your hand.
+/// on <see cref="Dark_Magician"/> with <see cref="Dark_Magician.SurvivedTimeMagic"/>. On summon: add 1 Spell from your draw or discard pile to your hand.
 /// </summary>
 public sealed class Dark_Sage : EffectMonsterCard
 {
@@ -43,7 +43,6 @@ public sealed class Dark_Sage : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
-
     public override Type[] RelatedCards =>
         new[] { typeof(Dark_Sage), typeof(Dark_Magician), typeof(Time_Wizard) };
 
@@ -77,7 +76,10 @@ public sealed class Dark_Sage : EffectMonsterCard
             return;
 
         CardPile? draw = YgoPlayerPiles.Draw(player);
-        if (draw == null || chosen.Pile != draw)
+        CardPile? discard = YgoPlayerPiles.Discard(player);
+        bool inDraw = draw != null && chosen.Pile == draw;
+        bool inDiscard = discard != null && chosen.Pile == discard;
+        if (!inDraw && !inDiscard)
             return;
 
         await CardPileCmd.Add(new[] { chosen }, hand, CardPilePosition.Top, chosen, false);
@@ -85,10 +87,13 @@ public sealed class Dark_Sage : EffectMonsterCard
 
     private static List<BaseSpellCard> BuildDeckSpellCandidates(Player player)
     {
+        var list = new List<BaseSpellCard>();
         CardPile? draw = YgoPlayerPiles.Draw(player);
-        if (draw == null)
-            return new List<BaseSpellCard>();
-
-        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards).OfType<BaseSpellCard>().ToList();
+        if (draw != null)
+            list.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards).OfType<BaseSpellCard>());
+        CardPile? discard = YgoPlayerPiles.Discard(player);
+        if (discard != null)
+            list.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(discard.Cards).OfType<BaseSpellCard>());
+        return list;
     }
 }

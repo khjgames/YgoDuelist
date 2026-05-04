@@ -30,7 +30,6 @@ public sealed class Kotodama : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
-
     public override StatEffectTotal GetStatEffect(BaseMonsterCard target)
     {
         if (Owner == null)

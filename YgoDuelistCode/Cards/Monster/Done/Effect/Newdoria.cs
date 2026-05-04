@@ -42,7 +42,6 @@ public sealed class Newdoria : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Newdoria) };
 
     public override void OnMovedToGraveyardFromHandOrField(PileType from)

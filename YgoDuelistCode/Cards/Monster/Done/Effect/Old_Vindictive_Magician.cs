@@ -36,7 +36,6 @@ public sealed class Old_Vindictive_Magician : EffectMonsterCard, IMonsterFlipEff
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
-
     public override Type[] RelatedCards => new[] { typeof(Old_Vindictive_Magician) };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

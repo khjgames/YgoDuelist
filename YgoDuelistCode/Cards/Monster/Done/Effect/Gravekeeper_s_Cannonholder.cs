@@ -40,7 +40,6 @@ public sealed class Gravekeeper_s_Cannonholder : EffectMonsterCard, IMonsterActi
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Spell | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Gravekeeper_s_Cannonholder) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

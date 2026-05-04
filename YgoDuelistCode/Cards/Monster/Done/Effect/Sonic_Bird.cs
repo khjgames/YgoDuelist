@@ -30,7 +30,6 @@ public sealed class Sonic_Bird : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Ritual | YgoCardPackTags.Wind | YgoCardPackTags.Spell;
-
     protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
         await RunOnNormalOrTributeSummonAsync(
             player,

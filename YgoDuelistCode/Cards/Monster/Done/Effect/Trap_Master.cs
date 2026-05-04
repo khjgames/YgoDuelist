@@ -40,7 +40,6 @@ public sealed class Trap_Master : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Warrior | YgoCardPackTags.Trap;
-
     public override Type[] RelatedCards => new[] { typeof(Trap_Master) };
 
     private bool ShowNextTrapDiscountPlus => IsUpgradedOrPreviewActive;

@@ -1,9 +1,13 @@
 namespace YgoDuelist.YgoDuelistCode.Nodes.CardLibrary;
 
-/// <summary>Tri-state card-library filter row: neutral (ignore), include (OR), exclude (hide matches).</summary>
+/// <summary>
+/// Card-library filter row: neutral (ignore), include (OR among checks), require-and (O: must match all O rows),
+/// exclude (✕: hide matches; evaluated before OR/O).
+/// </summary>
 public enum CardLibraryFilterTriState : sbyte
 {
     Exclude = -1,
     Neutral = 0,
-    Include = 1
+    Include = 1,
+    RequireAnd = 2
 }

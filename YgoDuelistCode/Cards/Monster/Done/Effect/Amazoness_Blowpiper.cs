@@ -29,7 +29,6 @@ public sealed class Amazoness_Blowpiper : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
-
     protected override async Task OnAfterMonsterPlayResolved(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Type == CardType.Attack && cardPlay.Target != null && Owner?.Creature != null)

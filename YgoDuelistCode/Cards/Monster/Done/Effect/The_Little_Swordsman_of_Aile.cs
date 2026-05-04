@@ -41,7 +41,6 @@ public sealed class The_Little_Swordsman_of_Aile : EffectMonsterCard, IMonsterAc
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
-
     public int ActivatedEffectEnergyCost => 0;
 
     public CardType ActivatedEffectCardType => CardType.Skill;

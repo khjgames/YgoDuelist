@@ -43,7 +43,6 @@ public sealed class Skilled_White_Magician : EffectMonsterCard, IMonsterActivate
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Spellcaster | YgoCardPackTags.Light | YgoCardPackTags.Spell;
-
     public override Type[] RelatedCards => new[] { typeof(Skilled_White_Magician), typeof(Buster_Blader) };
 
     public int CurrentSpellCounters => SpellCounters;

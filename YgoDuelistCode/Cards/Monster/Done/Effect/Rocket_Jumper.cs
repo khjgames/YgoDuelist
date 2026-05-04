@@ -26,7 +26,6 @@ public sealed class Rocket_Jumper : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Rocket_Jumper) };
 
     public override bool CardShowsBlightKeyword => true;

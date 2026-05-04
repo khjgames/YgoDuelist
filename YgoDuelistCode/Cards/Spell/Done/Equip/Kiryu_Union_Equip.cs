@@ -25,7 +25,8 @@ public sealed class Kiryu_Union_Equip : BaseEquipSpellCard, IYgoUnionEquipSpell,
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.None;
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Spell | YgoCardPackTags.None;
 
     public override Type[] RelatedCards => new[] { typeof(Kiryu_Union_Equip), typeof(Kiryu) };
 

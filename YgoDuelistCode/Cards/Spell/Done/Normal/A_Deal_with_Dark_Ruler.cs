@@ -17,7 +17,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Normal;
 
 /// <summary>
-/// If a Level 8+ monster you controlled was sent to the Graveyard this turn: Special Summon 1 <see cref="Berserk_Dragon"/> from your hand or Deck.
+/// If a Level 8+ monster you controlled was sent to the Graveyard this turn: Special Summon 1 <see cref="Berserk_Dragon"/> from your hand, draw pile, or discard pile.
 /// </summary>
 public sealed class A_Deal_with_Dark_Ruler : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
@@ -62,9 +62,11 @@ public sealed class A_Deal_with_Dark_Ruler : BaseSpellCard, IYgoPrePlayCancelabl
 
         CardPile? hand = YgoPlayerPiles.Hand(player);
         CardPile? draw = YgoPlayerPiles.Draw(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         bool inHand = hand != null && hand.Cards.Contains(berserk);
         bool inDeck = draw != null && draw.Cards.Contains(berserk);
-        if (!inHand && !inDeck)
+        bool inDiscard = discard != null && discard.Cards.Contains(berserk);
+        if (!inHand && !inDeck && !inDiscard)
             return;
 
         YgoDealWithDarkRulerState.EnterDealWithDarkRulerSummonBypass();
@@ -85,9 +87,6 @@ public sealed class A_Deal_with_Dark_Ruler : BaseSpellCard, IYgoPrePlayCancelabl
 
     private static List<CardModel> BuildBerserkDragonCandidates(Player player)
     {
-        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Berserk_Dragon>(
-            player,
-            YgoPlayerPiles.Hand,
-            YgoPlayerPiles.Draw).Cast<CardModel>().ToList();
+        return YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Berserk_Dragon>(player).Cast<CardModel>().ToList();
     }
 }

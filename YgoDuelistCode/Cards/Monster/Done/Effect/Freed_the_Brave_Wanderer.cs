@@ -45,7 +45,6 @@ public sealed class Freed_the_Brave_Wanderer : EffectMonsterCard, IMonsterActiva
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Warrior | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Freed_the_Brave_Wanderer) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

@@ -35,7 +35,6 @@ public sealed class Earth_Effigy : EffectMonsterCard, IDoubleTributeMaterial
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Normal;
-
     public override Type[] RelatedCards =>
         DoubleTributeRelatedCards.For(typeof(Earth_Effigy), DoubleTributeTargetSpec);
 }

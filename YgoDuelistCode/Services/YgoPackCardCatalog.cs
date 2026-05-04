@@ -5,8 +5,10 @@ using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Models.Cards;
 using YgoDuelist.YgoDuelistCode.Cards;
+using YgoDuelist.YgoDuelistCode.Cards.Basic;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -20,11 +22,21 @@ public static class YgoPackCardCatalog
     /// <summary>
     /// Declared <see cref="YgoDuelistCard.PackTags"/> plus implicit tags for monsters that are named fusion materials
     /// elsewhere (<see cref="FusionMaterialArchetypeIndex"/>): Fusion, attribute/race profile, and Normal/Ritual subtype when applicable.
+    /// Strike/Defend and <see cref="BaseYgoPowerCard"/> keep <see cref="YgoCardPackTags.None"/> as declared tags (potion / library rules);
+    /// for pool gates they still gain <see cref="YgoCardPackTags.MultiplayerSafe"/> here when declared tags are <c>None</c>.
+    /// Templates missing <see cref="YgoCardPackTags.MultiplayerSafe"/> on <see cref="YgoDuelistCard.PackTags"/> may still receive it via
+    /// <see cref="YgoMultiplayerSafePackRules.ShouldAugmentMultiplayerSafe"/> (explicit pick list from <c>tools/generate_user_mp_safe_explicit.py</c> + Draw / Elemental / monarch / Gravekeeper / trap-monster / <see cref="IDoubleTributeMaterial"/> / high-tier true normal rules).
     /// </summary>
     public static YgoCardPackTags GetEffectivePackTags(YgoDuelistCard y)
     {
         YgoCardPackTags tags = y.PackTags;
         Type t = y.GetType();
+        if (tags == YgoCardPackTags.None && HasImplicitMultiplayerSafeEffectiveTag(y))
+            tags |= YgoCardPackTags.MultiplayerSafe;
+
+        if ((tags & YgoCardPackTags.MultiplayerSafe) == 0 && YgoMultiplayerSafePackRules.ShouldAugmentMultiplayerSafe(y, t))
+            tags |= YgoCardPackTags.MultiplayerSafe;
+
         if (!FusionMaterialArchetypeIndex.IsNamedFusionMaterial(t))
             return tags;
 
@@ -39,6 +51,29 @@ public static class YgoPackCardCatalog
         }
 
         return tags;
+    }
+
+    /// <summary>Cards that intentionally keep declared <see cref="YgoDuelistCard.PackTags"/> at <see cref="YgoCardPackTags.None"/> but must count as multiplayer-safe for <see cref="GetEffectivePackTags"/>.</summary>
+    private static bool HasImplicitMultiplayerSafeEffectiveTag(YgoDuelistCard y) =>
+        y is Strike_YgoDuelist or Defend_YgoDuelist or BaseYgoPowerCard;
+
+    /// <summary>
+    /// Multiplayer: only <see cref="YgoDuelistCard"/> templates whose effective tags include
+    /// <see cref="YgoCardPackTags.MultiplayerSafe"/> may appear in procedural YGO pools (packs, YGO shop, potion grids, transforms).
+    /// </summary>
+    public static bool IsYgoBlockedFromMultiplayerProceduralPools(Player player, CardModel model)
+    {
+        if (player.RunState.Players.Count <= 1)
+            return false;
+        return model is YgoDuelistCard y && (GetEffectivePackTags(y) & YgoCardPackTags.MultiplayerSafe) == 0;
+    }
+
+    /// <inheritdoc cref="IsYgoBlockedFromMultiplayerProceduralPools(Player, CardModel)"/>
+    public static bool IsYgoBlockedFromMultiplayerProceduralPools(IRunState runState, CardModel model)
+    {
+        if (runState.Players.Count <= 1)
+            return false;
+        return model is YgoDuelistCard y && (GetEffectivePackTags(y) & YgoCardPackTags.MultiplayerSafe) == 0;
     }
 
     private static readonly object Gate = new();
@@ -103,6 +138,7 @@ public static class YgoPackCardCatalog
 
         return GetAllYgoTemplates()
             .Where(c => unlocked.Contains(c.Id) && c is YgoDuelistCard y && (GetEffectivePackTags(y) & tagMask) != 0)
+            .Where(c => !IsYgoBlockedFromMultiplayerProceduralPools(player, c))
             .ToList();
     }
 

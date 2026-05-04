@@ -20,19 +20,22 @@ public sealed class CardLibraryFilterSortingRuleCategoryFilterToggleGUI
     private readonly NCardRarityTickbox? _rarity;
     private readonly NCardCostTickbox? _cost;
     private readonly YgoTriStateRarityTickController? _triRarity;
+    private readonly YgoQuadStatePackTagTickController? _quadPackTag;
 
     private CardLibraryFilterSortingRuleCategoryFilterToggleGUI(
         CardLibraryFilterToggleStyle style,
         NCardTypeTickbox? type,
         NCardRarityTickbox? rarity,
         NCardCostTickbox? cost,
-        YgoTriStateRarityTickController? triRarity)
+        YgoTriStateRarityTickController? triRarity,
+        YgoQuadStatePackTagTickController? quadPackTag)
     {
         _style = style;
         _type = type;
         _rarity = rarity;
         _cost = cost;
         _triRarity = triRarity;
+        _quadPackTag = quadPackTag;
     }
 
     public Control Root => _style switch
@@ -43,18 +46,25 @@ public sealed class CardLibraryFilterSortingRuleCategoryFilterToggleGUI
         _ => throw new ArgumentOutOfRangeException()
     };
 
-    /// <summary>Tri-state for rarity rows (pack tags, attribute, race). Two-state toggles map to neutral/include only.</summary>
+    /// <summary>
+    /// Tri-state for rarity rows (race); quad-state for pack tags (neutral / OR check / AND O / ✕).
+    /// Two-state toggles map to neutral/include only.
+    /// </summary>
     public CardLibraryFilterTriState RowState
     {
         get
         {
+            if (_quadPackTag != null)
+                return _quadPackTag.State;
             if (_triRarity != null)
                 return _triRarity.State;
             return IsTicked ? CardLibraryFilterTriState.Include : CardLibraryFilterTriState.Neutral;
         }
         set
         {
-            if (_triRarity != null)
+            if (_quadPackTag != null)
+                _quadPackTag.SetState(value);
+            else if (_triRarity != null)
                 _triRarity.SetState(value);
             else
                 IsTicked = value == CardLibraryFilterTriState.Include;
@@ -66,9 +76,11 @@ public sealed class CardLibraryFilterSortingRuleCategoryFilterToggleGUI
         get => _style switch
         {
             CardLibraryFilterToggleStyle.CardType => _type!.IsTicked,
-            CardLibraryFilterToggleStyle.Rarity => _triRarity != null
-                ? _triRarity.State == CardLibraryFilterTriState.Include
-                : _rarity!.IsTicked,
+            CardLibraryFilterToggleStyle.Rarity => _quadPackTag != null
+                ? _quadPackTag.State == CardLibraryFilterTriState.Include
+                : _triRarity != null
+                    ? _triRarity.State == CardLibraryFilterTriState.Include
+                    : _rarity!.IsTicked,
             CardLibraryFilterToggleStyle.Cost => _cost!.IsTicked,
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -80,7 +92,9 @@ public sealed class CardLibraryFilterSortingRuleCategoryFilterToggleGUI
                     _type!.IsTicked = value;
                     break;
                 case CardLibraryFilterToggleStyle.Rarity:
-                    if (_triRarity != null)
+                    if (_quadPackTag != null)
+                        _quadPackTag.SetState(value ? CardLibraryFilterTriState.Include : CardLibraryFilterTriState.Neutral);
+                    else if (_triRarity != null)
                         _triRarity.SetState(value ? CardLibraryFilterTriState.Include : CardLibraryFilterTriState.Neutral);
                     else
                         _rarity!.IsTicked = value;
@@ -118,12 +132,14 @@ public sealed class CardLibraryFilterSortingRuleCategoryFilterToggleGUI
     /// <param name="iconTexture">CardType only: replaces the default %Image texture when set (expected pre-scaled, e.g. 5%).</param>
     /// <param name="hoverLoc">Hover tip for this row; when null, uses the generic <c>PACK_TAG_FILTER_ROW</c> entry.</param>
     /// <param name="triStateRarity">Rarity only: empty → check → ✕ → empty; drives <see cref="RowState"/>.</param>
+    /// <param name="quadStatePackTag">Pack tags only: empty → OR check → AND (O) → ✕ → empty.</param>
     public static CardLibraryFilterSortingRuleCategoryFilterToggleGUI Create(
         CardLibraryFilterToggleStyle style,
         string labelText,
         Texture2D? iconTexture = null,
         LocString? hoverLoc = null,
-        bool triStateRarity = false)
+        bool triStateRarity = false,
+        bool quadStatePackTag = false)
     {
         switch (style)
         {
@@ -134,7 +150,7 @@ public sealed class CardLibraryFilterSortingRuleCategoryFilterToggleGUI
                 if (iconTexture != null)
                     node.GetNode<TextureRect>("%Image").Texture = iconTexture;
                 node.Loc = hoverLoc ?? PackTagRowHoverLoc;
-                return new CardLibraryFilterSortingRuleCategoryFilterToggleGUI(style, node, null, null, null);
+                return new CardLibraryFilterSortingRuleCategoryFilterToggleGUI(style, node, null, null, null, null);
             }
             case CardLibraryFilterToggleStyle.Rarity:
             {
@@ -143,14 +159,21 @@ public sealed class CardLibraryFilterSortingRuleCategoryFilterToggleGUI
                 node.GetNode<MegaLabel>("Label").SetTextAutoSize(labelText);
                 node.Loc = hoverLoc ?? PackTagRowHoverLoc;
                 YgoTriStateRarityTickController? tri = null;
-                if (triStateRarity)
+                YgoQuadStatePackTagTickController? quad = null;
+                if (quadStatePackTag)
+                {
+                    quad = new YgoQuadStatePackTagTickController(node);
+                    YgoQuadStatePackTagTickRegistry.Register(node, quad);
+                    Callable.From(() => quad.EnsureOverlay()).CallDeferred();
+                }
+                else if (triStateRarity)
                 {
                     tri = new YgoTriStateRarityTickController(node);
                     YgoTriStateRarityTickRegistry.Register(node, tri);
                     Callable.From(() => tri.EnsureOverlay()).CallDeferred();
                 }
 
-                return new CardLibraryFilterSortingRuleCategoryFilterToggleGUI(style, null, node, null, tri);
+                return new CardLibraryFilterSortingRuleCategoryFilterToggleGUI(style, null, node, null, tri, quad);
             }
             case CardLibraryFilterToggleStyle.Cost:
             {
@@ -159,7 +182,7 @@ public sealed class CardLibraryFilterSortingRuleCategoryFilterToggleGUI
                 var label = node.GetNode<MegaLabel>("%Label");
                 label.SetTextAutoSize(labelText);
                 node.Loc = hoverLoc ?? PackTagRowHoverLoc;
-                return new CardLibraryFilterSortingRuleCategoryFilterToggleGUI(style, null, null, node, null);
+                return new CardLibraryFilterSortingRuleCategoryFilterToggleGUI(style, null, null, node, null, null);
             }
             default:
                 throw new ArgumentOutOfRangeException(nameof(style), style, null);

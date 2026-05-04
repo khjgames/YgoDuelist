@@ -40,7 +40,6 @@ public sealed class Spirit_Ryu : EffectMonsterCard, IMonsterActivatedEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Dragon | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Spirit_Ryu) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

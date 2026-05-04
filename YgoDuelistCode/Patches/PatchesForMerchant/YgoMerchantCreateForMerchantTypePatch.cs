@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Runs;
 using YgoDuelistCharacter = YgoDuelist.YgoDuelistCode.Character.YgoDuelist;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
@@ -82,8 +83,9 @@ public static class YgoMerchantCreateForMerchantTypePatch
 
     private static IEnumerable<CardModel> FilterForPlayerCount(IRunState runState, IEnumerable<CardModel> opts)
     {
-        if (runState.Players.Count > 1)
-            return opts.Where(c => c.MultiplayerConstraint != CardMultiplayerConstraint.SingleplayerOnly);
-        return opts.Where(c => c.MultiplayerConstraint != CardMultiplayerConstraint.MultiplayerOnly);
+        IEnumerable<CardModel> filtered = runState.Players.Count > 1
+            ? opts.Where(c => c.MultiplayerConstraint != CardMultiplayerConstraint.SingleplayerOnly)
+            : opts.Where(c => c.MultiplayerConstraint != CardMultiplayerConstraint.MultiplayerOnly);
+        return filtered.Where(c => !YgoPackCardCatalog.IsYgoBlockedFromMultiplayerProceduralPools(runState, c));
     }
 }

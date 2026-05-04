@@ -23,7 +23,7 @@ public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
         new[] { new DynamicVar("Mgc", 3m) };
 
     public Cursed_Seal_of_the_Forbidden_Spell()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapCounter)
+        : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapCounter)
     {
     }
     // Dictates the card pack tags this card will be included in.
@@ -71,7 +71,7 @@ public sealed class Cursed_Seal_of_the_Forbidden_Spell : BaseTrapCard
         await PowerCmd.Apply<PlatingPower>(Owner.Creature, DynamicVars["Mgc"].BaseValue, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(1m);
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(2m);
 
     private async Task<CardModel?> ChooseSpellToDiscard(PlayerChoiceContext choiceContext)
     {

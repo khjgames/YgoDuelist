@@ -75,7 +75,8 @@
         <Folder Include="YgoDuelist\images\relics\big\" />
     </ItemGroup>
 
-    <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent">
+    <!-- dotnet build /p:SkipDeployToMods=true when SlayTheSpire2.exe locks YgoDuelist.dll -->
+    <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent" Condition="'$(SkipDeployToMods)' != 'true'">
         <Message Text="Copying .dll and manifest to mods folder." Importance="high" />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Path)\mods\$(MSBuildProjectName)\" />
         <Copy SourceFiles="YgoDuelist.json" DestinationFolder="$(Sts2Path)\mods\$(MSBuildProjectName)\" />

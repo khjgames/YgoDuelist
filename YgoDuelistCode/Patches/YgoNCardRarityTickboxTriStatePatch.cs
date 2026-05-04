@@ -11,6 +11,12 @@ public static class YgoNCardRarityTickboxTriStatePatch
     [HarmonyPrefix]
     static bool Prefix(NCardRarityTickbox __instance)
     {
+        if (YgoQuadStatePackTagTickRegistry.TryGet(__instance, out YgoQuadStatePackTagTickController? quad) && quad != null)
+        {
+            quad.OnRelease();
+            return false;
+        }
+
         if (!YgoTriStateRarityTickRegistry.TryGet(__instance, out YgoTriStateRarityTickController? c) || c == null)
             return true;
         c.OnRelease();

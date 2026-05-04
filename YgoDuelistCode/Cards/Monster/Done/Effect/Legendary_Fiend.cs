@@ -36,7 +36,6 @@ public sealed class Legendary_Fiend : EffectMonsterCard, IYgoTurnStartAtkGrowthF
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Fiend | YgoCardPackTags.Dark;
-
     public override Type[] RelatedCards => new[] { typeof(Legendary_Fiend) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

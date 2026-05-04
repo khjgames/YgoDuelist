@@ -45,7 +45,6 @@ public sealed class Endless_Decay : EffectMonsterCard, IMonsterActivatedEffect, 
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Zombie | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Endless_Decay) };
 
     protected override TargetType NonAttackPlayTargetType => TargetType.AnyEnemy;

@@ -36,7 +36,6 @@ public sealed class Gale_Lizard : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water;
-
     public override Type[] RelatedCards => new[] { typeof(Gale_Lizard) };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

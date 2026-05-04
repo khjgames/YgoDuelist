@@ -28,13 +28,12 @@ public sealed class Diffusion_Wave_Motion : BaseSpellCard, IYgoNeowSignatureDark
     public override bool CancelSpellTrapZonePlayWhenUnresolvedTargetAfterResolve => true;
 
     public Diffusion_Wave_Motion()
-        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 1, cardType: CardType.Attack, rarity: CardRarity.Uncommon, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Spell | YgoCardPackTags.Light | YgoCardPackTags.Spellcaster;
-
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null

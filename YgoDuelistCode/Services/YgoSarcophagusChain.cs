@@ -178,17 +178,8 @@ public static class YgoSarcophagusChain
         return ok;
     }
 
-    public static List<Spirit_of_the_Pharaoh> BuildSpiritHandOrDeckCandidates(Player player)
-    {
-        var list = new List<Spirit_of_the_Pharaoh>();
-        CardPile? hand = YgoPlayerPiles.Hand(player);
-        if (hand != null)
-            list.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards).OfType<Spirit_of_the_Pharaoh>());
-        CardPile? draw = YgoPlayerPiles.Draw(player);
-        if (draw != null)
-            list.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards).OfType<Spirit_of_the_Pharaoh>());
-        return list;
-    }
+    public static List<Spirit_of_the_Pharaoh> BuildSpiritHandOrDeckCandidates(Player player) =>
+        YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Spirit_of_the_Pharaoh>(player);
 
     private static async Task<bool> TryPlaceContinuousFromHandOrDeckAsync<TContinuous>(
         PlayerChoiceContext choiceContext,
@@ -226,24 +217,10 @@ public static class YgoSarcophagusChain
     private static TContinuous? FindFirstInHandOrDeckOrdered<TContinuous>(Player player)
         where TContinuous : BaseContinuousSpellCard
     {
-        CardPile? hand = YgoPlayerPiles.Hand(player);
-        if (hand != null)
+        foreach (CardModel c in YgoPlayerPiles.OrderedCardsFromHandDrawDiscard(player))
         {
-            foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards))
-            {
-                if (c is TContinuous t)
-                    return t;
-            }
-        }
-
-        CardPile? draw = YgoPlayerPiles.Draw(player);
-        if (draw != null)
-        {
-            foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards))
-            {
-                if (c is TContinuous t)
-                    return t;
-            }
+            if (c is TContinuous t)
+                return t;
         }
 
         return null;

@@ -34,7 +34,6 @@ public sealed class Gear_Golem_the_Moving_Fortress : EffectMonsterCard, IMonster
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Earth | YgoCardPackTags.Machine | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Gear_Golem_the_Moving_Fortress) };
 
     public int ActivatedEffectEnergyCost => 0;

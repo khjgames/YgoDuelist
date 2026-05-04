@@ -25,11 +25,10 @@ public sealed class Pyramid_Energy : BaseSpellCard, IYgoPrePlayCancelableGridSel
     private const int OptionAtk = 0;
     private const int OptionDef = 1;
 
-    private const decimal AtkBonus = 4m;
-    private const decimal DefBonus = 4m;
+    private decimal StatBonus => IsUpgraded ? 5m : 4m;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new[] { new DynamicVar("Mgc", AtkBonus), new DynamicVar("Mgc2", DefBonus) };
+        new[] { new DynamicVar("Mgc", StatBonus), new DynamicVar("Mgc2", StatBonus) };
 
     public Pyramid_Energy()
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
@@ -91,9 +90,9 @@ public sealed class Pyramid_Energy : BaseSpellCard, IYgoPrePlayCancelableGridSel
 
         // Buff lives on the player so duel monsters still in hand (summoned later this turn) get the bonus.
         if (optionId == OptionAtk)
-            await PowerCmd.Apply<PyramidEnergyAtkBonusPower>(Owner.Creature, AtkBonus, Owner.Creature, this);
+            await PowerCmd.Apply<PyramidEnergyAtkBonusPower>(Owner.Creature, StatBonus, Owner.Creature, this);
         else
-            await PowerCmd.Apply<PyramidEnergyDefBonusPower>(Owner.Creature, DefBonus, Owner.Creature, this);
+            await PowerCmd.Apply<PyramidEnergyDefBonusPower>(Owner.Creature, StatBonus, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

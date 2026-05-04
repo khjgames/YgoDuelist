@@ -26,7 +26,6 @@ public sealed class Mefist_the_Infernal_General : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Fiend | YgoCardPackTags.Dark;
-
     public override Type[] RelatedCards => new[] { typeof(Mefist_the_Infernal_General) };
 
     public override bool CardShowsSplinterKeyword => true;

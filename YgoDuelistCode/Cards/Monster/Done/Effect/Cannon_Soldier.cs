@@ -39,7 +39,6 @@ public sealed class Cannon_Soldier : EffectMonsterCard, IMonsterActivatedEffect,
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Machine | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Cannon_Soldier) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

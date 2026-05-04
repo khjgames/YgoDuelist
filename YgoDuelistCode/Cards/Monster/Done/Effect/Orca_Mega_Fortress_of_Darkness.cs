@@ -38,7 +38,6 @@ public sealed class Orca_Mega_Fortress_of_Darkness : EffectMonsterCard, IMonster
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Water | YgoCardPackTags.Ocean;
-
     public override Type[] RelatedCards => new[] { typeof(Orca_Mega_Fortress_of_Darkness), typeof(Torpedo_Fish) };
 
     public int ActivatedEffectEnergyCost => 0;

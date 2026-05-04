@@ -36,5 +36,4 @@ public sealed class Pyramid_Turtle : EffectMonsterCard, IBattleDeathOptionalDeck
         m.DuelMonsterRace == DuelMonsterRace.Zombie && m.BaseDef <= 20 && m.CanSummonDuelMonster;
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Zombie;
-}
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Zombie;}

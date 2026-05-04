@@ -35,7 +35,6 @@ public sealed class D_D_Warrior : EffectMonsterCard, IMonsterActivatedEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | FusionMonsterCard.PackTagsForFusionProfile(DuelMonsterAttribute, DuelMonsterRace);
-
     public int ActivatedEffectEnergyCost => 0;
     public CardType ActivatedEffectCardType => CardType.Attack;
     public TargetType ActivatedEffectTarget => TargetType.AnyEnemy;

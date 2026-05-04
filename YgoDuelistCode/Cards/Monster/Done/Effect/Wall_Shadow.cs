@@ -33,7 +33,6 @@ public sealed class Wall_Shadow : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
-
     public override Type[] RelatedCards =>
         new[] { typeof(Wall_Shadow), typeof(Magical_Labyrinth), typeof(Labyrinth_Wall) };
 

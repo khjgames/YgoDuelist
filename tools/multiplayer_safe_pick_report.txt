@@ -1,0 +1,47 @@
+
+=== Earth need={'fusion_m': 1, 'ritual_m': 0, 'normal_m': 13, 'effect_m': 5, 'spells': 0, 'token_spells': 0, 'traps': 1} picked=0 ===
+
+=== Water need={'fusion_m': 1, 'ritual_m': 0, 'normal_m': 13, 'effect_m': 5, 'spells': 1, 'traps': 0} picked=1 ===
+  risk= 3 cat=spells       A_Legendary_Ocean
+
+=== Wind need={'fusion_m': 2, 'ritual_m': 0, 'normal_m': 12, 'effect_m': 5, 'spells': 1, 'traps': 0} picked=0 ===
+
+=== Fire need={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 6, 'spells': 1, 'traps': 0} picked=0 ===
+
+=== Dark need={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 6, 'spells': 1, 'token_spells': 0, 'traps': 0} picked=0 ===
+
+=== Light need={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 9, 'effect_m': 7, 'spells': 1, 'traps': 0} picked=0 ===
+
+=== Fusion need={'fusion_m': 16, 'effect_m': 3, 'spells': 1} picked=0 ===
+
+=== Ritual need={'ritual_m': 9, 'effect_m': 1, 'ritual_spells': 10} picked=0 ===
+
+=== Ocean need={'fusion_m': 1, 'ritual_m': 0, 'normal_m': 13, 'effect_m': 4, 'spells': 1, 'token_spells': 1} picked=0 ===
+
+=== Insect need={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 6, 'spells': 1, 'token_spells': 1} picked=0 ===
+
+=== Machine need={'fusion_m': 2, 'normal_m': 13, 'effect_m': 4, 'spells': 1} picked=0 ===
+
+=== Dragon need={'fusion_m': 4, 'ritual_m': 0, 'normal_m': 9, 'effect_m': 5, 'spells': 1, 'traps': 1} picked=1 ===
+  risk= 3 cat=effect_m     Lord_of_D
+
+=== Zombie need={'fusion_m': 2, 'ritual_m': 0, 'normal_m': 10, 'effect_m': 6, 'spells': 2, 'traps': 0} picked=0 ===
+
+=== Fiend need={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 12, 'effect_m': 6, 'spells': 0, 'token_spells': 0, 'traps': 0} picked=0 ===
+
+=== Spellcaster need={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 7, 'spells': 1} picked=0 ===
+
+=== Warrior need={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 6, 'spells': 1, 'traps': 0} picked=0 ===
+
+=== Heal need={'effect_m': 11, 'spells': 5, 'token_spells': 1, 'traps': 3} picked=0 ===
+
+=== Draw need={'effect_m': 13, 'spells': 5, 'traps': 2} picked=0 ===
+
+=== Chance need={'fusion_m': 2, 'effect_m': 11, 'spells': 2, 'traps': 5} picked=0 ===
+
+=== Burn need={'fusion_m': 0, 'effect_m': 13, 'spells': 4, 'traps': 3} picked=0 ===
+
+=== Spell need={'ritual_m': 0, 'normal_m': 0, 'effect_m': 4, 'spells': 14, 'token_spells': 1, 'traps': 1} picked=1 ===
+  risk= 3 cat=spells       FlatRaceFieldSpells
+
+=== Trap need={'normal_m': 0, 'effect_m': 3, 'spells': 1, 'traps': 16} picked=0 ===

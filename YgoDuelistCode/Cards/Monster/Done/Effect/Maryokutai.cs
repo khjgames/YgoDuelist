@@ -34,7 +34,6 @@ public sealed class Maryokutai : EffectMonsterCard, IMonsterActivatedEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Water | YgoCardPackTags.Starter;
-
     public override Type[] RelatedCards => new[] { typeof(Maryokutai) };
 
     public int ActivatedEffectEnergyCost => 0;

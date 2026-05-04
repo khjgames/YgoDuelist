@@ -13,7 +13,7 @@ using YgoDuelist.YgoDuelistCode.Piles;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// Monster moved to Graveyard from hand or draw pile: dispatches <see cref="IYgoAfterMonsterMovedToGraveyardFromHandOrDraw"/>.
+/// Monster moved to Graveyard from hand, draw pile, or discard pile: dispatches <see cref="IYgoAfterMonsterMovedToGraveyardFromHandOrDraw"/>.
 /// </summary>
 [HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Add), typeof(IEnumerable<CardModel>), typeof(CardPile), typeof(CardPilePosition), typeof(AbstractModel), typeof(bool))]
 public static class CardPileCmdMonsterGraveyardFromHandOrDrawHookPatch
@@ -41,7 +41,7 @@ public static class CardPileCmdMonsterGraveyardFromHandOrDrawHookPatch
 
         foreach ((CardModel card, PileType? from) in state)
         {
-            if (from is not (PileType.Hand or PileType.Draw))
+            if (from is not (PileType.Hand or PileType.Draw or PileType.Discard))
                 continue;
             if (card is not IYgoAfterMonsterMovedToGraveyardFromHandOrDraw hook)
                 continue;

@@ -14,7 +14,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Continuos;
 
 /// <summary>
-/// Continuous Trap: each of your turn starts while face-up, place the next Sarcophagus spell from your hand or Deck.
+/// Continuous Trap: each of your turn starts while face-up, place the next Sarcophagus spell from your hand, draw pile, or discard pile.
 /// When all three are face-up on the field, destroy them and Special Summon <see cref="Spirit_of_the_Pharaoh"/>.
 /// If any Sarcophagus piece leaves the field, the others are destroyed (<see cref="YgoSarcophagusChain"/>).
 /// </summary>

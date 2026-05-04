@@ -43,7 +43,6 @@ public sealed class Frontier_Wiseman : EffectMonsterCard, IYgoOwnerTurnStartFiel
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Earth | YgoCardPackTags.Spellcaster | YgoCardPackTags.Warrior;
-
     public override bool UseAlternateUpgradedDescription => true;
 
     public override Type[] RelatedCards => new[] { typeof(Frontier_Wiseman) };

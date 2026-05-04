@@ -36,7 +36,6 @@ public sealed class Pitch_Dark_Dragon : EffectMonsterCard, IUnionEffectMonster, 
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Dragon | YgoCardPackTags.Normal;
-
     protected override Type[] PreviewReferencedCardTypes =>
         YgoPreviewReferenceOrder.LeadingThenMerged(
             GetType(),

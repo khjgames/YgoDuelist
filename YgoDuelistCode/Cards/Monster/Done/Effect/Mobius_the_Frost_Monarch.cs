@@ -45,7 +45,6 @@ public sealed class Mobius_the_Frost_Monarch : EffectMonsterCard
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Spell | YgoCardPackTags.Trap;
-
     public override Type[] RelatedCards => new[] { typeof(Mobius_the_Frost_Monarch) };
 
     protected override IEnumerable<DynamicVar> CanonicalVars

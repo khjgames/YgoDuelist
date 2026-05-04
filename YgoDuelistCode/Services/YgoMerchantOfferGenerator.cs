@@ -374,7 +374,9 @@ public static class YgoMerchantOfferGenerator
             .GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint)
             .Select(c => c.Id)
             .ToHashSet();
-        List<CardModel> raw = YgoPackCardCatalog.GetAllYgoTemplates().Where(c => unlocked.Contains(c.Id)).ToList();
+        List<CardModel> raw = YgoPackCardCatalog.GetAllYgoTemplates()
+            .Where(c => unlocked.Contains(c.Id) && !YgoPackCardCatalog.IsYgoBlockedFromMultiplayerProceduralPools(player, c))
+            .ToList();
         return FilterPool(player, raw, rarity, excludeBundledTagFromPool, chosenIds);
     }
 
@@ -454,7 +456,8 @@ public static class YgoMerchantOfferGenerator
         List<CardModel> pool = YgoPackCardCatalog.GetAllYgoTemplates()
             .Where(c =>
                 unlocked.Contains(c.Id) && c.Rarity != CardRarity.Basic && !chosenIds.Contains(c.Id)
-                && AllowedForRun(player, c))
+                && AllowedForRun(player, c)
+                && !YgoPackCardCatalog.IsYgoBlockedFromMultiplayerProceduralPools(player, c))
             .ToList();
         return pool.Count > 0 ? rng.NextItem(pool) : null;
     }

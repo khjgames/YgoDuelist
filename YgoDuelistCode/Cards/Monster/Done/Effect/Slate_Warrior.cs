@@ -40,7 +40,6 @@ public sealed class Slate_Warrior : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Wind | YgoCardPackTags.Warrior | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[]
     {
         typeof(Slate_Warrior),

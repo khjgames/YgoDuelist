@@ -17,7 +17,7 @@ public interface IBattleDeathOptionalDeckSpecialSummon
     LocString BattleDeathSummonPrompt { get; }
     bool IsBattleDeathDeckSummonCandidate(BaseMonsterCard m);
 
-    /// <summary>When true, search <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.Hand"/> and draw pile; otherwise draw pile only.</summary>
+    /// <summary>When true, search hand, draw pile, and discard pile (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.OrderedCardsFromHandDrawDiscard"/>); otherwise draw pile only.</summary>
     bool BattleDeathSummonSearchHandAndDeck => false;
 }
 
@@ -28,6 +28,6 @@ public interface IGraveyardOptionalDeckSpecialSummon
     LocString GraveyardSummonPrompt { get; }
     bool IsGraveyardDeckSummonCandidate(BaseMonsterCard m);
 
-    /// <summary>When true, search hand and draw pile; otherwise draw pile only.</summary>
+    /// <summary>When true, search hand, draw pile, and discard pile; otherwise draw pile only.</summary>
     bool GraveyardSummonSearchHandAndDeck => false;
 }

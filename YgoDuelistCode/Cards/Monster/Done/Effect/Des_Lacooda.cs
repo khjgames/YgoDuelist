@@ -30,7 +30,6 @@ public sealed class Des_Lacooda : EffectMonsterCard, IMonsterFlipEffect, IMonste
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw;
-
     public override Type[] RelatedCards => new[] { typeof(Des_Lacooda) };
 
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)

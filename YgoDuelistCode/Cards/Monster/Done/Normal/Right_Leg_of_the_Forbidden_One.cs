@@ -24,7 +24,8 @@ public sealed class Right_Leg_of_the_Forbidden_One : NormalMonsterCard
     }
 
     // Dictates the card pack tags this card will be included in.
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
+    public override YgoCardPackTags PackTags => YgoCardPackTags.None |
+        YgoCardPackTags.Dark |
         YgoCardPackTags.Spellcaster |
         YgoCardPackTags.Normal |
         YgoCardPackTags.WinCon;

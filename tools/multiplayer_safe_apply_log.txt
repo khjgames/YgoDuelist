@@ -1,0 +1,443 @@
+
+=== Earth quota={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 12, 'effect_m': 5, 'spells': 1, 'token_spells': 0, 'traps': 0} picked=20 ===
+  risk=  1 normal_m     Abyss_Flower
+  risk=  1 normal_m     Acid_Crawler
+  risk=  1 normal_m     Acrobat_Monkey
+  risk=  1 normal_m     Alinsection
+  risk=  1 normal_m     Alligator_S_Sword
+  risk=  1 normal_m     Alpha_the_Magnet_Warrior
+  risk=  1 normal_m     Ancient_Jar
+  risk=  1 normal_m     Ancient_Lizard_Warrior
+  risk=  1 normal_m     Ancient_One_of_the_Deep_Forest
+  risk=  1 normal_m     Ancient_Tree_of_Enlightenment
+  risk=  1 normal_m     Ansatsu
+  risk=  1 normal_m     Anthrosaurus
+  risk=  1 effect_m     Chronomaly_Mayan_Machine
+  risk=  1 effect_m     Cobra_Jar
+  risk=  1 effect_m     Cockroach_Knight
+  risk=  1 effect_m     D_D_Crazy_Beast
+  risk=  1 effect_m     Dark_Zebra
+  risk=  3 fusion_m     The_Last_Warrior_from_Another_Planet
+  risk=  1 ritual_m     Black_Luster_Soldier
+  risk=  3 spells       Necrovalley
+
+=== Water quota={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 12, 'effect_m': 5, 'spells': 1} picked=20 ===
+  risk=  1 normal_m     Akihiron
+  risk=  1 normal_m     Amazon_of_the_Seas
+  risk=  1 normal_m     Amphibian_Beast
+  risk=  1 normal_m     Aqua_Madoor
+  risk=  1 normal_m     Aqua_Snake
+  risk=  1 normal_m     Arma_Knight
+  risk=  1 normal_m     Armored_Starfish
+  risk=  1 normal_m     Behegon
+  risk=  1 normal_m     Bolt_Escargot
+  risk=  1 normal_m     Bolt_Penguin
+  risk=  1 normal_m     Boneheimer
+  risk=  1 normal_m     Bottom_Dweller
+  risk=  1 effect_m     Lord_Poison
+  risk=  1 effect_m     Mermaid_Knight
+  risk=  1 effect_m     The_Legendary_Fisherman
+  risk=  1 effect_m     Unshaven_Angler
+  risk=  3 effect_m     Ameba
+  risk=  1 ritual_m     Crab_Turtle
+  risk=  3 spells       A_Legendary_Ocean
+  risk=  1 normal_m     Boulder_Tortoise
+
+=== Wind quota={'fusion_m': 2, 'normal_m': 12, 'effect_m': 5, 'spells': 1} picked=20 ===
+  risk=  1 normal_m     Air_Eater
+  risk=  1 normal_m     Baby_Dragon
+  risk=  1 normal_m     Bat
+  risk=  1 normal_m     Blue_Winged_Crown
+  risk=  1 normal_m     Crow_Goblin
+  risk=  1 normal_m     Cyber_Falcon
+  risk=  1 normal_m     Cyber_Tech_Alligator
+  risk=  1 normal_m     Dancing_Elf
+  risk=  1 normal_m     Dark_Bat
+  risk=  1 normal_m     Dark_Shade
+  risk=  1 normal_m     Djinn_the_Watcher_of_the_Wind
+  risk=  1 normal_m     Droll_Bird
+  risk=  1 effect_m     Birdface
+  risk=  1 effect_m     Sacred_Crane
+  risk=  1 effect_m     Whirlwind_Prodigy
+  risk=  1 effect_m     Wind_Effigy
+  risk=  3 effect_m     An_Owl_of_Luck
+  risk=  1 normal_m     Empress_Mantis
+  risk=  1 normal_m     Fairy_Dragon
+  risk=  1 normal_m     Faith_Bird
+
+=== Fire quota={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 6, 'spells': 1} picked=20 ===
+  risk=  1 normal_m     Blazing_Inpachi
+  risk=  1 normal_m     Darkfire_Soldier_1
+  risk=  1 normal_m     Darkfire_Soldier_2
+  risk=  1 normal_m     Dokuroyaiba
+  risk=  1 normal_m     Fire_Eye
+  risk=  1 normal_m     Fire_Kraken
+  risk=  1 normal_m     Firewing_Pegasus
+  risk=  1 normal_m     Fireyarou
+  risk=  1 normal_m     Flame_Cerebrus
+  risk=  1 normal_m     Flame_Champion
+  risk=  1 effect_m     Flame_Ruler
+  risk=  1 effect_m     Yamata_Dragon
+  risk=  3 effect_m     Command_Knight
+  risk=  3 effect_m     Lava_Golem
+  risk=  3 effect_m     Manticore_of_Darkness
+  risk=  3 effect_m     Molten_Zombie
+  risk=  1 ritual_m     Legendary_Flame_Lord
+  risk=  0 spells       Burning_Spear
+  risk=  1 normal_m     Flame_Dancer
+  risk=  1 normal_m     Flame_Manipulator
+
+=== Dark quota={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 9, 'effect_m': 6, 'spells': 1, 'token_spells': 0, 'traps': 1} picked=20 ===
+  risk=  1 normal_m     Akakieisu
+  risk=  1 normal_m     Ancient_Brain
+  risk=  1 normal_m     Ancient_Sorcerer
+  risk=  1 normal_m     Ancient_Tool
+  risk=  1 normal_m     Archfiend_Mirror
+  risk=  1 normal_m     Archfiend_Soldier
+  risk=  1 normal_m     Armored_Zombie
+  risk=  1 normal_m     Baron_of_the_Fiend_Sword
+  risk=  1 normal_m     Beast_of_Talwar
+  risk=  1 effect_m     Chopman_the_Desperate_Outlaw
+  risk=  1 effect_m     Dark_Effigy
+  risk=  1 effect_m     Double_Coston
+  risk=  1 effect_m     Giant_Germ
+  risk=  1 effect_m     Gravekeeper_s_Curse
+  risk=  1 effect_m     Keeper_of_the_Shrine
+  risk=  3 fusion_m     Dark_Paladin
+  risk=  3 fusion_m     Five_Headed_Dragon
+  risk=  1 ritual_m     Chakra
+  risk=  3 spells       A_Deal_with_Dark_Ruler
+  risk=  3 traps        Physical_Double
+
+=== Light quota={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 9, 'effect_m': 7, 'spells': 1} picked=20 ===
+  risk=  1 normal_m     Ancient_Elf
+  risk=  1 normal_m     Binding_Chain
+  risk=  1 normal_m     Bio_Mage
+  risk=  1 normal_m     Blue_Eyes_White_Dragon
+  risk=  1 normal_m     Dark_Witch
+  risk=  1 normal_m     Divine_Dragon_Ragnarok
+  risk=  1 normal_m     Dunames_Dark_Witch
+  risk=  1 normal_m     Eldeen
+  risk=  1 normal_m     Fairy_S_Gift
+  risk=  1 effect_m     Asura_Priest
+  risk=  1 effect_m     Gellenduo
+  risk=  1 effect_m     Kaiser_Sea_Horse
+  risk=  1 effect_m     Light_Effigy
+  risk=  1 effect_m     Maha_Vailo
+  risk=  1 effect_m     Samsara_Dragon
+  risk=  1 effect_m     Serenade_The_Melodious_Diva
+  risk=  1 ritual_m     Skull_Guardian
+  risk=  1 spells       Book_of_Taiyou
+  risk=  1 normal_m     Fiend_Reflection_2
+  risk=  1 normal_m     Genin
+
+=== Fusion quota={'fusion_m': 16, 'effect_m': 3, 'spells': 1} picked=17 ===
+  risk=  3 fusion_m     Five_Headed_Dragon
+  risk=  1 effect_m     Beastking_of_the_Swamps
+  risk=  1 effect_m     Goddess_with_the_Third_Eye
+  risk=  1 effect_m     Mystical_Sheep_1
+  risk=  3 spells       Fusion_Sage
+  risk=  1 effect_m     The_Dark_Hex_Sealed_Fusion
+  risk=  1 effect_m     The_Earth_Hex_Sealed_Fusion
+  risk=  1 effect_m     The_Light_Hex_Sealed_Fusion
+  risk=  1 effect_m     Versago_the_Destroyer
+  risk=  3 effect_m     Cyber_Stein
+  risk=  3 effect_m     Gale_Dogra
+  risk=  3 effect_m     King_of_the_Swamp
+  risk=  3 effect_m     Magical_Scientist
+  risk=  3 effect_m     Monster_Eye
+  risk=  3 spells       Polymerization
+  risk=  3 effect_m     Summoner_of_Illusions
+  risk=  3 effect_m     Supply
+
+=== Ritual quota={'ritual_m': 9, 'effect_m': 1, 'ritual_spells': 10} picked=20 ===
+  risk=  0 ritual_spells Earth_Chant
+  risk=  1 ritual_spells Beastly_Mirror_Ritual
+  risk=  1 ritual_spells Black_Illusion_Ritual
+  risk=  1 ritual_spells Black_Luster_Ritual
+  risk=  1 ritual_spells Black_Magic_Ritual
+  risk=  1 ritual_spells Commencement_Dance
+  risk=  1 ritual_spells Contract_with_the_Abyss
+  risk=  1 ritual_spells Contract_with_the_Dark_Master
+  risk=  1 ritual_spells Curse_of_the_Masked_Beast
+  risk=  1 ritual_spells Fortress_Whale_S_Oath
+  risk=  1 ritual_m     Black_Luster_Soldier
+  risk=  1 ritual_m     Chakra
+  risk=  1 ritual_m     Crab_Turtle
+  risk=  1 ritual_m     Dark_Master_Zorc
+  risk=  1 ritual_m     Dokurorider
+  risk=  1 ritual_m     Fiend_S_Mirror
+  risk=  1 ritual_m     Fortress_Whale
+  risk=  1 ritual_m     Garma_Sword
+  risk=  1 ritual_m     Hungry_Burger
+  risk=  3 effect_m     Manju_of_the_Ten_Thousand_Hands
+
+=== Ocean quota={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 13, 'effect_m': 4, 'spells': 1, 'token_spells': 0} picked=20 ===
+  risk=  1 normal_m     Akihiron
+  risk=  1 normal_m     Amazon_of_the_Seas
+  risk=  1 normal_m     Amphibian_Beast
+  risk=  1 normal_m     Aqua_Snake
+  risk=  1 normal_m     Arma_Knight
+  risk=  1 normal_m     Armored_Starfish
+  risk=  1 normal_m     Behegon
+  risk=  1 normal_m     Boneheimer
+  risk=  1 normal_m     Bottom_Dweller
+  risk=  1 normal_m     Boulder_Tortoise
+  risk=  1 normal_m     Card_30_000_Year_White_Turtle
+  risk=  1 normal_m     Card_7_Colored_Fish
+  risk=  1 normal_m     Change_Slime
+  risk=  1 effect_m     Mermaid_Knight
+  risk=  1 effect_m     The_Legendary_Fisherman
+  risk=  1 effect_m     Unshaven_Angler
+  risk=  3 effect_m     Ameba
+  risk=  1 ritual_m     Crab_Turtle
+  risk=  3 spells       A_Legendary_Ocean
+  risk=  1 normal_m     Crazy_Fish
+
+=== Insect quota={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 6, 'spells': 1, 'token_spells': 1} picked=20 ===
+  risk=  1 normal_m     Acid_Crawler
+  risk=  1 normal_m     Alinsection
+  risk=  1 normal_m     Basic_Insect
+  risk=  1 normal_m     Big_Insect
+  risk=  1 normal_m     Dungeon_Worm
+  risk=  1 normal_m     Empress_Mantis
+  risk=  1 normal_m     Fiend_Scorpion
+  risk=  1 normal_m     Flying_Kamakiri_2
+  risk=  1 normal_m     Ganigumo
+  risk=  1 normal_m     Giant_Flea
+  risk=  1 effect_m     Cockroach_Knight
+  risk=  1 effect_m     Needle_Burrower
+  risk=  1 effect_m     Pinch_Hopper
+  risk=  3 effect_m     Arsenal_Bug
+  risk=  3 effect_m     Flying_Kamakiri_1
+  risk=  3 effect_m     Gale_Dogra
+  risk=  1 ritual_m     Javelin_Beetle
+  risk=  3 spells       Multiplication_of_Ants
+  risk=  1 normal_m     Giant_Scorpion_of_the_Tundra
+  risk=  1 normal_m     Girochin_Kuwagata
+
+=== Machine quota={'fusion_m': 2, 'normal_m': 13, 'effect_m': 4, 'spells': 1} picked=20 ===
+  risk=  1 normal_m     Acrobat_Monkey
+  risk=  1 normal_m     Ancient_Tool
+  risk=  1 normal_m     Bat
+  risk=  1 normal_m     Blocker
+  risk=  1 normal_m     Brave_Scizzar
+  risk=  1 normal_m     Cyber_Commander
+  risk=  1 normal_m     Cyber_Falcon
+  risk=  1 normal_m     Cyber_Soldier
+  risk=  1 normal_m     Cyber_Soldier_of_Darkworld
+  risk=  1 normal_m     Cyber_Tech_Alligator
+  risk=  1 normal_m     Dharma_Cannon
+  risk=  1 normal_m     Dice_Armadillo
+  risk=  1 normal_m     Disk_Magician
+  risk=  1 effect_m     Chronomaly_Mayan_Machine
+  risk=  1 effect_m     Superheavy_Samurai_Big_Waraji
+  risk=  3 effect_m     Cyber_Stein
+  risk=  3 effect_m     Helping_Robo_for_Combat
+  risk=  1 spells       Limiter_Removal
+  risk=  1 normal_m     Gadget_Soldier
+  risk=  1 normal_m     Gatekeeper
+
+=== Dragon quota={'fusion_m': 4, 'ritual_m': 1, 'normal_m': 8, 'effect_m': 5, 'spells': 1, 'traps': 1} picked=20 ===
+  risk=  1 normal_m     B_Dragon_Jungle_King
+  risk=  1 normal_m     Baby_Dragon
+  risk=  1 normal_m     Blackland_Fire_Dragon
+  risk=  1 normal_m     Blue_Eyes_White_Dragon
+  risk=  1 normal_m     Crawling_Dragon
+  risk=  1 normal_m     Curse_of_Dragon
+  risk=  1 normal_m     Divine_Dragon_Ragnarok
+  risk=  1 normal_m     Fairy_Dragon
+  risk=  1 effect_m     Des_Volstgalph
+  risk=  1 effect_m     Keeper_of_the_Shrine
+  risk=  1 effect_m     Samsara_Dragon
+  risk=  1 effect_m     Totem_Dragon
+  risk=  1 effect_m     Yamata_Dragon
+  risk=  3 fusion_m     Dark_Paladin
+  risk=  3 fusion_m     Five_Headed_Dragon
+  risk=  3 ritual_m     Paladin_of_White_Dragon
+  risk=  3 spells       Burst_Stream_of_Destruction
+  risk=  3 traps        Burst_Breath
+  risk=  1 normal_m     Koumori_Dragon
+  risk=  1 normal_m     Lesser_Dragon
+
+=== Zombie quota={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 8, 'effect_m': 6, 'spells': 2, 'traps': 1} picked=20 ===
+  risk=  1 normal_m     Armored_Zombie
+  risk=  1 normal_m     Blue_Eyed_Silver_Zombie
+  risk=  1 normal_m     Bone_Mouse
+  risk=  1 normal_m     Clown_Zombie
+  risk=  1 normal_m     Corroding_Shark
+  risk=  1 normal_m     Dark_Assailant
+  risk=  1 normal_m     Dokuroizo_the_Grim_Reaper
+  risk=  1 normal_m     Dragon_Zombie
+  risk=  1 effect_m     Chopman_the_Desperate_Outlaw
+  risk=  1 effect_m     Double_Coston
+  risk=  1 effect_m     Shadow_Ghoul
+  risk=  3 effect_m     Berserk_Dragon
+  risk=  3 effect_m     Castle_of_Dark_Illusions
+  risk=  3 effect_m     Dark_Dust_Spirit
+  risk=  3 spells       A_Deal_with_Dark_Ruler
+  risk=  3 spells       Call_of_the_Mummy
+  risk=  1 ritual_m     Dokurorider
+  risk=  3 traps        The_First_Sarcophagus
+  risk=  1 normal_m     Fiend_S_Hand
+  risk=  1 normal_m     Fire_Reaper
+
+=== Fiend quota={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 11, 'effect_m': 6, 'spells': 1, 'token_spells': 0, 'traps': 0} picked=20 ===
+  risk=  1 normal_m     Air_Eater
+  risk=  1 normal_m     Ancient_Brain
+  risk=  1 normal_m     Archfiend_Mirror
+  risk=  1 normal_m     Archfiend_Soldier
+  risk=  1 normal_m     Baron_of_the_Fiend_Sword
+  risk=  1 normal_m     Beast_of_Talwar
+  risk=  1 normal_m     Bio_Plant
+  risk=  1 normal_m     Candle_of_Fate
+  risk=  1 normal_m     Claw_Reacher
+  risk=  1 normal_m     D_D_Trainer
+  risk=  1 normal_m     Dark_Chimera
+  risk=  1 effect_m     Giant_Germ
+  risk=  1 effect_m     Sangan
+  risk=  3 effect_m     Archfiend_of_Gilfer
+  risk=  3 effect_m     Berfomet
+  risk=  3 effect_m     Big_Eye
+  risk=  3 effect_m     Bite_Shoes
+  risk=  1 ritual_m     Chakra
+  risk=  3 spells       Archfiend_s_Oath
+  risk=  1 normal_m     Dark_King_of_the_Abyss
+
+=== Spellcaster quota={'fusion_m': 1, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 7, 'spells': 1} picked=20 ===
+  risk=  1 normal_m     Akakieisu
+  risk=  1 normal_m     Ancient_Elf
+  risk=  1 normal_m     Ancient_Sorcerer
+  risk=  1 normal_m     Aqua_Madoor
+  risk=  1 normal_m     Boo_Koo
+  risk=  1 normal_m     Curtain_of_the_Dark_Ones
+  risk=  1 normal_m     Djinn_the_Watcher_of_the_Wind
+  risk=  1 normal_m     Doriado
+  risk=  1 normal_m     Eldeen
+  risk=  1 normal_m     Fairy_S_Gift
+  risk=  1 effect_m     Asura_Priest
+  risk=  1 effect_m     Gravekeeper_s_Curse
+  risk=  1 effect_m     Magical_Plant_Mandragola
+  risk=  1 effect_m     Maha_Vailo
+  risk=  3 effect_m     Ancient_Lamp
+  risk=  3 effect_m     Apprentice_Magician
+  risk=  3 effect_m     Breaker_the_Magical_Warrior
+  risk=  3 fusion_m     Dark_Paladin
+  risk=  1 ritual_m     Legendary_Flame_Lord
+  risk=  3 spells       Dark_Magic_Attack
+
+=== Warrior quota={'fusion_m': 2, 'ritual_m': 1, 'normal_m': 10, 'effect_m': 6, 'spells': 1, 'traps': 0} picked=20 ===
+  risk=  1 normal_m     Ansatsu
+  risk=  1 normal_m     Armaill
+  risk=  1 normal_m     Axe_Raider
+  risk=  1 normal_m     Battle_Warrior
+  risk=  1 normal_m     Beautiful_Beast_Trainer
+  risk=  1 normal_m     Beautiful_Headhuntress
+  risk=  1 normal_m     Celtic_Guardian
+  risk=  1 normal_m     D_Human
+  risk=  1 normal_m     Dark_Blade
+  risk=  1 normal_m     Doron
+  risk=  1 effect_m     Gaia_The_Fierce_Knight_Origin
+  risk=  1 effect_m     Gearfried_the_Iron_Knight
+  risk=  1 effect_m     Mataza_the_Zapper
+  risk=  1 effect_m     Sword_Hunter
+  risk=  1 effect_m     The_Legendary_Fisherman
+  risk=  1 effect_m     Total_Defense_Shogun
+  risk=  3 fusion_m     The_Last_Warrior_from_Another_Planet
+  risk=  1 ritual_m     Black_Luster_Soldier
+  risk=  3 spells       Fusion_Sword_Murasame_Blade
+  risk=  1 normal_m     Dragon_Statue
+
+=== Heal quota={'effect_m': 11, 'spells': 5, 'token_spells': 1, 'traps': 3} picked=0 ===
+
+=== Draw quota={'effect_m': 13, 'spells': 5, 'traps': 2} picked=20 ===
+  risk=  1 effect_m     A_Cat_of_Ill_Omen
+  risk=  1 effect_m     Aswan_Apparition
+  risk=  1 effect_m     Birdface
+  risk=  1 effect_m     Card_Trooper
+  risk=  1 effect_m     Elephant_Statue_of_Blessing
+  risk=  1 effect_m     Emissary_of_the_Afterlife
+  risk=  1 effect_m     Magician_of_Faith
+  risk=  1 effect_m     Nubian_Guard
+  risk=  1 effect_m     Sacred_Crane
+  risk=  1 effect_m     Sangan
+  risk=  1 effect_m     Skelengel
+  risk=  1 effect_m     Spirit_Caller
+  risk=  1 effect_m     The_Agent_of_Wisdom_Mercury
+  risk=  3 spells       Archfiend_s_Oath
+  risk=  3 spells       Card_Destruction
+  risk=  3 spells       Convulsion_of_Nature
+  risk=  3 spells       Extra_Foolish_Burial
+  risk=  3 spells       Foolish_Burial
+  risk=  1 traps        Appropriate
+  risk=  1 traps        Energy_Drain
+
+=== Chance quota={'fusion_m': 2, 'effect_m': 11, 'spells': 2, 'traps': 5} picked=0 ===
+
+=== Burn quota={'fusion_m': 1, 'effect_m': 12, 'spells': 4, 'traps': 3} picked=20 ===
+  risk=  1 effect_m     Cobra_Jar
+  risk=  1 effect_m     Des_Volstgalph
+  risk=  1 effect_m     Gearfried_the_Iron_Knight
+  risk=  1 effect_m     Giant_Germ
+  risk=  1 effect_m     Hayabusa_Knight
+  risk=  1 effect_m     Lord_Poison
+  risk=  1 effect_m     Minar
+  risk=  1 effect_m     Needle_Burrower
+  risk=  1 effect_m     Theban_Nightmare
+  risk=  1 effect_m     Yamata_Dragon
+  risk=  3 effect_m     Amazoness_Swords_Woman
+  risk=  3 effect_m     Ameba
+  risk=  0 spells       Burning_Spear
+  risk=  3 spells       Axe_of_Despair
+  risk=  3 spells       Burning_Land
+  risk=  3 spells       Dark_Hole
+  risk=  1 traps        Des_Counterblow
+  risk=  1 traps        Skull_Invitation
+  risk=  3 traps        Bad_Reaction_to_Simochi
+  risk=  3 effect_m     Anti_Aircraft_Flower
+
+=== Spell quota={'ritual_m': 0, 'normal_m': 0, 'effect_m': 4, 'spells': 14, 'token_spells': 1, 'traps': 1} picked=20 ===
+  risk=  0 spells       Burning_Spear
+  risk=  1 spells       Book_of_Taiyou
+  risk=  1 spells       De_Spell
+  risk=  1 spells       Dust_Barrier
+  risk=  1 spells       Limiter_Removal
+  risk=  1 spells       Magical_Labyrinth
+  risk=  1 spells       Mausoleum_of_the_Emperor
+  risk=  3 spells       A_Legendary_Ocean
+  risk=  3 spells       Archfiend_s_Oath
+  risk=  3 spells       Axe_of_Despair
+  risk=  3 spells       Banner_of_Courage
+  risk=  3 spells       Book_of_Moon
+  risk=  3 spells       Breath_of_Light
+  risk=  3 spells       Burning_Land
+  risk=  1 effect_m     Chopman_the_Desperate_Outlaw
+  risk=  1 effect_m     Magical_Plant_Mandragola
+  risk=  1 effect_m     Magician_of_Faith
+  risk=  1 effect_m     Nubian_Guard
+  risk=  1 traps        Type_Zero_Magic_Crusher
+  risk=  1 ritual_m     Legendary_Flame_Lord
+
+=== Trap quota={'normal_m': 1, 'effect_m': 3, 'spells': 1, 'traps': 15} picked=20 ===
+  risk=  1 traps        Appropriate
+  risk=  1 traps        Des_Counterblow
+  risk=  1 traps        Energy_Drain
+  risk=  1 traps        Fake_Trap
+  risk=  1 traps        Rite_of_Spirit
+  risk=  1 traps        Skull_Invitation
+  risk=  1 traps        Type_Zero_Magic_Crusher
+  risk=  3 traps        Amazoness_Archers
+  risk=  3 traps        Anti_Spell
+  risk=  3 traps        Arsenal_Robber
+  risk=  3 traps        Bad_Reaction_to_Simochi
+  risk=  3 traps        Bottomless_Shifting_Sand
+  risk=  3 traps        Bottomless_Trap_Hole
+  risk=  3 traps        Burst_Breath
+  risk=  3 traps        Call_of_the_Haunted
+  risk=  1 effect_m     A_Cat_of_Ill_Omen
+  risk=  1 effect_m     Aswan_Apparition
+  risk=  3 effect_m     Magical_Merchant
+  risk=  3 normal_m     Sealmaster_Meisei
+  risk=  3 spells       Nightmare_S_Steelcage
+
+Unique files patched: 293 (union pick count 293)

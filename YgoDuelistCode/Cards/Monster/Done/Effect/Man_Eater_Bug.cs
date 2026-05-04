@@ -36,7 +36,6 @@ public sealed class Man_Eater_Bug : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Insect;
-
     public override Type[] RelatedCards => new[] { typeof(Man_Eater_Bug) };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

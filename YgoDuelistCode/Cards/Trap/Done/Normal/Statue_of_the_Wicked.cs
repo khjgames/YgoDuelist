@@ -30,7 +30,6 @@ public sealed class Statue_of_the_Wicked : BaseTrapCard, IYgoAfterFaceDownSetTra
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Trap | YgoCardPackTags.Earth;
-
     public override Type[] RelatedCards => new[] { typeof(Statue_of_the_Wicked), typeof(Wicked_Token) };
 
     public async Task OnAfterFaceDownSetTrapDestroyedToGraveyardAsync(Player player)

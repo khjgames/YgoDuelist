@@ -24,7 +24,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Command;
 
 /// <summary>
 /// Command on <see cref="Dark_Magician"/> after <see cref="Dark_Magician.SurvivedTimeMagic"/>:
-/// Tribute this monster; Special Summon <see cref="Dark_Sage"/> from the hand or draw pile.
+/// Tribute this monster; Special Summon <see cref="Dark_Sage"/> from the hand, draw pile, or discard pile.
 /// </summary>
 public sealed class Special_Summon_Dark_Sage : MonsterCommandCard, IYgoNHandPlayPhaseHighlightOverride
 {
@@ -81,25 +81,8 @@ public sealed class Special_Summon_Dark_Sage : MonsterCommandCard, IYgoNHandPlay
         return YgoNHandPlayPhaseHighlightColors.CallOfTheMummyYellow;
     }
 
-    public static List<Dark_Sage> BuildDarkSageHandOrDeckCandidates(Player player)
-    {
-        var list = new List<Dark_Sage>();
-        CardPile? hand = YgoPlayerPiles.Hand(player);
-        if (hand != null)
-        {
-            list.AddRange(
-                YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards).OfType<Dark_Sage>());
-        }
-
-        CardPile? draw = YgoPlayerPiles.Draw(player);
-        if (draw != null)
-        {
-            list.AddRange(
-                YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards).OfType<Dark_Sage>());
-        }
-
-        return list;
-    }
+    public static List<Dark_Sage> BuildDarkSageHandOrDeckCandidates(Player player) =>
+        YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Dark_Sage>(player);
 
     protected override bool IsPlayable
     {
@@ -154,7 +137,9 @@ public sealed class Special_Summon_Dark_Sage : MonsterCommandCard, IYgoNHandPlay
             return;
 
         CardPile? pickedPile = picked.Pile;
-        if (pickedPile != YgoPlayerPiles.Hand(player) && pickedPile != YgoPlayerPiles.Draw(player))
+        if (pickedPile != YgoPlayerPiles.Hand(player)
+            && pickedPile != YgoPlayerPiles.Draw(player)
+            && pickedPile != YgoPlayerPiles.Discard(player))
             return;
 
         await DuelMonsterPetDeathPatch.MoveEquipsToGraveyardThenMonsterToPileAsync(

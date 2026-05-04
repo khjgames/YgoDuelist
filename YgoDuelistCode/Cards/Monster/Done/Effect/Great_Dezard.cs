@@ -17,7 +17,7 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
 /// <summary>
-/// Activate Effect (1 Energy, 1 Conduit): Tribute this card; destroy 1 monster in your hand; Special Summon 1 "Fushioh Richie" from your hand or draw pile.
+/// Activate Effect (1 Energy, 1 Conduit): Tribute this card; destroy 1 monster in your hand; Special Summon 1 "Fushioh Richie" from your hand, draw pile, or discard pile.
 /// </summary>
 public sealed class Great_Dezard : EffectMonsterCard, IMonsterActivatedEffect
 {
@@ -44,7 +44,6 @@ public sealed class Great_Dezard : EffectMonsterCard, IMonsterActivatedEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
-
     public override Type[] RelatedCards => new[] { typeof(Great_Dezard), typeof(Fushioh_Richie) };
 
     public int ActivatedEffectEnergyCost => 1;
@@ -115,7 +114,7 @@ public sealed class Great_Dezard : EffectMonsterCard, IMonsterActivatedEffect
         if (hand == null || gy == null || !hand.Cards.Contains(toDestroy))
             return;
 
-        if (fush.Pile?.Type != PileType.Hand && fush.Pile?.Type != PileType.Draw)
+        if (fush.Pile?.Type is not (PileType.Hand or PileType.Draw or PileType.Discard))
             return;
 
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(pet, true);
@@ -145,17 +144,8 @@ public sealed class Great_Dezard : EffectMonsterCard, IMonsterActivatedEffect
         return false;
     }
 
-    private static List<Fushioh_Richie> BuildFushiohHandOrDrawCandidates(Player player)
-    {
-        var list = new List<Fushioh_Richie>();
-        CardPile? hand = YgoPlayerPiles.Hand(player);
-        if (hand != null)
-            list.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards).OfType<Fushioh_Richie>());
-        CardPile? draw = YgoPlayerPiles.Draw(player);
-        if (draw != null)
-            list.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards).OfType<Fushioh_Richie>());
-        return list;
-    }
+    private static List<Fushioh_Richie> BuildFushiohHandOrDrawCandidates(Player player) =>
+        YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Fushioh_Richie>(player);
 
     private static List<BaseMonsterCard> BuildHandMonsterDestroyCandidates(Player player, Fushioh_Richie chosenFush)
     {

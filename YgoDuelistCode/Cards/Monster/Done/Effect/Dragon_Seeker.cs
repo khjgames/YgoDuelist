@@ -38,7 +38,6 @@ public sealed class Dragon_Seeker : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
-
     public override Type[] RelatedCards => new[] { typeof(Dragon_Seeker) };
 
     protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>

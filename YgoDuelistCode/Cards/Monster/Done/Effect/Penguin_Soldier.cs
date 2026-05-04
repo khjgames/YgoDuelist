@@ -42,7 +42,6 @@ public sealed class Penguin_Soldier : EffectMonsterCard, IMonsterFlipEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water;
-
     public override Type[] RelatedCards => new[] { typeof(Penguin_Soldier) };
 
     public override int GetDuelMonsterDefensePlayEnergy(bool upgradedOrPreview)

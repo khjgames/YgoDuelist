@@ -38,6 +38,5 @@ public sealed class Shining_Angel : EffectMonsterCard, IBattleDeathOptionalDeckS
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Normal;
-
     public override Type[] RelatedCards => new[] { typeof(Shining_Angel) };
 }

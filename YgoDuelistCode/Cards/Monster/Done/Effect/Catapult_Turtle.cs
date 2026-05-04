@@ -39,7 +39,6 @@ public sealed class Catapult_Turtle : EffectMonsterCard, IMonsterActivatedEffect
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Starter | YgoCardPackTags.Water | YgoCardPackTags.Burn;
-
     public override Type[] RelatedCards => new[] { typeof(Catapult_Turtle) };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips

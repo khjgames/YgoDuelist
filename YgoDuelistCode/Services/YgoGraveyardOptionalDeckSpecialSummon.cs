@@ -73,10 +73,7 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
 
     private static List<CardModel> BuildHandAndDeckCandidates(Player player, Func<BaseMonsterCard, bool> isCandidate)
     {
-        List<BaseMonsterCard> merged = YgoPlayerPiles.OrderedCardsOfTypeFromPiles<BaseMonsterCard>(
-            player,
-            YgoPlayerPiles.Hand,
-            YgoPlayerPiles.Draw);
+        List<BaseMonsterCard> merged = YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<BaseMonsterCard>(player);
         return merged.Where(isCandidate).Cast<CardModel>().ToList();
     }
 
@@ -134,11 +131,13 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
 
         CardPile? hand = YgoPlayerPiles.Hand(player);
         CardPile? draw = YgoPlayerPiles.Draw(player);
+        CardPile? discard = YgoPlayerPiles.Discard(player);
         bool inHand = hand != null && hand.Cards.Contains(chosen);
         bool inDraw = draw != null && draw.Cards.Contains(chosen);
+        bool inDiscard = discard != null && discard.Cards.Contains(chosen);
         if (searchHandAndDeck)
         {
-            if (!inHand && !inDraw)
+            if (!inHand && !inDraw && !inDiscard)
                 return;
         }
         else if (!inDraw)
