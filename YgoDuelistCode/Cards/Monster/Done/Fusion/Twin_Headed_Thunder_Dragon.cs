@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -31,6 +32,8 @@ public sealed class Twin_Headed_Thunder_Dragon : FusionMonsterCard
     /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
     /// </summary>
     public override float PackWeightMultiplier => 1.05f;
+
+    public override YgoCardPackTags PackTags => base.PackTags | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Thunder_Dragon) };
 }

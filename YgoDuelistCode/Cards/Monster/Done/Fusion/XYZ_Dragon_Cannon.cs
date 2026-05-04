@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
@@ -34,6 +35,8 @@ public sealed class Xyz_Dragon_Cannon : FusionMonsterCard
             typeof(Z_Metal_Tank))
     {
     }
+
+    public override YgoCardPackTags PackTags => base.PackTags | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Xy_Dragon_Cannon), typeof(Xz_Tank_Cannon), typeof(Yz_Tank_Dragon) };
 

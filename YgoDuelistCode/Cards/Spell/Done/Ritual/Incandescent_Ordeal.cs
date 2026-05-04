@@ -22,7 +22,7 @@ public sealed class Incandescent_Ordeal : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Incandescent_Ordeal), typeof(Legendary_Flame_Lord) };
 }

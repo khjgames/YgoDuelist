@@ -34,7 +34,7 @@ public sealed class Kazejin : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Wind | YgoCardPackTags.Spellcaster | YgoCardPackTags.Bundled;
+        YgoCardPackTags.Wind | YgoCardPackTags.Spellcaster;
 
     public override Type[] RelatedCards => new[] { typeof(Kazejin) };
 

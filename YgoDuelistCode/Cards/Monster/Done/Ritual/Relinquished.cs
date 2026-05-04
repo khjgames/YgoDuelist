@@ -26,7 +26,7 @@ public sealed class Relinquished : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster;
+        YgoCardPackTags.Ritual | YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Black_Illusion_Ritual), typeof(Relinquished) };
 }

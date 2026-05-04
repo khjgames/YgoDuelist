@@ -27,7 +27,7 @@ public sealed class Sealmaster_Meisei : NormalMonsterCard, IYgoSealmasterMeiseiF
 
     // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.Dark |
-        YgoCardPackTags.Spellcaster | YgoCardPackTags.Normal | YgoCardPackTags.Spell | YgoCardPackTags.Trap;
+        YgoCardPackTags.Spellcaster | YgoCardPackTags.Normal | YgoCardPackTags.Spell | YgoCardPackTags.Trap | YgoCardPackTags.Bundled;
 
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
     public override Type[] BundledCards => new[]

@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -37,6 +38,9 @@ public sealed class Mystical_Knight_of_Jackal : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.BeastWarrior)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Light | YgoCardPackTags.Warrior;
 
     public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
     {

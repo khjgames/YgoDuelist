@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -33,6 +34,9 @@ public sealed class Kycoo_the_Ghost_Destroyer : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Spellcaster)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Dark | YgoCardPackTags.Spellcaster | YgoCardPackTags.Banish;
 
     protected override async Task BeforeAttackCombatActionAsync(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

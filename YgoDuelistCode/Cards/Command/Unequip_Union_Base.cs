@@ -57,7 +57,7 @@ public abstract class Unequip_Union_Base : MonsterCommandCard, IYgoNHandPlayPhas
         if (!vanillaWouldUseCyanPlayableHighlight)
             return null;
 
-        return YgoNHandPlayPhaseHighlightColors.FusionStylePurple;
+        return YgoNHandPlayPhaseHighlightColors.CallOfTheMummyYellow;
     }
 
     public override string PortraitPath
@@ -95,7 +95,7 @@ public abstract class Unequip_Union_Base : MonsterCommandCard, IYgoNHandPlayPhas
             BaseEquipSpellCard? eq = FindAttachedUnionOnHost();
             if (eq == null)
                 return false;
-            if (DuelMonsterSummon.CountLiveDuelMonsters(Owner) >= DuelMonsterSummon.MaxDuelMonstersPerPlayer)
+            if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
                 return false;
             Creature? pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
             return pet != null;

@@ -7,8 +7,10 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Equip;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
@@ -34,6 +36,11 @@ public sealed class Pitch_Dark_Dragon : EffectMonsterCard, IUnionEffectMonster, 
 
     public override YgoCardPackTags PackTags =>
         YgoCardPackTags.Dark | YgoCardPackTags.Dragon | YgoCardPackTags.Normal;
+
+    protected override Type[] PreviewReferencedCardTypes =>
+        YgoPreviewReferenceOrder.LeadingThenMerged(
+            GetType(),
+            new[] { typeof(Pitch_Dark_Dragon_Union_Equip), typeof(Dark_Blade) });
 
     public IEnumerable<MonsterCommandCard> BuildExtraMonsterOptionCommands(
         CombatState combatState,

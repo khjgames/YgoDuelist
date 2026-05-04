@@ -1,6 +1,7 @@
 using System;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -27,6 +28,8 @@ public sealed class Blue_Eyes_Ultimate_Dragon : FusionMonsterCard
             typeof(Blue_Eyes_White_Dragon))
     {
     }
+
+    public override YgoCardPackTags PackTags => base.PackTags | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Blue_Eyes_White_Dragon) };
 }

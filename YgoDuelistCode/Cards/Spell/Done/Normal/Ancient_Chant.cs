@@ -29,8 +29,6 @@ public sealed class Ancient_Chant : BaseSpellCard
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.God;
 
-    public override Type[] BundledCards => new[] { typeof(The_Winged_Dragon_of_Ra) };
-
     public override Type[] RelatedCards => new[] { typeof(Ancient_Chant), typeof(The_Winged_Dragon_of_Ra) };
 
     protected override bool IsPlayable =>

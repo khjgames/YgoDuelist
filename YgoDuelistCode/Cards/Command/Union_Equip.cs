@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -12,6 +13,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
@@ -61,7 +63,7 @@ public sealed class Union_Equip : MonsterCommandCard, IYgoNHandPlayPhaseHighligh
         if (!vanillaWouldUseCyanPlayableHighlight)
             return null;
 
-        return YgoNHandPlayPhaseHighlightColors.FusionStylePurple;
+        return YgoNHandPlayPhaseHighlightColors.UnionEffectPlayableGreen;
     }
 
     private static BaseEquipSpellCard? ProtoEquipForSource(BaseMonsterCard? source) =>
@@ -76,13 +78,16 @@ public sealed class Union_Equip : MonsterCommandCard, IYgoNHandPlayPhaseHighligh
     {
         get
         {
-            if (IsCanonical)
-                return "card.png".CardImagePath();
             TryResolveSourceMonsterFromStoredPetId();
-            BaseEquipSpellCard? proto = ProtoEquipForSource(SourceMonster);
-            if (proto != null && !string.IsNullOrEmpty(proto.PortraitPath))
-                return proto.PortraitPath;
-            return "card.png".CardImagePath();
+            if (SourceMonster is BaseMonsterCard bm && bm is IUnionEffectMonster)
+            {
+                BaseEquipSpellCard? proto = ProtoEquipForSource(bm);
+                if (proto != null && !string.IsNullOrEmpty(proto.PortraitPath))
+                    return proto.PortraitPath;
+            }
+
+            // Compendium / preview: no field source — match first union-effect implementation used by this command.
+            return ModelDb.Card<Pitch_Dark_Dragon>().PortraitPath;
         }
     }
 
@@ -181,6 +186,9 @@ public sealed class Union_Equip : MonsterCommandCard, IYgoNHandPlayPhaseHighligh
 
         if (equip == null)
             return;
+
+        if (source.IsUpgraded && !equip.IsUpgraded)
+            CardCmd.Upgrade(equip, CardPreviewStyle.None);
 
         EquipSpellPlayPayload.SetPending(equip, host);
         await YgoSpellTrapZoneBridge.ActivateEquipSpellAsync(equip, host);

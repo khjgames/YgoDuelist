@@ -43,7 +43,7 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Light | YgoCardPackTags.Dragon;
+        YgoCardPackTags.Ritual | YgoCardPackTags.Light | YgoCardPackTags.Dragon | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(White_Dragon_Ritual), typeof(Paladin_of_White_Dragon) };
 

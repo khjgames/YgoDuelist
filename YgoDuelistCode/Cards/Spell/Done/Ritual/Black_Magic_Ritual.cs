@@ -22,7 +22,7 @@ public sealed class Black_Magic_Ritual : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Black_Magic_Ritual), typeof(Magician_of_Black_Chaos) };
 

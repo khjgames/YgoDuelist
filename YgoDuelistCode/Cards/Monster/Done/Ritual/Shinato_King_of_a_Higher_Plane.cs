@@ -33,7 +33,7 @@ public sealed class Shinato_King_of_a_Higher_Plane : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Light;
+        YgoCardPackTags.Ritual | YgoCardPackTags.Light | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Shinato_S_Ark), typeof(Shinato_King_of_a_Higher_Plane) };
 

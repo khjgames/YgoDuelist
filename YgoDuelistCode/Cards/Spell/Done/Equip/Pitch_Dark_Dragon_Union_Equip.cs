@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -28,7 +29,18 @@ public sealed class Pitch_Dark_Dragon_Union_Equip : BaseEquipSpellCard, IYgoUnio
 
     public override Type[] RelatedCards => new[] { typeof(Pitch_Dark_Dragon_Union_Equip), typeof(Pitch_Dark_Dragon) };
 
+    protected override Type[] PreviewReferencedCardTypes => new[]
+    {
+        typeof(Pitch_Dark_Dragon),
+        typeof(Dark_Blade),
+    };
+
     public override string PortraitPath => ModelDb.Card<Pitch_Dark_Dragon>().PortraitPath;
+
+    /// <inheritdoc cref="YgoDuelistCard.CustomPortraitPath"/>
+    /// <remarks>Defaults would load <c>pitch_dark_dragon_union_equip.png</c>; reuse <see cref="Pitch_Dark_Dragon"/> art for large/compendium portrait.</remarks>
+    public override string CustomPortraitPath =>
+        ModelDb.Card<Pitch_Dark_Dragon>() is YgoDuelistCard src ? src.CustomPortraitPath : base.CustomPortraitPath;
 
     public override bool CanEquipTo(BaseMonsterCard target) => target is Dark_Blade;
 

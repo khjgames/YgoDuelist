@@ -22,7 +22,7 @@ public sealed class Resurrection_of_Chakra : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Resurrection_of_Chakra), typeof(Chakra) };
 

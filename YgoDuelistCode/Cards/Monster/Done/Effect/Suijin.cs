@@ -34,7 +34,7 @@ public sealed class Suijin : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Water | YgoCardPackTags.Ocean | YgoCardPackTags.Bundled;
+        YgoCardPackTags.Water | YgoCardPackTags.Ocean;
 
     public override Type[] RelatedCards => new[] { typeof(Suijin) };
 

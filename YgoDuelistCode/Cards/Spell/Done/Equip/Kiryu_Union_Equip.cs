@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -28,7 +29,18 @@ public sealed class Kiryu_Union_Equip : BaseEquipSpellCard, IYgoUnionEquipSpell,
 
     public override Type[] RelatedCards => new[] { typeof(Kiryu_Union_Equip), typeof(Kiryu) };
 
+    protected override Type[] PreviewReferencedCardTypes => new[]
+    {
+        typeof(Kiryu),
+        typeof(Dark_Blade),
+    };
+
     public override string PortraitPath => ModelDb.Card<Kiryu>().PortraitPath;
+
+    /// <inheritdoc cref="YgoDuelistCard.CustomPortraitPath"/>
+    /// <remarks>Defaults would load <c>kiryu_union_equip.png</c>; reuse <see cref="Kiryu"/> art for large/compendium portrait.</remarks>
+    public override string CustomPortraitPath =>
+        ModelDb.Card<Kiryu>() is YgoDuelistCard src ? src.CustomPortraitPath : base.CustomPortraitPath;
 
     public override bool CanEquipTo(BaseMonsterCard target) => target is Dark_Blade;
 

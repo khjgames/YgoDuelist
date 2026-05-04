@@ -22,7 +22,7 @@ public sealed class Curse_of_the_Masked_Beast : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Curse_of_the_Masked_Beast), typeof(The_Masked_Beast) };
 }

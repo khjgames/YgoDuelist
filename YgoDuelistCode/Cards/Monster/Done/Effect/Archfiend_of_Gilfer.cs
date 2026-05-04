@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
@@ -38,6 +39,9 @@ public sealed class Archfiend_of_Gilfer : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Fiend)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Dark | YgoCardPackTags.Fiend;
 
     public override void OnMovedToGraveyardFromHandOrField(PileType from)
     {

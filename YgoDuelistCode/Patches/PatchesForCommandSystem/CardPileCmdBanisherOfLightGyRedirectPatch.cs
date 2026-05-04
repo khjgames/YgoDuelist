@@ -24,7 +24,7 @@ public static class CardPileCmdBanisherOfLightGyRedirectPatch
         CardPile newPile,
         CardPilePosition position,
         AbstractModel source,
-        bool allowNothing,
+        bool skipVisuals,
         ref Task __result)
     {
         if (newPile?.Type != GraveyardPile.CustomType)
@@ -46,7 +46,7 @@ public static class CardPileCmdBanisherOfLightGyRedirectPatch
                 return true;
         }
 
-        __result = BanishBatchInsteadOfGraveyardAsync(list, position, source, allowNothing);
+        __result = BanishBatchInsteadOfGraveyardAsync(list, position, source, skipVisuals);
         return false;
     }
 
@@ -54,11 +54,11 @@ public static class CardPileCmdBanisherOfLightGyRedirectPatch
         List<CardModel> list,
         CardPilePosition position,
         AbstractModel source,
-        bool allowNothing)
+        bool skipVisuals)
     {
         _ = position;
         _ = source;
-        _ = allowNothing;
+        _ = skipVisuals;
 
         foreach (CardModel c in list)
         {

@@ -32,9 +32,9 @@ public sealed class Sanga_of_the_Thunder : EffectMonsterCard
             duelMonsterRace: DuelMonsterRace.Thunder)
     {
     }
-
+    
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Light | YgoCardPackTags.Burn | YgoCardPackTags.Bundled;
+        YgoCardPackTags.Light | YgoCardPackTags.Burn;
 
     public override Type[] RelatedCards => new[] { typeof(Sanga_of_the_Thunder) };
 

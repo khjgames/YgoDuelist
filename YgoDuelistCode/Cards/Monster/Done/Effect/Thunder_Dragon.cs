@@ -39,7 +39,7 @@ public sealed class Thunder_Dragon : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Starter | YgoCardPackTags.Light | YgoCardPackTags.Bundled;
 
     public override bool BundleGrantsExtraCopyOfSelf => true;
 

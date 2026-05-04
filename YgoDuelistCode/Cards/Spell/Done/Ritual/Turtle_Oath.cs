@@ -22,7 +22,7 @@ public sealed class Turtle_Oath : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Turtle_Oath), typeof(Crab_Turtle) };
 }

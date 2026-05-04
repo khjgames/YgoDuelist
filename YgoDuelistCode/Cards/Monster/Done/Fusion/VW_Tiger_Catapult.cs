@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -30,6 +31,8 @@ public sealed class Vw_Tiger_Catapult : FusionMonsterCard
             typeof(W_Wing_Catapult))
     {
     }
+
+    public override YgoCardPackTags PackTags => base.PackTags | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Vwxyz_Dragon_Catapult_Cannon) };
 

@@ -22,7 +22,7 @@ public sealed class Zera_Ritual : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Zera_Ritual), typeof(Zera_the_Mant) };
 

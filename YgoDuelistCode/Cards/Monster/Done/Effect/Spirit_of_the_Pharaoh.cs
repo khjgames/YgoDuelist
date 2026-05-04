@@ -45,7 +45,7 @@ public sealed class Spirit_of_the_Pharaoh : EffectMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Zombie;
+        YgoCardPackTags.Zombie | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards =>
         new[]

@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Patches;
@@ -38,6 +39,9 @@ public sealed class Call_of_the_Mummy
         : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
     {
     }
+
+    public override YgoCardPackTags PackTags =>
+        YgoCardPackTags.Spell | YgoCardPackTags.Zombie;
 
     public override StatEffectTotal GetContinuousStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
 

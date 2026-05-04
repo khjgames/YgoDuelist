@@ -41,7 +41,7 @@ public sealed class Guardian_Slime : EffectMonsterCard, IMonsterActivatedEffect
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.God | YgoCardPackTags.Ocean | YgoCardPackTags.Water;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.God | YgoCardPackTags.Ocean | YgoCardPackTags.Water | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Ancient_Chant) };
 

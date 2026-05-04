@@ -27,7 +27,7 @@ public sealed class Skull_Guardian : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Light | YgoCardPackTags.Warrior;
+        YgoCardPackTags.Ritual | YgoCardPackTags.Light | YgoCardPackTags.Warrior | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Novox_S_Prayer), typeof(Skull_Guardian) };
 }

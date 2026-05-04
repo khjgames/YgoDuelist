@@ -22,7 +22,7 @@ public sealed class Novox_S_Prayer : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Novox_S_Prayer), typeof(Skull_Guardian) };
 

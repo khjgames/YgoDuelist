@@ -40,7 +40,7 @@ public sealed class Gate_Guardian : EffectMonsterCard, IYgoNamedTripleTributeSum
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Warrior | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Kazejin), typeof(Suijin), typeof(Sanga_of_the_Thunder) };
 

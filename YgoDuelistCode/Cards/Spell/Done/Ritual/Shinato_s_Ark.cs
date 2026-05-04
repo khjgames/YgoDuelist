@@ -22,7 +22,7 @@ public sealed class Shinato_S_Ark : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Shinato_S_Ark), typeof(Shinato_King_of_a_Higher_Plane) };
 

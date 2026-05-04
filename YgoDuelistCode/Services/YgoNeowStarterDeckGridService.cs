@@ -75,8 +75,15 @@ public static class YgoNeowStarterDeckGridService
                 Cancelable = false
             };
 
-            DraftLog("await YgoSimpleGridSelection.SelectAsync…");
-            List<CardModel> chosenList = await YgoSimpleGridSelection.SelectAsync(player, grid, prefs);
+            DraftLog("await YgoSimpleGridSelection.TrySelectAsync…");
+            List<CardModel> chosenList = await YgoSimpleGridSelection.TrySelectAsync(player, grid, prefs);
+            if (chosenList.Count == 0)
+            {
+                // Screen exited (e.g. ReturnToMainMenu) → NCardGridSelectionScreen._ExitTree cancels the task; not an error.
+                DraftLog("starter grid aborted (selection canceled); skipping deck/trunk and Neow resume");
+                return;
+            }
+
             DraftLog($"FromSimpleGrid returned chosenCount={chosenList.Count}");
 
             // Deck.AddInternal alone does not set Owner or RunState._allCards; Hook.ShouldAllowAncient → RunState.Contains NREs on Owner.

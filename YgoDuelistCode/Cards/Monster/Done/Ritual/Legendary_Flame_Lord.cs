@@ -26,7 +26,7 @@ public sealed class Legendary_Flame_Lord : RitualMonsterCard
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Ritual | YgoCardPackTags.Fire | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell;
+        YgoCardPackTags.Ritual | YgoCardPackTags.Fire | YgoCardPackTags.Spellcaster | YgoCardPackTags.Spell | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Incandescent_Ordeal), typeof(Legendary_Flame_Lord) };
 }

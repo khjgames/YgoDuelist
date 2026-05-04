@@ -30,7 +30,7 @@ public sealed class Bubonic_Vermin : EffectMonsterCard, IMonsterFlipEffect
     }
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw;
+        YgoCardPackTags.Starter | YgoCardPackTags.Earth | YgoCardPackTags.Draw | YgoCardPackTags.Bundled;
 
     public override Type[] RelatedCards => new[] { typeof(Bubonic_Vermin) };
 

@@ -21,4 +21,7 @@ public static class YgoNHandPlayPhaseHighlightColors
 
     /// <summary>Spell/Trap zone activatable glow (e.g. Call of the Mummy).</summary>
     public static readonly Color CallOfTheMummyYellow = new(1f, 0.92f, 0.22f, 0.98f);
+
+    /// <summary>Union Equip option when a legal Dark Blade host exists.</summary>
+    public static readonly Color UnionEffectPlayableGreen = new(0.22f, 0.92f, 0.42f, 0.98f);
 }

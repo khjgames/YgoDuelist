@@ -32,7 +32,7 @@ public sealed class Berserk_Dragon : EffectMonsterCard, IYgoOwnerTurnStartFieldM
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Zombie;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Dark | YgoCardPackTags.Zombie | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(A_Deal_with_Dark_Ruler) };
 

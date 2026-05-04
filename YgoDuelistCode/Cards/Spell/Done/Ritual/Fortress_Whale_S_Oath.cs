@@ -22,7 +22,7 @@ public sealed class Fortress_Whale_S_Oath : RitualSpellCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.Ritual | YgoCardPackTags.Bundled;
 
     public override Type[] BundledCards => new[] { typeof(Fortress_Whale_S_Oath), typeof(Fortress_Whale) };
 

@@ -5,6 +5,7 @@ using BaseLib.Utils;
 using Godot;
 using YgoDuelist.YgoDuelistCode.Character;
 using YgoDuelist.YgoDuelistCode.Extensions;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -15,6 +16,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -285,6 +287,15 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     protected IEnumerable<IHoverTip> EnumerateReferencedCardPreviewHoverTips()
     {
         foreach (Type t in EnumerateReferencedCardPreviewTypes())
-            yield return HoverTipFactory.FromCard(YgoPackCardCatalog.CardFromType(t));
+        {
+            CardModel template = YgoPackCardCatalog.CardFromType(t);
+            if (IsUpgradedOrPreviewActive)
+            {
+                template = template.ToMutable();
+                CardCmd.Upgrade(template, CardPreviewStyle.None);
+            }
+
+            yield return HoverTipFactory.FromCard(template);
+        }
     }
 }

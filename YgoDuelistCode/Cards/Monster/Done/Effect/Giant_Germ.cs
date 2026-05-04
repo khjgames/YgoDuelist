@@ -28,7 +28,7 @@ public sealed class Giant_Germ : EffectMonsterCard
     protected override bool UsesBattleDeathGraveyardMark => true;
 
     public override YgoCardPackTags PackTags =>
-        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Burn;
+        YgoCardPackTags.Starter | YgoCardPackTags.Dark | YgoCardPackTags.Fiend | YgoCardPackTags.Burn | YgoCardPackTags.Bundled;
 
     public override Type[] RelatedCards => new[] { typeof(Giant_Germ) };
 
