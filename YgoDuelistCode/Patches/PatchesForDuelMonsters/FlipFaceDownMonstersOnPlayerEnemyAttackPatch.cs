@@ -19,8 +19,12 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Patches;
 
 /// <summary>
-/// When the player character is hit by an enemy attack (including fully blocked damage),
-/// face-down duel monsters that have already used their Command this turn are flipped face up.
+/// When the player character is hit by an enemy <see cref="MegaCrit.Sts2.Core.ValueProps.ValueProp.Move"/> attack
+/// (including fully blocked HP loss—hook still runs), face-down duel monsters on pets that already used a Command
+/// this turn may flip. For <see cref="IMonsterFlipEffect"/> with <see cref="BaseMonsterCard.AskSelectFlip"/> (default true),
+/// monsters stay face-down until the player picks them in the combined "Activate Flip Effects" prompt; only chosen cards
+/// flip and resolve their flip effect. Cancel leaves all face-down. Cards with <c>AskSelectFlip == false</c> (e.g. Stealth Bird)
+/// flip and resolve immediately with no activation prompt. Non-flip-effect face-down monsters still flip immediately (no effect).
 /// </summary>
 [HarmonyPatch(typeof(Hook), nameof(Hook.AfterDamageReceived))]
 public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
@@ -88,9 +92,7 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
                 continue;
             }
 
-            if (!FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpWithoutActivatingEffectNow(card, choiceContext))
-                continue;
-
+            // AskSelectFlip: keep FaceDown until the player selects this card in the activation grid (or cancels all).
             promptCandidates.Add(card);
         }
 
@@ -142,6 +144,7 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
         List<AbstractMonsterCard> promptCandidates = YgoMpCombatOrder
             .CardsSnapshotOrderedForMp(state.Pending)
             .OfType<AbstractMonsterCard>()
+            .Where(c => c.FaceDown && c.IsMutable)
             .Distinct()
             .ToList();
         state.Pending.Clear();
@@ -184,25 +187,37 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
         MegaCrit.Sts2.Core.Entities.Players.Player player,
         IReadOnlyList<AbstractMonsterCard> promptCandidates)
     {
-        var prefs = new CardSelectorPrefs(ActivateFlipEffectsPrompt, 1, promptCandidates.Count)
+        var prefs = new CardSelectorPrefs(ActivateFlipEffectsPrompt, 0, promptCandidates.Count)
         {
             Cancelable = true,
             RequireManualConfirmation = true
         };
 
         Godot.GD.Print(
-            $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] showing combined activate prompt owner={player.NetId} candidates={promptCandidates.Count} min=1 cancelable=true");
+            $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] showing combined activate prompt owner={player.NetId} candidates={promptCandidates.Count} min=0 cancelable=true (face-down until chosen)");
 
         List<AbstractMonsterCard> selected = await YgoOrderedCardSelection.TryChooseManyAsync(
             choiceContext,
             player,
             prefs,
-            () => YgoMpCombatOrder.CardsSnapshotOrderedForMp(promptCandidates).OfType<AbstractMonsterCard>().ToList(),
+            () => YgoMpCombatOrder.CardsSnapshotOrderedForMp(promptCandidates)
+                .OfType<AbstractMonsterCard>()
+                .Where(c => c.FaceDown && c.IsMutable)
+                .ToList(),
             promptCandidates.Count);
         foreach (AbstractMonsterCard selectedCard in selected)
         {
             if (selectedCard is not IMonsterFlipEffect flip)
                 continue;
+            if (!selectedCard.FaceDown || !selectedCard.IsMutable)
+                continue;
+
+            if (!FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpWithoutActivatingEffectNow(selectedCard, choiceContext))
+            {
+                Godot.GD.PrintErr(
+                    $"[YgoDuelist][FlipFaceDownOnEnemyAttack] flip+effect skipped: MarkFlippedFaceUpOnField failed card={selectedCard.Id?.Entry} ownerNet={player.NetId}");
+                continue;
+            }
 
             await YgoMonsterFlipEffectRunner.RunFlipEffectAsync(flip, YgoChoiceContexts.Blocking(choiceContext), selectedCard);
         }

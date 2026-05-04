@@ -6092,7 +6092,7 @@
   "YGODUELIST-THE_FIRST_MONARCH_TRAP_MONSTER.description_skill": "Gain [blue]{Block}[/blue] block.\nContinuous Trap.\nATK [blue]{Damage}[/blue] / DEF [blue]{Def}[/blue]",
   "YGODUELIST-THE_FIRST_MONARCH_TRAP_MONSTER.description_skill_combat": "Gain [blue]{CalculatedDEF}[/blue] block.\nContinuous Trap.\nATK [blue]{CalculatedATK}[/blue] / DEF [blue]{CalculatedDEF}[/blue]",
   "YGODUELIST-THE_FIRST_MONARCH_TRAP_MONSTER.title": "The First Monarch",
-  "YGODUELIST-THE_FIRST_SARCOPHAGUS.description": "Turn start: places the next piece — \"The Second Sarcophagus\" then \"The Third Sarcophagus\" — from your hand, draw pile, or discard pile, face-up in your Spell/Trap Zone.\\Upon the third, destroy them and Special Summon [blue]1[/blue] \"Spirit of the Pharaoh\" from your hand or deck\\nIf any piece leaves the field, destroy the rest.",
+  "YGODUELIST-THE_FIRST_SARCOPHAGUS.description": "Turn start: places the next piece — \"The Second Sarcophagus\" then \"The Third Sarcophagus\" — from your hand, draw pile, or discard pile, face-up in your Spell/Trap Zone.\\nUpon the third, destroy them and Special Summon [blue]1[/blue] \"Spirit of the Pharaoh\" from your hand or deck.\\nIf any piece leaves the field, destroy the rest.",
   "YGODUELIST-THE_FIRST_SARCOPHAGUS.pick_spirit": "Choose \"Spirit of the Pharaoh\" in your hand, draw pile, or discard pile to Special Summon.",
   "YGODUELIST-THE_FIRST_SARCOPHAGUS.title": "The First Sarcophagus",
   "YGODUELIST-THE_FLUTE_OF_SUMMONING_DRAGON.description": "TODO: implement card effect.",

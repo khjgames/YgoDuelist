@@ -24,7 +24,7 @@ public sealed class The_Third_Sarcophagus : BaseContinuousSpellCard, IYgoBrickCa
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Zombie | YgoCardPackTags.Trap;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
     public override Type[] RelatedCards =>
         new[]

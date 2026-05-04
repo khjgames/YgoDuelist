@@ -34,7 +34,7 @@ public sealed class Burst_Stream_of_Destruction
     public override bool CancelSpellTrapZonePlayWhenUnresolvedTargetAfterResolve => true;
 
     public Burst_Stream_of_Destruction()
-        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Uncommon, target: TargetType.None, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 

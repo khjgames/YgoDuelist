@@ -16,7 +16,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Normal;
 public sealed class Fake_Trap : BaseTrapCard
 {
     public Fake_Trap()
-        : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
 

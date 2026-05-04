@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
@@ -40,7 +41,7 @@ public static class YgoMonsterFlipEffectRunner
             return false;
         if (card is not BaseMonsterCard bm || bm.Owner == null)
             return false;
-        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(bm.Owner, bm))
+        if (!IsRegisteredOrPetLinkedFieldMonster(bm))
             return false;
 
         bm.ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline();
@@ -54,5 +55,24 @@ public static class YgoMonsterFlipEffectRunner
             await YgoPreviewGridSelection.ShowPreviewAsync(ctx, new[] { self }, monster.Owner, ResolvingFlipEffectPrompt);
 
         await flip.OnFlippedFaceUpAsync(ctx, self);
+    }
+
+    /// <summary>
+    /// <see cref="DuelMonsterFieldRegistry.ContainsFieldMonster"/> is the fast path; during damage hooks / MP
+    /// reordering the HashSet can briefly disagree with <see cref="DuelMonsterFieldRegistry.HasSourceCard"/> pet links.
+    /// </summary>
+    private static bool IsRegisteredOrPetLinkedFieldMonster(BaseMonsterCard bm)
+    {
+        if (DuelMonsterFieldRegistry.ContainsFieldMonster(bm.Owner, bm))
+            return true;
+        if (bm.Owner.PlayerCombatState == null)
+            return false;
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(bm.Owner.PlayerCombatState))
+        {
+            if (DuelMonsterFieldRegistry.HasSourceCard(pet, bm))
+                return true;
+        }
+
+        return false;
     }
 }

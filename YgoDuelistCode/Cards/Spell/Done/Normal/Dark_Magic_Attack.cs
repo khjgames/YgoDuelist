@@ -27,7 +27,7 @@ public sealed class Dark_Magic_Attack : BaseSpellCard, IYgoNeowSignatureDarkMagi
         };
 
     public Dark_Magic_Attack()
-        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, cardType: CardType.Attack, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 

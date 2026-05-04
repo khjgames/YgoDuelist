@@ -25,7 +25,7 @@ public sealed class The_First_Sarcophagus : BaseContinuousTrapCard, IYgoOwnerTur
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Trap | YgoCardPackTags.Zombie | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.None;
 
     public override Type[] RelatedCards =>
         new[]
