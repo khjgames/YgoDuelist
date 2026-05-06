@@ -96,7 +96,7 @@ public sealed class Nimble_Momonga : EffectMonsterCard
     }
 
     private static List<Nimble_Momonga> BuildDeckCandidates(Player player) => YgoPlayerPiles
-        .OrderedCardsOfTypeFromPiles<Nimble_Momonga>(player, YgoPlayerPiles.Draw)
+        .OrderedSummonableMonstersFromPiles<Nimble_Momonga>(player, YgoPlayerPiles.Draw)
         .Where(m => m.CanSummonDuelMonster)
         .ToList();
 

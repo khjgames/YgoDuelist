@@ -14,6 +14,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 /// <summary>While face-up on the field, you gain Enraged Battle Ox power; your Beast-Warrior monsters deal splinter damage.</summary>
 public sealed class Enraged_Battle_Ox : EffectMonsterCard, IMonsterFlipEffect
 {
+    public override bool AskSelectFlip => false;
+
     public Enraged_Battle_Ox()
         : base(
             cost: 1,

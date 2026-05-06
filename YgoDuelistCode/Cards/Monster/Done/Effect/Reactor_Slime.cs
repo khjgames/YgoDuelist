@@ -23,7 +23,7 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, 
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Water,
@@ -48,13 +48,18 @@ public sealed class Reactor_Slime : EffectMonsterCard, IMonsterActivatedEffect, 
     public TargetType SecondActivatedEffectTarget => TargetType.Self;
     public string SecondActivatedEffectDescriptionLocKey => "YGODUELIST-REACTOR_SLIME.activated_effect_2.description";
 
+    public string? SecondActivatedEffectPortraitPath => ModelDb.Card<Metal_Reflect_Slime>().PortraitPath;
+
     public bool IsActivatedEffectAvailable =>
         Owner != null
+        && !ReactorSlimeSummonGate.HasSummonedNonDivineMonsterThisTurn(Owner)
         && YgoTokenSummon.MaxTokensThatFit(Owner) >= 2
-        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0);
+        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0)
+        && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Aqua);
 
     public bool IsSecondActivatedEffectAvailable =>
         Owner?.Creature?.CombatState != null
+        && !ReactorSlimeSummonGate.BlocksNonDivineSummons(Owner)
         && HasMetalReflectInHandDeckOrGraveyard(Owner)
         && YgoPlayerPiles.SpellTrapZone(Owner) != null
         && YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(

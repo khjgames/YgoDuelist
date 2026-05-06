@@ -73,7 +73,7 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
 
     private static List<CardModel> BuildHandAndDeckCandidates(Player player, Func<BaseMonsterCard, bool> isCandidate)
     {
-        List<BaseMonsterCard> merged = YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<BaseMonsterCard>(player);
+        List<BaseMonsterCard> merged = YgoPlayerPiles.OrderedSummonableMonstersFromHandDrawDiscard<BaseMonsterCard>(player);
         return merged.Where(isCandidate).Cast<CardModel>().ToList();
     }
 
@@ -102,6 +102,9 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return;
 
+        bool SummonCandidate(BaseMonsterCard bm) =>
+            isCandidate(bm) && ReactorSlimeSummonGate.AllowsSummon(player, bm);
+
         PlayerChoiceContext? ctx = await YgoGraveyardTriggeredActivation.TryConfirmSourceAsync(
             player,
             source,
@@ -119,7 +122,7 @@ public static class YgoGraveyardOptionalDeckSpecialSummon
         };
 
         List<BaseMonsterCard> BuildTypedCandidates() =>
-            BuildSummonCandidates(player, isCandidate, searchHandAndDeck).OfType<BaseMonsterCard>().ToList();
+            BuildSummonCandidates(player, SummonCandidate, searchHandAndDeck).OfType<BaseMonsterCard>().ToList();
 
         BaseMonsterCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
             ctx,

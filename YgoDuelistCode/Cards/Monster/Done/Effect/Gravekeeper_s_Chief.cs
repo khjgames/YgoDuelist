@@ -106,6 +106,8 @@ public sealed class Gravekeeper_s_Chief : EffectMonsterCard, IMonsterActivatedEf
                 continue;
             if (!bm.CanSummonDuelMonster)
                 continue;
+            if (!ReactorSlimeSummonGate.AllowsSummon(player, bm))
+                continue;
             list.Add(bm);
         }
 

@@ -39,6 +39,8 @@ public sealed class Sanga_of_the_Thunder : EffectMonsterCard
 
     private bool ShowConsumableShacklesPlusPowerHover => IsUpgradedOrPreviewActive;
 
+    public override bool UseAlternateUpgradedDescription => true;
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get

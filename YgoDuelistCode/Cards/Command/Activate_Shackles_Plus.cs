@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Powers;
@@ -23,8 +24,12 @@ public sealed class Activate_Shackles_Plus : MonsterCommandCard
 
     protected internal override string? CommandEnergyIconPrefix => "silent";
 
-    public Activate_Shackles_Plus()
+    public override LocString? GetPatchedDescriptionLocStringForDisplay()
     {
+        var loc = new LocString("cards", Id.Entry + ".description");
+        DynamicVars.AddTo(loc);
+        DynamicVars["ShacklesStr"].BaseValue = ActiveShacklesPlusPower.StrengthLossPerApply;
+        return loc;
     }
 
     protected override int CanonicalEnergyCost => 0;

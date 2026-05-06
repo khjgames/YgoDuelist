@@ -61,7 +61,7 @@ public sealed class Contract_with_Exodia : BaseSpellCard
     }
 
     private static Exodia_Necross? FindExodiaNecrossInHand(Player player) =>
-        YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Exodia_Necross>(player, YgoPlayerPiles.Hand).FirstOrDefault();
+        YgoPlayerPiles.OrderedSummonableMonstersFromPiles<Exodia_Necross>(player, YgoPlayerPiles.Hand).FirstOrDefault();
 
     private static bool HasAllFiveForbiddenOnePiecesInGraveyard(Player player)
     {

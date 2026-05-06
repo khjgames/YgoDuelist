@@ -42,7 +42,10 @@ public static class YgoPinchHopperGraveyard
 
         return YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards)
             .OfType<BaseMonsterCard>()
-            .Where(m => m.DuelMonsterRace == DuelMonsterRace.Insect && m.CanSummonDuelMonster)
+            .Where(m =>
+                m.DuelMonsterRace == DuelMonsterRace.Insect
+                && m.CanSummonDuelMonster
+                && ReactorSlimeSummonGate.AllowsSummon(player, m))
             .Cast<CardModel>()
             .ToList();
     }

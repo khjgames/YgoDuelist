@@ -47,12 +47,23 @@ public static class PlayCardActionTributeSelectionPatch
             if (card is not NormalMonsterCard nmc || nmc.TributeReleaseCount <= 0)
                 return;
 
+            GD.Print(
+                $"[YgoDuelist][MP][Tribute] PreSelect owner={action.Player.NetId} card={card.Id?.Entry} pile={card.Pile?.Type} printedLevel={nmc.DuelMonsterLevel} effectiveLevel={nmc.GetEffectiveDuelMonsterLevel()} tributeNeed={nmc.TributeReleaseCount}");
+
             var resolution = await TributeSummonSelection.SelectTributesForNormalSummonAsync(action.Player, nmc);
             if (resolution == null)
             {
+                GD.Print(
+                    $"[YgoDuelist][MP][Tribute] Select canceled/failed owner={action.Player.NetId} card={card.Id?.Entry} effectiveLevel={nmc.GetEffectiveDuelMonsterLevel()} tributeNeed={nmc.TributeReleaseCount}");
                 action.Cancel();
                 return;
             }
+
+            // Must match index used at OnPlay: vanilla updates NetCombatCard before spend/OnPlay. If we SetPending with the
+            // pre-update CombatCardIndex, TryTakePending (PlayCardAction key) misses after UpdateCardBeforeExecution — second
+            // tribute summons on the same turn often drift (e.g. Cost Down + Blue-Eyes then Time Eater). Mirrors option pile:
+            // PlayCardFromOptionPilePatch runs UpdateCardBeforeExecution before SetPending.
+            NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
 
             GD.Print(
                 $"[YgoDuelist][MP][Tribute] SetPending netCardIdx={action.NetCombatCard.CombatCardIndex} owner={action.Player.NetId} pets={resolution.Pets.Count} card={card.Id?.Entry}");
@@ -74,8 +85,7 @@ public static class PlayCardActionTributeSelectionPatch
             return;
 
         GD.Print(
-            $"[YgoDuelist][Queue][Defer] Execute body: UpdateCardBeforeExecution after tribute confirm (player {action.Player.NetId}, card {card.Id?.Entry})");
-        NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
+            $"[YgoDuelist][Queue][Defer] Execute body after tribute confirm (player {action.Player.NetId}, card {card.Id?.Entry})");
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
         CardPile? pile = card.Pile;
         if (pile == null || pile.Type != PileType.Hand)

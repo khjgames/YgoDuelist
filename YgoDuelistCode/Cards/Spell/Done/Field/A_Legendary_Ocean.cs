@@ -27,11 +27,13 @@ public sealed class A_Legendary_Ocean : BaseFieldSpellCard
 
     public override StatEffectTotal GetFieldStatEffect(BaseMonsterCard target)
     {
-        if (target.DuelMonsterAttribute != DuelMonsterAttribute.Water)
+        if (target.GetEffectiveDuelMonsterAttribute() != DuelMonsterAttribute.Water)
             return StatEffectTotal.None;
         int atk = YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedAtkDef, IsUpgraded);
         int def = YgoStatUpgradeScaling.ApplySpellTrapStatBonusUpgrade(PrintedAtkDef, IsUpgraded);
-        return new StatEffectTotal(atk, def, -(int)DynamicVars["Mgc2"].BaseValue);
+        // Level reduction is applied through LegendaryOceanLevelPower on the pet so HP/max HP
+        // can recalculate when the field toggles or stacks change.
+        return new StatEffectTotal(atk, def, 0);
     }
 
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>

@@ -38,7 +38,7 @@ public sealed class Dark_Magic_Attack : BaseSpellCard, IYgoNeowSignatureDarkMagi
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpDarkMagicianArchetype);
+        && YgoMonsterArchetypeKeywords.PlayerControlsFaceUpDarkMagicianArchetypeMonster(Owner);
 
     protected override Type[] PreviewReferencedCardTypes => new[] { typeof(Dark_Magician) };
 

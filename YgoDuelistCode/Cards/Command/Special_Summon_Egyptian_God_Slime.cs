@@ -12,7 +12,6 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
 using YgoDuelist.YgoDuelistCode.Extensions;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
@@ -55,7 +54,7 @@ public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard, IYgo
                 : YgoMpCombatOrder.FirstCardWhereStable(extra.Cards, c => c is Egyptian_God_Slime) as Egyptian_God_Slime;
             if (slime != null && !string.IsNullOrEmpty(slime.PortraitPath))
                 return slime.PortraitPath;
-            return "card.png".CardImagePath();
+            return ModelDb.Card<Egyptian_God_Slime>().PortraitPath;
         }
     }
 
@@ -131,12 +130,5 @@ public sealed class Special_Summon_Egyptian_God_Slime : MonsterCommandCard, IYgo
 
         if (!await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, slime, choiceContext))
             return;
-
-        Creature? slimePet = TributeSummonSelection.ResolvePetForFieldCard(player, slime);
-        if (slimePet == null || !slimePet.IsAlive || player.Creature == null)
-            return;
-
-        if (!YgoStumblingField.IsActive(player))
-            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(slimePet, true, player.Creature, slime);
     }
 }

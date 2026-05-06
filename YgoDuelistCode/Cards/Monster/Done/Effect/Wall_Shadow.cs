@@ -31,13 +31,22 @@ public sealed class Wall_Shadow : EffectMonsterCard
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
 
     public override Type[] RelatedCards =>
         new[] { typeof(Wall_Shadow), typeof(Magical_Labyrinth), typeof(Labyrinth_Wall) };
+    
+    public override Type[] BundledCards => new[] { typeof(Magical_Labyrinth) };
 
     public override bool CanSummonDuelMonster => false;
 
     public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate =>
         YgoMagicalLabyrinthWallShadowSummonState.IsSummonBypassActive;
+
+    /// <summary>
+    /// <see cref="NormalMonsterCard.IsPlayable"/> returns true when <see cref="CanSummonDuelMonster"/> is false (hand summon checks are skipped).
+    /// This monster must not be played from hand at all — only special summoned via <see cref="Magical_Labyrinth"/> command — same pattern as
+    /// <see cref="Berserk_Dragon"/>.
+    /// </summary>
+    protected override bool IsPlayable => base.IsPlayable && CanSummonDuelMonster;
 }

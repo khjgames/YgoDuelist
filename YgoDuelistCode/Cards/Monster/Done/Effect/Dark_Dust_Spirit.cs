@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -23,6 +24,8 @@ public sealed class Dark_Dust_Spirit : EffectMonsterCard,
     IMonsterFlipEffect,
     IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
 {
+    private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
+
     public Dark_Dust_Spirit()
         : base(
             cost: 1,
@@ -43,7 +46,12 @@ public sealed class Dark_Dust_Spirit : EffectMonsterCard,
 
     public override Type[] RelatedCards => new[] { typeof(Dark_Dust_Spirit) };
 
+    public override bool UseAlternateUpgradedDescription => true;
+
     public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => false;
+
+    protected override void AddExtraArgsToDescription(LocString description) =>
+        description.Add("conduitIcon", ConduitImgBbcode);
 
     protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
         await RunOnNormalOrTributeSummonAsync(

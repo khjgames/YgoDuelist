@@ -108,6 +108,7 @@ public sealed class Spirit_of_the_Pharaoh : EffectMonsterCard
                 && m.GetEffectiveDuelMonsterLevel() <= maxLevel
                 && (m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate)
                 && !m.BlocksSpecialDuelMonsterSummon)
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player))
             .ToList();
 
     protected override void OnUpgrade()

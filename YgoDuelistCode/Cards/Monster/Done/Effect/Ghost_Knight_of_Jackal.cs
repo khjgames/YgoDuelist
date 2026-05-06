@@ -27,7 +27,7 @@ public sealed class Ghost_Knight_of_Jackal : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 5,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
@@ -81,6 +81,7 @@ public sealed class Ghost_Knight_of_Jackal : EffectMonsterCard
         return YgoMpCombatOrder.CardsSnapshotOrderedForMp(gy.Cards)
             .OfType<BaseMonsterCard>()
             .Where(m => m.CanSummonDuelMonster)
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player))
             .ToList();
     }
 }

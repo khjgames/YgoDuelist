@@ -3,6 +3,7 @@ using System.Linq;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
@@ -80,5 +81,7 @@ public static class YgoFieldSpellStatAggregator
             m.RefreshSummonKeywordsForMonsterLevel();
             CardModelEnergyCache.Invalidate(m);
         }
+
+        TaskHelper.RunSafely(DnaFieldOverrideSync.SyncCombatFieldOverridesAsync(player));
     }
 }

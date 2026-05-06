@@ -135,7 +135,8 @@ public sealed class Fenrir : EffectMonsterCard
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
-        return BuildWaterGraveyardCandidates(player).Count >= 2;
+        return BuildWaterGraveyardCandidates(player).Count >= 2
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Beast);
     }
 
     private static List<BaseMonsterCard> BuildWaterGraveyardCandidates(Player player) =>

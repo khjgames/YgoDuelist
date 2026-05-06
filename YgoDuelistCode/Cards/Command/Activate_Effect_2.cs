@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
+using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Command;
@@ -42,13 +43,24 @@ public sealed class Activate_Effect_2 : MonsterCommandCard, IActivateEffectPileU
 
     public override TargetType TargetType => Effect?.SecondActivatedEffectTarget ?? TargetType.Self;
 
+    public override string PortraitPath
+    {
+        get
+        {
+            TryResolveSourceMonsterFromStoredPetId();
+            if (Effect?.SecondActivatedEffectPortraitPath is { Length: > 0 } path)
+                return path;
+            return base.PortraitPath;
+        }
+    }
+
     protected override bool IsPlayable
     {
         get
         {
             if (!base.IsPlayable || SourceMonster is not IMonsterSecondActivatedEffect impl)
                 return false;
-            if (SourceMonster.FaceDown)
+            if (SourceMonster.FaceDown && !SourceMonster.AllowsActivateEffectWhileFaceDownFlipFaceUp)
                 return false;
             if (!impl.IsSecondActivatedEffectAvailable)
                 return false;
@@ -69,8 +81,20 @@ public sealed class Activate_Effect_2 : MonsterCommandCard, IActivateEffectPileU
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner == null || SourceMonster is not IMonsterSecondActivatedEffect impl || SourceMonster.FaceDown)
+        if (Owner == null || SourceMonster is not IMonsterSecondActivatedEffect impl)
             return;
+
+        if (SourceMonster.FaceDown)
+        {
+            if (!SourceMonster.AllowsActivateEffectWhileFaceDownFlipFaceUp
+                || SourceMonster is not AbstractMonsterCard amc)
+                return;
+
+            if (!FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpWithoutActivatingEffectNow(amc, choiceContext))
+                return;
+
+            await DuelMonsterStancePowerSync.SyncSummonedPetIfPresentAsync(amc, Owner.Creature);
+        }
 
         var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
         if (pet != null)

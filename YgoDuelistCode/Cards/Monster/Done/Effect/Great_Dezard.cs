@@ -144,7 +144,7 @@ public sealed class Great_Dezard : EffectMonsterCard, IMonsterActivatedEffect
     }
 
     private static List<Fushioh_Richie> BuildFushiohHandOrDrawCandidates(Player player) =>
-        YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Fushioh_Richie>(player);
+        YgoPlayerPiles.OrderedSummonableMonstersFromHandDrawDiscard<Fushioh_Richie>(player);
 
     private static List<BaseMonsterCard> BuildHandMonsterDestroyCandidates(Player player, Fushioh_Richie chosenFush)
     {

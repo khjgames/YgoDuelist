@@ -58,7 +58,8 @@ public sealed class Aqua_Spirit : EffectMonsterCard
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
-        return BuildWaterGraveyardCandidates(player).Count >= 1;
+        return BuildWaterGraveyardCandidates(player).Count >= 1
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Aqua);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

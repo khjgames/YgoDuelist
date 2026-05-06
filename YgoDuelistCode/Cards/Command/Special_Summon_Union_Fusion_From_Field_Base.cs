@@ -58,7 +58,7 @@ public abstract class Special_Summon_Union_Fusion_From_Field_Base : MonsterComma
                 && fusionTargets.Count > 0
                 && !string.IsNullOrEmpty(fusionTargets[0].PortraitPath))
                 return fusionTargets[0].PortraitPath;
-            return "card.png".CardImagePath();
+            return CanonicalUnionFusionPortraitPath;
         }
     }
 

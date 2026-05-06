@@ -47,7 +47,7 @@ public static class YgoGiantGermGraveyard
 
         return YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards)
             .OfType<Giant_Germ>()
-            .Where(g => g.CanSummonDuelMonster)
+            .Where(g => g.CanSummonDuelMonster && ReactorSlimeSummonGate.AllowsSummon(player, g))
             .Cast<CardModel>()
             .ToList();
     }

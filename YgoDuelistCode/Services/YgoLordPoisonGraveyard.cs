@@ -46,7 +46,11 @@ public static class YgoLordPoisonGraveyard
 
         return YgoMpCombatOrder.CardsSnapshotOrderedForMp(gy.Cards)
             .OfType<BaseMonsterCard>()
-            .Where(m => m.DuelMonsterRace == DuelMonsterRace.Plant && m is not Lord_Poison && m.CanSummonDuelMonster)
+            .Where(m =>
+                m.DuelMonsterRace == DuelMonsterRace.Plant
+                && m is not Lord_Poison
+                && m.CanSummonDuelMonster
+                && ReactorSlimeSummonGate.AllowsSummon(player, m))
             .Cast<CardModel>()
             .ToList();
     }

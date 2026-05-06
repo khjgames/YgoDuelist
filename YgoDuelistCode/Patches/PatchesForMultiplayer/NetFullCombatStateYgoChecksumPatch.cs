@@ -716,6 +716,12 @@ public static class NetFullCombatStateYgoChecksumPatch
         GD.PrintErr(
             $"[YgoDuelist][MP][Divergence][HOST] remoteClient={remoteClientId} checksumId={checksumId} hostHash={hostHash} clientHash={clientHash} context={context}");
         PrintYgoDuelistFingerprintsFromSnapshot(runState, hostSnapshot, "[Divergence][HOST]");
+        if (context == YgoMonsterCommandChecksumReconcile.AfterPlayerTurnStartContext)
+        {
+            string oxFp = EnragedBattleOxService.FormatOxAuraChecksumFingerprint(runState);
+            if (oxFp.Length > 0)
+                GD.PrintErr(oxFp);
+        }
     }
 
     /// <summary>
@@ -744,6 +750,12 @@ public static class NetFullCombatStateYgoChecksumPatch
         GD.PrintErr("[YgoDuelist][MP][Divergence][CLIENT] --- REMOTE snapshot (packet) YGO fp ---");
         if (remoteSnapshot != null)
             PrintYgoDuelistFingerprintsFromSnapshot(runState, remoteSnapshot, "[Divergence][CLIENT][remote]");
+        if (context == YgoMonsterCommandChecksumReconcile.AfterPlayerTurnStartContext)
+        {
+            string oxFp = EnragedBattleOxService.FormatOxAuraChecksumFingerprint(runState);
+            if (oxFp.Length > 0)
+                GD.PrintErr(oxFp);
+        }
     }
 
     private static void PrintYgoDuelistFingerprintsFromSnapshot(

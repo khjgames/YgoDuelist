@@ -46,6 +46,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         Type == CardType.Attack ? TargetType.AnyEnemy : NonAttackPlayTargetType;
 
     private int _duelMonsterLevel;
+    private readonly DuelMonsterAttribute _baseDuelMonsterAttribute;
+    private readonly DuelMonsterRace _baseDuelMonsterRace;
 
     private readonly int? _duelMonsterAttackPlayEnergyOverride;
     private readonly int? _duelMonsterDefensePlayEnergyOverride;
@@ -119,11 +121,14 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
             BaseDef);
     }
 
-    /// <summary>Cost Down and similar: −1 energy for monsters in hand while <see cref="CostDownHandLevelPower"/> is active.</summary>
+    /// <summary>
+    /// Cost Down and similar: while this card is in hand, reduce play energy by <c>Amount</c> (1 per Cost Down stack).
+    /// </summary>
     protected int GetCostDownHandPlayEnergyDiscount() =>
-        !IsCanonical && Owner != null && Pile?.Type == PileType.Hand && Owner.Creature?.GetPower<CostDownHandLevelPower>() != null
-            ? CostDownHandLevelPower.HandEnergyDiscount
-            : 0;
+        IsCanonical || Owner == null || Pile?.Type != PileType.Hand
+            ? 0
+            : System.Math.Max(0, (int)(Owner.Creature?.GetPower<CostDownHandLevelPower>()?.Amount ?? 0m))
+                * CostDownHandLevelPower.HandEnergyDiscount;
 
     /// <summary>Subtracts from attack/defense play energy (e.g. The Legendary Fisherman while Umi is up). Clamped to 0.</summary>
     public virtual int GetDuelMonsterPlayEnergyDiscount() => GetCostDownHandPlayEnergyDiscount();
@@ -183,14 +188,18 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// <summary>Level (star count) for the duel monster this card summons.</summary>
     public override int DuelMonsterLevel => _duelMonsterLevel;
 
-    /// <summary>Set when this card resolves while face-down on the field (flip); cleared at the start of your turn.</summary>
+    /// <summary>
+    /// Set when this card resolves while face-down on the field (flip); cleared at the start of your turn.
+    /// Serialized on combat card copies so observers agree with the acting peer (e.g. <see cref="YgoSpearCretinGraveyard"/> GY gate).
+    /// </summary>
+    [SavedProperty]
     public bool FlippedThisTurn { get; set; }
 
     /// <summary>Duel monster attribute (EARTH/WATER/FIRE/WIND/LIGHT/DARK) from the original YgoDuelist card.</summary>
-    public override DuelMonsterAttribute DuelMonsterAttribute { get; }
+    public override DuelMonsterAttribute DuelMonsterAttribute => GetEffectiveDuelMonsterAttribute();
 
     /// <summary>Duel monster race / type for the card frame icon.</summary>
-    public override DuelMonsterRace DuelMonsterRace { get; }
+    public override DuelMonsterRace DuelMonsterRace => GetEffectiveDuelMonsterRace();
 
     /// <summary>
     /// 2–5: this monster's attack damage is dealt in that many hits that sum to its ATK (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoPortionMath"/>).
@@ -458,8 +467,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         int? duelMonsterDefensePlayEnergyOverride = null)
         : base(cost, type, rarity, target)
     {
-        DuelMonsterAttribute = duelMonsterAttribute;
-        DuelMonsterRace = duelMonsterRace;
+        _baseDuelMonsterAttribute = duelMonsterAttribute;
+        _baseDuelMonsterRace = duelMonsterRace;
         BaseAtk = baseAtk;
         BaseDef = baseDef;
         BaseMgc = baseMgc;
@@ -708,15 +717,25 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     }
 
     /// <summary>
-    /// Printed level plus face-up field spell level modifiers (e.g. A Legendary Ocean), clamped 1–12 for UI and tribute rules.
+    /// Printed level plus active level-effect totals (hand/field modifiers), clamped 1–12 for UI and tribute rules.
     /// </summary>
     public int GetEffectiveDuelMonsterLevel()
     {
         int lv = DuelMonsterLevel;
-        if (!IsCanonical && Owner != null && Pile?.Type == PileType.Hand && Owner.Creature?.GetPower<CostDownHandLevelPower>() != null)
-            lv -= CostDownHandLevelPower.LevelReduction;
+        if (IsCanonical)
+        {
+            if (lv < 1)
+                lv = 1;
+            else if (lv > 12)
+                lv = 12;
+            return lv;
+        }
 
-        if (!IsCanonical && Owner != null)
+        if (Owner != null && Pile?.Type == PileType.Hand)
+            lv -= LevelModifierPowerSync.GetCostDownHandLevelReduction(Owner);
+        lv -= GetSourcePetLevelReductionFromPowers();
+
+        if (Owner != null)
         {
             foreach (BaseFieldSpellCard fieldSpell in YgoFieldSpellStatAggregator.GetActiveFaceUpFieldSpells(Owner))
             {
@@ -736,6 +755,82 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
         else if (lv > 12)
             lv = 12;
         return lv;
+    }
+
+    public DuelMonsterAttribute GetEffectiveDuelMonsterAttribute()
+    {
+        DuelMonsterAttribute attr = _baseDuelMonsterAttribute;
+        int? overrideIndex = GetSourcePetOverrideAttributeIndex();
+        if (overrideIndex.HasValue)
+            attr = (DuelMonsterAttribute)overrideIndex.Value;
+        return attr;
+    }
+
+    public DuelMonsterRace GetEffectiveDuelMonsterRace()
+    {
+        DuelMonsterRace race = _baseDuelMonsterRace;
+        int? overrideIndex = GetSourcePetOverrideRaceIndex();
+        if (overrideIndex.HasValue)
+            race = (DuelMonsterRace)overrideIndex.Value;
+        return race;
+    }
+
+    private int GetSourcePetLevelReductionFromPowers()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return 0;
+
+        int total = 0;
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
+        {
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
+                continue;
+
+            total += (int)(pet.GetPower<CostDownSummonedLevelPower>()?.Amount ?? 0m);
+            total += (int)(pet.GetPower<LegendaryOceanLevelPower>()?.Amount ?? 0m);
+        }
+
+        return total;
+    }
+
+    private int? GetSourcePetOverrideRaceIndex()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
+        {
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
+                continue;
+            DnaSurgeryRaceOverridePower? racePower = pet.GetPower<DnaSurgeryRaceOverridePower>();
+            if (racePower == null)
+                continue;
+            int idx = (int)racePower.Amount - 1;
+            if (idx < 0 || idx > (int)DuelMonsterRace.Zombie)
+                return null;
+            return idx;
+        }
+
+        return null;
+    }
+
+    private int? GetSourcePetOverrideAttributeIndex()
+    {
+        if (IsCanonical || Owner?.PlayerCombatState == null)
+            return null;
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.PlayerCombatState))
+        {
+            if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
+                continue;
+            DnaTransplantAttributeOverridePower? attrPower = pet.GetPower<DnaTransplantAttributeOverridePower>();
+            if (attrPower == null)
+                continue;
+            int idx = (int)attrPower.Amount - 1;
+            if (idx < 0 || idx > (int)DuelMonsterAttribute.Divine)
+                return null;
+            return idx;
+        }
+
+        return null;
     }
 
     /// <summary>Data for summoning a duel monster from this card (level, ATK, DEF, portrait path, name).</summary>
@@ -1186,6 +1281,15 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     /// <summary>When true with face-down defense, Command Attack may deal flip damage before stance change (Stealth Bird).</summary>
     public virtual bool UsesFaceDownFlipDamageOnCommandAttack => false;
+
+    /// <summary>
+    /// When true, <c>Activate_Effect</c> / <c>Activate_Effect_2</c> stay playable while <see cref="AbstractMonsterCard.FaceDown"/>
+    /// and, on resolve, flip the source face-up (face-up defense if it was face-down defense) via
+    /// <c>FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpWithoutActivatingEffectNow</c> plus
+    /// <see cref="DuelMonsterStancePowerSync.SyncSummonedPetIfPresentAsync"/> before the activated-effect body runs.
+    /// Does not run <see cref="IMonsterFlipEffect"/> (ignition-style reveal). Override on specific monsters (e.g. The Winged Dragon of Ra).
+    /// </summary>
+    public virtual bool AllowsActivateEffectWhileFaceDownFlipFaceUp => false;
 
     /// <summary>Extra Command Attack playability (Dark Zebra, Ultimate Obedient Fiend).</summary>
     public virtual bool IsCommandAttackPlayable(Player? owner, Creature? pet) => true;

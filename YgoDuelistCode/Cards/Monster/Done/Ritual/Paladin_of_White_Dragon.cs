@@ -152,7 +152,7 @@ public sealed class Paladin_of_White_Dragon : RitualMonsterCard, IMonsterActivat
 
     private static List<Blue_Eyes_White_Dragon> BuildBlueEyesCandidates(Player player)
     {
-        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Blue_Eyes_White_Dragon>(
+        return YgoPlayerPiles.OrderedSummonableMonstersFromPiles<Blue_Eyes_White_Dragon>(
             player,
             YgoPlayerPiles.Hand,
             YgoPlayerPiles.Discard,

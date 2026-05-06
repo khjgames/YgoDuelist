@@ -214,7 +214,8 @@ public sealed class Black_Luster_Soldier_Envoy_of_the_Beginning : EffectMonsterC
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
         return BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Light).Count >= 1
-            && BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Dark).Count >= 1;
+            && BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Dark).Count >= 1
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Warrior);
     }
 
     private static List<BaseMonsterCard> BuildGraveyardAttributeCandidates(

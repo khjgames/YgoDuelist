@@ -119,6 +119,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
             return false;
 
         int legionCountBeforeSummon = LegionFiendJesterSpellcasterConduit.CountLegionsOnField(player);
+        bool summonedFromHand = card.Pile?.Type == PileType.Hand;
 
         DuelMonsterData data = card.GetDuelMonsterData();
         DuelMonsterModel monster = (DuelMonsterModel)ModelDb.Monster<DuelMonsterModel>().ToMutable();
@@ -161,6 +162,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
             await MonsterCommandRegistry.SetHasUsedCommandThisTurn(petCreature, true, player.Creature, card);
 
         await DuelMonsterStancePowerSync.SyncForPetAsync(petCreature, card, player.Creature, card);
+        await LevelModifierPowerSync.SyncSummonedMonsterCostDownPowerAsync(player, petCreature, card, summonedFromHand);
 
         // After the summon completes, move the monster card into the MonsterPile
         // so it is no longer in Hand/Discard/etc.
@@ -193,6 +195,8 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
         if (card.GetType() == typeof(global::YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect.Fushioh_Richie))
             YgoFushiohRichieSummonGate.Consume(player);
+
+        ReactorSlimeSummonGate.RecordSummon(player, card);
 
         return true;
     }

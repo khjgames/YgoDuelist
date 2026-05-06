@@ -47,6 +47,20 @@ public sealed class YgoTransientSpellOptionCommandCard : MonsterCommandCard
         _portraitPathOverride = portraitPngFileName.CardImagePath();
     }
 
+    public void ConfigureWithPortraitPath(
+        int optionId,
+        string titleCardsLocKey,
+        string descriptionCardsLocKey,
+        CardModel? dynamicVarSource,
+        string portraitPath)
+    {
+        OptionId = optionId;
+        TitleCardsLocKey = titleCardsLocKey;
+        DescriptionCardsLocKey = descriptionCardsLocKey;
+        DynamicVarSource = dynamicVarSource;
+        _portraitPathOverride = portraitPath;
+    }
+
     public static YgoTransientSpellOptionCommandCard Create(
         CombatState combatState,
         Player player,
@@ -58,6 +72,20 @@ public sealed class YgoTransientSpellOptionCommandCard : MonsterCommandCard
     {
         var card = (YgoTransientSpellOptionCommandCard)combatState.CreateCard<YgoTransientSpellOptionCommandCard>(player);
         card.Configure(optionId, titleCardsLocKey, descriptionCardsLocKey, dynamicVarSource, portraitPngFileName);
+        return card;
+    }
+
+    public static YgoTransientSpellOptionCommandCard CreateWithPortraitPath(
+        CombatState combatState,
+        Player player,
+        int optionId,
+        string titleCardsLocKey,
+        string descriptionCardsLocKey,
+        CardModel? dynamicVarSource,
+        string portraitPath)
+    {
+        var card = (YgoTransientSpellOptionCommandCard)combatState.CreateCard<YgoTransientSpellOptionCommandCard>(player);
+        card.ConfigureWithPortraitPath(optionId, titleCardsLocKey, descriptionCardsLocKey, dynamicVarSource, portraitPath);
         return card;
     }
 

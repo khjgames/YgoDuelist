@@ -85,6 +85,7 @@ public sealed class The_Thing_in_the_Crater : EffectMonsterCard
             .Where(m =>
                 m.DuelMonsterRace == DuelMonsterRace.Pyro
                 && (m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player))
             .ToList();
     }
 }

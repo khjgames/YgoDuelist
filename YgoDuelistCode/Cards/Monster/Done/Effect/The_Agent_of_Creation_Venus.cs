@@ -24,7 +24,7 @@ public sealed class The_Agent_of_Creation_Venus : EffectMonsterCard, IMonsterAct
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Light,
@@ -36,6 +36,8 @@ public sealed class The_Agent_of_Creation_Venus : EffectMonsterCard, IMonsterAct
     }
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Light | YgoCardPackTags.Draw;
+
+    public override Type[] BundledCards => new[] { typeof(Mystical_Shine_Ball) };
 
     public override Type[] RelatedCards => new[] { typeof(The_Agent_of_Creation_Venus), typeof(Mystical_Shine_Ball) };
 
@@ -97,7 +99,7 @@ public sealed class The_Agent_of_Creation_Venus : EffectMonsterCard, IMonsterAct
     }
 
     private static List<Mystical_Shine_Ball> BuildShineBallCandidates(Player player) => YgoPlayerPiles
-        .OrderedCardsOfTypeFromHandDrawDiscard<Mystical_Shine_Ball>(player)
+        .OrderedSummonableMonstersFromHandDrawDiscard<Mystical_Shine_Ball>(player)
         .Where(m => m.CanSummonDuelMonster)
         .ToList();
 

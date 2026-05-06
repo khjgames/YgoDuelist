@@ -20,5 +20,11 @@ public interface IMonsterSecondActivatedEffect
 
     bool SecondActivatedEffectConsumesOncePerTurnSlot => true;
 
+    /// <summary>
+    /// When non-null, <see cref="Command.Activate_Effect_2"/> uses this portrait (e.g. the card the effect summons or sets).
+    /// Default: same art as the field monster (<see cref="MonsterCommandCard.SourceMonster"/>).
+    /// </summary>
+    string? SecondActivatedEffectPortraitPath => null;
+
     Task OnSecondActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source);
 }

@@ -126,6 +126,8 @@ public sealed class Hannibal_Necromancer : EffectMonsterCard, IMonsterActivatedE
                 continue;
             if (bm.BaseAtk > 15)
                 continue;
+            if (!ReactorSlimeSummonGate.AllowsSummon(player, bm))
+                continue;
             list.Add(bm);
         }
 

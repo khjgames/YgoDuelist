@@ -101,6 +101,7 @@ public sealed class Ancient_Lamp : EffectMonsterCard, IMonsterActivatedEffect
         return YgoMpCombatOrder
             .CardsSnapshotOrderedForMp(hand.Cards)
             .OfType<La_Jinn_the_Mystical_Genie_of_the_Lamp>()
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<La_Jinn_the_Mystical_Genie_of_the_Lamp>(player))
             .ToList();
     }
 }

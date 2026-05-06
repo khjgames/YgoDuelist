@@ -61,6 +61,8 @@ public sealed class Manticore_of_Darkness : EffectMonsterCard, IYgoOwnerBeforeTu
             return;
         if (!IsOwnerBeforeTurnEndFlushGraveyardEffectActive())
             return;
+        if (!ReactorSlimeSummonGate.AllowsSummonPrintedRace(owner, DuelMonsterRace.BeastWarrior))
+            return;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(owner, 0))
             return;
 

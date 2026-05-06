@@ -10,11 +10,16 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 
 public sealed class TributeSummonPendingResolution
 {
-    public TributeSummonPendingResolution(List<Creature> pets, int mausoleumHpTributes, int mausoleumHpLossTotal)
+    public TributeSummonPendingResolution(
+        List<Creature> pets,
+        int mausoleumHpTributes,
+        int mausoleumHpLossTotal,
+        int requiredTributeCount)
     {
         Pets = pets;
         MausoleumHpTributes = mausoleumHpTributes;
         MausoleumHpLossTotal = mausoleumHpLossTotal;
+        RequiredTributeCount = requiredTributeCount;
     }
 
     public List<Creature> Pets { get; }
@@ -22,6 +27,12 @@ public sealed class TributeSummonPendingResolution
     public int MausoleumHpTributes { get; }
 
     public int MausoleumHpLossTotal { get; }
+
+    /// <summary>
+    /// Tribute requirement captured at selection time, so resolution validation does not drift when level modifiers
+    /// (e.g. Cost Down hand-only effects) stop applying after the card leaves hand.
+    /// </summary>
+    public int RequiredTributeCount { get; }
 }
 
 /// <summary>

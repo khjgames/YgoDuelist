@@ -143,7 +143,8 @@ public sealed class Dark_Necrofear : EffectMonsterCard
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
-        return BuildFiendGraveyardBanishCandidates(player).Count >= 3;
+        return BuildFiendGraveyardBanishCandidates(player).Count >= 3
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Fiend);
     }
 
     private static List<BaseMonsterCard> BuildFiendGraveyardBanishCandidates(Player player) =>
@@ -167,7 +168,8 @@ public sealed class Dark_Necrofear : EffectMonsterCard
                         m.DuelMonsterRace == DuelMonsterRace.Fiend
                         && m.DuelMonsterLevel <= maxLevel
                         && !m.BlocksSpecialDuelMonsterSummon
-                        && (m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate)));
+                        && (m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
+                    .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player)));
         }
 
         CardPile? ban = YgoPlayerPiles.Banished(player);
@@ -181,7 +183,8 @@ public sealed class Dark_Necrofear : EffectMonsterCard
                         m.DuelMonsterRace == DuelMonsterRace.Fiend
                         && m.DuelMonsterLevel <= maxLevel
                         && !m.BlocksSpecialDuelMonsterSummon
-                        && (m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate)));
+                        && (m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
+                    .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player)));
         }
 
         return list;

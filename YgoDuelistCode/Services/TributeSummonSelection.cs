@@ -80,7 +80,7 @@ public static class TributeSummonSelection
     {
         int need = summonCard.TributeReleaseCount;
         if (need <= 0)
-            return new TributeSummonPendingResolution(new List<Creature>(), 0, 0);
+            return new TributeSummonPendingResolution(new List<Creature>(), 0, 0, requiredTributeCount: 0);
 
         for (int attempt = 0; attempt < MaxInvalidTributeReselects; attempt++)
         {
@@ -99,12 +99,13 @@ public static class TributeSummonSelection
         Player? player,
         List<Creature>? pets,
         int mausoleumHpTributes,
-        int mausoleumHpLossTotal)
+        int mausoleumHpLossTotal,
+        int? lockedRequiredTributeCount = null)
     {
         if (summon is IYgoNamedTripleTributeSummon namedSummon)
             return namedSummon.NamedTributeRecipeMatches(pets, mausoleumHpTributes, mausoleumHpLossTotal);
 
-        int need = summon.TributeReleaseCount;
+        int need = lockedRequiredTributeCount ?? summon.TributeReleaseCount;
         if (need <= 0)
             return true;
         if (mausoleumHpTributes < 0 || mausoleumHpTributes > 3)
@@ -209,9 +210,9 @@ public static class TributeSummonSelection
 
         int mausoleumHpLossTotal = picked.OfType<IYgoMausoleumHpTributeOption>().Sum(c => c.TributeHpLoss);
         if (!TributeSelectionMeetsCost(summonCard, player, pets, mausoleumHpTributes, mausoleumHpLossTotal))
-            return new TributeSummonPendingResolution(new List<Creature>(), 0, 0);
+            return new TributeSummonPendingResolution(new List<Creature>(), 0, 0, requiredTributeCount: need);
 
-        return new TributeSummonPendingResolution(pets, mausoleumHpTributes, mausoleumHpLossTotal);
+        return new TributeSummonPendingResolution(pets, mausoleumHpTributes, mausoleumHpLossTotal, requiredTributeCount: need);
     }
 
     private static List<CardModel> BuildTributeSelectionCandidates(Player player, BaseMonsterCard summonCard, int need)

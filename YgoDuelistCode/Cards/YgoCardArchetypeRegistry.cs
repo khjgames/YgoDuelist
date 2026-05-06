@@ -24,8 +24,10 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards;
 
 /// <summary>
-/// Central lists for <see cref="YgoCardArchetype"/> used by <see cref="YgoRelatedCardsComposer"/>.
-/// Attribute/race boost sets align with <see cref="YgoStarterCardCatalog"/> flat attribute fields, terrain fields, and flat race equips.
+/// Central lists for <see cref="YgoCardArchetype"/>.
+/// Blue-Eyes and Dark Magician use two lists each: <b>strict</b> (in-archetype for rules / keywords via
+/// <see cref="GetStrictArchetypeTypes"/>) and <b>related</b> (broader support for <see cref="YgoRelatedCardsComposer"/> via
+/// <see cref="GetTypes"/>). Other flags use a single list for both.
 /// </summary>
 public static class YgoCardArchetypeRegistry
 {
@@ -45,6 +47,32 @@ public static class YgoCardArchetypeRegistry
         typeof(Paladin_of_White_Dragon),
         typeof(Dragon_Master_Knight),
         typeof(Burst_Stream_of_Destruction),
+        typeof(White_Dragon_Ritual)
+    ];
+
+    private static readonly Type[] s_darkMagician =
+    [
+        typeof(Dark_Magician),
+        typeof(Dark_Magician_Girl),
+        typeof(Skilled_Dark_Magician),
+        typeof(Dark_Magician_of_Chaos),
+        //typeof(Toon_Dark_Magician_Girl),
+        typeof(Magician_of_Black_Chaos),
+        typeof(Dark_Paladin),
+        typeof(Dark_Flare_Knight),
+        typeof(Dark_Sage),
+        typeof(Dark_Magic_Attack),
+        typeof(Black_Magic_Ritual),
+    ];
+
+    private static readonly Type[] s_blueEyesRelated =
+    [
+        typeof(Blue_Eyes_White_Dragon),
+        typeof(Blue_Eyes_Ultimate_Dragon),
+        //typeof(Blue_Eyes_Toon_Dragon),
+        typeof(Paladin_of_White_Dragon),
+        typeof(Dragon_Master_Knight),
+        typeof(Burst_Stream_of_Destruction),
         typeof(White_Dragon_Ritual),
         typeof(Double_Summon),
         typeof(Mausoleum_of_the_Emperor),
@@ -56,7 +84,7 @@ public static class YgoCardArchetypeRegistry
         typeof(Light_Effigy),
     ];
 
-    private static readonly Type[] s_darkMagician =
+    private static readonly Type[] s_darkMagicianRelated =
     [
         typeof(Dark_Magician),
         typeof(Dark_Magician_Girl),
@@ -214,7 +242,7 @@ public static class YgoCardArchetypeRegistry
     [
         typeof(Anti_Spell),
         typeof(Apprentice_Magician),
-        //typeof(Breaker_the_Magical_Warrior),
+        typeof(Breaker_the_Magical_Warrior),
         typeof(Hannibal_Necromancer),
         typeof(Legendary_Flame_Lord),
         typeof(Magical_Marionette),
@@ -272,15 +300,15 @@ public static class YgoCardArchetypeRegistry
     private static readonly Type[] s_blight =
     [
         typeof(Alligator_S_Sword_Dragon),
-        //typeof(Amphibious_Bugroth_MK_3),
+        typeof(Amphibious_Bugroth_MK_3),
         typeof(Black_Tyranno),
         typeof(Drillago),
-        //typeof(Gear_Golem_the_Moving_Fortress),
+        typeof(Gear_Golem_the_Moving_Fortress),
         typeof(Jinzo_7),
         typeof(Lady_Assailant_of_Flames),
         typeof(Leghul),
         typeof(Levia_Dragon_Daedalus),
-        //typeof(Mucus_Yolk),
+        typeof(Mucus_Yolk),
         typeof(Mystic_Lamp),
         typeof(Nightmare_Horse),
         typeof(Ocean_Dragon_Lord_Neo_Daedalus),
@@ -449,8 +477,8 @@ public static class YgoCardArchetypeRegistry
     private static readonly Dictionary<YgoCardArchetype, Type[]> s_byArchetype = new()
     {
         [YgoCardArchetype.ZombieBoost] = s_zombieBoost,
-        [YgoCardArchetype.BlueEyesWhiteDragon] = s_blueEyes,
-        [YgoCardArchetype.DarkMagician] = s_darkMagician,
+        [YgoCardArchetype.BlueEyesWhiteDragon] = s_blueEyesRelated,
+        [YgoCardArchetype.DarkMagician] = s_darkMagicianRelated,
         [YgoCardArchetype.EarthBoost] = s_earthBoost,
         [YgoCardArchetype.WaterBoost] = s_waterBoost,
         [YgoCardArchetype.WindBoost] = s_windBoost,
@@ -494,7 +522,12 @@ public static class YgoCardArchetypeRegistry
         [YgoCardArchetype.Energy] = s_energy,
     };
 
-    /// <summary>All card types in <paramref name="archetype"/> (for <see cref="YgoRelatedCardsComposer"/>).</summary>
+    /// <summary>
+    /// Related pool for <paramref name="archetype"/> (pack weighting, <see cref="YgoRelatedCardsComposer"/>,
+    /// <see cref="GetImplicitArchetypes"/>). For <see cref="YgoCardArchetype.BlueEyesWhiteDragon"/> and
+    /// <see cref="YgoCardArchetype.DarkMagician"/> this is the broader support list; use <see cref="GetStrictArchetypeTypes"/>
+    /// for in-archetype card logic and monster keywords.
+    /// </summary>
     public static IReadOnlyList<Type> GetTypes(YgoCardArchetype archetype)
     {
         if (archetype == YgoCardArchetype.None)
@@ -510,6 +543,18 @@ public static class YgoCardArchetypeRegistry
             ? arr
             : Array.Empty<Type>();
     }
+
+    /// <summary>
+    /// Strict "in this archetype" members (YGO naming): monsters and cards that count for archetype rules / keyword chips.
+    /// For Blue-Eyes and Dark Magician only; other archetypes delegate to <see cref="GetTypes"/>.
+    /// </summary>
+    public static IReadOnlyList<Type> GetStrictArchetypeTypes(YgoCardArchetype archetype) =>
+        archetype switch
+        {
+            YgoCardArchetype.BlueEyesWhiteDragon => s_blueEyes,
+            YgoCardArchetype.DarkMagician => s_darkMagician,
+            _ => GetTypes(archetype),
+        };
 
     /// <summary>
     /// Pack-related archetypes inferred from card type (in addition to <see cref="YgoDuelistCard.CardArchetypes"/>).

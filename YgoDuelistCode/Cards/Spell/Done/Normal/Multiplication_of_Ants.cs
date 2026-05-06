@@ -36,7 +36,8 @@ public sealed class Multiplication_of_Ants : BaseSpellCard, IYgoPrePlayCancelabl
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && BuildInsectFieldCandidates(Owner).Count > 0;
+        && BuildInsectFieldCandidates(Owner).Count > 0
+        && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Insect);
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {

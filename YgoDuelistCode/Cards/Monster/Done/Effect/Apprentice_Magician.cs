@@ -32,7 +32,7 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,

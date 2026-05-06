@@ -42,5 +42,7 @@ public static class YgoMonsterCommandChecksumReconcile
                 }
             }
         }
+
+        EnragedBattleOxService.ReconcileForChecksum(runState);
     }
 }

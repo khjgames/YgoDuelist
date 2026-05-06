@@ -146,7 +146,8 @@ public sealed class Silpheed : EffectMonsterCard
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
-        return BuildWindGraveyardCandidates(player).Count >= 1;
+        return BuildWindGraveyardCandidates(player).Count >= 1
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Fairy);
     }
 
     private static List<BaseMonsterCard> BuildWindGraveyardCandidates(Player player) =>

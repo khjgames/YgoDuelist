@@ -33,9 +33,9 @@ public sealed class Amphibious_Bugroth_MK_3 : EffectMonsterCard
     public override Type[] RelatedCards => new[] { typeof(Amphibious_Bugroth_MK_3), typeof(Umi), typeof(A_Legendary_Ocean) };
 
     public override bool AttackDealsBlightedDamage =>
-        Owner != null && HasUmiLikeFieldSpell(Owner);
+        !IsCanonical && Owner != null && HasUmiLikeFieldSpell(Owner);
 
-    public override bool CardShowsBlightKeyword => AttackDealsBlightedDamage;
+    public override bool CardShowsBlightKeyword => true;
 
     private static bool HasUmiLikeFieldSpell(Player player) =>
         YgoFieldSpellStatAggregator.HasActiveFaceUpFieldSpell<Umi>(player)

@@ -179,7 +179,8 @@ public sealed class Chaos_Sorcerer : EffectMonsterCard, IMonsterActivatedEffect
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
         return BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Light).Count >= 1
-            && BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Dark).Count >= 1;
+            && BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Dark).Count >= 1
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Spellcaster);
     }
 
     private static List<BaseMonsterCard> BuildGraveyardAttributeCandidates(

@@ -33,14 +33,20 @@ public sealed class Sacred_Crane : EffectMonsterCard
 
     public override Type[] RelatedCards => new[] { typeof(Sacred_Crane) };
 
-    public override async Task OnAfterSummonPipelineAsync(
-        Player player,
-        PlayerChoiceContext ctx,
-        Creature pet,
-        bool canAttackThisTurn)
+    protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet) =>
+        await RunOnSummonedAsync(
+            player,
+            choiceContext,
+            duelMonsterPet,
+            () => DrawOnSummonAsync(player, choiceContext));
+
+    public override async Task OnFlipSummonedFromCommandMenuAsync(PlayerChoiceContext choiceContext, Player player) =>
+        await RunOnFlipSummonedFromCommandMenuAsync(
+            choiceContext,
+            ctx => DrawOnSummonAsync(player, ctx));
+
+    private async Task DrawOnSummonAsync(Player player, PlayerChoiceContext ctx)
     {
-        _ = pet;
-        _ = canAttackThisTurn;
         if (player.PlayerCombatState == null)
             return;
         await CardPileCmd.Draw(EnsureBlockingChoiceContext(ctx), 1, player);

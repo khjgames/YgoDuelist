@@ -51,6 +51,8 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
 
     public override bool NormalSummonSkipsStiffFatigueOnSummonTurn => true;
 
+    public override bool AllowsActivateEffectWhileFaceDownFlipFaceUp => true;
+
     protected override int? TributeReleaseCountOverride => 3;
 
     protected override IEnumerable<DynamicVar> CanonicalVars

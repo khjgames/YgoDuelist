@@ -70,6 +70,8 @@ public sealed class Insect_Queen : EffectMonsterCard
         {
             if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
                 continue;
+            if (!ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Insect))
+                break;
             await YgoTokenSummon.TrySpecialSummonTokenAsync<Insect_Monster_Token>(Owner, choiceContext, defensePosition: false);
             break;
         }

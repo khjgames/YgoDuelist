@@ -179,7 +179,7 @@ public static class YgoSarcophagusChain
     }
 
     public static List<Spirit_of_the_Pharaoh> BuildSpiritHandOrDeckCandidates(Player player) =>
-        YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Spirit_of_the_Pharaoh>(player);
+        YgoPlayerPiles.OrderedSummonableMonstersFromHandDrawDiscard<Spirit_of_the_Pharaoh>(player);
 
     private static async Task<bool> TryPlaceContinuousFromHandOrDeckAsync<TContinuous>(
         PlayerChoiceContext choiceContext,

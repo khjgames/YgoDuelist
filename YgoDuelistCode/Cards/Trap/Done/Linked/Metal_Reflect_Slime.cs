@@ -25,7 +25,7 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
     private BaseMonsterCard? _pendingLinkAfterZone;
 
     public Metal_Reflect_Slime()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 3, rarity: CardRarity.Rare, target: TargetType.Self)
     {
     }
 
@@ -54,7 +54,8 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tributeReleaseCount: 0);
+        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, tributeReleaseCount: 0)
+        && !ReactorSlimeSummonGate.BlocksNonDivineSummons(Owner);
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -92,6 +93,9 @@ public sealed class Metal_Reflect_Slime : BaseContinuousTrapCard, IYgoSpellTrapE
         PlayerChoiceContext choiceContext)
     {
         if (player?.Creature?.CombatState == null)
+            return false;
+
+        if (ReactorSlimeSummonGate.BlocksNonDivineSummons(player))
             return false;
 
         CardPile? zone = YgoPlayerPiles.SpellTrapZone(player);

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -10,14 +10,10 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
-using YgoDuelist.YgoDuelistCode.Relics;
-
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -27,19 +23,33 @@ public static class YgoSpearCretinGraveyard
     private static readonly LocString GyPrompt =
         new("cards", "YGODUELIST-SPEAR_CRETIN.gy_summon_select");
 
-    private static readonly LocString PositionPrompt =
-        new("cards", "YGODUELIST-SPEAR_CRETIN.summon_heads_or_face_down");
-
     public static void OnCardAddedToGraveyardPile(CardPile pile, CardModel addedCard)
     {
         if (addedCard is not Spear_Cretin sc)
             return;
-        if (!sc.FlippedThisTurn)
-            return;
         if (!YgoGraveyardPileHooks.TryGetPlayerForGraveyardAdd(pile, addedCard, out Player? player))
             return;
 
-        TaskHelper.RunSafely(RunAsync(player, sc));
+        if (!sc.FlippedThisTurn)
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][SpearCretin] skip GY effect (FlippedThisTurn=false) ownerNet={sc.Owner?.NetId} id={sc.Id?.Entry}");
+            return;
+        }
+
+        Player ownerPlayer = player;
+        Spear_Cretin spear = sc;
+        void StartRun()
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][SpearCretin] start GY effect ownerNet={ownerPlayer.NetId} id={spear.Id?.Entry}");
+            TaskHelper.RunSafely(RunAsync(ownerPlayer, spear));
+        }
+
+        if (Engine.GetMainLoop() is SceneTree tree && tree.Root != null)
+            Callable.From(StartRun).CallDeferred();
+        else
+            StartRun();
     }
 
     private static List<BaseMonsterCard> BuildGraveyardSummons(Player player, Spear_Cretin sourceInGy)
@@ -50,8 +60,23 @@ public static class YgoSpearCretinGraveyard
 
         return YgoMpCombatOrder.CardsSnapshotOrderedForMp(gy.Cards)
             .OfType<BaseMonsterCard>()
-            .Where(m => !ReferenceEquals(m, sourceInGy) && m.CanSummonDuelMonster)
+            .Where(m =>
+                !ReferenceEquals(m, sourceInGy)
+                && m.CanSummonDuelMonster
+                && ReactorSlimeSummonGate.AllowsSummon(player, m))
             .ToList();
+    }
+
+    /// <summary>
+    /// Face-up Attack vs face-down Defense: player right-clicks the row to cycle Attack / Defense (see NCardHolder Alt /
+    /// right-click patches). Defense mode maps to face-down set summon; Attack mode to face-up Attack.
+    /// </summary>
+    private static void ApplySpearCretinSummonStanceFromGrid(AbstractMonsterCard summon, bool faceDownDefenseSet)
+    {
+        if (faceDownDefenseSet)
+            summon.ApplyNetworkObserverHandPlayBattleState(false, false, faceDownValue: true, willSetValue: true);
+        else
+            summon.ApplyNetworkObserverHandPlayBattleState(true, false, faceDownValue: false, willSetValue: false);
     }
 
     private static async Task RunAsync(Player player, Spear_Cretin sourceInGy)
@@ -65,43 +90,47 @@ public static class YgoSpearCretinGraveyard
 
         var ctx = YgoChoiceContexts.Blocking();
 
-        BaseMonsterCard? summon = candidates.Count == 1
-            ? candidates[0]
-            : await YgoOrderedCardSelection.TryChooseSingleAsync(
-                ctx,
-                player,
-                new CardSelectorPrefs(GyPrompt, 1, 1) { Cancelable = true },
-                () => BuildGraveyardSummons(player, sourceInGy));
+        BaseMonsterCard? summon = await TryChooseGraveyardSummonAsync(ctx, player, sourceInGy);
         if (summon == null)
             return;
 
         if (!YgoPlayerPiles.GraveyardContains(player, summon))
             return;
 
-        CombatState? cs = player.Creature?.CombatState;
-        if (cs == null)
+        if (player.Creature?.CombatState == null)
             return;
 
-        var heads = cs.CreateCard<Heads>(player);
-        heads.InitializeSource(sourceInGy);
-        var tails = cs.CreateCard<Tails>(player);
-        tails.InitializeSource(sourceInGy);
-
-        List<CardModel> BuildPositionOptions() => new List<CardModel> { heads, tails };
-
-        CardModel? posPick = await YgoOrderedCardSelection.TryChooseSingleAsync<CardModel>(
-            ctx,
-            player,
-            new CardSelectorPrefs(PositionPrompt, 1, 1) { Cancelable = true },
-            BuildPositionOptions);
-        if (posPick == null)
-            return;
-
-        bool faceDownDefense = posPick is Tails;
-        if (faceDownDefense)
-            summon.FaceDown = true;
+        bool faceDownDefenseSet = !summon.IsAttackBattlePosition && summon.FaceDown;
+        ApplySpearCretinSummonStanceFromGrid(summon, faceDownDefenseSet);
 
         if (!await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, summon, ctx))
-            return;
+        {
+            GD.PrintErr(
+                $"[YgoDuelist][SpearCretin] TrySummonDuelMonsterSpecial failed target={summon.Id?.Entry} faceDownSet={faceDownDefenseSet} atkBattle={summon.IsAttackBattlePosition} type={summon.Type} faceDown={summon.FaceDown} ownerNet={player.NetId}");
+        }
+    }
+
+    private static async Task<BaseMonsterCard?> TryChooseGraveyardSummonAsync(
+        PlayerChoiceContext ctx,
+        Player player,
+        Spear_Cretin sourceInGy)
+    {
+        try
+        {
+            YgoMonsterFormPreviewContext.RestrictMonsterToggleToAttackDefenseOnly = true;
+            return await YgoOrderedCardSelection.TryChooseSingleAsync(
+                ctx,
+                player,
+                new CardSelectorPrefs(GyPrompt, 1, 1)
+                {
+                    Cancelable = true,
+                    RequireManualConfirmation = true,
+                },
+                () => BuildGraveyardSummons(player, sourceInGy));
+        }
+        finally
+        {
+            YgoMonsterFormPreviewContext.RestrictMonsterToggleToAttackDefenseOnly = false;
+        }
     }
 }

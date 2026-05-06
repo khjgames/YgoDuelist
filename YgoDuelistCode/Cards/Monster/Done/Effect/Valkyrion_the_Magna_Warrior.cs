@@ -305,6 +305,8 @@ public sealed class Valkyrion_the_Magna_Warrior : EffectMonsterCard, IMonsterAct
     {
         if (player?.PlayerCombatState == null)
             return false;
+        if (!ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Rock))
+            return false;
 
         List<BaseMonsterCard> alphas = BuildMagnetMaterialPool<Alpha_the_Magnet_Warrior>(player, new HashSet<BaseMonsterCard>());
         List<BaseMonsterCard> betas = BuildMagnetMaterialPool<Beta_the_Magnet_Warrior>(player, new HashSet<BaseMonsterCard>());
@@ -350,6 +352,7 @@ public sealed class Valkyrion_the_Magna_Warrior : EffectMonsterCard, IMonsterAct
             .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
             .OfType<TMag>()
             .Where(m => m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate)
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<TMag>(player))
             .Cast<BaseMonsterCard>()
             .ToList();
 }

@@ -146,5 +146,6 @@ public sealed class Fushioh_Richie : EffectMonsterCard, IMonsterActivatedEffect,
                 m.DuelMonsterRace == DuelMonsterRace.Zombie
                 && (m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate)
                 && !m.BlocksSpecialDuelMonsterSummon)
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player))
             .ToList();
 }

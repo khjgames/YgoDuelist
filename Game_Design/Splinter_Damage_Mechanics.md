@@ -90,3 +90,23 @@ If something mid‑fight only triggers after N hits and suddenly adds block / re
 So “capped” is not redundant with “half previous”: it means the previous step sets a ceiling, but actual splinter size is also tied to real unblocked damage on each hop, so block / mitigation / prevention can make the next bounce smaller than half the previous budget, or zero.
 
 First splinter in your earlier scenario stays half of unblocked damage from the main hit (e.g. 46 → 23). After that, each step is bounded by half the prior splinter budget and cannot exceed what half of unblocked on that hit justifies — so the number of meaningful bounces is still finite, and can shrink if the fight changes mid‑chain.
+
+---
+
+## Order of multiple concurrent splinter branches (3+ enemies)
+
+When the main hit fans out to **more than one** other living enemy, the game runs **one independent splinter branch per other enemy** (each branch gets the same first hop budget: half of past‑block on the main target, floored). Branches are **not** “finish branch A completely, then start branch B.”
+
+**Dispatch order (interleaved by wave):** branches are ordered the same way as the game’s ordered list of “other” enemies. Each **wave** performs **at most one hop per branch** that is still active, in that order:
+
+- **Wave 1:** branch 1 hop 1, branch 2 hop 1, …, branch (N−1) hop 1  
+- **Wave 2:** each branch that still has a positive budget and a valid next target takes hop 2, in the same branch order (skipping branches that already ended).  
+- **Wave 3+:** same, until no branches remain.
+
+**Example (symmetric combat, two other enemies, first hop 8, then pure × decay 4 → 2 → 1 on each branch):**  
+`8, 8, 4, 4, 2, 2, 1, 1` — you see both first splinters before either branch’s second hop, so it is obvious two chains started immediately.
+
+**Example (three other enemies, first hop 8 each):**  
+`8, 8, 8,` then the next wave for all surviving branches, e.g. `4, 4, 4,` and so on.
+
+If one branch **ends early** (budget hits 0, no next target, or a target is no longer valid), the remaining branches **keep alternating in waves** without gaps for the finished branch.

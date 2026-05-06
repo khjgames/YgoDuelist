@@ -26,6 +26,12 @@ public sealed class Stray_Lambs : BaseSpellCard
     protected override Type[] PreviewReferencedCardTypes =>
         YgoPreviewReferencedCardTypes.Merged(GetType(), typeof(Lamb_Token));
 
+    protected override bool IsPlayable =>
+        base.IsPlayable
+        && Owner != null
+        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0)
+        && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Beast);
+
     protected override Task OnSpellPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Owner?.Creature?.CombatState == null)

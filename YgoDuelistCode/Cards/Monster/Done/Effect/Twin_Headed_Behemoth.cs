@@ -27,7 +27,7 @@ public sealed class Twin_Headed_Behemoth : EffectMonsterCard, IYgoOwnerBeforeTur
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Wind,

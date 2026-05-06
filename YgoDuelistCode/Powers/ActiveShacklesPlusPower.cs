@@ -24,5 +24,7 @@ public sealed class ActiveShacklesPlusPower : TemporaryStrengthPower, ICustomPow
 
     public override LocString Description => new("powers", "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.description");
 
+    protected override string SmartDescriptionLocKey => "YGODUELIST-ACTIVE_SHACKLES_PLUS_POWER.smartDescription";
+
     protected override bool IsPositive => false;
 }

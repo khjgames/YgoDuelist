@@ -31,7 +31,7 @@ public sealed class Final_Destiny : BaseSpellCard
         new[] { new DynamicVar("Mgc", 18m) };
 
     public Final_Destiny()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
 

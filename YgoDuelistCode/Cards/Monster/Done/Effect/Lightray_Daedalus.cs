@@ -166,7 +166,8 @@ public sealed class Lightray_Daedalus : EffectMonsterCard, IMonsterActivatedEffe
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
-        return CountLightMonstersInGraveyard(player) >= 4;
+        return CountLightMonstersInGraveyard(player) >= 4
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.SeaSerpent);
     }
 
     private static int CountLightMonstersInGraveyard(Player player) =>

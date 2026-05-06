@@ -217,7 +217,8 @@ public sealed class Chaos_Emperor_Dragon_Envoy_of_the_End : EffectMonsterCard, I
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
         return BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Light).Count >= 1
-            && BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Dark).Count >= 1;
+            && BuildGraveyardAttributeCandidates(player, DuelMonsterAttribute.Dark).Count >= 1
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Dragon);
     }
 
     private static List<BaseMonsterCard> BuildGraveyardAttributeCandidates(

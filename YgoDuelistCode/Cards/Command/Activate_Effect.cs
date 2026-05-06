@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
+using YgoDuelist.YgoDuelistCode.Patches;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Services;
 
@@ -73,7 +74,7 @@ public sealed class Activate_Effect : MonsterCommandCard, IActivateEffectPileUi,
         {
             if (!base.IsPlayable || SourceMonster is not IMonsterActivatedEffect impl)
                 return false;
-            if (SourceMonster.FaceDown)
+            if (SourceMonster.FaceDown && !SourceMonster.AllowsActivateEffectWhileFaceDownFlipFaceUp)
                 return false;
             if (!SourceMonster.IsActivatedEffectAvailableInCommandContext(Owner))
                 return false;
@@ -93,8 +94,20 @@ public sealed class Activate_Effect : MonsterCommandCard, IActivateEffectPileUi,
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner == null || SourceMonster is not IMonsterActivatedEffect impl || SourceMonster.FaceDown)
+        if (Owner == null || SourceMonster is not IMonsterActivatedEffect impl)
             return;
+
+        if (SourceMonster.FaceDown)
+        {
+            if (!SourceMonster.AllowsActivateEffectWhileFaceDownFlipFaceUp
+                || SourceMonster is not AbstractMonsterCard amc)
+                return;
+
+            if (!FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpWithoutActivatingEffectNow(amc, choiceContext))
+                return;
+
+            await DuelMonsterStancePowerSync.SyncSummonedPetIfPresentAsync(amc, Owner.Creature);
+        }
 
         var pet = MonsterActivatedEffectRuntime.FindPetForSourceMonster(SourceMonster, Owner);
         if (pet != null)

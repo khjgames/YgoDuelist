@@ -15,6 +15,8 @@ public sealed class ConsumableShacklesPlusPower : YgoDuelistPower
 
     public override LocString Description => new("powers", "YGODUELIST-CONSUMABLE_SHACKLES_PLUS_POWER.description");
 
+    protected override string SmartDescriptionLocKey => "YGODUELIST-CONSUMABLE_SHACKLES_PLUS_POWER.smartDescription";
+
     public override string CustomPackedIconPath => "dark_shackles_power.png".PowerImagePath();
 
     public override string CustomBigIconPath => "dark_shackles_power.png".PowerImagePath();

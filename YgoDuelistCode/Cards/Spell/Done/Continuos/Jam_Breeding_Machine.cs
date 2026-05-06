@@ -9,6 +9,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Token;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
+using DuelMonsterSummon = YgoDuelist.YgoDuelistCode.Services.DuelMonsterSummon;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Continuos;
 
@@ -40,6 +41,10 @@ public sealed class Jam_Breeding_Machine : BaseContinuousSpellCard, IYgoOwnerTur
         if (!IsOwnerTurnStartSpellTrapZoneEffectActive())
             return;
         if (!YgoAnnualTracker.TryConsumeAnnual(player, "JAM_BREEDING_MACHINE"))
+            return;
+        if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
+            return;
+        if (!ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Aqua))
             return;
 
         await YgoTokenSummon.TrySpecialSummonTokenAsync<Slime_Token>(player, choiceContext, defensePosition: false);

@@ -14,12 +14,15 @@ public interface IYgoNHandPlayPhaseHighlightOverride
     Color? GetNHandPlayPhaseHighlightModulateOverride(NHandCardHolder holder, bool vanillaWouldUseCyanPlayableHighlight);
 }
 
-/// <summary>Shared modulate for fusion-style purple highlights.</summary>
+/// <summary>
+/// Hand play-phase highlights (option pile): <see cref="FusionStylePurple"/> for extra-deck fusion/union paths;
+/// <see cref="CallOfTheMummyYellow"/> for main-deck special-summon command cards (hand/draw/discard), not extra deck.
+/// </summary>
 public static class YgoNHandPlayPhaseHighlightColors
 {
     public static readonly Color FusionStylePurple = new(0.78f, 0.42f, 1f, 0.98f);
 
-    /// <summary>Spell/Trap zone activatable glow (e.g. Call of the Mummy).</summary>
+    /// <summary>Main-deck special summon command glow; also used for some spell/trap zone prompts (e.g. Call of the Mummy).</summary>
     public static readonly Color CallOfTheMummyYellow = new(1f, 0.92f, 0.22f, 0.98f);
 
     /// <summary>Union Equip option when a legal Dark Blade host exists.</summary>

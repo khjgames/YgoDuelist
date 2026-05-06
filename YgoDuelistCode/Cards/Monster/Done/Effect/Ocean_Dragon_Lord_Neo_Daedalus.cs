@@ -141,7 +141,8 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
             return false;
         return YgoMpCombatOrder.PetsAny(
             Owner.PlayerCombatState,
-            p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceMonster<Levia_Dragon_Daedalus>(p) != null);
+            p => p.IsAlive && DuelMonsterFieldRegistry.GetSourceMonster<Levia_Dragon_Daedalus>(p) != null)
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.SeaSerpent);
     }
 
     private static bool HasUmiLikeFieldSpell(MegaCrit.Sts2.Core.Entities.Players.Player player) =>

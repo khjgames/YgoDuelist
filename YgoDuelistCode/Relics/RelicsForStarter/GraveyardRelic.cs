@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Patches.Content;
+using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Commands;
@@ -52,6 +53,16 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     /// <summary>While true, nested <see cref="DamageCmd.Attack"/> from splinter chain must not start another splinter chain.</summary>
     private bool _splinterChainRunning;
+
+    /// <summary>Set false to silence <see cref="SplinterLog"/> output.</summary>
+    private const bool SplinterDebugLog = true;
+
+    private static void SplinterLog(string message)
+    {
+        if (!SplinterDebugLog)
+            return;
+        GD.Print($"[YgoDuelist][Splinter] {message}");
+    }
 
     /// <summary>
     /// Enemies (by <see cref="Creature.CombatId"/>) that have already triggered per-hit monster on-damage effects (Cestus, Bistro Butcher, Masked Sorcerer)
@@ -134,6 +145,12 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     /// <summary>Bottomless Shifting Sand: hand count for its effect uses size before the end-of-turn discard flush.</summary>
     public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)
     {
+        // Multiplayer: BeforeFlush is invoked on every relic instance for the player whose hand is flushing.
+        // Each human also has a GraveyardRelic — without this guard, YgoOwnerBeforeTurnEndFlushHooks would run
+        // once per peer (duplicate Bottomless Shifting Sand burn, duplicate field/GY hooks, etc.).
+        if (!ReferenceEquals(Owner, player))
+            return;
+
         if (player.PlayerCombatState != null)
         {
             foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
@@ -345,9 +362,9 @@ public sealed class GraveyardRelic : YgoDuelistRelic
             }
         }
 
-        // Splinter follow-up hits run nested AfterAttack while _splinterChainRunning; execute-style hooks are skipped there and applied in ResolveSplinterChainAsync via ProcessMonsterExecuteKillEffectsAsync so splinter kills count as that monster's execute.
+        // Splinter nested hits run AfterAttack while _splinterChainRunning. Permanent execute-ATK deltas intentionally do not apply to splinter kills (see ProcessMonsterExecuteKillEffectsAsync); card hooks still run.
         if (!_splinterChainRunning)
-            await ProcessMonsterExecuteKillEffectsAsync(command, monster, cs);
+            await ProcessMonsterExecuteKillEffectsAsync(command, monster, cs, fromSplinterNestedAttack: false);
 
         if (!_splinterChainRunning && monster is D_D_Warrior or D_D_Warrior_Lady && monster is NormalMonsterCard nmc)
         {
@@ -479,15 +496,16 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     /// <summary>
     /// Permanent execute ATK (<see cref="BaseMonsterCard.PermanentAtkDeltaOnEnemyExecute"/>), then per-card <see cref="BaseMonsterCard.OnEnemyExecutedByThisAttackAsync"/>.
-    /// Called for the main hit from <see cref="AfterAttack"/> and for each splinter hit from <see cref="ResolveSplinterChainAsync"/> (nested AfterAttack skips while <see cref="_splinterChainRunning"/> to avoid double-processing).
+    /// Splinter nested hits pass <paramref name="fromSplinterNestedAttack"/> so permanent execute ATK does not stack off splash kills (which inflated the next main hit and splinter budget).
     /// </summary>
     private static async Task ProcessMonsterExecuteKillEffectsAsync(
         AttackCommand command,
         BaseMonsterCard monster,
-        CombatState cs)
+        CombatState cs,
+        bool fromSplinterNestedAttack)
     {
         int killBonus = monster.PermanentAtkDeltaOnEnemyExecute;
-        if (killBonus != 0)
+        if (killBonus != 0 && !fromSplinterNestedAttack)
         {
             foreach (DamageResult r in command.Results)
             {
@@ -498,13 +516,24 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                 monster.ApplyPermanentExecuteAtkDelta(killBonus);
             }
         }
+        else if (killBonus != 0 && fromSplinterNestedAttack)
+        {
+            foreach (DamageResult r in command.Results)
+            {
+                if (r.Receiver.Side != CombatSide.Enemy || !r.WasTargetKilled)
+                    continue;
+                SplinterLog(
+                    $"skipped PermanentAtkDeltaOnEnemyExecute (+{killBonus}) from splinter kill monster={monster.GetType().Name} victimCombatId={r.Receiver.CombatId}");
+            }
+        }
 
         await monster.OnEnemyExecutedByThisAttackAsync(command, cs);
     }
 
     /// <summary>
-    /// First splinter = half of damage past block on the struck enemy. That amount fans out to <b>each</b> other living enemy (N−1 branches);
-    /// each branch then chains independently with min(floor(prev base / 2), floor(past block on last hit / 2)) and round-robin picks for later hops.
+    /// First splinter = half of damage past block on the struck enemy. That amount fans out to <b>each</b> other living enemy (N−1 branches).
+    /// Each branch chains with min(floor(prev base / 2), floor(past block on last hit / 2)) and round-robin picks for later hops.
+    /// When multiple branches exist, hits are <b>interleaved by wave</b>: every branch resolves hop 1 in order, then every surviving branch hop 2, and so on (see design doc).
     /// </summary>
     private static async Task ResolveSplinterChainAsync(
         BlockingPlayerChoiceContext ctx,
@@ -528,8 +557,9 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     .Where(c => c.IsAlive && !ReferenceEquals(c, mainReceiver))
                     .ToList();
 
-                foreach (Creature initialOther in initialOthers)
-                    await ResolveSplinterBranchAsync(ctx, attacker, monster, cs, firstBase, initialOther);
+                SplinterLog(
+                    $"chainStart aggregated pastBlock={pbAgg} firstBase={firstBase} mainReceiver={mainReceiver.CombatId} branches={initialOthers.Count} attackerCard={monster.GetType().Name}");
+                await ResolveSplinterBranchesInterleavedAsync(ctx, attacker, monster, cs, firstBase, initialOthers);
             }
 
             return;
@@ -550,47 +580,91 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                 .Where(c => c.IsAlive && !ReferenceEquals(c, mainReceiver))
                 .ToList();
 
-            foreach (Creature initialOther in initialOthers)
-                await ResolveSplinterBranchAsync(ctx, attacker, monster, cs, firstBase, initialOther);
+            SplinterLog(
+                $"chainStart pastBlock={pastBlock} firstBase={firstBase} mainReceiver={mainReceiver.CombatId} branches={initialOthers.Count} attackerCard={monster.GetType().Name}");
+            await ResolveSplinterBranchesInterleavedAsync(ctx, attacker, monster, cs, firstBase, initialOthers);
         }
     }
 
-    /// <summary>One splinter chain: first hit goes to <paramref name="firstTarget"/>; subsequent hops use <see cref="PickNextSplinterVictim"/>.</summary>
-    private static async Task ResolveSplinterBranchAsync(
+    private sealed class SplinterBranchState
+    {
+        public int BaseAmount;
+        public Creature? Next;
+        public Creature FirstTarget = null!;
+        public int Hop;
+    }
+
+    /// <summary>
+    /// Runs every parallel splinter branch in <b>waves</b>: branch order is stable (same as <paramref name="initialOthers"/>).
+    /// Each wave performs exactly one hop per branch that is still active; shorter branches drop out and remaining branches continue in later waves.
+    /// </summary>
+    private static async Task ResolveSplinterBranchesInterleavedAsync(
         BlockingPlayerChoiceContext ctx,
         Creature attacker,
         BaseMonsterCard monster,
         CombatState cs,
-        int baseAmount,
-        Creature firstTarget)
+        int firstBase,
+        List<Creature> initialOthers)
     {
-        Creature? next = firstTarget;
-        while (baseAmount > 0 && next != null)
+        List<SplinterBranchState> branches = initialOthers
+            .Select(o => new SplinterBranchState { BaseAmount = firstBase, Next = o, FirstTarget = o, Hop = 0 })
+            .ToList();
+
+        while (branches.Count > 0)
         {
-            if (!next.IsAlive)
-                break;
-
-            AttackCommand splinterCmd = await DamageCmd.Attack(baseAmount)
-                .FromCard(monster)
-                .Targeting(next)
-                .WithHitFx("vfx/vfx_attack_slash")
-                .Execute(ctx);
-
-            await ProcessMonsterExecuteKillEffectsAsync(splinterCmd, monster, cs);
-
-            int pastBlockOnVictim = 0;
-            foreach (DamageResult dr in splinterCmd.Results)
+            List<int> finished = new();
+            for (int i = 0; i < branches.Count; i++)
             {
-                if (dr.Receiver == next)
-                    pastBlockOnVictim += DamagePastBlock(dr);
+                bool stillActive = await ExecuteSplinterHopAndAdvanceAsync(ctx, attacker, monster, cs, branches[i]);
+                if (!stillActive)
+                    finished.Add(i);
             }
 
-            int chainCeiling = baseAmount / 2;
-            int damageCandidate = (int)decimal.Floor(pastBlockOnVictim * 0.5m);
-            Creature lastHit = next;
-            baseAmount = Math.Min(chainCeiling, damageCandidate);
-            next = PickNextSplinterVictim(attacker, lastHit, cs);
+            for (int j = finished.Count - 1; j >= 0; j--)
+                branches.RemoveAt(finished[j]);
         }
+    }
+
+    /// <summary>One hop on a branch; updates <paramref name="branch"/> budget and next target. Returns false if this branch has no further hops.</summary>
+    private static async Task<bool> ExecuteSplinterHopAndAdvanceAsync(
+        BlockingPlayerChoiceContext ctx,
+        Creature attacker,
+        BaseMonsterCard monster,
+        CombatState cs,
+        SplinterBranchState branch)
+    {
+        if (branch.BaseAmount <= 0 || branch.Next == null || !branch.Next.IsAlive)
+            return false;
+
+        branch.Hop++;
+        SplinterLog(
+            $"branch hop={branch.Hop} budget={branch.BaseAmount} target={branch.Next.CombatId} firstTargetRoot={branch.FirstTarget.CombatId} card={monster.GetType().Name}");
+
+        AttackCommand splinterCmd = await DamageCmd.Attack(branch.BaseAmount)
+            .FromCard(monster)
+            .Targeting(branch.Next)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .Execute(ctx);
+
+        await ProcessMonsterExecuteKillEffectsAsync(splinterCmd, monster, cs, fromSplinterNestedAttack: true);
+
+        int pastBlockOnVictim = 0;
+        foreach (DamageResult dr in splinterCmd.Results)
+        {
+            if (dr.Receiver == branch.Next)
+                pastBlockOnVictim += DamagePastBlock(dr);
+        }
+
+        int chainCeiling = branch.BaseAmount / 2;
+        int damageCandidate = (int)decimal.Floor(pastBlockOnVictim * 0.5m);
+        Creature lastHit = branch.Next;
+        int nextBudget = Math.Min(chainCeiling, damageCandidate);
+        SplinterLog(
+            $"branch hop={branch.Hop} resolved pastBlockOnVictim={pastBlockOnVictim} ceiling={chainCeiling} damageCandidate={damageCandidate} nextBudget={nextBudget}");
+        branch.BaseAmount = nextBudget;
+        branch.Next = PickNextSplinterVictim(attacker, lastHit, cs);
+
+        return branch.BaseAmount > 0 && branch.Next != null;
     }
 
     /// <summary>

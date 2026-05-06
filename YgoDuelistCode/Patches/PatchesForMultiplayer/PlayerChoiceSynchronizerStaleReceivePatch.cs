@@ -247,6 +247,74 @@ public static class PlayerChoiceSynchronizerReserveLogPatch
 [HarmonyPriority(Priority.First)]
 public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
 {
+    /// <summary>
+    /// When several late-arriving pre-buffered results were remapped to the same <paramref name="choiceId"/>,
+    /// <see cref="PlayerChoiceSynchronizer.WaitForRemoteChoice"/> uses <c>FindIndex</c> on the first match. A stale
+    /// empty <see cref="PlayerChoiceType.CombatCard"/> remap can otherwise win over the host's real non-empty tribute
+    /// pick (checksum drift after <see cref="PlayCardActionTributeSelectionPatch"/>).
+    /// </summary>
+    private static int CompletedChoiceWirePayloadScore(NetPlayerChoiceResult net) =>
+        net.type switch
+        {
+            PlayerChoiceType.CombatCard => net.combatCards?.Count ?? 0,
+            PlayerChoiceType.Index => net.indexes?.Count ?? 0,
+            PlayerChoiceType.DeckCard => net.deckCards?.Count ?? 0,
+            PlayerChoiceType.CanonicalCard => net.canonicalCards?.Count ?? 0,
+            PlayerChoiceType.MutableCard => net.mutableCards?.Count ?? 0,
+            _ => 0
+        };
+
+    private static void DedupeCompletedBufferedChoicesForSenderAndId(IList list, ulong ownerNetId, uint choiceId)
+    {
+        var scored = new List<(int listIndex, int score)>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            object item = list[i]!;
+            uint cId = Traverse.Create(item).Field<uint>("choiceId").Value;
+            ulong senderId = Traverse.Create(item).Field<ulong>("senderId").Value;
+            if (senderId != ownerNetId || cId != choiceId)
+                continue;
+
+            object? tcsObj = Traverse.Create(item).Field("completionSource").GetValue();
+            if (tcsObj == null)
+                continue;
+
+            var taskProp = tcsObj.GetType().GetProperty("Task");
+            if (taskProp?.GetValue(tcsObj) is not Task<NetPlayerChoiceResult> task || !task.IsCompleted)
+                continue;
+
+            NetPlayerChoiceResult net = task.Result;
+            scored.Add((i, CompletedChoiceWirePayloadScore(net)));
+        }
+
+        if (scored.Count <= 1)
+            return;
+
+        int keepListIndex = scored[0].listIndex;
+        int keepScore = scored[0].score;
+        for (int s = 1; s < scored.Count; s++)
+        {
+            int idx = scored[s].listIndex;
+            int sc = scored[s].score;
+            if (sc > keepScore || (sc == keepScore && idx > keepListIndex))
+            {
+                keepListIndex = idx;
+                keepScore = sc;
+            }
+        }
+
+        foreach (int removeAt in scored
+                     .Where(t => t.listIndex != keepListIndex)
+                     .Select(t => t.listIndex)
+                     .OrderByDescending(i => i))
+        {
+            list.RemoveAt(removeAt);
+        }
+
+        GD.PrintErr(
+            $"[YgoDuelist][MP][PlayerChoice] Deduped {scored.Count} pre-buffered results for choiceId={choiceId} ownerNet={ownerNetId}; kept listIndex={keepListIndex} score={keepScore}");
+    }
+
     [HarmonyPrefix]
     public static void Prefix(PlayerChoiceSynchronizer __instance, Player player, uint choiceId)
     {
@@ -301,6 +369,18 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
 
                 if (rejectReason == null)
                 {
+                    // Future-id empty CombatCard buffers are almost always unrelated cancels; remapping them onto a
+                    // new tribute/combat wait satisfies WaitForRemoteChoice with zero picks while the host confirmed
+                    // materials (PlayCardAction checksum after Labyrinth Wall–style summons).
+                    if (cId > expectedChoiceId && net.type == PlayerChoiceType.CombatCard
+                        && (net.combatCards == null || net.combatCards.Count == 0))
+                    {
+                        list.RemoveAt(i);
+                        GD.PrintErr(
+                            $"[YgoDuelist][MP][PlayerChoice] Removed empty pre-buffered future CombatCard (do not remap to active wait) choiceId={cId}→{choiceId} sender={player.NetId}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(exp.Value)}");
+                        continue;
+                    }
+
                     var itemTraverse = Traverse.Create(item);
                     itemTraverse.Field<uint>("choiceId").Value = choiceId;
                     list[i] = itemTraverse.GetValue();
@@ -319,6 +399,8 @@ public static class PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch
             GD.PrintErr(
                 $"[YgoDuelist][MP][PlayerChoice] Removed invalid pre-buffered {net.type} for active choice choiceId={choiceId} sender={player.NetId}: {rejectReason}; {PlayerChoiceSynchronizerStaleReceivePatch.DescribeExpectation(exp.Value)}");
         }
+
+        DedupeCompletedBufferedChoicesForSenderAndId(list, player.NetId, choiceId);
     }
 
     [HarmonyPostfix]

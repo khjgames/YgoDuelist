@@ -175,7 +175,8 @@ public sealed class Garuda_the_Wind_Spirit : EffectMonsterCard, IMonsterActivate
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
-        return BuildWindGraveyardCandidates(player).Count >= 1;
+        return BuildWindGraveyardCandidates(player).Count >= 1
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.WingedBeast);
     }
 
     private static List<BaseMonsterCard> BuildWindGraveyardCandidates(Player player) =>

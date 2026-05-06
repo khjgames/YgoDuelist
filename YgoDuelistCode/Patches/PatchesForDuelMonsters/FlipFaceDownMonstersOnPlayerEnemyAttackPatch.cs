@@ -72,11 +72,18 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
         var player = target.Player;
         if (player?.PlayerCombatState == null)
             return;
+        bool isLocalOwner = MegaCrit.Sts2.Core.Context.LocalContext.IsMe(player);
+        Godot.GD.Print(
+            $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] evaluate owner={player.NetId} localOwner={isLocalOwner} targetCombat={target.CombatId} dealer={dealer.CombatId}");
 
         var promptCandidates = new List<AbstractMonsterCard>();
         foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
         {
-            if (!FlipFaceDownOnPlayerEnemyAttackHelpers.TryGetEligibleFaceDownSourceCard(pet, out AbstractMonsterCard? card))
+            if (!FlipFaceDownOnPlayerEnemyAttackHelpers.TryGetEligibleFaceDownSourceCard(
+                    pet,
+                    requireAlive: true,
+                    requireUsedCommandThisTurn: false,
+                    out AbstractMonsterCard? card))
                 continue;
 
             if (card is not IMonsterFlipEffect)
@@ -86,9 +93,18 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             }
 
             bool askPrompt = card is not BaseMonsterCard bm || bm.AskSelectFlip;
+            Godot.GD.Print(
+                $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] candidate owner={player.NetId} localOwner={isLocalOwner} petCombat={pet.CombatId} card={card.Id?.Entry} isFlipEffect={card is IMonsterFlipEffect} askPrompt={askPrompt}");
             if (!askPrompt)
             {
                 FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpNow(card, choiceContext);
+                continue;
+            }
+
+            if (!isLocalOwner)
+            {
+                Godot.GD.Print(
+                    $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] skip prompt queue for non-local owner={player.NetId} petCombat={pet.CombatId} card={card.Id?.Entry}");
                 continue;
             }
 
@@ -114,6 +130,16 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             PendingByPlayerNetId[key] = state;
         }
 
+        // Multi-hit attacks can fire another AfterDamageReceived while the local player is still in the combined
+        // "Activate Flip Effects" grid. Pending was already cleared at drain start, so the duplicate-card guard does
+        // not run and the same Spear Cretin gets re-queued; when the first prompt closes, Drain runs again → two prompts.
+        if (state.PromptActive)
+        {
+            Godot.GD.Print(
+                $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] skip enqueue (flip activate prompt already open) owner={player.NetId}");
+            return;
+        }
+
         foreach (AbstractMonsterCard candidate in promptCandidates)
         {
             if (state.Pending.Any(c => ReferenceEquals(c, candidate)))
@@ -135,8 +161,11 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
         PlayerChoiceContext choiceContext,
         MegaCrit.Sts2.Core.Entities.Players.Player player)
     {
-        // Let same-frame multi-hit hooks enqueue into one combined prompt before opening the grid.
+        // Same-frame hits: one process frame lets every AfterDamageReceived postfix enqueue first.
         await WaitOneProcessFrameAsync();
+        // Multi-hit across adjacent frames: wait until Pending count is unchanged for two consecutive frames
+        // (capped) so one combined prompt covers the whole attack sequence instead of one prompt per hit.
+        await WaitFlipPromptPendingStableAsync(player.NetId);
 
         if (!PendingByPlayerNetId.TryGetValue(player.NetId, out PendingFlipPromptState? state))
             return;
@@ -182,19 +211,66 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             await Task.Yield();
     }
 
+    /// <summary>
+    /// After the first frame, keep yielding until <see cref="PendingFlipPromptState.Pending"/>.Count is the same
+    /// for two consecutive process frames (or we hit a frame cap). Multi-hit enemy attacks often call
+    /// <see cref="Hook.AfterDamageReceived"/> once per hit on separate frames; without this, each hit opens its own prompt.
+    /// </summary>
+    private static async Task WaitFlipPromptPendingStableAsync(ulong playerNetId)
+    {
+        if (Godot.Engine.GetMainLoop() is not Godot.SceneTree tree)
+        {
+            await Task.Yield();
+            return;
+        }
+
+        const int maxExtraFrames = 12;
+        int stableFrames = 0;
+        int? lastCount = null;
+        for (int i = 0; i < maxExtraFrames; i++)
+        {
+            if (!PendingByPlayerNetId.TryGetValue(playerNetId, out PendingFlipPromptState? state))
+                return;
+
+            int c = state.Pending.Count;
+            if (lastCount == c)
+                stableFrames++;
+            else
+            {
+                lastCount = c;
+                stableFrames = 1;
+            }
+
+            if (stableFrames >= 2)
+            {
+                Godot.GD.Print(
+                    $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] flip prompt batch stable ownerNet={playerNetId} pending={c} extraFrames={i + 1}");
+                return;
+            }
+
+            await tree.ToSignal(tree, Godot.SceneTree.SignalName.ProcessFrame);
+        }
+
+        Godot.GD.Print(
+            $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] flip prompt batch stable timeout ownerNet={playerNetId} lastCount={lastCount}");
+    }
+
     private static async Task SelectFlipEffectsToActivateAsync(
         PlayerChoiceContext choiceContext,
         MegaCrit.Sts2.Core.Entities.Players.Player player,
         IReadOnlyList<AbstractMonsterCard> promptCandidates)
     {
-        var prefs = new CardSelectorPrefs(ActivateFlipEffectsPrompt, 0, promptCandidates.Count)
+        // MinSelect=1: NSimpleCardSelectScreen enables Confirm only after at least one row is selected (vanilla
+        // enables Confirm immediately when MinSelect==0). Use Cancel to activate zero flip effects.
+        int maxPick = promptCandidates.Count;
+        var prefs = new CardSelectorPrefs(ActivateFlipEffectsPrompt, 1, maxPick)
         {
             Cancelable = true,
             RequireManualConfirmation = true
         };
 
         Godot.GD.Print(
-            $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] showing combined activate prompt owner={player.NetId} candidates={promptCandidates.Count} min=0 cancelable=true (face-down until chosen)");
+            $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] showing combined activate prompt owner={player.NetId} candidates={maxPick} min=1 cancelable=true (face-down until chosen; cancel skips all)");
 
         List<AbstractMonsterCard> selected = await YgoOrderedCardSelection.TryChooseManyAsync(
             choiceContext,
@@ -228,15 +304,32 @@ internal static class FlipFaceDownOnPlayerEnemyAttackHelpers
 {
     public static bool TryGetEligibleFaceDownSourceCard(Creature pet, out AbstractMonsterCard? card)
     {
-        return TryGetEligibleFaceDownSourceCard(pet, requireAlive: true, out card);
+        return TryGetEligibleFaceDownSourceCard(
+            pet,
+            requireAlive: true,
+            requireUsedCommandThisTurn: true,
+            out card);
     }
 
     public static bool TryGetEligibleFaceDownSourceCard(Creature pet, bool requireAlive, out AbstractMonsterCard? card)
     {
+        return TryGetEligibleFaceDownSourceCard(
+            pet,
+            requireAlive,
+            requireUsedCommandThisTurn: true,
+            out card);
+    }
+
+    public static bool TryGetEligibleFaceDownSourceCard(
+        Creature pet,
+        bool requireAlive,
+        bool requireUsedCommandThisTurn,
+        out AbstractMonsterCard? card)
+    {
         card = null;
         if (requireAlive && !pet.IsAlive)
             return false;
-        if (!MonsterCommandRegistry.PetHasUsedAnyCommandSlotThisTurn(pet))
+        if (requireUsedCommandThisTurn && !MonsterCommandRegistry.PetHasUsedAnyCommandSlotThisTurn(pet))
             return false;
         if (DuelMonsterFieldRegistry.GetSourceMonster<AbstractMonsterCard>(pet) is not AbstractMonsterCard sourceCard)
             return false;

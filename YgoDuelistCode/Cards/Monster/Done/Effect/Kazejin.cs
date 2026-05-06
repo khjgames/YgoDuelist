@@ -39,6 +39,8 @@ public sealed class Kazejin : EffectMonsterCard
 
     private bool ShowConsumableShacklesPlusPowerHover => IsUpgradedOrPreviewActive;
 
+    public override bool UseAlternateUpgradedDescription => true;
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get

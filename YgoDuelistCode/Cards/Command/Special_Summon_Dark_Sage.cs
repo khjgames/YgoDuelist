@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -44,17 +43,7 @@ public sealed class Special_Summon_Dark_Sage : MonsterCommandCard, IYgoNHandPlay
 
     public override TargetType TargetType => TargetType.Self;
 
-    public override string PortraitPath
-    {
-        get
-        {
-            if (IsCanonical)
-                return ModelDb.Card<Dark_Sage>().PortraitPath;
-
-            TryResolveSourceMonsterFromStoredPetId();
-            return "card.png".CardImagePath();
-        }
-    }
+    public override string PortraitPath => ModelDb.Card<Dark_Sage>().PortraitPath;
 
     public Color? GetNHandPlayPhaseHighlightModulateOverride(
         NHandCardHolder holder,
@@ -82,7 +71,7 @@ public sealed class Special_Summon_Dark_Sage : MonsterCommandCard, IYgoNHandPlay
     }
 
     public static List<Dark_Sage> BuildDarkSageHandOrDeckCandidates(Player player) =>
-        YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Dark_Sage>(player);
+        YgoPlayerPiles.OrderedSummonableMonstersFromHandDrawDiscard<Dark_Sage>(player);
 
     protected override bool IsPlayable
     {
@@ -165,12 +154,5 @@ public sealed class Special_Summon_Dark_Sage : MonsterCommandCard, IYgoNHandPlay
 
         if (!summoned)
             return;
-
-        Creature? sagePet = TributeSummonSelection.ResolvePetForFieldCard(player, picked);
-        if (sagePet == null || !sagePet.IsAlive || player.Creature == null)
-            return;
-
-        if (!YgoStumblingField.IsActive(player))
-            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(sagePet, true, player.Creature, picked);
     }
 }

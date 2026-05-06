@@ -164,7 +164,8 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             if (tribute > 0 && !TributeSummonSelection.CanMeetTributeCostForSummon(Owner, this))
                 return false;
 
-            if (ReactorSlimeSummonGate.BlocksNonDivineSummons(Owner) && DuelMonsterRace != DuelMonsterRace.DivineBeast)
+            if (ReactorSlimeSummonGate.BlocksNonDivineSummons(Owner)
+                && GetEffectiveDuelMonsterRace() != DuelMonsterRace.DivineBeast)
                 return false;
 
             return true;
@@ -308,6 +309,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
         if (Owner != null && CanSummonDuelMonster)
         {
             int tribute = TributeReleaseCount;
+            if (NormalSummonHandTributeNeedLock.TryConsume(choiceContext, this, out int lockedTributeNeed))
+                tribute = lockedTributeNeed;
+
             TributeSummonPendingResolution? tributePending = null;
 
             if (tribute > 0)
@@ -318,12 +322,13 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                         Owner,
                         tributePending.Pets,
                         tributePending.MausoleumHpTributes,
-                        tributePending.MausoleumHpLossTotal))
+                        tributePending.MausoleumHpLossTotal,
+                        tributePending.RequiredTributeCount))
                 {
                     if (YgoPlayPayloadNetKey.TryGetKey(this, out ulong kOid, out uint kIdx))
                     {
                         GD.PrintErr(
-                            $"[YgoDuelist][MP][Tribute] OnPlay fallback (no kill/summon): key=({kOid},{kIdx}) card={Id?.Entry} pendingNull={tributePending == null}");
+                            $"[YgoDuelist][MP][Tribute] OnPlay fallback (no kill/summon): key=({kOid},{kIdx}) card={Id?.Entry} pendingNull={tributePending == null} printedLevel={DuelMonsterLevel} effectiveLevel={GetEffectiveDuelMonsterLevel()} tributeNeed={TributeReleaseCount}");
                     }
 
                     await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);

@@ -31,7 +31,8 @@ public sealed class Physical_Double : BaseTrapCard
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner?.Creature?.CombatState != null
-        && Owner.Creature.CombatState.HittableEnemies.Any(e => e.IsAlive);
+        && Owner.Creature.CombatState.HittableEnemies.Any(e => e.IsAlive)
+        && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Warrior);
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -45,17 +44,7 @@ public sealed class Special_Summon_Wall_Shadow : MonsterCommandCard, IYgoNHandPl
 
     public override TargetType TargetType => TargetType.Self;
 
-    public override string PortraitPath
-    {
-        get
-        {
-            if (IsCanonical)
-                return ModelDb.Card<Wall_Shadow>().PortraitPath;
-
-            TryResolveSourceMonsterFromStoredPetId();
-            return "card.png".CardImagePath();
-        }
-    }
+    public override string PortraitPath => ModelDb.Card<Wall_Shadow>().PortraitPath;
 
     public Color? GetNHandPlayPhaseHighlightModulateOverride(
         NHandCardHolder holder,
@@ -79,11 +68,11 @@ public sealed class Special_Summon_Wall_Shadow : MonsterCommandCard, IYgoNHandPl
         if (!vanillaWouldUseCyanPlayableHighlight)
             return null;
 
-        return YgoNHandPlayPhaseHighlightColors.FusionStylePurple;
+        return YgoNHandPlayPhaseHighlightColors.CallOfTheMummyYellow;
     }
 
     public static List<Wall_Shadow> BuildWallShadowHandOrDeckCandidates(Player player) =>
-        YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Wall_Shadow>(player);
+        YgoPlayerPiles.OrderedSummonableMonstersFromHandDrawDiscard<Wall_Shadow>(player);
 
     protected override bool IsPlayable
     {
@@ -168,12 +157,5 @@ public sealed class Special_Summon_Wall_Shadow : MonsterCommandCard, IYgoNHandPl
 
         if (!summoned)
             return;
-
-        Creature? wallPet = TributeSummonSelection.ResolvePetForFieldCard(player, picked);
-        if (wallPet == null || !wallPet.IsAlive || player.Creature == null)
-            return;
-
-        if (!YgoStumblingField.IsActive(player))
-            await MonsterCommandRegistry.SetHasUsedCommandThisTurn(wallPet, true, player.Creature, picked);
     }
 }

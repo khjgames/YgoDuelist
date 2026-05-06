@@ -112,7 +112,8 @@ public sealed class Spirit_of_Flames : EffectMonsterCard
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
-        return BuildFireGraveyardCandidates(player).Count >= 1;
+        return BuildFireGraveyardCandidates(player).Count >= 1
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Pyro);
     }
 
     private static List<BaseMonsterCard> BuildFireGraveyardCandidates(Player player) =>

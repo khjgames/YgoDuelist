@@ -349,7 +349,10 @@ public static class TributeSummonGridSelect
             }
         }
 
-        NPlayerHand.Instance?.CancelAllCardPlay();
+        // Do not call NPlayerHand.CancelAllCardPlay() here. During a hand play (e.g. tribute summon) the parent
+        // PlayCardAction is still active; CancelAllCardPlay can abort the nested grid await, fire
+        // OperationCanceledException, and SyncCancelIfMp → empty combat-card wire for the reserved choice id — host
+        // and observer then diverge (spurious "Grid cancel → empty" at the tribute id; second attempt uses shifted ids).
         NSimpleCardSelectScreen screen = NSimpleCardSelectScreen.Create(cards, prefs);
         NOverlayStack.Instance.Push(screen);
         try

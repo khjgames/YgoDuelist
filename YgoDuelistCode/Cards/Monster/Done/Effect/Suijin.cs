@@ -38,6 +38,8 @@ public sealed class Suijin : EffectMonsterCard
     public override Type[] RelatedCards => new[] { typeof(Suijin) };
 
     private bool ShowConsumableShacklesPlusPowerHover => IsUpgradedOrPreviewActive;
+    
+    public override bool UseAlternateUpgradedDescription => true;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {

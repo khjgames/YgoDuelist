@@ -23,7 +23,9 @@ public static class YgoLinkedSpecialSummonSelection
             .BuildCandidates(
                 player,
                 sourcePiles,
-                c => c is BaseMonsterCard bm && (predicate == null || predicate(bm)))
+                c => c is BaseMonsterCard bm
+                    && (predicate == null || predicate(bm))
+                    && ReactorSlimeSummonGate.AllowsSummon(player, bm))
             .OfType<BaseMonsterCard>()
             .ToList();
     }

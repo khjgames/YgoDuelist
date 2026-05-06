@@ -4,6 +4,7 @@ using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -66,6 +67,28 @@ public static class YgoPlayerPiles
     public static List<TCard> OrderedCardsOfTypeFromHandDrawDiscard<TCard>(Player? player)
         where TCard : CardModel =>
         OrderedCardsFromPiles(player, Hand, Draw, Discard).OfType<TCard>().ToList();
+
+    /// <summary>
+    /// Same pile union as <see cref="OrderedCardsOfTypeFromHandDrawDiscard{TCard}"/>, but removes monsters that
+    /// <see cref="ReactorSlimeSummonGate"/> would reject at <see cref="DuelMonsterSummon"/> (divine-only lock).
+    /// Prefer this for special-summon grid pools so MP/UI parity matches resolve-time enforcement.
+    /// </summary>
+    public static List<TCard> OrderedSummonableMonstersFromHandDrawDiscard<TCard>(Player? player)
+        where TCard : BaseMonsterCard =>
+        OrderedCardsOfTypeFromHandDrawDiscard<TCard>(player)
+            .Where(m => ReactorSlimeSummonGate.AllowsSummon(player, m))
+            .ToList();
+
+    /// <summary>
+    /// Same as <see cref="OrderedCardsOfTypeFromPiles{TCard}"/> with <see cref="ReactorSlimeSummonGate"/> filtering for duel summons.
+    /// </summary>
+    public static List<TCard> OrderedSummonableMonstersFromPiles<TCard>(
+        Player? player,
+        params Func<Player?, CardPile?>[] pileGetters)
+        where TCard : BaseMonsterCard =>
+        OrderedCardsOfTypeFromPiles<TCard>(player, pileGetters)
+            .Where(m => ReactorSlimeSummonGate.AllowsSummon(player, m))
+            .ToList();
 
     public static List<CardModel> OrderedCardsFromPiles(
         Player? player,

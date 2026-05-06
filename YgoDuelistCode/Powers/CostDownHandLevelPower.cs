@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using YgoDuelist.YgoDuelistCode.Services;
@@ -17,7 +18,7 @@ public sealed class CostDownHandLevelPower : YgoDuelistPower
 
     public override PowerType Type => PowerType.Buff;
 
-    public override PowerStackType StackType => PowerStackType.None;
+    public override PowerStackType StackType => PowerStackType.Counter;
 
     public override LocString Title => new("powers", "YGODUELIST-COST_DOWN_HAND_LEVEL_POWER.title");
 
@@ -27,7 +28,16 @@ public sealed class CostDownHandLevelPower : YgoDuelistPower
     {
         if (side != Owner.Side)
             return;
+
+        if (Owner.Player?.PlayerCombatState != null)
+        {
+            foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(Owner.Player.PlayerCombatState))
+                await PowerCmd.Remove<CostDownSummonedLevelPower>(pet);
+        }
+
         await PowerCmd.Remove(this);
         CardModelEnergyCache.InvalidateHandMonstersEnergy(Owner.Player);
+        if (Owner.Player != null)
+            await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(Owner.Player);
     }
 }

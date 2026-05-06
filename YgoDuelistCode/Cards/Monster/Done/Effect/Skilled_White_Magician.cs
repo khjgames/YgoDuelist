@@ -108,7 +108,7 @@ public sealed class Skilled_White_Magician : EffectMonsterCard, IMonsterActivate
 
     private static List<Buster_Blader> BuildSummonTargets(Player player)
     {
-        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Buster_Blader>(
+        return YgoPlayerPiles.OrderedSummonableMonstersFromPiles<Buster_Blader>(
             player,
             YgoPlayerPiles.Hand,
             YgoPlayerPiles.Draw,

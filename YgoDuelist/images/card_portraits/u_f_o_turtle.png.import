@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bfhqq4geoy2hp"
-path="res://.godot/imported/ufo_turtle.png-07879e24495c6fb1558588312d77f8cc.ctex"
+uid="uid://tffwtr36r0pw"
+path="res://.godot/imported/u_f_o_turtle.png-f47afcf6c191efcf49e5ac39284fdbc5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://YgoDuelist/images/card_portraits/ufo_turtle.png"
-dest_files=["res://.godot/imported/ufo_turtle.png-07879e24495c6fb1558588312d77f8cc.ctex"]
+source_file="res://YgoDuelist/images/card_portraits/u_f_o_turtle.png"
+dest_files=["res://.godot/imported/u_f_o_turtle.png-f47afcf6c191efcf49e5ac39284fdbc5.ctex"]
 
 [params]
 

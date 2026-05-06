@@ -92,9 +92,11 @@ public sealed class Monster_Reborn : BaseSpellCard, IYgoPrePlayCancelableGridSel
         await DuelMonsterSummon.TrySummonDuelMonsterSpecial(player, chosen, choiceContext);
     }
 
-    private static List<CardModel> BuildGraveyardMonsters(Player player) => YgoMpCombatOrder
-        .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
-        .OfType<BaseMonsterCard>()
-        .Cast<CardModel>()
-        .ToList();
+    private static List<CardModel> BuildGraveyardMonsters(Player player) =>
+        YgoMpCombatOrder
+            .CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+            .OfType<BaseMonsterCard>()
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player))
+            .Cast<CardModel>()
+            .ToList();
 }

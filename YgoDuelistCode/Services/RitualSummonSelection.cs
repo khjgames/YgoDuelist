@@ -151,6 +151,8 @@ public static class RitualSummonSelection
                 continue;
             if (attrFilter is { } a && rm.DuelMonsterAttribute != a)
                 continue;
+            if (!ReactorSlimeSummonGate.AllowsSummon(player, rm))
+                continue;
             list.Add(rm);
         }
 

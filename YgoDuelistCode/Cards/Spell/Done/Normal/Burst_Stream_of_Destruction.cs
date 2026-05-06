@@ -45,7 +45,7 @@ public sealed class Burst_Stream_of_Destruction
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && DuelMonsterFieldRegistry.OrderedFieldMonsters(Owner).Any(YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype);
+        && YgoMonsterArchetypeKeywords.PlayerControlsFaceUpBlueEyesArchetypeMonster(Owner);
 
     protected override Type[] PreviewReferencedCardTypes => new[] { typeof(Blue_Eyes_White_Dragon) };
 
@@ -141,7 +141,8 @@ public sealed class Burst_Stream_of_Destruction
         if (target == null || !target.IsAlive || Owner?.Creature == null)
             return false;
 
-        if (DuelMonsterFieldRegistry.GetSourceMonster<Blue_Eyes_White_Dragon>(target) is null)
+        BaseMonsterCard? src = DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(target);
+        if (!YgoMonsterArchetypeKeywords.IsFaceUpBlueEyesWhiteDragonArchetype(src))
             return false;
 
         return target.Side == Owner.Creature.Side;

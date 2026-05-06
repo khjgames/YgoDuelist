@@ -49,11 +49,11 @@ public sealed class YgoCardLibraryLevelFilterState
     static int? TryGetDuelMonsterLevel(CardModel card)
     {
         if (card is BaseMonsterCard bm)
-            return bm.GetEffectiveDuelMonsterLevel();
+            return bm.IsCanonical ? bm.DuelMonsterLevel : bm.GetEffectiveDuelMonsterLevel();
         if (card is AbstractMonsterCard am)
             return am.DuelMonsterLevel;
-        if (card is MonsterCommandCard cmd && cmd.SourceMonster != null)
-            return cmd.SourceMonster.GetEffectiveDuelMonsterLevel();
+        if (card is MonsterCommandCard cmd && cmd.SourceMonster is BaseMonsterCard src)
+            return src.IsCanonical ? src.DuelMonsterLevel : src.GetEffectiveDuelMonsterLevel();
         return null;
     }
 

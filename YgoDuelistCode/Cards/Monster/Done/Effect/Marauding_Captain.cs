@@ -24,7 +24,7 @@ public sealed class Marauding_Captain : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
@@ -83,6 +83,7 @@ public sealed class Marauding_Captain : EffectMonsterCard
             .Where(m =>
                 m.DuelMonsterLevel <= 4
                 && (m.CanSummonDuelMonster || m.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate))
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player))
             .ToList();
     }
 }

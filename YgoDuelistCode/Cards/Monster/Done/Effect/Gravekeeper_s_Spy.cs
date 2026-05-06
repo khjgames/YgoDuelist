@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -25,7 +26,7 @@ public sealed class Gravekeeper_s_Spy : EffectMonsterCard, IMonsterFlipEffect
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
@@ -71,6 +72,7 @@ public sealed class Gravekeeper_s_Spy : EffectMonsterCard, IMonsterFlipEffect
         return YgoMpCombatOrder.CardsSnapshotOrderedForMp(draw.Cards)
             .OfType<BaseMonsterCard>()
             .Where(m => IsGravekeeperLowAtk(m) && m.CanSummonDuelMonster)
+            .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<BaseMonsterCard>(player))
             .ToList();
     }
 

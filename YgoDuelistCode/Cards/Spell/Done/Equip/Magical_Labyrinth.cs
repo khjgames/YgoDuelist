@@ -15,14 +15,16 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Equip;
 public sealed class Magical_Labyrinth : BaseEquipSpellCard
 {
     public Magical_Labyrinth()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
 
-    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell;
+    public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Earth | YgoCardPackTags.Dark | YgoCardPackTags.Warrior;
 
     public override Type[] RelatedCards =>
         new[] { typeof(Magical_Labyrinth), typeof(Labyrinth_Wall), typeof(Wall_Shadow) };
+
+    public override Type[] BundledCards => new[] { typeof(Wall_Shadow) };
 
     public override bool CanEquipTo(BaseMonsterCard target) => target is Labyrinth_Wall;
 

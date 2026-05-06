@@ -52,7 +52,8 @@ public sealed class Lekunga : EffectMonsterCard, IMonsterActivatedEffect
     public bool IsActivatedEffectAvailable =>
         Owner != null
         && BuildWaterGraveyardCandidates(Owner).Count >= 2
-        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0);
+        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0)
+        && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Plant);
 
     public async Task OnActivatedEffect(PlayerChoiceContext choiceContext, CardPlay cardPlay, NormalMonsterCard source)
     {

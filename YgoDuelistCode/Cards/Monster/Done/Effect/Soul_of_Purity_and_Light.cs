@@ -152,7 +152,8 @@ public sealed class Soul_of_Purity_and_Light : EffectMonsterCard, IYgoOwnerTurnS
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;
-        return BuildLightGraveyardCandidates(player).Count >= 2;
+        return BuildLightGraveyardCandidates(player).Count >= 2
+            && ReactorSlimeSummonGate.AllowsSummonPrintedRace(player, DuelMonsterRace.Fairy);
     }
 
     private static List<BaseMonsterCard> BuildLightGraveyardCandidates(Player player) =>

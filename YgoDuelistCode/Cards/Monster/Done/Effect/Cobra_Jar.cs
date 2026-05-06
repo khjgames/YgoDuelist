@@ -8,6 +8,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Token;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
+using DuelMonsterSummon = YgoDuelist.YgoDuelistCode.Services.DuelMonsterSummon;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
@@ -35,6 +36,10 @@ public sealed class Cobra_Jar : EffectMonsterCard, IMonsterFlipEffect
     public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
     {
         if (Owner == null || self is not Cobra_Jar)
+            return;
+        if (!ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Reptile))
+            return;
+        if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
             return;
         await YgoTokenSummon.TrySpecialSummonTokenAsync<Poisonous_Snake_Token>(Owner, choiceContext, defensePosition: false);
     }

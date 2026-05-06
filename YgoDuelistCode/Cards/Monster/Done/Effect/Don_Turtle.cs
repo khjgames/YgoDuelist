@@ -50,7 +50,11 @@ public sealed class Don_Turtle : EffectMonsterCard
                 CardPile? hand = YgoPlayerPiles.Hand(player);
                 if (hand == null)
                     return;
-                List<Don_Turtle> copies = YgoMpCombatOrder.CardsSnapshotOrderedForMp(hand.Cards).OfType<Don_Turtle>().ToList();
+                List<Don_Turtle> copies = YgoMpCombatOrder
+                    .CardsSnapshotOrderedForMp(hand.Cards)
+                    .OfType<Don_Turtle>()
+                    .Where(ReactorSlimeSummonGate.SummonCandidatePredicate<Don_Turtle>(player))
+                    .ToList();
                 foreach (Don_Turtle copy in copies)
                 {
                     if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))

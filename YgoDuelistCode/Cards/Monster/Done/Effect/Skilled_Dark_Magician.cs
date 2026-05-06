@@ -109,7 +109,7 @@ public sealed class Skilled_Dark_Magician : EffectMonsterCard, IMonsterActivated
 
     private static List<Dark_Magician> BuildSummonTargets(Player player)
     {
-        return YgoPlayerPiles.OrderedCardsOfTypeFromPiles<Dark_Magician>(
+        return YgoPlayerPiles.OrderedSummonableMonstersFromPiles<Dark_Magician>(
             player,
             YgoPlayerPiles.Hand,
             YgoPlayerPiles.Draw,

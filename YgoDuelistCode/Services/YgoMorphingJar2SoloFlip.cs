@@ -94,6 +94,7 @@ public static class YgoMorphingJar2SoloFlip
             if (card is BaseMonsterCard bm
                 && bm.DuelMonsterLevel <= 4
                 && bm.CanSummonDuelMonster
+                && ReactorSlimeSummonGate.AllowsSummon(player, bm)
                 && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             {
                 bm.FaceDown = true;

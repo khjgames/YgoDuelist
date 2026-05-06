@@ -38,7 +38,8 @@ public sealed class Multiply : BaseSpellCard, IYgoPrePlayCancelableGridSelection
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner != null
-        && BuildKuribohCandidates(Owner).Count > 0;
+        && BuildKuribohCandidates(Owner).Count > 0
+        && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Fiend);
 
     public async Task<bool> TryPreparePrePlayCancelableGridAsync(Player player, CardModel sourceCard)
     {

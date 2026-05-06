@@ -22,7 +22,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Normal;
 public sealed class A_Deal_with_Dark_Ruler : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
     public A_Deal_with_Dark_Ruler()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
+        : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellQuickPlay)
     {
     }
 
@@ -87,6 +87,6 @@ public sealed class A_Deal_with_Dark_Ruler : BaseSpellCard, IYgoPrePlayCancelabl
 
     private static List<CardModel> BuildBerserkDragonCandidates(Player player)
     {
-        return YgoPlayerPiles.OrderedCardsOfTypeFromHandDrawDiscard<Berserk_Dragon>(player).Cast<CardModel>().ToList();
+        return YgoPlayerPiles.OrderedSummonableMonstersFromHandDrawDiscard<Berserk_Dragon>(player).Cast<CardModel>().ToList();
     }
 }

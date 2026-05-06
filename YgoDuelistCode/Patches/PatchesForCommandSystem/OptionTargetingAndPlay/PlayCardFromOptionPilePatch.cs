@@ -268,58 +268,114 @@ public static class PlayCardFromOptionPilePatch
                 return;
             }
 
-            bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
-            if (!observingOtherPlayer
-                && (!card.CanPlay(out UnplayableReason unplayable, out AbstractModel? _) || !card.IsValidTarget(target)))
+            // This patch runs before PlayCardActionTributeSelectionPatch and replaces ExecuteAction entirely for option-pile
+            // plays — hand tribute flow never runs. Mirror SetPending + finally Clear here so duel tribute summons from the
+            // second-hand row match NormalMonsterCard.OnPlay (TryTakePendingForManualPlay).
+            if (card is NormalMonsterCard nmcTribute
+                && nmcTribute.CanSummonDuelMonster
+                && nmcTribute.TributeReleaseCount > 0)
             {
                 GD.Print(
-                    $"[YgoDuelist][MP][OptionPile] unplayable or invalid target card={card?.Id.Entry} unplayable={unplayable} targetCombat={target?.CombatId}");
-                GD.Print("[YgoDuelist] PlayCardFromOptionPile: CanPlay false or invalid target, card=", card?.Id.Entry ?? "null");
-                if (card is MonsterCommandCard mccMenu && mccMenu.TryEnqueueUnplayableOptionPileMenu(action.Player!, target))
+                    $"[YgoDuelist][MP][Tribute] OptionPile PreSelect owner={action.Player.NetId} netIdx={action.NetCombatCard.CombatCardIndex} card={card.Id?.Entry} printedLevel={nmcTribute.DuelMonsterLevel} effectiveLevel={nmcTribute.GetEffectiveDuelMonsterLevel()} tributeNeed={nmcTribute.TributeReleaseCount}");
+                TributeSummonPendingResolution? resolution =
+                    await TributeSummonSelection.SelectTributesForNormalSummonAsync(action.Player, nmcTribute);
+                if (resolution == null)
                 {
-                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: unplayable menu card — YgoMonsterMenuCommandNetHelper");
+                    GD.Print(
+                        $"[YgoDuelist][MP][Tribute] OptionPile Select canceled/failed owner={action.Player.NetId} card={card.Id?.Entry}");
+                    action.Cancel();
+                    if (preparedPreplaySelection && preplaySource != null)
+                    {
+                        ActivatedEffectTributeSelectionPayload.ClearForSource(preplaySource);
+                        ObeliskActivatedTributePayload.ClearForSource(preplaySource);
+                    }
+
+                    return;
                 }
-                else
-                    GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is not a known option-pile click handler, skipping OnClickedOption");
-                GD.Print("[YgoDuelist] PlayCardFromOptionPile: calling action.Cancel() and returning");
-                action.Cancel();
-                if (preparedPreplaySelection && preplaySource != null)
+
+                GD.Print(
+                    $"[YgoDuelist][MP][Tribute] OptionPile SetPending netCardIdx={action.NetCombatCard.CombatCardIndex} owner={action.Player.NetId} pets={resolution.Pets.Count} card={card.Id?.Entry}");
+                TributeSummonPlayPayload.SetPending(action.Player.NetId, action.NetCombatCard.CombatCardIndex, resolution);
+                try
                 {
-                    ActivatedEffectTributeSelectionPayload.ClearForSource(preplaySource);
-                    ObeliskActivatedTributePayload.ClearForSource(preplaySource);
+                    await ExecuteOptionPileSpendResourcesAndOnPlayAsync(
+                        action,
+                        card,
+                        target,
+                        preparedPreplaySelection,
+                        preplaySource);
                 }
+                finally
+                {
+                    TributeSummonPlayPayload.ClearForKey(action.Player.NetId, action.NetCombatCard.CombatCardIndex);
+                }
+
                 return;
             }
 
-            (int energySpent, int starsSpent) = await card.SpendResources();
-            var resources = new ResourceInfo
-            {
-                EnergySpent = energySpent,
-                EnergyValue = energySpent,
-                StarsSpent = starsSpent,
-                StarValue = starsSpent
-            };
-
-            var context = new GameActionPlayerChoiceContext(action);
-            PlayerChoiceContextProp?.SetValue(action, context);
-            Player? playerForCleanup = action.Player;
-            CardModel? cardForCleanup = action.NetCombatCard.ToCardModel();
-            try
-            {
-                await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
-            }
-            finally
-            {
-                // Option-pile cards are not PileType.Hand, so NCardPlayQueue never calls RemoveCardHolder — the
-                // holder stays reparented under NPlayerHand with NCardPlay's bottom-screen target position.
-                // If the card remains in the option pile (e.g. Command_Defend), we must free that holder before
-                // SyncFromOptionPile rebuilds the row; otherwise a duplicate floats forever.
-                ScheduleOptionPilePostPlayCleanup(playerForCleanup, cardForCleanup);
-            }
+            await ExecuteOptionPileSpendResourcesAndOnPlayAsync(action, card, target, preparedPreplaySelection, preplaySource);
         }
         finally
         {
             GD.Print("[YgoDuelist] PlayCardFromOptionPile: ExecutePlayFromOptionPileAsync END");
+        }
+    }
+
+    private static async Task ExecuteOptionPileSpendResourcesAndOnPlayAsync(
+        PlayCardAction action,
+        CardModel card,
+        Creature? target,
+        bool preparedPreplaySelection,
+        NormalMonsterCard? preplaySource)
+    {
+        bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
+        if (!observingOtherPlayer
+            && (!card.CanPlay(out UnplayableReason unplayable, out AbstractModel? _) || !card.IsValidTarget(target)))
+        {
+            GD.Print(
+                $"[YgoDuelist][MP][OptionPile] unplayable or invalid target card={card?.Id.Entry} unplayable={unplayable} targetCombat={target?.CombatId}");
+            GD.Print("[YgoDuelist] PlayCardFromOptionPile: CanPlay false or invalid target, card=", card?.Id.Entry ?? "null");
+            if (card is MonsterCommandCard mccMenu && mccMenu.TryEnqueueUnplayableOptionPileMenu(action.Player!, target))
+            {
+                GD.Print("[YgoDuelist] PlayCardFromOptionPile: unplayable menu card — YgoMonsterMenuCommandNetHelper");
+            }
+            else
+                GD.Print("[YgoDuelist] PlayCardFromOptionPile: card is not a known option-pile click handler, skipping OnClickedOption");
+            GD.Print("[YgoDuelist] PlayCardFromOptionPile: calling action.Cancel() and returning");
+            action.Cancel();
+            if (preparedPreplaySelection && preplaySource != null)
+            {
+                ActivatedEffectTributeSelectionPayload.ClearForSource(preplaySource);
+                ObeliskActivatedTributePayload.ClearForSource(preplaySource);
+            }
+
+            return;
+        }
+
+        (int energySpent, int starsSpent) = await card.SpendResources();
+        var resources = new ResourceInfo
+        {
+            EnergySpent = energySpent,
+            EnergyValue = energySpent,
+            StarsSpent = starsSpent,
+            StarValue = starsSpent
+        };
+
+        var context = new GameActionPlayerChoiceContext(action);
+        PlayerChoiceContextProp?.SetValue(action, context);
+        Player? playerForCleanup = action.Player;
+        CardModel? cardForCleanup = action.NetCombatCard.ToCardModel();
+        try
+        {
+            await card.OnPlayWrapper(context, target, isAutoPlay: false, resources);
+        }
+        finally
+        {
+            // Option-pile cards are not PileType.Hand, so NCardPlayQueue never calls RemoveCardHolder — the
+            // holder stays reparented under NPlayerHand with NCardPlay's bottom-screen target position.
+            // If the card remains in the option pile (e.g. Command_Defend), we must free that holder before
+            // SyncFromOptionPile rebuilds the row; otherwise a duplicate floats forever.
+            ScheduleOptionPilePostPlayCleanup(playerForCleanup, cardForCleanup);
         }
     }
 }

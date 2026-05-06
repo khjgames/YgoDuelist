@@ -60,9 +60,9 @@ public enum YgoCardArchetype : ulong
     None = 0,
     /// <summary>Zombie boost package (field/equip synergy).</summary>
     ZombieBoost = 1UL << 0,
-    /// <summary>Blue-Eyes White Dragon family and closely tied support.</summary>
+    /// <summary>Blue-Eyes White Dragon archetype flag: <see cref="YgoCardArchetypeRegistry.GetTypes"/> = related pool; <see cref="YgoCardArchetypeRegistry.GetStrictArchetypeTypes"/> = strict in-archetype for rules/keywords.</summary>
     BlueEyesWhiteDragon = 1UL << 1,
-    /// <summary>Dark Magician family and closely tied support.</summary>
+    /// <summary>Dark Magician archetype flag: related vs strict split same as <see cref="BlueEyesWhiteDragon"/>.</summary>
     DarkMagician = 1UL << 2,
     /// <summary>Monsters that count as two tributes for eligible normal summons.</summary>
     GenericDoubleSummoner = 1UL << 3,

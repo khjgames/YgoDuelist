@@ -10,6 +10,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Token;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
+using DuelMonsterSummon = YgoDuelist.YgoDuelistCode.Services.DuelMonsterSummon;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Normal;
 
@@ -29,6 +30,12 @@ public sealed class Ojama_Trio : BaseTrapCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Trap;
 
     public override Type[] RelatedCards => new[] { typeof(Ojama_Trio), typeof(Ojama_Token) };
+
+    protected override bool IsPlayable =>
+        base.IsPlayable
+        && Owner != null
+        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0)
+        && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Beast);
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
