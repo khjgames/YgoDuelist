@@ -23,7 +23,7 @@ public sealed class Draining_Shield : BaseTrapCard
         new[] { new DynamicVar("Mgc", 1m) };
 
     public Draining_Shield()
-        : base(cost: 0, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
+        : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.TrapNormal)
     {
     }
     // Dictates the card pack tags this card will be included in.

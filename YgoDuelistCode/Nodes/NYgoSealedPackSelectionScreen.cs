@@ -53,13 +53,37 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
 
     public Control? DefaultFocusedControl => _widgets.Count > 0 ? _widgets[0] : this;
 
-    public static NYgoSealedPackSelectionScreen Push(IReadOnlyList<YgoCardPackTags> masks)
+    /// <summary>
+    /// Pushes on the next idle frame so a just-closed card grid (<c>_ExitTree</c>) does not leave
+    /// <see cref="NOverlayStack"/> busy (<c>add_child</c> / <c>move_child</c> errors).
+    /// </summary>
+    public static Task<NYgoSealedPackSelectionScreen> PushAsync(IReadOnlyList<YgoCardPackTags> masks)
     {
         var screen = new NYgoSealedPackSelectionScreen();
         screen.Name = nameof(NYgoSealedPackSelectionScreen);
         screen._masks = masks;
-        NOverlayStack.Instance!.Push(screen);
-        return screen;
+
+        var ready = new TaskCompletionSource<NYgoSealedPackSelectionScreen>();
+        Callable.From(() =>
+        {
+            if (!GodotObject.IsInstanceValid(screen))
+            {
+                ready.TrySetCanceled();
+                return;
+            }
+
+            NOverlayStack? stack = NOverlayStack.Instance;
+            if (stack == null)
+            {
+                ready.TrySetCanceled();
+                return;
+            }
+
+            stack.Push(screen);
+            ready.TrySetResult(screen);
+        }).CallDeferred();
+
+        return ready.Task;
     }
 
     public override void _Ready()
@@ -167,8 +191,16 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
 
         AttachDeckFloatingChrome();
 
-        GetTree().CreateTimer(0.05, processAlways: false, ignoreTimeScale: true).Timeout += () => DebugDumpFullLayout("timer+0.05s");
-        GetTree().CreateTimer(0.35, processAlways: false, ignoreTimeScale: true).Timeout += () => DebugDumpFullLayout("timer+0.35s");
+        GetTree().CreateTimer(0.05, processAlways: false, ignoreTimeScale: true).Timeout += () =>
+        {
+            if (GodotObject.IsInstanceValid(this))
+                DebugDumpFullLayout("timer+0.05s");
+        };
+        GetTree().CreateTimer(0.35, processAlways: false, ignoreTimeScale: true).Timeout += () =>
+        {
+            if (GodotObject.IsInstanceValid(this))
+                DebugDumpFullLayout("timer+0.35s");
+        };
 
         Callable.From(() => DebugDumpFullLayout("_Ready deferred")).CallDeferred();
 
@@ -269,6 +301,9 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
 
     private void LogChromeDebug(string tag)
     {
+        if (!CanLogLayoutDebug())
+            return;
+
         Window w = GetWindow();
         Vector2 content = w.ContentScaleSize;
         Vector2 viewport = GetViewport().GetVisibleRect().Size;
@@ -342,9 +377,17 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
         _bannerModulateTween.Finished += () => LogBannerDebug("StartBannerModulateFadeIn_tweenFinished");
     }
 
+    private static bool CanLogLayoutDebug(Control screen) =>
+        GodotObject.IsInstanceValid(screen) && screen.IsInsideTree() && screen.GetViewport() != null;
+
+    private bool CanLogLayoutDebug() => CanLogLayoutDebug(this);
+
     private void LogBannerDebug(string tag)
     {
-        Rect2 vr = GetViewport().GetVisibleRect();
+        if (!CanLogLayoutDebug())
+            return;
+
+        Rect2 vr = GetViewport()!.GetVisibleRect();
         Rect2 screenG = GetGlobalRect();
         GD.PrintErr(
             $"[YgoSealedPackBanner] {tag} screen visible={Visible} modulate={Modulate} globalRect={screenG.Position} {screenG.Size} " +
@@ -421,8 +464,11 @@ public partial class NYgoSealedPackSelectionScreen : Control, IOverlayScreen, IS
 
     private void DebugDumpFullLayout(string tag)
     {
+        if (!CanLogLayoutDebug())
+            return;
+
         LogBannerDebug($"layout_dump_hook:{tag}");
-        Vector2 vps = GetViewport().GetVisibleRect().Size;
+        Vector2 vps = GetViewport()!.GetVisibleRect().Size;
         Rect2 screenG = GetGlobalRect();
         GD.PrintErr(
             $"[YgoSealedPack] layout_dump [{tag}] viewport={vps} screen name={Name} visible={Visible} modulate={Modulate} " +

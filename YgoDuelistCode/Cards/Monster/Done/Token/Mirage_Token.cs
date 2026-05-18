@@ -35,7 +35,9 @@ public sealed class Mirage_Token : YgoTokenEffectMonster, IYgoOwnerBeforeTurnEnd
             baseAtk: 0,
             baseDef: 0,
             baseMgc: 0,
-            duelMonsterRace: DuelMonsterRace.Warrior)
+            duelMonsterRace: DuelMonsterRace.Warrior,
+            duelMonsterDefensePlayEnergyOverride: 1,
+            duelMonsterAttackPlayEnergyOverride: 1)
     {
     }
 

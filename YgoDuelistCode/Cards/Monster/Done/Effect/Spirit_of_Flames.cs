@@ -29,12 +29,12 @@ public sealed class Spirit_of_Flames : EffectMonsterCard
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 4,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
             baseAtk: 17,
-            baseDef: 10,
+            baseDef: 11,
             baseMgc: 2,
             duelMonsterRace: DuelMonsterRace.Pyro)
     {
@@ -48,14 +48,16 @@ public sealed class Spirit_of_Flames : EffectMonsterCard
 
     public override bool CanSummonDuelMonster => false;
 
-    public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => IsHandEffectFormActive;
+    /// <inheritdoc />
+    /// <remarks>Hand-only restriction is enforced by <see cref="IsPlayable"/> and <see cref="OnPlay"/>; graveyard revival works.</remarks>
+    public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => true;
 
     public override int CurrentStarCost => IsHandEffectFormActive ? 0 : base.CurrentStarCost;
 
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     protected override bool IsPlayable =>
-        base.IsPlayable && (!IsHandEffectFormActive || CanResolveHandSpecialSummon(Owner));
+        base.IsPlayable && IsHandEffectFormActive && CanResolveHandSpecialSummon(Owner);
 
     protected override (int atk, int def) GetSecondaryStats()
     {

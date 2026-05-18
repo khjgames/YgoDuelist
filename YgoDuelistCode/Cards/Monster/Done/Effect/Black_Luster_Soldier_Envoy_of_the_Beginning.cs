@@ -81,7 +81,7 @@ public sealed class Black_Luster_Soldier_Envoy_of_the_Beginning : EffectMonsterC
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     protected override bool IsPlayable =>
-        base.IsPlayable && (!IsHandEffectFormActive || CanResolveHandSpecialSummon(Owner));
+        base.IsPlayable && IsHandEffectFormActive && CanResolveHandSpecialSummon(Owner);
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

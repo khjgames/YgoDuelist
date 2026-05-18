@@ -497,7 +497,7 @@ public static class YgoCardPackRewardFlow
             if (ShouldSelectLocalPackChoice(player))
             {
                 MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand.Instance?.CancelAllCardPlay();
-                NYgoSealedPackSelectionScreen screen = NYgoSealedPackSelectionScreen.Push(packTagMasks);
+                NYgoSealedPackSelectionScreen screen = await NYgoSealedPackSelectionScreen.PushAsync(packTagMasks);
                 idx = await screen.WaitPackResultAsync();
                 RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(player, choiceId, PlayerChoiceResult.FromIndex(idx));
             }
@@ -515,8 +515,13 @@ public static class YgoCardPackRewardFlow
         }
     }
 
-    private static bool ShouldSelectLocalPackChoice(Player player) =>
-        LocalContext.IsMe(player) && RunManager.Instance!.NetService.Type != NetGameType.Replay;
+    private static bool ShouldSelectLocalPackChoice(Player player)
+    {
+        NetGameType net = RunManager.Instance!.NetService.Type;
+        if (net == NetGameType.Singleplayer)
+            return true;
+        return LocalContext.IsMe(player) && net != NetGameType.Replay;
+    }
 
     private static async Task<List<CardModel>> ChoosePackViaRepresentativesCardScreenAsync(
         Player player,

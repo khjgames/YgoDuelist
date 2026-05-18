@@ -50,7 +50,7 @@ public sealed class Aqua_Spirit : EffectMonsterCard
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     protected override bool IsPlayable =>
-        base.IsPlayable && (!IsHandEffectFormActive || CanResolveHandSpecialSummon(Owner));
+        base.IsPlayable && IsHandEffectFormActive && CanResolveHandSpecialSummon(Owner);
 
     private static bool CanResolveHandSpecialSummon(Player? player)
     {

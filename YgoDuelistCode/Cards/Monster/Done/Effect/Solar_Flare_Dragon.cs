@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -19,8 +18,11 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
-/// <summary>With another Pyro on the field: +<c>Mgc</c> ATK/DEF. End of turn: <c>Mgc2</c> Blight on a random enemy (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoSolarFlareDragonEndPhase"/>).</summary>
-public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
+/// <summary>
+/// With another Pyro on the field: +<c>Mgc</c> ATK/DEF.
+/// Start of your turn (and when Summoned or flipped face-up): <c>Mgc2</c> Blight on a random enemy while another Pyro is present.
+/// </summary>
+public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerTurnStartFieldMonsterEffect, IMonsterFlipEffect
 {
     public override int AttackPortionCount => 2;
     public Solar_Flare_Dragon()
@@ -67,10 +69,7 @@ public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerBeforeTurnE
         if (Owner == null)
             return base.GetSecondaryStats();
 
-        bool otherPyro = DuelMonsterFieldRegistry
-            .GetFieldMonsters(Owner)
-            .Any(m => m != null && !m.FaceDown && !ReferenceEquals(m, this) && m.DuelMonsterRace == DuelMonsterRace.Pyro);
-        if (!otherPyro)
+        if (!HasOtherPyroOnField(Owner, this))
             return (0, 0);
 
         int mgc = (int)DynamicVars["Mgc"].BaseValue;
@@ -84,32 +83,86 @@ public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerBeforeTurnE
         DynamicVars["Mgc2"].BaseValue = 7m;
     }
 
-    public bool IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(Creature pet) =>
-        !FaceDown && pet.IsAlive && HasOtherPyroOnField(Owner!, this);
+    public bool IsOwnerTurnStartFieldMonsterEffectActive() =>
+        Owner != null && !FaceDown && DuelMonsterFieldRegistry.ContainsFieldMonster(Owner, this);
 
-    public async Task TryResolveOwnerBeforeTurnEndFlushFieldMonsterEffectAsync(PlayerChoiceContext choiceContext, Player owner, Creature pet)
+    public async Task TryResolveOwnerTurnStartFieldMonsterEffectAsync(PlayerChoiceContext choiceContext, Player owner)
     {
-        if (owner.Creature?.CombatState == null || FaceDown || Owner == null)
+        _ = choiceContext;
+        if (owner.PlayerCombatState == null || owner.Creature == null)
             return;
-        if (!HasOtherPyroOnField(owner, this))
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            owner.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, this));
+        if (pet == null)
             return;
+        await TryPulseBlightOnceThisOwnerTurnAsync(owner, pet);
+    }
+
+    public override async Task OnAfterSummonPipelineAsync(
+        Player player,
+        PlayerChoiceContext ctx,
+        Creature pet,
+        bool canAttackThisTurn)
+    {
+        await base.OnAfterSummonPipelineAsync(player, ctx, pet, canAttackThisTurn);
+        if (player.Creature?.CombatState == null)
+            return;
+        if (!DuelMonsterFieldRegistry.HasSourceCard(pet, this))
+            return;
+        if (FaceDown)
+            return;
+        await TryPulseBlightOnceThisOwnerTurnAsync(player, pet);
+    }
+
+    public async Task OnFlippedFaceUpAsync(PlayerChoiceContext choiceContext, AbstractMonsterCard self)
+    {
+        _ = choiceContext;
+        if (self is not Solar_Flare_Dragon || Owner?.Creature?.CombatState == null)
+            return;
+        Creature? pet = YgoMpCombatOrder.FirstPetWhere(
+            Owner.PlayerCombatState,
+            p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, this));
+        if (pet == null)
+            return;
+        await TryPulseBlightOnceThisOwnerTurnAsync(Owner, pet);
+    }
+
+    private async Task TryPulseBlightOnceThisOwnerTurnAsync(Player owner, Creature pet)
+    {
+        if (YgoSolarFlareDragonTurnPulseDedup.AlreadyPulsedThisOwnerTurn(owner, pet))
+            return;
+        if (!await TryPulseBlightOnRandomEnemyAsync(owner, pet))
+            return;
+        YgoSolarFlareDragonTurnPulseDedup.NotePulse(owner, pet);
+    }
+
+    private async Task<bool> TryPulseBlightOnRandomEnemyAsync(Player owner, Creature pet)
+    {
+        if (owner.Creature?.CombatState == null || FaceDown || !HasOtherPyroOnField(owner, this))
+            return false;
         int blight = (int)DynamicVars["Mgc2"].BaseValue;
         if (blight <= 0)
-            return;
+            return false;
         List<Creature> enemies = YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(owner.Creature.CombatState);
         if (enemies.Count == 0)
-            return;
-        Creature? target = YgoDeterministicRng.PickOne(owner.Creature.CombatState, enemies, "SOLAR_FLARE_DRAGON_BLIGHT", (ulong)(pet.CombatId ?? 0u));
+            return false;
+        Creature? target = YgoDeterministicRng.PickOne(
+            owner.Creature.CombatState,
+            enemies,
+            "SOLAR_FLARE_DRAGON_BLIGHT",
+            (ulong)(pet.CombatId ?? 0u));
         if (target == null)
-            return;
+            return false;
         await PowerCmd.Apply<BlightPower>(target, blight, owner.Creature, this);
+        return true;
     }
 
     private static bool HasOtherPyroOnField(Player player, Solar_Flare_Dragon self)
     {
         foreach (BaseMonsterCard? m in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
         {
-            if (m == null || m.FaceDown || ReferenceEquals(m, self))
+            if (m == null || ReferenceEquals(m, self))
                 continue;
             if (m.DuelMonsterRace == DuelMonsterRace.Pyro)
                 return true;

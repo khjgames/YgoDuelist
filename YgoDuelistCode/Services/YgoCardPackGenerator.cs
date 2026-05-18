@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Logging;
@@ -26,6 +28,9 @@ public sealed record PackTemplateRoll(
 public static class YgoCardPackGenerator
 {
     public const int MaxCardsPerPack = 10;
+
+    private const int PackWeightLogFullPoolMax = 48;
+    private const int PackWeightLogTopEntriesWhenTruncated = 24;
 
     private const int Single_Tag_Fatigue = 5;
     private const int Double_Tag_Fatigue = 4;
@@ -222,7 +227,11 @@ public static class YgoCardPackGenerator
         bool excludeBundledTagFromPool = false;
 
         var trunkCounts = CountIds(YgoPlayerRunPiles.Trunk(player)?.Cards ?? []);
+        var deckCounts = CountIds(player.Deck.Cards);
+        var sideCounts = CountIds(YgoPlayerRunPiles.SideDeck(player)?.Cards ?? []);
+        var extraCounts = CountIds(YgoPlayerRunPiles.RunExtraDeck(player)?.Cards ?? []);
         var relatedBonus = BuildRelatedBonus(player);
+        LogPackOwnershipSnapshot(packIndex, tagMask, trunkCounts, deckCounts, sideCounts, extraCounts, relatedBonus);
 
         var slotRarities = new CardRarity[packSlots];
         for (int i = 0; i < packSlots; i++)
@@ -235,10 +244,15 @@ public static class YgoCardPackGenerator
                 player,
                 rng,
                 tagMask,
+                packIndex,
+                slot,
                 ref rarity,
                 cards,
                 excludeBundledTagFromPool,
                 trunkCounts,
+                deckCounts,
+                sideCounts,
+                extraCounts,
                 relatedBonus,
                 progress);
 
@@ -250,7 +264,7 @@ public static class YgoCardPackGenerator
 
         bool hadBundleAnchor = cards.Exists(c => c is YgoDuelistCard y && y.BundledCards.Length > 0);
         int rareBeforeBundle = CountRaresInPack(cards);
-        ApplyBundleResolution(rng, cards);
+        ApplyBundleResolution(rng, cards, packIndex);
         int rareAfterBundle = CountRaresInPack(cards);
         if (hadBundleAnchor && rareAfterBundle < rareBeforeBundle)
         {
@@ -299,7 +313,7 @@ public static class YgoCardPackGenerator
     /// <summary>
     /// After all slot rolls, inject bundle mates by replacing lowest-rarity non-bundled non-rare cards; grow if needed; trim at 10 by dropping random non-bundled rares (Packs_System design).
     /// </summary>
-    private static void ApplyBundleResolution(Rng rng, List<CardModel> cards)
+    private static void ApplyBundleResolution(Rng rng, List<CardModel> cards, int packIndex)
     {
         CardModel? anchor = null;
         YgoDuelistCard? yAnchor = null;
@@ -317,18 +331,35 @@ public static class YgoCardPackGenerator
             return;
 
         HashSet<ModelId> bundleIds = CollectBundleIds(anchor, yAnchor);
+        Log.Info(
+            $"[YgoDuelist][PackGen][Bundle] packIndex={packIndex} anchor={anchor.Id.Entry}[{anchor.Rarity}] " +
+            $"bundledMates=[{string.Join(", ", yAnchor.BundledCards.Select(t => t.Name))}]");
 
         foreach (CardModel mate in EnumerateBundleMatesExceptAnchor(anchor, yAnchor))
         {
             bool allowDupSelf = yAnchor.BundleGrantsExtraCopyOfSelf && mate.Id == anchor.Id;
             if (cards.Exists(c => c.Id == mate.Id) && !allowDupSelf)
+            {
+                Log.Info(
+                    $"[YgoDuelist][PackGen][Bundle] packIndex={packIndex} skip mate={mate.Id.Entry} (already in pack)");
                 continue;
+            }
 
             int victim = FindLowestRarityNonBundledNonRareVictimIndex(cards, bundleIds);
             if (victim >= 0)
+            {
+                string replaced = cards[victim].Id.Entry;
                 cards[victim] = mate;
+                Log.Info(
+                    $"[YgoDuelist][PackGen][Bundle] packIndex={packIndex} inject mate={mate.Id.Entry}[{mate.Rarity}] " +
+                    $"replacedSlot={victim} was={replaced}");
+            }
             else
+            {
                 cards.Add(mate);
+                Log.Info(
+                    $"[YgoDuelist][PackGen][Bundle] packIndex={packIndex} inject mate={mate.Id.Entry}[{mate.Rarity}] appended");
+            }
 
             TrimExceededMaxPackSize(cards, bundleIds, rng);
         }
@@ -412,10 +443,15 @@ public static class YgoCardPackGenerator
         Player player,
         Rng rng,
         YgoCardPackTags tagMask,
+        int packIndex,
+        int slotIndex,
         ref CardRarity rarity,
         List<CardModel> chosenSoFar,
         bool excludeBundledTagFromPool,
         Dictionary<ModelId, int> trunkCounts,
+        Dictionary<ModelId, int> deckCounts,
+        Dictionary<ModelId, int> sideCounts,
+        Dictionary<ModelId, int> extraCounts,
         Dictionary<ModelId, int> relatedBonus,
         YgoPackRewardProgressState progress)
     {
@@ -462,9 +498,20 @@ public static class YgoCardPackGenerator
             throw new InvalidOperationException(msg);
         }
 
-        CardModel? pick = rng.WeightedNextItem(pool, m =>
-            Math.Max(1f, CalculateWeight(m!, chosenSoFar, trunkCounts, relatedBonus)));
-        return pick ?? pool[rng.NextInt(pool.Count)];
+        return WeightedPickForSlot(
+            rng,
+            pool,
+            tagMask,
+            packIndex,
+            slotIndex,
+            rarity,
+            excludeBundledTagFromPool,
+            chosenSoFar,
+            trunkCounts,
+            deckCounts,
+            sideCounts,
+            extraCounts,
+            relatedBonus);
     }
 
     private static List<CardModel>? BuildPool(
@@ -492,23 +539,273 @@ public static class YgoCardPackGenerator
         CardModel model,
         List<CardModel> chosenSoFar,
         Dictionary<ModelId, int> trunkCounts,
-        Dictionary<ModelId, int> relatedBonus)
-    {
-        const int baseWeight = 20;
-        float w = baseWeight * GetPackWeightMultiplier(model);
-        w -= 2 * trunkCounts.GetValueOrDefault(model.Id, 0);
-        w = Math.Max(1f, w);
-        w += relatedBonus.GetValueOrDefault(model.Id, 0);
-
-        int copiesInPack = chosenSoFar.Count(c => c.Id == model.Id);
-        if (copiesInPack > 0)
-            w /= MathF.Pow(3f, copiesInPack);
-
-        return Math.Max(1f, w);
-    }
+        Dictionary<ModelId, int> deckCounts,
+        Dictionary<ModelId, int> sideCounts,
+        Dictionary<ModelId, int> extraCounts,
+        Dictionary<ModelId, int> relatedBonus) =>
+        ComputePackSlotWeightDetail(model, chosenSoFar, trunkCounts, deckCounts, sideCounts, extraCounts, relatedBonus)
+            .FinalWeight;
 
     private static float GetPackWeightMultiplier(CardModel model) =>
         model is YgoDuelistCard y ? y.AdjustedPackWeightMultiplier : 1f;
+
+    private readonly record struct PackSlotWeightDetail(
+        float PackWeightMultiplier,
+        float AfterPackMultiplier,
+        float UnwantedFatigueMult,
+        float DuplicateFatigueMult,
+        int TrunkCopies,
+        int DeckCopies,
+        int SideCopies,
+        int ExtraCopies,
+        float TrunkFlatPenalty,
+        float AfterTrunkPenalty,
+        int RelatedBonus,
+        int CopiesInPack,
+        float InPackDupeDivisor,
+        float FinalWeight);
+
+    private static PackSlotWeightDetail ComputePackSlotWeightDetail(
+        CardModel model,
+        List<CardModel> chosenSoFar,
+        Dictionary<ModelId, int> trunkCounts,
+        Dictionary<ModelId, int> deckCounts,
+        Dictionary<ModelId, int> sideCounts,
+        Dictionary<ModelId, int> extraCounts,
+        Dictionary<ModelId, int> relatedBonus)
+    {
+        const int baseWeight = 20;
+        float packMult = GetPackWeightMultiplier(model);
+        float w = baseWeight * packMult;
+
+        int trunk = trunkCounts.GetValueOrDefault(model.Id, 0);
+        int deck = deckCounts.GetValueOrDefault(model.Id, 0);
+        int side = sideCounts.GetValueOrDefault(model.Id, 0);
+        int extra = extraCounts.GetValueOrDefault(model.Id, 0);
+
+        float unwantedMult = 1f;
+        float duplicateMult = 1f;
+        if (model is YgoDuelistCard y)
+        {
+            if (trunk > 0 && deck == 0 && side == 0 && extra == 0)
+                unwantedMult = y.UnwantedFatigue;
+            if (trunk > 0 || deck > 0 || side > 0 || extra > 0)
+                duplicateMult = y.DuplicateFatigue;
+        }
+
+        w *= unwantedMult * duplicateMult;
+        float trunkPenalty = 2f * trunk;
+        w -= trunkPenalty;
+        w = Math.Max(1f, w);
+        int rel = relatedBonus.GetValueOrDefault(model.Id, 0);
+        w += rel;
+
+        int copiesInPack = chosenSoFar.Count(c => c.Id == model.Id);
+        float inPackDivisor = 1f;
+        if (copiesInPack > 0)
+        {
+            inPackDivisor = MathF.Pow(3f, copiesInPack);
+            w /= inPackDivisor;
+        }
+
+        return new PackSlotWeightDetail(
+            packMult,
+            baseWeight * packMult,
+            unwantedMult,
+            duplicateMult,
+            trunk,
+            deck,
+            side,
+            extra,
+            trunkPenalty,
+            Math.Max(1f, baseWeight * packMult * unwantedMult * duplicateMult - trunkPenalty),
+            rel,
+            copiesInPack,
+            inPackDivisor,
+            Math.Max(1f, w));
+    }
+
+    private static CardModel WeightedPickForSlot(
+        Rng rng,
+        List<CardModel> pool,
+        YgoCardPackTags tagMask,
+        int packIndex,
+        int slotIndex,
+        CardRarity rarity,
+        bool excludeBundledTagFromPool,
+        List<CardModel> chosenSoFar,
+        Dictionary<ModelId, int> trunkCounts,
+        Dictionary<ModelId, int> deckCounts,
+        Dictionary<ModelId, int> sideCounts,
+        Dictionary<ModelId, int> extraCounts,
+        Dictionary<ModelId, int> relatedBonus)
+    {
+        float roll01 = rng.NextFloat();
+        var rows = new List<(CardModel Card, float Weight, PackSlotWeightDetail Detail)>(pool.Count);
+        foreach (CardModel m in pool)
+        {
+            PackSlotWeightDetail detail = ComputePackSlotWeightDetail(
+                m,
+                chosenSoFar,
+                trunkCounts,
+                deckCounts,
+                sideCounts,
+                extraCounts,
+                relatedBonus);
+            rows.Add((m, Math.Max(1f, detail.FinalWeight), detail));
+        }
+
+        float totalWeight = rows.Sum(r => r.Weight);
+        float pickPoint = roll01 * totalWeight;
+
+        float cumulative = 0f;
+        CardModel? pick = null;
+        float pickBandStart = 0f;
+        float pickBandEnd = 0f;
+        foreach ((CardModel card, float weight, _) in rows)
+        {
+            pickBandStart = cumulative;
+            cumulative += weight;
+            pickBandEnd = cumulative;
+            if (pick == null && pickPoint <= cumulative)
+            {
+                pick = card;
+                break;
+            }
+        }
+
+        pick ??= pool[rng.NextInt(pool.Count)];
+
+        LogPackSlotWeightRoll(
+            tagMask,
+            packIndex,
+            slotIndex,
+            rarity,
+            excludeBundledTagFromPool,
+            roll01,
+            pickPoint,
+            totalWeight,
+            pickBandStart,
+            pickBandEnd,
+            pick,
+            rows);
+
+        return pick;
+    }
+
+    private static void LogPackOwnershipSnapshot(
+        int packIndex,
+        YgoCardPackTags tagMask,
+        Dictionary<ModelId, int> trunkCounts,
+        Dictionary<ModelId, int> deckCounts,
+        Dictionary<ModelId, int> sideCounts,
+        Dictionary<ModelId, int> extraCounts,
+        Dictionary<ModelId, int> relatedBonus)
+    {
+        Log.Info(
+            $"[YgoDuelist][PackGen][Weight] packIndex={packIndex} tagMask={tagMask} ownershipSnapshot " +
+            $"distinctTrunk={trunkCounts.Count} distinctDeck={deckCounts.Count} distinctSide={sideCounts.Count} " +
+            $"distinctExtra={extraCounts.Count} relatedBonusTargets={relatedBonus.Count}");
+    }
+
+    private static void LogPackSlotWeightRoll(
+        YgoCardPackTags tagMask,
+        int packIndex,
+        int slotIndex,
+        CardRarity rarity,
+        bool excludeBundledTagFromPool,
+        float roll01,
+        float pickPoint,
+        float totalWeight,
+        float pickBandStart,
+        float pickBandEnd,
+        CardModel pick,
+        List<(CardModel Card, float Weight, PackSlotWeightDetail Detail)> rows)
+    {
+        float pickShare = totalWeight > 0f ? pickBandEnd - pickBandStart : 0f;
+        float pickPct = totalWeight > 0f ? (pickShare / totalWeight) * 100f : 0f;
+
+        Log.Info(
+            $"[YgoDuelist][PackGen][Weight] packIndex={packIndex} slot={slotIndex} tagMask={tagMask} " +
+            $"rarity={rarity} excludeBundledTagFromPool={excludeBundledTagFromPool} poolSize={rows.Count} " +
+            $"roll01={FmtF(roll01, 6)} pickPoint={FmtF(pickPoint, 2)} totalWeight={FmtF(totalWeight, 2)} " +
+            $"picked={pick.Id.Entry}[{pick.Rarity}] band=[{FmtF(pickBandStart, 2)},{FmtF(pickBandEnd, 2)}] " +
+            $"pickWeight={FmtF(pickShare, 2)} pickChance≈{FmtF(pickPct, 2)}%");
+
+        PackSlotWeightDetail pickedDetail = rows.First(r => r.Card.Id == pick.Id).Detail;
+        Log.Info(
+            $"[YgoDuelist][PackGen][Weight] packIndex={packIndex} slot={slotIndex} pickedBreakdown " +
+            FormatWeightDetailLine(pick.Id.Entry, pickedDetail, isPick: true));
+
+        bool logFullPool = rows.Count <= PackWeightLogFullPoolMax;
+        IEnumerable<(CardModel Card, float Weight, PackSlotWeightDetail Detail)> logRows;
+        if (logFullPool)
+        {
+            logRows = rows;
+        }
+        else
+        {
+            IEnumerable<(CardModel Card, float Weight, PackSlotWeightDetail Detail)> owned = rows.Where(r =>
+                r.Detail.TrunkCopies > 0
+                || r.Detail.DeckCopies > 0
+                || r.Detail.SideCopies > 0
+                || r.Detail.ExtraCopies > 0);
+            logRows = rows
+                .OrderByDescending(r => r.Weight)
+                .Take(PackWeightLogTopEntriesWhenTruncated)
+                .Concat(owned)
+                .DistinctBy(r => r.Card.Id);
+        }
+
+        var sb = new StringBuilder();
+        sb.Append(
+            $"[YgoDuelist][PackGen][Weight] packIndex={packIndex} slot={slotIndex} poolWeights " +
+            $"{(logFullPool ? "FULL" : $"TOP+OWNED (of {rows.Count})")}:");
+        float cum = 0f;
+        foreach ((CardModel card, float weight, PackSlotWeightDetail detail) in logRows.OrderByDescending(r => r.Weight))
+        {
+            float bandLo = cum;
+            cum += weight;
+            float bandHi = cum;
+            bool isPick = card.Id == pick.Id;
+            sb.Append('\n')
+                .Append("  ")
+                .Append(isPick ? ">> " : "   ")
+                .Append(FormatWeightDetailLine(card.Id.Entry, detail, weight, bandLo, bandHi, totalWeight, isPick));
+        }
+
+        Log.Info(sb.ToString());
+    }
+
+    private static string FormatWeightDetailLine(
+        string entry,
+        PackSlotWeightDetail d,
+        bool isPick) =>
+        $"{entry}{(isPick ? " *PICK*" : "")} w={FmtF(d.FinalWeight, 2)} " +
+        $"base20×pwm={FmtF(d.PackWeightMultiplier, 2)}→{FmtF(d.AfterPackMultiplier, 2)} " +
+        $"unwanted×{FmtF(d.UnwantedFatigueMult, 2)} dup×{FmtF(d.DuplicateFatigueMult, 2)} " +
+        $"own T{d.TrunkCopies}/D{d.DeckCopies}/S{d.SideCopies}/E{d.ExtraCopies} " +
+        $"trunk-{FmtF(d.TrunkFlatPenalty, 0)}→{FmtF(d.AfterTrunkPenalty, 2)} rel+{d.RelatedBonus} " +
+        $"inPack÷{FmtF(d.InPackDupeDivisor, 0)}";
+
+    private static string FormatWeightDetailLine(
+        string entry,
+        PackSlotWeightDetail d,
+        float slotWeight,
+        float bandLo,
+        float bandHi,
+        float totalWeight,
+        bool isPick)
+    {
+        float pct = totalWeight > 0f ? (slotWeight / totalWeight) * 100f : 0f;
+        return
+            $"{entry}[{FmtF(slotWeight, 2)} ≈{FmtF(pct, 1)}% band {FmtF(bandLo, 1)}-{FmtF(bandHi, 1)}] " +
+            $"pwm={FmtF(d.PackWeightMultiplier, 2)} unwanted×{FmtF(d.UnwantedFatigueMult, 2)} dup×{FmtF(d.DuplicateFatigueMult, 2)} " +
+            $"own T{d.TrunkCopies}/D{d.DeckCopies}/S{d.SideCopies}/E{d.ExtraCopies} rel+{d.RelatedBonus}";
+    }
+
+    private static string FmtF(float v, int decimals) =>
+        v.ToString($"F{decimals}", CultureInfo.InvariantCulture);
 
     private static Dictionary<ModelId, int> CountIds(IEnumerable<CardModel> cards)
     {

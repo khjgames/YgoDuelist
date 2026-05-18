@@ -63,6 +63,19 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         TrySummonDuelMonster(player, card, ctx, canAttackThisTurn: true, isSpecialSummonRoute: true);
 
     /// <summary>
+    /// Mirrors special-summon gates in <see cref="TrySummonDuelMonster"/> for pile-backed selection grids
+    /// (Monster Reborn, Call of the Haunted, etc.).
+    /// </summary>
+    public static bool IsEligibleSpecialSummonTarget(BaseMonsterCard? card)
+    {
+        if (card == null)
+            return false;
+        if (card.BlocksSpecialDuelMonsterSummon)
+            return false;
+        return card.CanSummonDuelMonster || card.AllowSpecialSummonIgnoringCanSummonDuelMonsterGate;
+    }
+
+    /// <summary>
     /// In co-op, <see cref="Creature.CombatState"/> on a remote peer’s <see cref="Player.Creature"/> can be unset while
     /// that player’s duel pets still hold the live <see cref="CombatState"/>. Summon must use that state so option-pile
     /// special summons (e.g. union fusion) do not fail after materials are already gone on whichever client runs first.

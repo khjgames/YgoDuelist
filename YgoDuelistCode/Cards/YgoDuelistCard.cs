@@ -42,9 +42,20 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
 
     /// <summary>
     /// Multiplier for YGO pack reward weighted picks (<see cref="YgoCardPackGenerator"/>).
-    /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
+    /// Applied to base weight before ownership fatigue, trunk penalty, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
     /// </summary>
     public virtual float PackWeightMultiplier => 1f;
+
+    /// <summary>
+    /// Pack draft weight multiplier when at least one copy is in the trunk and none are in deck, side deck, or extra deck. Default <c>0.85</c>.
+    /// </summary>
+    public virtual float UnwantedFatigue => 0.85f;
+
+    /// <summary>
+    /// Pack draft weight multiplier when at least one copy is owned in trunk, deck, side deck, or extra deck.
+    /// Default <c>0.97</c>; <see cref="BulkBundled"/> cards use <c>0.9</c> so bulk bonus pools skew toward unowned monsters.
+    /// </summary>
+    public virtual float DuplicateFatigue => BulkBundled ? 0.9f : 0.97f;
 
     public virtual float GetPackWeightMultiplierAdjusted(float packWeightBeforeAdjustments)
     {

@@ -70,7 +70,7 @@ public sealed class Endless_Decay : EffectMonsterCard, IMonsterActivatedEffect, 
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     protected override bool IsPlayable =>
-        base.IsPlayable && (!IsHandEffectFormActive || CanResolveHandSpecialSummon(Owner));
+        base.IsPlayable && IsHandEffectFormActive && CanResolveHandSpecialSummon(Owner);
 
     protected override (int atk, int def) GetSecondaryStats()
     {

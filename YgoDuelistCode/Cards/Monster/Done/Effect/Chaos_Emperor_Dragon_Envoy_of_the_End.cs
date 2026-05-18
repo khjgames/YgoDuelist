@@ -72,7 +72,7 @@ public sealed class Chaos_Emperor_Dragon_Envoy_of_the_End : EffectMonsterCard, I
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     protected override bool IsPlayable =>
-        base.IsPlayable && (!IsHandEffectFormActive || CanResolveHandSpecialSummon(Owner));
+        base.IsPlayable && IsHandEffectFormActive && CanResolveHandSpecialSummon(Owner);
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -153,7 +153,12 @@ public abstract class NormalMonsterCard : BaseMonsterCard
                 return false;
 
             if (!CanSummonDuelMonster || Owner == null)
+            {
+                // Cannot normal summon: block attack/defense hand forms; hand-effect form stays gated by subclass IsPlayable.
+                if (Owner != null && SupportsHandEffectForm && !IsHandEffectFormActive)
+                    return false;
                 return true;
+            }
 
             if (YgoStumblingField.IsActive(Owner)
                 && StumblingBlocksHandSummonInAttackPosition

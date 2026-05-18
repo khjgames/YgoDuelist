@@ -24,8 +24,11 @@ public abstract class YgoTokenNormalMonster : NormalMonsterCard, IYgoTokenMonste
         int baseAtk,
         int baseDef,
         int baseMgc,
-        DuelMonsterRace duelMonsterRace)
-        : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace)
+        DuelMonsterRace duelMonsterRace,
+        int? duelMonsterAttackPlayEnergyOverride = null,
+        int? duelMonsterDefensePlayEnergyOverride = null)
+        : base(cost, type, rarity, target, duelMonsterLevel, duelMonsterAttribute, baseAtk, baseDef, baseMgc, duelMonsterRace,
+            duelMonsterAttackPlayEnergyOverride, duelMonsterDefensePlayEnergyOverride)
     {
     }
 

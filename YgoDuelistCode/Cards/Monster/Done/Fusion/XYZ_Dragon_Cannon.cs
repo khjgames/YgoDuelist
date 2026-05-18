@@ -38,6 +38,11 @@ public sealed class Xyz_Dragon_Cannon : FusionMonsterCard
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | base.PackTags | YgoCardPackTags.Bundled;
 
+     /// <summary>
+    /// How likely it is (within its own rarity), to get duplicates of this card after the first (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
+    /// </summary>
+    public override float DuplicateFatigue => 0.75f;
+
     public override Type[] BundledCards => new[] { typeof(Xy_Dragon_Cannon), typeof(Xz_Tank_Cannon), typeof(Yz_Tank_Dragon) };
 
     public override bool CanBeFusionSummoned => false;

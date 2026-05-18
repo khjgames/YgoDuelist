@@ -79,6 +79,7 @@ public static class YgoCombatEndLifecycle
         YgoTotalDefenseShogunDeferredBlock.ClearAll();
         YgoPlayerCombatTurnStamp.ClearAll();
         YgoSoulOfPurityAndLightTurnPulseDedup.ClearAll();
+        YgoSolarFlareDragonTurnPulseDedup.ClearAll();
         YgoSanganNameLock.ClearAll();
         YgoBattleDeathMarkedCards.ClearAll();
         TributeSummonPlayPayload.ClearAll();

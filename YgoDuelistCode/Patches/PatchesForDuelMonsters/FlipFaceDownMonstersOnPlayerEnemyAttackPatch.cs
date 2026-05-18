@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -29,9 +30,6 @@ namespace YgoDuelist.YgoDuelistCode.Patches;
 [HarmonyPatch(typeof(Hook), nameof(Hook.AfterDamageReceived))]
 public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
 {
-    private static readonly LocString ActivateFlipEffectsPrompt =
-        new("cards", "YGODUELIST-FLIP_EFFECT.activate.selection");
-
     private sealed class PendingFlipPromptState
     {
         public readonly List<AbstractMonsterCard> Pending = new();
@@ -115,7 +113,29 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
         if (promptCandidates.Count == 0)
             return;
 
+        // Die For You pets are flipped synchronously in BeforeDamageReceived (lethal spill skips AfterDamageReceived).
+        promptCandidates.RemoveAll(c => IsFaceDownCardOnDieForYouPet(player, c));
+
+        if (promptCandidates.Count == 0)
+            return;
+
         EnqueueFlipPromptCandidates(choiceContext, player, promptCandidates);
+    }
+
+    private static bool IsFaceDownCardOnDieForYouPet(
+        MegaCrit.Sts2.Core.Entities.Players.Player player,
+        AbstractMonsterCard card)
+    {
+        if (player.PlayerCombatState == null || card is not BaseMonsterCard bm)
+            return false;
+
+        foreach (Creature pet in YgoMpCombatOrder.PetsSnapshotOrderedByCombatId(player.PlayerCombatState))
+        {
+            if (pet.HasPower<DieForYouPower>() && DuelMonsterFieldRegistry.HasSourceCard(pet, bm))
+                return true;
+        }
+
+        return false;
     }
 
     private static void EnqueueFlipPromptCandidates(
@@ -187,7 +207,10 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
         state.PromptActive = true;
         try
         {
-            await SelectFlipEffectsToActivateAsync(choiceContext, player, promptCandidates);
+            await FlipFaceDownOnPlayerEnemyAttackHelpers.SelectFlipEffectsToActivateAsync(
+                choiceContext,
+                player,
+                promptCandidates);
         }
         finally
         {
@@ -255,13 +278,79 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             $"[YgoDuelist][MP][FlipFaceDownOnEnemyAttack] flip prompt batch stable timeout ownerNet={playerNetId} lastCount={lastCount}");
     }
 
-    private static async Task SelectFlipEffectsToActivateAsync(
+}
+
+internal static class FlipFaceDownOnPlayerEnemyAttackHelpers
+{
+    private static readonly LocString ActivateFlipEffectsPrompt =
+        new("cards", "YGODUELIST-FLIP_EFFECT.activate.selection");
+
+    /// <summary>
+    /// One Die For You pet: flip (and optional FLIP effect) before spill damage. Called from
+    /// <see cref="DieForYouPowerFlipBeforeBattleDamagePatch"/> on each pet's <see cref="DieForYouPower"/>.
+    /// </summary>
+    public static async Task ResolveDieForYouPetFaceDownFlipBeforeBattleDamageAsync(
+        PlayerChoiceContext choiceContext,
+        Creature pet)
+    {
+        MegaCrit.Sts2.Core.Entities.Players.Player? player = pet.PetOwner;
+        if (player?.PlayerCombatState == null || !pet.HasPower<DieForYouPower>())
+            return;
+
+        if (!TryGetEligibleFaceDownSourceCard(
+                pet,
+                requireAlive: true,
+                requireUsedCommandThisTurn: false,
+                out AbstractMonsterCard? card))
+            return;
+
+        if (card is not IMonsterFlipEffect)
+        {
+            ForceFlipFaceUpWithoutActivatingEffectNow(card, choiceContext);
+            return;
+        }
+
+        bool askPrompt = card is not BaseMonsterCard bm || bm.AskSelectFlip;
+        if (!askPrompt)
+        {
+            await ResolveFlippedFaceUpAndRunFlipEffectAsync(choiceContext, player, card);
+            return;
+        }
+
+        if (!MegaCrit.Sts2.Core.Context.LocalContext.IsMe(player))
+        {
+            Godot.GD.Print(
+                $"[YgoDuelist][MP][FlipDieForYou] skip prompt for non-local owner={player.NetId} petCombat={pet.CombatId} card={card.Id?.Entry}");
+            return;
+        }
+
+        Godot.GD.Print(
+            $"[YgoDuelist][MP][FlipDieForYou] flip prompt before battle damage owner={player.NetId} petCombat={pet.CombatId} card={card.Id?.Entry}");
+
+        await SelectFlipEffectsToActivateAsync(choiceContext, player, new[] { card });
+    }
+
+    private static async Task ResolveFlippedFaceUpAndRunFlipEffectAsync(
+        PlayerChoiceContext choiceContext,
+        MegaCrit.Sts2.Core.Entities.Players.Player player,
+        AbstractMonsterCard card)
+    {
+        if (!ForceFlipFaceUpWithoutActivatingEffectNow(card, choiceContext))
+            return;
+        if (card is not IMonsterFlipEffect flip)
+            return;
+
+        await YgoMonsterFlipEffectRunner.RunFlipEffectAsync(
+            flip,
+            YgoChoiceContexts.Blocking(choiceContext),
+            card);
+    }
+
+    public static async Task SelectFlipEffectsToActivateAsync(
         PlayerChoiceContext choiceContext,
         MegaCrit.Sts2.Core.Entities.Players.Player player,
         IReadOnlyList<AbstractMonsterCard> promptCandidates)
     {
-        // MinSelect=1: NSimpleCardSelectScreen enables Confirm only after at least one row is selected (vanilla
-        // enables Confirm immediately when MinSelect==0). Use Cancel to activate zero flip effects.
         int maxPick = promptCandidates.Count;
         var prefs = new CardSelectorPrefs(ActivateFlipEffectsPrompt, 1, maxPick)
         {
@@ -288,20 +377,20 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
             if (!selectedCard.FaceDown || !selectedCard.IsMutable)
                 continue;
 
-            if (!FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpWithoutActivatingEffectNow(selectedCard, choiceContext))
+            if (!ForceFlipFaceUpWithoutActivatingEffectNow(selectedCard, choiceContext))
             {
                 Godot.GD.PrintErr(
                     $"[YgoDuelist][FlipFaceDownOnEnemyAttack] flip+effect skipped: MarkFlippedFaceUpOnField failed card={selectedCard.Id?.Entry} ownerNet={player.NetId}");
                 continue;
             }
 
-            await YgoMonsterFlipEffectRunner.RunFlipEffectAsync(flip, YgoChoiceContexts.Blocking(choiceContext), selectedCard);
+            await YgoMonsterFlipEffectRunner.RunFlipEffectAsync(
+                flip,
+                YgoChoiceContexts.Blocking(choiceContext),
+                selectedCard);
         }
     }
-}
 
-internal static class FlipFaceDownOnPlayerEnemyAttackHelpers
-{
     public static bool TryGetEligibleFaceDownSourceCard(Creature pet, out AbstractMonsterCard? card)
     {
         return TryGetEligibleFaceDownSourceCard(

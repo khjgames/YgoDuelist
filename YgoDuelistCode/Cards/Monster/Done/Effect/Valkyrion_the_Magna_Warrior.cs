@@ -79,7 +79,7 @@ public sealed class Valkyrion_the_Magna_Warrior : EffectMonsterCard, IMonsterAct
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     protected override bool IsPlayable =>
-        base.IsPlayable && (!IsHandEffectFormActive || CanMeetMagnaHandSpecialSummon(Owner));
+        base.IsPlayable && IsHandEffectFormActive && CanMeetMagnaHandSpecialSummon(Owner);
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

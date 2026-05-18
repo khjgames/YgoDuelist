@@ -36,7 +36,7 @@ public sealed class Time_Wizard : EffectMonsterCard, IMonsterActivatedEffect
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 2,
             duelMonsterAttribute: DuelMonsterAttribute.Light,

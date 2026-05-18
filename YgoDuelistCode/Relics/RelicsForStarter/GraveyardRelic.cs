@@ -74,6 +74,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     {
         YgoCombatEndLifecycle.ResetDedupForNewCombat();
         YgoSoulOfPurityAndLightTurnPulseDedup.ClearAll();
+        YgoSolarFlareDragonTurnPulseDedup.ClearAll();
         SubscribeToGraveyardPile();
         if (Owner != null)
             YgoBrickCardBootstrap.StripBricksFromPlayerCombatPiles(Owner);

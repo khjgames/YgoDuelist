@@ -43,7 +43,7 @@ public static class ReactorSlimeSummonGate
     /// <summary>Compose after rule-specific filters in LINQ so grids mirror <see cref="DuelMonsterSummon.TrySummonDuelMonster"/>.</summary>
     public static Func<TMonster, bool> SummonCandidatePredicate<TMonster>(Player? player)
         where TMonster : BaseMonsterCard =>
-        m => AllowsSummon(player, m);
+        m => AllowsSummon(player, m) && DuelMonsterSummon.IsEligibleSpecialSummonTarget(m);
 
     /// <summary>
     /// True after any non–Divine-Beast duel monster was successfully summoned this turn (normal or special).

@@ -62,8 +62,7 @@ public sealed class Ocean_Dragon_Lord_Neo_Daedalus : EffectMonsterCard, IMonster
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     protected override bool IsPlayable =>
-        base.IsPlayable
-        && (!IsHandEffectFormActive || CanTributeLeviaForHandSummon());
+        base.IsPlayable && IsHandEffectFormActive && CanTributeLeviaForHandSummon();
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

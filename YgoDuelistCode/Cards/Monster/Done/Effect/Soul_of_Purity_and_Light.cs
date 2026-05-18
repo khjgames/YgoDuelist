@@ -70,7 +70,7 @@ public sealed class Soul_of_Purity_and_Light : EffectMonsterCard, IYgoOwnerTurnS
     protected override int MonsterConduitStarCost => IsHandEffectFormActive ? 0 : base.MonsterConduitStarCost;
 
     protected override bool IsPlayable =>
-        base.IsPlayable && (!IsHandEffectFormActive || CanResolveHandSpecialSummon(Owner));
+        base.IsPlayable && IsHandEffectFormActive && CanResolveHandSpecialSummon(Owner);
 
     public bool IsOwnerTurnStartFieldMonsterEffectActive() =>
         Owner != null && !FaceDown && DuelMonsterFieldRegistry.ContainsFieldMonster(Owner, this);
