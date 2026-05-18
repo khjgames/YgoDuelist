@@ -16,14 +16,16 @@ using YgoDuelist.YgoDuelistCode.Services;
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Normal;
 
 /// <summary>
-/// Add 1 Field Spell from your draw or discard pile to your hand (cancelable grid before the spell resolves).
+/// Add 1 Field Spell from your deck to your hand. Upgraded: also search your graveyard.
 /// </summary>
 public sealed class Terraforming : BaseSpellCard, IYgoPrePlayCancelableGridSelection
 {
     public Terraforming()
-        : base(cost: 1, rarity: CardRarity.Common, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
+        : base(cost: 0, rarity: CardRarity.Uncommon, target: TargetType.Self, duelMonsterRace: DuelMonsterRace.SpellNormal)
     {
     }
+
+    public override bool UseAlternateUpgradedDescription => true;
 
     public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Spell | YgoCardPackTags.Draw;
 
@@ -57,7 +59,8 @@ public sealed class Terraforming : BaseSpellCard, IYgoPrePlayCancelableGridSelec
         CardPile? discard = YgoPlayerPiles.Discard(player);
         bool inDraw = draw != null && draw.Cards.Contains(chosen);
         bool inDiscard = discard != null && discard.Cards.Contains(chosen);
-        if (!inDraw && !inDiscard)
+        bool inGraveyard = IsUpgraded && YgoPlayerPiles.GraveyardContains(player, chosen);
+        if (!inDraw && !inDiscard && !inGraveyard)
             return;
 
         CardPile? hand = YgoPlayerPiles.Hand(player);
@@ -77,7 +80,7 @@ public sealed class Terraforming : BaseSpellCard, IYgoPrePlayCancelableGridSelec
         EnergyCost.UpgradeBy(-1);
     }
 
-    private static List<BaseFieldSpellCard> BuildFieldSpellCandidates(Player player)
+    private List<BaseFieldSpellCard> BuildFieldSpellCandidates(Player player)
     {
         var list = new List<BaseFieldSpellCard>();
 
@@ -98,6 +101,19 @@ public sealed class Terraforming : BaseSpellCard, IYgoPrePlayCancelableGridSelec
             {
                 if (c is BaseFieldSpellCard fs)
                     list.Add(fs);
+            }
+        }
+
+        if (IsUpgradedOrPreviewActive)
+        {
+            CardPile? graveyard = YgoPlayerPiles.Graveyard(player);
+            if (graveyard != null)
+            {
+                foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(graveyard.Cards))
+                {
+                    if (c is BaseFieldSpellCard fs)
+                        list.Add(fs);
+                }
             }
         }
 

@@ -721,6 +721,9 @@ public static class NetFullCombatStateYgoChecksumPatch
             string oxFp = EnragedBattleOxService.FormatOxAuraChecksumFingerprint(runState);
             if (oxFp.Length > 0)
                 GD.PrintErr(oxFp);
+            string rageFp = DragonRageService.FormatDragonRageChecksumFingerprint(runState);
+            if (rageFp.Length > 0)
+                GD.PrintErr(rageFp);
         }
     }
 
@@ -755,6 +758,9 @@ public static class NetFullCombatStateYgoChecksumPatch
             string oxFp = EnragedBattleOxService.FormatOxAuraChecksumFingerprint(runState);
             if (oxFp.Length > 0)
                 GD.PrintErr(oxFp);
+            string rageFp = DragonRageService.FormatDragonRageChecksumFingerprint(runState);
+            if (rageFp.Length > 0)
+                GD.PrintErr(rageFp);
         }
     }
 

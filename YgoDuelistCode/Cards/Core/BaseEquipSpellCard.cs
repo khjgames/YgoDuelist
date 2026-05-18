@@ -65,6 +65,12 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
 
     public abstract StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped);
 
+    /// <summary>Field-wide stat change from this face-up equip (e.g. Lightning Blade WATER penalty).</summary>
+    public virtual StatEffectTotal GetGlobalFieldStatEffect(BaseMonsterCard target) => StatEffectTotal.None;
+
+    /// <summary>Minimum attack portion count while this equip is attached (Twin Swords → 2).</summary>
+    public virtual int GetEquipMinimumAttackPortionCount(BaseMonsterCard equipped) => 0;
+
     /// <summary>Extra discount applied only when the equipped monster pays attack-stance / Command Attack energy.</summary>
     public virtual int GetEquipAttackPlayEnergyDiscount(BaseMonsterCard equipped) => 0;
 
@@ -169,6 +175,11 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
 
     /// <summary>Invoked after <see cref="YgoEquipSpellRegistry.Attach"/> binds this equip to a field monster.</summary>
     protected internal virtual void OnAfterAttachedToFieldMonster(BaseMonsterCard equippedMonster)
+    {
+    }
+
+    /// <summary>Invoked after <see cref="YgoEquipSpellRegistry.Detach"/> removes this equip from a field monster.</summary>
+    protected internal virtual void OnAfterDetachedFromFieldMonster(BaseMonsterCard equippedMonster)
     {
     }
 }

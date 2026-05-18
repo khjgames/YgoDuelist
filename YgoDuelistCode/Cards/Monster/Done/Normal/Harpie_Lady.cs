@@ -27,6 +27,8 @@ public sealed class Harpie_Lady : NormalMonsterCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.Wind |
         YgoCardPackTags.Normal;
 
+    public override YgoCardArchetype CardArchetypes => YgoCardArchetype.HarpieLady;
+
     // You will always see bundled cards when RNG rolls this card, but not the other way around.
     //public override Type[] BundledCards => new[]
     //{

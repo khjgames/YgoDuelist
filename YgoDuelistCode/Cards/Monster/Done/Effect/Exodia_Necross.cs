@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -14,6 +15,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
@@ -21,6 +23,11 @@ public sealed class Exodia_Necross : EffectMonsterCard, IYgoTurnStartAtkGrowthFr
 {
     private static readonly CardKeyword UnyieldingKeyword = (CardKeyword)20062;
     private static readonly CardKeyword MagicProtectionKeyword = (CardKeyword)20063;
+    private const int UnyieldingStacks = 3;
+    private const int UnyieldingStacksUpgraded = 5;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        base.CanonicalVars.Concat(new[] { new DynamicVar("Uyd", UnyieldingStacks) });
 
     public Exodia_Necross()
         : base(
@@ -67,8 +74,7 @@ public sealed class Exodia_Necross : EffectMonsterCard, IYgoTurnStartAtkGrowthFr
     protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
     {
         await base.OnSummoned(player, choiceContext, duelMonsterPet);
-        decimal unyielding = IsUpgradedOrPreviewActive ? 5m : 3m;
-        await YgoDuelMonsterProtectionSummon.ApplyUnyieldingAsync(player, duelMonsterPet, unyielding);
+        await YgoDuelMonsterProtectionSummon.ApplyUnyieldingAsync(player, duelMonsterPet, DynamicVars["Uyd"].BaseValue);
         await YgoDuelMonsterProtectionSummon.ApplyMagicProtectionAsync(player, duelMonsterPet);
     }
 
@@ -86,5 +92,6 @@ public sealed class Exodia_Necross : EffectMonsterCard, IYgoTurnStartAtkGrowthFr
     {
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 6m;
+        DynamicVars["Uyd"].BaseValue = UnyieldingStacksUpgraded;
     }
 }

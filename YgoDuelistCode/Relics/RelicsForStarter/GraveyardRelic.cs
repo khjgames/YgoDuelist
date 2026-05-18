@@ -229,7 +229,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         Player? atkOwner = command.Attacker.Player;
         Player? atkPlayer = atkOwner;
 
-        bool portionSalvo = monster.AttackPortionCount >= 2 && YgoPortionedSalvo.IsMonsterSalvoFor(monster);
+        bool portionSalvo = monster.GetResolvedAttackPortionCount() >= 2 && YgoPortionedSalvo.IsMonsterSalvoFor(monster);
         bool skipClearAndOpening = portionSalvo && YgoPortionedSalvo.IsMidMonsterSalvoPastFirstChunk(monster);
 
         if (!_splinterChainRunning && !skipClearAndOpening)
@@ -264,6 +264,8 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         bool splinter = monster.AttackDealsSplinterDamage;
         if (!splinter)
             splinter = EnragedBattleOxService.AttackGetsSplinterFromOxAura(monster, atkOwner);
+        if (!splinter)
+            splinter = DragonRageService.AttackGetsSplinterFromDragonRageAura(monster, atkOwner);
         if (!splinter)
         {
             foreach (var eq in YgoEquipSpellRegistry.GetEquipsForMonster(monster))

@@ -10,6 +10,7 @@ using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Services;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Equip;
 
@@ -17,6 +18,11 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Equip;
 public sealed class Mist_Body : BaseEquipSpellCard
 {
     private static readonly CardKeyword UnyieldingKeyword = (CardKeyword)20062;
+    private const int PrintedStacks = 3;
+    private const int PrintedStacksUpgraded = 5;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new[] { new DynamicVar("Mgc", PrintedStacks) };
 
     public Mist_Body()
         : base(cost: 1, rarity: CardRarity.Uncommon, target: TargetType.Self)
@@ -52,5 +58,9 @@ public sealed class Mist_Body : BaseEquipSpellCard
         await YgoDuelMonsterProtectionSummon.ApplyUnyieldingAsync(player, pet, stacks);
     }
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+        DynamicVars["Mgc"].BaseValue = PrintedStacksUpgraded;
+    }
 }

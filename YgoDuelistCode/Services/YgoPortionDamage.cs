@@ -23,7 +23,7 @@ public static class YgoPortionDamage
         int attackTotal,
         string hitFx)
     {
-        int n = monster.AttackPortionCount;
+        int n = monster.GetResolvedAttackPortionCount();
         if (n < 2)
             return await SingleMonsterAttackAsync(choiceContext, monster, target, attackTotal, hitFx);
 

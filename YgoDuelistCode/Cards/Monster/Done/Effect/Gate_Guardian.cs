@@ -35,8 +35,8 @@ public sealed class Gate_Guardian : EffectMonsterCard, IYgoNamedTripleTributeSum
             baseDef: 34,
             baseMgc: 3,
             duelMonsterRace: DuelMonsterRace.Warrior,
-            duelMonsterAttackPlayEnergyOverride: 0,
-            duelMonsterDefensePlayEnergyOverride: 0)
+            duelMonsterAttackPlayEnergyOverride: 1,
+            duelMonsterDefensePlayEnergyOverride: 1)
     {
     }
 

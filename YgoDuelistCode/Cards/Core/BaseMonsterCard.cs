@@ -208,6 +208,23 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// </summary>
     public virtual int AttackPortionCount => 0;
 
+    /// <summary>Printed portions plus equip bonuses (e.g. Twin Swords of Flashing Light - Tryce).</summary>
+    public int GetResolvedAttackPortionCount()
+    {
+        int portions = AttackPortionCount;
+        if (IsCanonical || Owner == null)
+            return portions;
+
+        foreach (BaseEquipSpellCard equip in YgoEquipSpellRegistry.GetEquipsForMonster(this))
+        {
+            if (equip.Pile?.Type != SpellTrapZonePile.CustomType || equip.FaceDown)
+                continue;
+            portions = System.Math.Max(portions, equip.GetEquipMinimumAttackPortionCount(this));
+        }
+
+        return portions;
+    }
+
     /// <summary>Splinter (YGO piercing): after unblocked damage on an enemy, a decaying chain splashes other enemies (see <see cref="Relics.GraveyardRelic"/>).</summary>
     public virtual bool AttackDealsSplinterDamage => false;
 
@@ -226,13 +243,15 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
 
     /// <inheritdoc cref="YgoDuelistCard.CardShowsSplinterKeyword" />
     public override bool CardShowsSplinterKeyword =>
-        AttackDealsSplinterDamage || EnragedBattleOxService.MonsterCardShowsSplinterFromOx(this);
+        AttackDealsSplinterDamage
+        || EnragedBattleOxService.MonsterCardShowsSplinterFromOx(this)
+        || DragonRageService.MonsterCardShowsSplinterFromDragonRage(this);
 
     /// <inheritdoc cref="YgoDuelistCard.CardShowsBlightKeyword" />
     public override bool CardShowsBlightKeyword => AttackDealsBlightedDamage;
 
     /// <inheritdoc cref="YgoDuelistCard.CardShowsPortionKeyword" />
-    public override bool CardShowsPortionKeyword => AttackPortionCount >= 2;
+    public override bool CardShowsPortionKeyword => GetResolvedAttackPortionCount() >= 2;
 
     /// <summary>
     /// When true, Command Attack and Command Defend each use a separate once-per-turn allowance; stiff/fatigue applies after both are used.
@@ -639,6 +658,13 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
                 StatEffectTotal ee = equip.GetEquipStatEffect(this);
                 atk += ee.BonusAtk;
                 def += ee.BonusDef;
+            }
+
+            foreach (BaseEquipSpellCard equip in YgoEquipSpellFieldStats.GetOwnerFaceUpEquipsInZone(Owner))
+            {
+                StatEffectTotal ge = equip.GetGlobalFieldStatEffect(this);
+                atk += ge.BonusAtk;
+                def += ge.BonusDef;
             }
 
             foreach (BaseContinuousSpellCard continuous in YgoFieldSpellStatAggregator.GetActiveFaceUpContinuousSpells(Owner))

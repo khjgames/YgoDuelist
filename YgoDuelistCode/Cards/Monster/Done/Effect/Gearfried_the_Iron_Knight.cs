@@ -19,7 +19,7 @@ public sealed class Gearfried_the_Iron_Knight : EffectMonsterCard
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
             baseAtk: 18,
             baseDef: 16,
-            baseMgc: 1,
+            baseMgc: 2,
             duelMonsterRace: DuelMonsterRace.Warrior)
     {
     }
@@ -33,6 +33,6 @@ public sealed class Gearfried_the_Iron_Knight : EffectMonsterCard
     protected override void OnUpgrade()
     {
         base.OnUpgrade();
-        DynamicVars["Mgc"].BaseValue = 2m;
+        DynamicVars["Mgc"].BaseValue = 3m;
     }
 }

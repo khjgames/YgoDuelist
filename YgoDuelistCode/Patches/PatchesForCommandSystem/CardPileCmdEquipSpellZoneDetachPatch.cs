@@ -71,6 +71,11 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
                     TaskHelper.RunSafely(YgoUnionLimboDestroyed.AfterEquipArrivedInGraveyardFromZoneAsync(unionPl, eq, limboMon));
                 }
 
+                if (toGraveyard && eq.Owner is Player gyOwner && eq is IYgoEquipSentFromSpellTrapZoneToGraveyard gyHook)
+                {
+                    TaskHelper.RunSafely(gyHook.OnSentFromSpellTrapZoneToGraveyardAsync(gyOwner));
+                }
+
                 continue;
             }
 
@@ -100,6 +105,9 @@ public static class CardPileCmdEquipSpellZoneDetachPatch
                         owner,
                         card));
             }
+
+            if (from == SpellTrapZonePile.CustomType && newPile.Type != SpellTrapZonePile.CustomType && card.Owner != null)
+                TaskHelper.RunSafely(DragonRageService.SyncPlayerPowerAsync(card.Owner));
         }
     }
 }

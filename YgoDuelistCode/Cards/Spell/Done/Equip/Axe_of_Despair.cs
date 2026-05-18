@@ -18,7 +18,7 @@ public sealed class Axe_of_Despair : BaseEquipSpellCard
         new[] { new DynamicVar("Mgc", (decimal)PrintedAtkBonus) };
 
     public Axe_of_Despair()
-        : base(cost: 1, rarity: CardRarity.Rare, target: TargetType.Self)
+        : base(cost: 2, rarity: CardRarity.Uncommon, target: TargetType.Self)
     {
     }
     // Dictates the card pack tags this card will be included in.

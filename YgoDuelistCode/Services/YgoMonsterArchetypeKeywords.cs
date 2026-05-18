@@ -22,6 +22,9 @@ public static class YgoMonsterArchetypeKeywords
     /// <summary>Hover title: <c>Blue-Eyes White Dragon</c>.</summary>
     public static readonly CardKeyword BlueEyesWhiteDragonArchetypeKeyword = (CardKeyword)20055;
 
+    /// <summary>Hover title: <c>Harpie Lady</c>.</summary>
+    public static readonly CardKeyword HarpieLadyArchetypeKeyword = (CardKeyword)20066;
+
     /// <summary>Types that receive <see cref="DarkMagicianArchetypeKeyword"/> (spell previews, tooling).</summary>
     public static IReadOnlyList<Type> DarkMagicianArchetypeMonsterTypes =>
         FilterMonsterTypes(YgoCardArchetypeRegistry.GetStrictArchetypeTypes(YgoCardArchetype.DarkMagician));
@@ -29,6 +32,9 @@ public static class YgoMonsterArchetypeKeywords
     /// <summary>Types that receive <see cref="BlueEyesWhiteDragonArchetypeKeyword"/>.</summary>
     public static IReadOnlyList<Type> BlueEyesWhiteDragonArchetypeMonsterTypes =>
         FilterMonsterTypes(YgoCardArchetypeRegistry.GetStrictArchetypeTypes(YgoCardArchetype.BlueEyesWhiteDragon));
+
+    public static IReadOnlyList<Type> HarpieLadyArchetypeMonsterTypes =>
+        FilterMonsterTypes(YgoCardArchetypeRegistry.GetStrictArchetypeTypes(YgoCardArchetype.HarpieLady));
 
     /// <summary>Keywords applied to this monster type for UI and <see cref="CardModel.Keywords"/> checks.</summary>
     public static IEnumerable<CardKeyword> KeywordsForMonsterType(Type monsterType)
@@ -47,6 +53,15 @@ public static class YgoMonsterArchetypeKeywords
             if (t == monsterType && typeof(BaseMonsterCard).IsAssignableFrom(t))
             {
                 yield return BlueEyesWhiteDragonArchetypeKeyword;
+                yield break;
+            }
+        }
+
+        foreach (Type t in YgoCardArchetypeRegistry.GetStrictArchetypeTypes(YgoCardArchetype.HarpieLady))
+        {
+            if (t == monsterType && typeof(BaseMonsterCard).IsAssignableFrom(t))
+            {
+                yield return HarpieLadyArchetypeKeyword;
                 yield break;
             }
         }
@@ -77,6 +92,9 @@ public static class YgoMonsterArchetypeKeywords
 
     public static bool IsFaceUpBlueEyesWhiteDragonArchetype(BaseMonsterCard? m) =>
         m is { FaceDown: false } && HasKeyword(m, BlueEyesWhiteDragonArchetypeKeyword);
+
+    public static bool IsFaceUpHarpieLadyArchetype(BaseMonsterCard? m) =>
+        m is { FaceDown: false } && HasKeyword(m, HarpieLadyArchetypeKeyword);
 
     /// <summary>
     /// Spell / trap availability: true when the owner has a <b>living</b> duel monster pet whose source field card is a

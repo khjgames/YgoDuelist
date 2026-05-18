@@ -26,7 +26,7 @@ public sealed class Woodland_Sprite : EffectMonsterCard, IMonsterActivatedEffect
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Rare,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 3,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,

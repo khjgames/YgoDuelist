@@ -64,6 +64,8 @@ public static class YgoEquipSpellRegistry
             if (list.Count == 0)
                 ByMonster.Remove(monster);
         }
+
+        equip.OnAfterDetachedFromFieldMonster(monster);
     }
 
     public static IReadOnlyList<BaseEquipSpellCard> GetEquipsForMonster(BaseMonsterCard? monster)

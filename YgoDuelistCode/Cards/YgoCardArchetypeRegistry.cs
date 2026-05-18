@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
+using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
@@ -269,12 +270,14 @@ public static class YgoCardArchetypeRegistry
     private static readonly Type[] s_harpieLady =
     [
         typeof(Harpie_Lady),
-        //typeof(Cyber_Harpie_Lady),
-        //typeof(Harpie_Lady_Sisters),
-        //typeof(Harpie_S_Pet_Dragon),
-        //typeof(Birdface),
-        //typeof(Elegant_Egotist),
-        //typeof(Harpie_S_Feather_Duster),
+    ];
+
+    private static readonly Type[] s_harpieLadyRelated =
+    [
+        typeof(Harpie_Lady),
+        typeof(Harpie_S_Pet_Dragon),
+        typeof(Birdface),
+        typeof(Cyber_Shield),
     ];
 
     private static readonly Type[] s_coinflip =
@@ -283,6 +286,7 @@ public static class YgoCardArchetypeRegistry
         //typeof(Second_Coin_Toss),
         typeof(Jirai_Gumo),
         typeof(Copycat),
+        typeof(Slot_Machine),
         typeof(Heads),
         typeof(Tails),
     ];
@@ -334,6 +338,7 @@ public static class YgoCardArchetypeRegistry
         typeof(Dark_Driceratops),
         typeof(Dragon_Nails),
         typeof(Enraged_Battle_Ox),
+        typeof(Dragon_s_Rage),
         typeof(Exarion_Universe),
         typeof(Gravekeeper_s_Spear_Soldier),
         typeof(Insect_Armor_with_Laser_Cannon),
@@ -502,7 +507,7 @@ public static class YgoCardArchetypeRegistry
         [YgoCardArchetype.RockBoost] = s_rockBoost,
         [YgoCardArchetype.SpellCounter] = s_spellCounter,
         [YgoCardArchetype.RedEyesBlackDragon] = s_redEyesBlackDragon,
-        [YgoCardArchetype.HarpieLady] = s_harpieLady,
+        [YgoCardArchetype.HarpieLady] = s_harpieLadyRelated,
         [YgoCardArchetype.Coinflip] = s_coinflip,
         [YgoCardArchetype.Diceroll] = s_diceroll,
         [YgoCardArchetype.Blight] = s_blight,
@@ -553,6 +558,7 @@ public static class YgoCardArchetypeRegistry
         {
             YgoCardArchetype.BlueEyesWhiteDragon => s_blueEyes,
             YgoCardArchetype.DarkMagician => s_darkMagician,
+            YgoCardArchetype.HarpieLady => s_harpieLady,
             _ => GetTypes(archetype),
         };
 

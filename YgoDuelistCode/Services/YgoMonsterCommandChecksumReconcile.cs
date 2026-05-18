@@ -44,5 +44,6 @@ public static class YgoMonsterCommandChecksumReconcile
         }
 
         EnragedBattleOxService.ReconcileForChecksum(runState);
+        DragonRageService.ReconcileForChecksum(runState);
     }
 }

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
@@ -15,6 +17,11 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 public sealed class Spirit_Reaper : EffectMonsterCard
 {
     private static readonly CardKeyword UnyieldingKeyword = (CardKeyword)20062;
+    private const int UnyieldingStacks = 3;
+    private const int UnyieldingStacksUpgraded = 4;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        base.CanonicalVars.Concat(new[] { new DynamicVar("Uyd", UnyieldingStacks) });
 
     public Spirit_Reaper()
         : base(
@@ -51,7 +58,13 @@ public sealed class Spirit_Reaper : EffectMonsterCard
         Creature duelMonsterPet)
     {
         await base.OnSummoned(player, choiceContext, duelMonsterPet);
-        decimal stacks = IsUpgradedOrPreviewActive ? 4m : 3m;
-        await YgoDuelMonsterProtectionSummon.ApplyUnyieldingAsync(player, duelMonsterPet, stacks);
+        await YgoDuelMonsterProtectionSummon.ApplyUnyieldingAsync(
+            player, duelMonsterPet, DynamicVars["Uyd"].BaseValue);
+    }
+
+    protected override void OnUpgrade()
+    {
+        base.OnUpgrade();
+        DynamicVars["Uyd"].BaseValue = UnyieldingStacksUpgraded;
     }
 }
