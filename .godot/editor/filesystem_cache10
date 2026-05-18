@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1779089420
+::res://::1779091300
 export_presets.cfg::TextFile::-1::1773513087::0::1::::<><><>0<>0<><>::
 MainFile.cs::CSharpScript::4205972269297282253::1776474881::0::1::::<><><>0<>0<><>::
 monster_no_packtags.txt::TextFile::-1::1777848354::0::1::::<><><>0<>0<><>::
@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1779089420::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1779090467
-YgoDuelist.deps.json::JSON::-1::1779089874::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1779091403
+YgoDuelist.deps.json::JSON::-1::1779091403::0::1::::<><><>0<>0<><>::
 ::res://docs/::1777429907
 card_database_import.schema.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1777848353::0::1::::<><><>0<>0<><>::
@@ -70,7 +70,7 @@ multiplayer_hand_ygoduelist-ygo_duelist_scissors.png::CompressedTexture2D::14561
 project.assets.json::JSON::-1::1775024285::0::1::::<><><>0<>0<><>::
 YgoDuelist.csproj.nuget.dgspec.json::JSON::-1::1775024286::0::1::::<><><>0<>0<><>::
 ::res://packages/::1773520347
-::res://packages/alchyr.sts2.baselib/::1778645985
+::res://packages/alchyr.sts2.baselib/::1779091302
 ::res://packages/alchyr.sts2.baselib/0.1.2/::1773513134
 README.md::TextFile::-1::1773438254::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.baselib/0.1.2/Content/::1773513134
@@ -169,6 +169,13 @@ BaseLib.json::JSON::-1::1778207268::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.baselib/3.1.2/lib/::1778645986
 ::res://packages/alchyr.sts2.baselib/3.1.2/lib/net9.0/::1778645986
 BaseLib.xml::TextFile::-1::1778207554::0::1::::<><><>0<>0<><>::
+::res://packages/alchyr.sts2.baselib/3.1.3/::1779091302
+README.md::TextFile::-1::1775288080::0::1::::<><><>0<>0<><>::
+::res://packages/alchyr.sts2.baselib/3.1.3/Content/::1779091302
+BaseLib.json::JSON::-1::1778670558::0::1::::<><><>0<>0<><>::
+::res://packages/alchyr.sts2.baselib/3.1.3/lib/::1779091302
+::res://packages/alchyr.sts2.baselib/3.1.3/lib/net9.0/::1779091302
+BaseLib.xml::TextFile::-1::1778670562::0::1::::<><><>0<>0<><>::
 ::res://packages/alchyr.sts2.modanalyzers/::1776066409
 ::res://packages/alchyr.sts2.modanalyzers/0.0.9/::1773513134
 README.md::TextFile::-1::1773084058::0::1::::<><><>0<>0<><>::
