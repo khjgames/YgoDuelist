@@ -140,6 +140,8 @@ public enum YgoCardArchetype : ulong
     GenericSingleMonsterTempStatBoost = 1UL << 44,
     /// <summary>Energy discounts, surcharges, or summon cost modifiers.</summary>
     Energy = 1UL << 45,
+    /// <summary>Spirit Monster family (return to hand at turn end while face-up).</summary>
+    SpiritMonster = 1UL << 46,
 }
 
 /// <summary>How a single fusion material slot accepts materials: exact named card, requirement filter only, or either.</summary>

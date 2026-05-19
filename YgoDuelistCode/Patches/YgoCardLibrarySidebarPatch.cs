@@ -101,6 +101,7 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
         AppendAttributeCategory(inner, __instance, filterState);
         AppendRaceCategory(inner, __instance, filterState);
         AppendPackTagCategory(inner, __instance, filterState);
+        AppendArchetypeCategory(inner, __instance, filterState);
         YgoCardLibrarySidebarFilterRegistry.States.Add(__instance, filterState);
 
         inner.AddChild(alphabetSorter);
@@ -415,6 +416,43 @@ public static class YgoCardLibraryScrollAndPackTagsReadyPatch
             string hoverKey = $"PACK_TAG_FILTER_{tag}";
             var gui = AddToggle(tag.ToString(), new LocString("static_hover_tips", hoverKey));
             state.FlagToggles.Add((tag, gui));
+        }
+
+    }
+
+    static void AppendArchetypeCategory(
+        VBoxContainer inner,
+        NCardLibrary library,
+        YgoCardLibrarySidebarFilterState root)
+    {
+        YgoCardLibraryArchetypeFilterState state = root.Archetypes;
+        var cat = new CardLibraryFilterSortingRuleCategoryGUI { Name = "YgoArchetypesModule" };
+        cat.Setup("Archetypes", () => YgoCardLibraryNCardLibraryInvoker.RequestDisplayCards(library));
+        state.SortButton = cat.SortButton;
+        inner.AddChild(cat);
+
+        void Dirty() => YgoCardLibraryNCardLibraryInvoker.RequestUpdateFilter(library);
+
+        CardLibraryFilterSortingRuleCategoryFilterToggleGUI AddToggle(string label, LocString hoverLoc)
+        {
+            var gui = CardLibraryFilterSortingRuleCategoryFilterToggleGUI.Create(
+                CardLibraryFilterToggleStyle.Rarity,
+                label,
+                null,
+                hoverLoc,
+                quadStatePackTag: true);
+            gui.ConnectChanged(Dirty);
+            cat.ToggleColumn.AddChild(gui.Root);
+            return gui;
+        }
+
+        state.NoneToggle = AddToggle("None", new LocString("static_hover_tips", "ARCHETYPE_FILTER_NONE"));
+
+        foreach (YgoCardArchetype archetype in YgoCardLibraryArchetypeSidebarLabels.SidebarOrder())
+        {
+            string label = YgoCardLibraryArchetypeSidebarLabels.TickboxLabel(archetype);
+            var gui = AddToggle(label, new LocString("static_hover_tips", "ARCHETYPE_FILTER_ROW"));
+            state.FlagToggles.Add((archetype, gui));
         }
 
         var spacer = new Control { CustomMinimumSize = new Vector2(0, 18) };

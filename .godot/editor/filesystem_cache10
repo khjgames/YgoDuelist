@@ -9,8 +9,8 @@ YgoDuelist.json::JSON::-1::1779089420::0::1::::<><><>0<>0<><>::
 ::res://bin/::1773513922
 ::res://bin/ExportRelease/::1773513922
 ::res://bin/ExportRelease/net9.0/::1773513922
-::res://bin/ExportRelease/net9.0/publish/::1779196638
-YgoDuelist.deps.json::JSON::-1::1779196638::0::1::::<><><>0<>0<><>::
+::res://bin/ExportRelease/net9.0/publish/::1779281042
+YgoDuelist.deps.json::JSON::-1::1779281042::0::1::::<><><>0<>0<><>::
 ::res://docs/::1777429907
 card_database_import.schema.json::JSON::-1::1775731862::0::1::::<><><>0<>0<><>::
 card_inventory_data.json::JSON::-1::1777848353::0::1::::<><><>0<>0<><>::
@@ -2600,7 +2600,7 @@ character_icon_ygoduelist-ygo_duelist_outline.png::CompressedTexture2D::11381576
 ::res://YgoDuelist/localization/::1773513086
 ::res://YgoDuelist/localization/eng/::1779089423
 ancients.json::JSON::-1::1773592011::0::1::::<><><>0<>0<><>::
-cards.json::JSON::-1::1779196470::0::1::::<><><>0<>0<><>::
+cards.json::JSON::-1::1779206295::0::1::::<><><>0<>0<><>::
 card_keywords.json::JSON::-1::1779194971::0::1::::<><><>0<>0<><>::
 characters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 combat_messages.json::JSON::-1::1777343874::0::1::::<><><>0<>0<><>::
@@ -2608,7 +2608,7 @@ monsters.json::JSON::-1::1773589494::0::1::::<><><>0<>0<><>::
 powers.json::JSON::-1::1779196476::0::1::::<><><>0<>0<><>::
 relics.json::JSON::-1::1776106970::0::1::::<><><>0<>0<><>::
 rest_site_ui.json::JSON::-1::1775731858::0::1::::<><><>0<>0<><>::
-static_hover_tips.json::JSON::-1::1777858398::0::1::::<><><>0<>0<><>::
+static_hover_tips.json::JSON::-1::1779197043::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelist/monsters/::1773589494
 ::res://YgoDuelist/monsters/duel_monster/::1775731858
 duel_monster.tscn::PackedScene::-1::1776468398::0::1::::<><><>0<>0<><>::
@@ -2638,8 +2638,8 @@ services-underscore-is.txt::TextFile::-1::1776406760::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/::1779089423
 IYgoTokenMonster.cs::CSharpScript::5322724661985871427::1777424062::0::1::::<><><>0<>0<><>::
 RitualArchetypeMeta.cs::CSharpScript::8503929562558895497::1777424062::0::1::::<><><>0<>0<><>::
-YgoCardArchetypeRegistry.cs::CSharpScript::4412358389309975768::1779089423::0::1::::<><><>0<>0<><>::
-YgoCardTypes.cs::CSharpScript::8470661758287105871::1779089420::0::1::::<><><>0<>0<><>::
+YgoCardArchetypeRegistry.cs::CSharpScript::4412358389309975768::1779197001::0::1::::<><><>0<>0<><>::
+YgoCardTypes.cs::CSharpScript::8470661758287105871::1779196991::0::1::::<><><>0<>0<><>::
 YgoCycleKeywordPileHelper.cs::CSharpScript::5117249336157152713::1775731861::0::1::::<><><>0<>0<><>::
 YgoDuelistCard.cs::CSharpScript::1750447615170480644::1779191694::0::1::::<><><>0<>0<><>::
 YgoRelatedCardsComposer.cs::CSharpScript::3158350990066215801::1776120914::0::1::::<><><>0<>0<><>::
@@ -2687,7 +2687,7 @@ Unequip_Pitch_Dark_Dragon.cs::CSharpScript::8363194057040682855::1777852269::0::
 Unequip_Union_Base.cs::CSharpScript::5111567828633511939::1777853938::0::1::::<><><>0<>0<><>::
 Union_Equip.cs::CSharpScript::4477823445252217367::1777853983::0::1::::<><><>0<>0<><>::
 YgoTransientSpellOptionCommandCard.cs::CSharpScript::6331117203489362983::1779089420::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Cards/Core/::1779195599
+::res://YgoDuelistCode/Cards/Core/::1779196644
 AbstractMonsterCard.cs::CSharpScript::9217052544431261624::1779195606::0::1::::<><><>0<>0<><>::
 BaseContinuousSpellCard.cs::CSharpScript::5725153647441206473::1776209837::0::1::::<><><>0<>0<><>::
 BaseContinuousTrapCard.cs::CSharpScript::6316315533953657295::1776209843::0::1::::<><><>0<>0<><>::
@@ -2752,13 +2752,13 @@ MonsterCardFieldAndBattleDeathInterfaces.cs::CSharpScript::2422740635690676428::
 NormalMonsterCard.cs::CSharpScript::4082555643496497167::1779136518::0::1::::<><><>0<>0<><>::
 RitualMonsterCard.cs::CSharpScript::1709879962997000164::1776120946::0::1::::<><><>0<>0<><>::
 RitualSpellCard.cs::CSharpScript::2740121426851065573::1776120946::0::1::::<><><>0<>0<><>::
-SpiritEffectMonsterCard.cs::CSharpScript::6872203554890867153::1779195922::0::1::::<><><>0<>0<><>::
+SpiritEffectMonsterCard.cs::CSharpScript::6872203554890867153::1779196993::0::1::::<><><>0<>0<><>::
 YgoOwnerTurnStartSpellTrapDispatchPhase.cs::CSharpScript::8441659244366891882::1776436749::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Monster/::1777902280
 Enraged_Muka_Muka.cs::CSharpScript::8776879511406162243::1777904088::0::1::::<><><>0<>0<><>::
 Muka_Muka.cs::CSharpScript::487168266688562560::1777904088::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Cards/Monster/Done/::1777426103
-::res://YgoDuelistCode/Cards/Monster/Done/Effect/::1779195752
+::res://YgoDuelistCode/Cards/Monster/Done/Effect/::1779196644
 Absorbing_Kid_from_the_Sky.cs::CSharpScript::6037731302513059300::1777904088::0::1::::<><><>0<>0<><>::
 Airknight_Parshath.cs::CSharpScript::8907643380986674883::1777904869::0::1::::<><><>0<>0<><>::
 Amazoness_Blowpiper.cs::CSharpScript::8826577177369557199::1777904869::0::1::::<><><>0<>0<><>::
@@ -2829,7 +2829,7 @@ Dark_Jeroid.cs::CSharpScript::880215734219689712::1777904870::0::1::::<><><>0<>0
 Dark_Magician_Girl.cs::CSharpScript::4286129936792028495::1777904870::0::1::::<><><>0<>0<><>::
 Dark_Magician_of_Chaos.cs::CSharpScript::5076222625680030214::1777906353::0::1::::<><><>0<>0<><>::
 Dark_Necrofear.cs::CSharpScript::3881026611047099583::1779136538::0::1::::<><><>0<>0<><>::
-Dark_Sage.cs::CSharpScript::7100226313069296::1777906353::0::1::::<><><>0<>0<><>::
+Dark_Sage.cs::CSharpScript::7100226313069296::1779206268::0::1::::<><><>0<>0<><>::
 Dark_Zebra.cs::CSharpScript::6578672579152125489::1777906353::0::1::::<><><>0<>0<><>::
 Desertapir.cs::CSharpScript::2908901782031430420::1777906353::0::1::::<><><>0<>0<><>::
 Despair_from_the_Dark.cs::CSharpScript::7777166987362109145::1777906353::0::1::::<><><>0<>0<><>::
@@ -4060,12 +4060,14 @@ NYgoConvulsionPreviewHolder.cs::CSharpScript::1626144052045855264::1776447901::0
 NYgoOptionCardHolder.cs::CSharpScript::4837965220185115671::1774301852::0::1::::<><><>0<>0<><>::
 NYgoSealedPackSelectionScreen.cs::CSharpScript::454642122818788915::1779194158::0::1::::<><><>0<>0<><>::
 NYgoSealedPackWidget.cs::CSharpScript::7849126189180578001::1775731861::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Nodes/CardLibrary/::1779089420
+::res://YgoDuelistCode/Nodes/CardLibrary/::1779198849
 CardLibraryFilterSortingRuleCategoryFilterToggleGUI.cs::CSharpScript::8074772425166268968::1777858717::0::1::::<><><>0<>0<><>::
 CardLibraryFilterSortingRuleCategoryGUI.cs::CSharpScript::1751260109907694422::1775731861::0::1::::<><><>0<>0<><>::
 CardLibraryFilterStatRangeSortingRuleCategoryGUI.cs::CSharpScript::1334355074482440452::1776447903::0::1::::<><><>0<>0<><>::
 CardLibraryFilterToggleStyle.cs::CSharpScript::3423838873942336681::1775731861::0::1::::<><><>0<>0<><>::
 CardLibraryFilterTriState.cs::CSharpScript::3109542347501758954::1777858360::0::1::::<><><>0<>0<><>::
+YgoCardLibraryArchetypeFilterState.cs::CSharpScript::2820648900095065636::1779197011::0::1::::<><><>0<>0<><>::
+YgoCardLibraryArchetypeSidebarLabels.cs::CSharpScript::288624207026353613::1779197019::0::1::::<><><>0<>0<><>::
 YgoCardLibraryAttributeFilterState.cs::CSharpScript::296803245642733122::1775731861::0::1::::<><><>0<>0<><>::
 YgoCardLibraryLevelFilterState.cs::CSharpScript::6657401159795853112::1779089420::0::1::::<><><>0<>0<><>::
 YgoCardLibraryMonsterStatSortAxis.cs::CSharpScript::8366552744089897932::1775996809::0::1::::<><><>0<>0<><>::
@@ -4074,7 +4076,7 @@ YgoCardLibraryPackTagFilterState.cs::CSharpScript::3410794275947721105::17779033
 YgoCardLibraryPackWeightRangeFilterState.cs::CSharpScript::5629876679486292822::1777276058::0::1::::<><><>0<>0<><>::
 YgoCardLibraryRaceFilterState.cs::CSharpScript::5238029660205302471::1777858379::0::1::::<><><>0<>0<><>::
 YgoCardLibraryRaceSidebarLabels.cs::CSharpScript::7277639264023300775::1775731861::0::1::::<><><>0<>0<><>::
-YgoCardLibrarySidebarFilterState.cs::CSharpScript::7140853491161561958::1775996831::0::1::::<><><>0<>0<><>::
+YgoCardLibrarySidebarFilterState.cs::CSharpScript::7140853491161561958::1779197027::0::1::::<><><>0<>0<><>::
 YgoCardLibraryStatRangeFilterState.cs::CSharpScript::4467748730449577941::1775731861::0::1::::<><><>0<>0<><>::
 YgoCardLibraryYgoCardTypeFilterState.cs::CSharpScript::1911937899691414347::1775731861::0::1::::<><><>0<>0<><>::
 YgoQuadStatePackTagTickController.cs::CSharpScript::2569074119745826481::1777858947::0::1::::<><><>0<>0<><>::
@@ -4084,7 +4086,7 @@ YgoTriStateRarityTickRegistry.cs::CSharpScript::3719674891323968655::1775731861:
 ::res://YgoDuelistCode/Patches/::1777605176
 EnchantmentModelCanEnchantYgoMonsterPatch.cs::CSharpScript::1581130152908540199::1775731861::0::1::::<><><>0<>0<><>::
 YgoCardLibraryGridStatSortPatch.cs::CSharpScript::7378002613587009863::1777276063::0::1::::<><><>0<>0<><>::
-YgoCardLibrarySidebarPatch.cs::CSharpScript::6211306507989716566::1777858396::0::1::::<><><>0<>0<><>::
+YgoCardLibrarySidebarPatch.cs::CSharpScript::6211306507989716566::1779197033::0::1::::<><><>0<>0<><>::
 YgoCompendiumPackWeightDescriptionPatch.cs::CSharpScript::8944697912693276314::1777276067::0::1::::<><><>0<>0<><>::
 YgoMinimumDeckHarmonyPatches.cs::CSharpScript::3831963834334087557::1777283320::0::1::::<><><>0<>0<><>::
 YgoNCardRarityTickboxTriStatePatch.cs::CSharpScript::8561131144883943831::1777858373::0::1::::<><><>0<>0<><>::
@@ -4295,7 +4297,7 @@ MonsterPile.cs::CSharpScript::8859254023266794220::1773590953::0::1::::<><><>0<>
 SpellTrapZonePile.cs::CSharpScript::8528764836177003569::1775731861::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Potions/::1773606321
 YgoDuelistPotion.cs::CSharpScript::8746247100384225587::1773513087::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Powers/::1779196445
+::res://YgoDuelistCode/Powers/::1779196644
 AccumulatedSpiritsPower.cs::CSharpScript::6823473984447703216::1775731861::0::1::::<><><>0<>0<><>::
 ActiveShacklesPlusPower.cs::CSharpScript::4593200190000154715::1779089420::0::1::::<><><>0<>0<><>::
 ActiveShacklesPower.cs::CSharpScript::232779839669866314::1779089420::0::1::::<><><>0<>0<><>::
@@ -4418,7 +4420,7 @@ TrunkSideDeckRelic.cs::CSharpScript::2316772366581976651::1777074789::0::1::::<>
 YgoDuelistRelic.cs::CSharpScript::1362123596858446735::1773589494::0::1::::<><><>0<>0<><>::
 ::res://YgoDuelistCode/Rewards/::1775731861
 YgoCampfireDeckEditUiReward.cs::CSharpScript::6724651277447641421::1775731861::0::1::::<><><>0<>0<><>::
-::res://YgoDuelistCode/Services/::1779140709
+::res://YgoDuelistCode/Services/::1779280369
 ActivatedEffectTributeSelectionPayload.cs::CSharpScript::8872545235464063281::1775731861::0::1::::<><><>0<>0<><>::
 CardModelEnergyCache.cs::CSharpScript::6082268261041224344::1777073957::0::1::::<><><>0<>0<><>::
 ColdWaveSpellTrapLockGate.cs::CSharpScript::4441843039876981339::1776063803::0::1::::<><><>0<>0<><>::
@@ -4478,7 +4480,7 @@ YgoCardGridChoice.cs::CSharpScript::1993316115974816946::1777081545::0::1::::<><
 YgoCardLibraryLayoutTuning.cs::CSharpScript::8101545935485669240::1775731862::0::1::::<><><>0<>0<><>::
 YgoCardLibraryYgoCardTypeFilterIcons.cs::CSharpScript::452709787439450289::1775731862::0::1::::<><><>0<>0<><>::
 YgoCardPackGenerator.cs::CSharpScript::559839963261001960::1779192425::0::1::::<><><>0<>0<><>::
-YgoCardPackRewardFlow.cs::CSharpScript::781940021435502597::1779194159::0::1::::<><><>0<>0<><>::
+YgoCardPackRewardFlow.cs::CSharpScript::781940021435502597::1779280368::0::1::::<><><>0<>0<><>::
 YgoChoiceContexts.cs::CSharpScript::7366663260604459733::1777082038::0::1::::<><><>0<>0<><>::
 YgoCombatEndLifecycle.cs::CSharpScript::5269952261753592617::1779140203::0::1::::<><><>0<>0<><>::
 YgoCreatureProxySelection.cs::CSharpScript::50163224261860040::1777082039::0::1::::<><><>0<>0<><>::
@@ -4560,6 +4562,7 @@ YgoOrderedCardSelection.cs::CSharpScript::5017986573472585846::1777081545::0::1:
 YgoOwnerBeforeTurnEndFlushHooks.cs::CSharpScript::9076030954545997236::1777078844::0::1::::<><><>0<>0<><>::
 YgoOwnerTurnStartFieldMonsterHooks.cs::CSharpScript::6302023723036987598::1777078844::0::1::::<><><>0<>0<><>::
 YgoPackCardCatalog.cs::CSharpScript::5990710534985251064::1777905166::0::1::::<><><>0<>0<><>::
+YgoPackCardRewardHooks.cs::CSharpScript::1112430681968657988::1779280613::0::1::::<><><>0<>0<><>::
 YgoPackParticipatingTags.cs::CSharpScript::1121219190211051363::1775731862::0::1::::<><><>0<>0<><>::
 YgoPackRewardProgress.cs::CSharpScript::4617420048543398053::1776032715::0::1::::<><><>0<>0<><>::
 YgoPackTagBalanceSerializer.cs::CSharpScript::4517891046247980224::1775731862::0::1::::<><><>0<>0<><>::

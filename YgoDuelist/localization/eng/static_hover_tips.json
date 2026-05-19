@@ -93,5 +93,7 @@
   "RACE_FILTER_SpellRitual": "Spell (Ritual)\n\nOR filter: include ritual spell cards.",
   "RACE_FILTER_TrapNormal": "Trap (Normal)\n\nOR filter: include normal trap cards.",
   "RACE_FILTER_TrapContinuous": "Trap (Continuous)\n\nOR filter: include continuous trap cards.",
-  "RACE_FILTER_TrapCounter": "Trap (Counter)\n\nOR filter: include counter trap cards."
+  "RACE_FILTER_TrapCounter": "Trap (Counter)\n\nOR filter: include counter trap cards.",
+  "ARCHETYPE_FILTER_ROW": "Archetype filter\n\nClick to cycle: off → OR (✓) → AND (O) → NOT (✕).\nOR rows combine with OR; every O row must match together; NOT rows hide matches first.",
+  "ARCHETYPE_FILTER_NONE": "No archetype\n\nOR (✓): include only cards with no declared archetype flags.\nAND (O): require no declared archetype together with other O rows.\nNOT (✕): hide cards with no declared archetype."
 }

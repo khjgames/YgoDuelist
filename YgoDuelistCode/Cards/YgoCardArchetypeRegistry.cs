@@ -473,6 +473,17 @@ public static class YgoCardArchetypeRegistry
         typeof(Narrow_Pass),
     ];
 
+    private static readonly Type[] s_spiritMonster =
+    [
+        typeof(Asura_Priest),
+        typeof(Dark_Dust_Spirit),
+        typeof(Fushi_No_Tori),
+        typeof(Maharaghi),
+        typeof(Tsukuyomi),
+        typeof(Yamata_Dragon),
+        typeof(Yata_Garasu),
+    ];
+
     private static readonly object s_genericGate = new();
     private static Type[]? s_genericDoubleSummoner;
 
@@ -525,6 +536,7 @@ public static class YgoCardArchetypeRegistry
         [YgoCardArchetype.GenericAllMonstersContinuousStatBoost] = s_genericAllMonstersContinuousStatBoost,
         [YgoCardArchetype.GenericSingleMonsterTempStatBoost] = s_genericSingleMonsterTempStatBoost,
         [YgoCardArchetype.Energy] = s_energy,
+        [YgoCardArchetype.SpiritMonster] = s_spiritMonster,
     };
 
     /// <summary>
@@ -559,6 +571,7 @@ public static class YgoCardArchetypeRegistry
             YgoCardArchetype.BlueEyesWhiteDragon => s_blueEyes,
             YgoCardArchetype.DarkMagician => s_darkMagician,
             YgoCardArchetype.HarpieLady => s_harpieLady,
+            YgoCardArchetype.SpiritMonster => s_spiritMonster,
             _ => GetTypes(archetype),
         };
 

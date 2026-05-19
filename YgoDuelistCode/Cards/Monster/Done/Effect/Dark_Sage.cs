@@ -20,11 +20,16 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
 /// <summary>
 /// Cannot be Normal Summoned/Set. Special Summon only via <see cref="YgoDuelist.YgoDuelistCode.Cards.Command.Special_Summon_Dark_Sage"/>
-/// on <see cref="Dark_Magician"/> with <see cref="Dark_Magician.SurvivedTimeMagic"/>. On summon: add 1 Spell from your draw or discard pile to your hand.
+/// on <see cref="Dark_Magician"/> with <see cref="Dark_Magician.SurvivedTimeMagic"/>.
+/// On summon: add 1 Spell from your deck to your hand. Upgraded: also search your graveyard.
 /// </summary>
 public sealed class Dark_Sage : EffectMonsterCard
 {
-    private static readonly LocString AddSpellPrompt = new("cards", "YGODUELIST-DARK_SAGE.add_spell_from_deck");
+    private static readonly LocString AddSpellFromDeckPrompt =
+        new("cards", "YGODUELIST-DARK_SAGE.add_spell_from_deck");
+
+    private static readonly LocString AddSpellFromDeckOrGraveyardPrompt =
+        new("cards", "YGODUELIST-DARK_SAGE.add_spell_from_deck_or_graveyard");
 
     public Dark_Sage()
         : base(
@@ -50,11 +55,14 @@ public sealed class Dark_Sage : EffectMonsterCard
     public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate =>
         YgoDarkSageSummonGate.IsSummonBypassActive;
 
+    public override bool UseAlternateUpgradedDescription => true;
+
     protected internal override async Task OnSummoned(Player player, PlayerChoiceContext choiceContext, Creature duelMonsterPet)
     {
         await base.OnSummoned(player, choiceContext, duelMonsterPet);
 
-        List<BaseSpellCard> candidates = BuildDeckSpellCandidates(player);
+        bool includeGraveyard = IsUpgraded;
+        List<BaseSpellCard> candidates = BuildSpellCandidates(player, includeGraveyard);
         if (candidates.Count == 0)
             return;
 
@@ -62,15 +70,16 @@ public sealed class Dark_Sage : EffectMonsterCard
         if (hand == null)
             return;
 
+        LocString prompt = includeGraveyard ? AddSpellFromDeckOrGraveyardPrompt : AddSpellFromDeckPrompt;
         BaseSpellCard? chosen = await YgoOrderedCardSelection.TryChooseSingleAsync(
             choiceContext,
             player,
-            new CardSelectorPrefs(AddSpellPrompt, 1, 1)
+            new CardSelectorPrefs(prompt, 1, 1)
             {
                 RequireManualConfirmation = true,
                 Cancelable = true,
             },
-            () => BuildDeckSpellCandidates(player));
+            () => BuildSpellCandidates(player, includeGraveyard));
         if (chosen == null)
             return;
 
@@ -78,13 +87,14 @@ public sealed class Dark_Sage : EffectMonsterCard
         CardPile? discard = YgoPlayerPiles.Discard(player);
         bool inDraw = draw != null && chosen.Pile == draw;
         bool inDiscard = discard != null && chosen.Pile == discard;
-        if (!inDraw && !inDiscard)
+        bool inGraveyard = includeGraveyard && YgoPlayerPiles.GraveyardContains(player, chosen);
+        if (!inDraw && !inDiscard && !inGraveyard)
             return;
 
         await CardPileCmd.Add(new[] { chosen }, hand, CardPilePosition.Top, chosen, false);
     }
 
-    private static List<BaseSpellCard> BuildDeckSpellCandidates(Player player)
+    private static List<BaseSpellCard> BuildSpellCandidates(Player player, bool includeGraveyard)
     {
         var list = new List<BaseSpellCard>();
         CardPile? draw = YgoPlayerPiles.Draw(player);
@@ -93,6 +103,13 @@ public sealed class Dark_Sage : EffectMonsterCard
         CardPile? discard = YgoPlayerPiles.Discard(player);
         if (discard != null)
             list.AddRange(YgoMpCombatOrder.CardsSnapshotOrderedForMp(discard.Cards).OfType<BaseSpellCard>());
-        return list;
+        if (includeGraveyard)
+        {
+            list.AddRange(
+                YgoMpCombatOrder.CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player))
+                    .OfType<BaseSpellCard>());
+        }
+
+        return YgoMpCombatOrder.CardsSnapshotOrderedForMp(list).OfType<BaseSpellCard>().ToList();
     }
 }

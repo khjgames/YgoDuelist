@@ -15,6 +15,8 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Core;
 /// </summary>
 public abstract class SpiritEffectMonsterCard : EffectMonsterCard, IYgoSpiritMonster, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
 {
+    public override YgoCardArchetype CardArchetypes => YgoCardArchetype.SpiritMonster;
+
     protected SpiritEffectMonsterCard(
         int cost,
         CardType type,

@@ -59,7 +59,8 @@ public static class YgoCardPackRewardFlow
         Player player,
         List<PackTemplateRoll> rolls,
         List<IReadOnlyList<CardModel>> bundles,
-        List<YgoCardPackTags> packTagMasks)
+        List<YgoCardPackTags> packTagMasks,
+        CardCreationOptions creationOptions)
     {
         bundles.Clear();
         packTagMasks.Clear();
@@ -77,6 +78,7 @@ public static class YgoCardPackRewardFlow
                 row.Add(player.RunState.CreateCard(template, player));
             foreach (CardModel template in roll.BonusBulkTemplates)
                 row.Add(player.RunState.CreateCard(template, player));
+            YgoPackCardRewardHooks.ApplyToPackRow(player, row, creationOptions);
             bundles.Add(row);
             int expected = mainN + bonusN;
             bool countOk = row.Count == expected;
@@ -169,11 +171,24 @@ public static class YgoCardPackRewardFlow
             LogPackFlowPhase(player, "pack_rolls_fresh", SummarizeRollsForLog(rolls));
         }
 
-        MaterializeBundlesFromRolls(player, cached.Rolls, bundles, packTagMasks);
+        MaterializeBundlesFromRolls(player, cached.Rolls, bundles, packTagMasks, options);
+
+        void OnRelicObtainedDuringPack(RelicModel relic)
+        {
+            foreach (IReadOnlyList<CardModel> bundle in bundles)
+            {
+                if (bundle is List<CardModel> row)
+                    YgoPackCardRewardHooks.ApplyRelicObtainedToPackRow(player, row, relic, options);
+            }
+        }
+
+        player.RelicObtained += OnRelicObtainedDuringPack;
 
         List<CardModel> chosenPack;
         int chosenBundleIndex;
 
+        try
+        {
     PickBundle:
         LogPackFlowPhase(player, "choose_pack_phase_start", SummarizeBundlesForLog(bundles));
         try
@@ -393,6 +408,11 @@ public static class YgoCardPackRewardFlow
         LogPackFlowPhase(player, "flow_end_success", "cards committed (min deck progress counted at pack confirm)");
         ClearPackOfferCache(reward);
         return true;
+        }
+        finally
+        {
+            player.RelicObtained -= OnRelicObtainedDuringPack;
+        }
     }
 
     private static void LogPackFlowPhase(Player player, string phase, string detail)

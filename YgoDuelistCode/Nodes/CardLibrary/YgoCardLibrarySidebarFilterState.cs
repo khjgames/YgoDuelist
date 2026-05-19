@@ -7,6 +7,8 @@ public sealed class YgoCardLibrarySidebarFilterState
 {
     public YgoCardLibraryPackTagFilterState PackTags { get; } = new();
 
+    public YgoCardLibraryArchetypeFilterState Archetypes { get; } = new();
+
     public YgoCardLibraryYgoCardTypeFilterState YgoCardTypes { get; } = new();
 
     public YgoCardLibraryLevelFilterState Level { get; } = new();
@@ -25,7 +27,8 @@ public sealed class YgoCardLibrarySidebarFilterState
     public YgoCardLibraryMonsterStatSortAxis PrimaryMonsterStatSort { get; set; }
 
     public bool Matches(CardModel card) =>
-        PackTags.Matches(card) && YgoCardTypes.Matches(card) && Level.Matches(card) && Attribute.Matches(card)
+        PackTags.Matches(card) && Archetypes.Matches(card) && YgoCardTypes.Matches(card) && Level.Matches(card)
+        && Attribute.Matches(card)
         && Race.Matches(card)
         && PackWeight.Matches(card)
         && Atk.Matches(card, bm => bm.BaseAtk)
@@ -35,6 +38,7 @@ public sealed class YgoCardLibrarySidebarFilterState
     {
         PrimaryMonsterStatSort = YgoCardLibraryMonsterStatSortAxis.None;
         PackTags.ResetToDefaults();
+        Archetypes.ResetToDefaults();
         YgoCardTypes.ResetToDefaults();
         Level.ResetToDefaults();
         Attribute.ResetToDefaults();
