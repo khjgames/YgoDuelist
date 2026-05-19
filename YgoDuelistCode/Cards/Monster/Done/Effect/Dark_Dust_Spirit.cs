@@ -18,11 +18,10 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
 /// <summary>
 /// Cannot be Special Summoned. Normal/Tribute Summon or flip face-up: destroy all other face-up duel monsters;
-/// gain 1 Conduit per destroyed (and 1 Energy per destroyed when upgraded). End of your turn: return to hand.
+/// gain 1 Conduit per destroyed (and 1 Energy per destroyed when upgraded).
 /// </summary>
-public sealed class Dark_Dust_Spirit : EffectMonsterCard,
-    IMonsterFlipEffect,
-    IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
+public sealed class Dark_Dust_Spirit : SpiritEffectMonsterCard,
+    IMonsterFlipEffect
 {
     private const string ConduitImgBbcode = "[img]res://YgoDuelist/images/card_frames/conduit_icon.png[/img]";
 
@@ -30,7 +29,7 @@ public sealed class Dark_Dust_Spirit : EffectMonsterCard,
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Common,
+            rarity: CardRarity.Uncommon,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 6,
             duelMonsterAttribute: DuelMonsterAttribute.Earth,
@@ -83,22 +82,6 @@ public sealed class Dark_Dust_Spirit : EffectMonsterCard,
         if (pet == null)
             return;
         await DestroyOtherFaceUpFieldMonstersAsync(Owner, pet, choiceContext, this);
-    }
-
-    public bool IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(Creature pet) =>
-        Owner != null && !FaceDown && pet.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(pet, this);
-
-    public async Task TryResolveOwnerBeforeTurnEndFlushFieldMonsterEffectAsync(
-        PlayerChoiceContext choiceContext,
-        Player owner,
-        Creature pet)
-    {
-        if (!IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(pet))
-            return;
-        YgoDuelMonsterBounceToHand.RegisterForHandReturn(pet);
-        await YgoDuelMonsterDestructionRules.KillPetWithinDestructionAsync(
-            YgoDestructionSourceKind.MonsterEffect,
-            pet);
     }
 
     private static async Task DestroyOtherFaceUpFieldMonstersAsync(

@@ -5,8 +5,8 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
-/// <summary>Cannot be Special Summoned.</summary>
-public sealed class Asura_Priest : EffectMonsterCard
+/// <summary>Cannot be Special Summoned. This card's attacks hit all enemies.</summary>
+public sealed class Asura_Priest : SpiritEffectMonsterCard
 {
     public Asura_Priest()
         : base(
@@ -28,4 +28,6 @@ public sealed class Asura_Priest : EffectMonsterCard
     public override Type[] RelatedCards => new[] { typeof(Asura_Priest) };
 
     public override bool BlocksSpecialDuelMonsterSummon => true;
+
+    public override bool DuelMonsterAttackHitsAllEnemies => true;
 }

@@ -329,5 +329,11 @@
   "YGODUELIST-SLATE_WARRIOR_POWER.smartDescription": "This duel monster gains [blue]{Amount}[/blue] ATK and [blue]{Amount}[/blue] DEF.",
   "YGODUELIST-GILFER_POWER_POWER.title": "Gilfer Power",
   "YGODUELIST-GILFER_POWER_POWER.description": "This duel monster gains +1 ATK and +1 DEF per stack.",
-  "YGODUELIST-GILFER_POWER_POWER.smartDescription": "This duel monster gains [blue]{Amount}[/blue] ATK and [blue]{Amount}[/blue] DEF."
+  "YGODUELIST-GILFER_POWER_POWER.smartDescription": "This duel monster gains [blue]{Amount}[/blue] ATK and [blue]{Amount}[/blue] DEF.",
+  "YGODUELIST-YATA_GARASU_POWER.title": "Yata Garasu",
+  "YGODUELIST-YATA_GARASU_POWER.description": "At the start of your next turn, gain 1 Conduit per stack, then this power is removed.",
+  "YGODUELIST-YATA_GARASU_POWER.smartDescription": "At the start of your next turn, gain {Amount:starsIcons()} per stack, then this power is removed.",
+  "YGODUELIST-YATA_GARASU_POWER_PLUS.title": "Yata Garasu +",
+  "YGODUELIST-YATA_GARASU_POWER_PLUS.description": "At the start of your next turn, gain 1 Conduit and 1 Energy per stack, then this power is removed.",
+  "YGODUELIST-YATA_GARASU_POWER_PLUS.smartDescription": "At the start of your next turn, gain {Amount:starsIcons()} and {Amount:energyIcons()} per stack, then this power is removed."
 }

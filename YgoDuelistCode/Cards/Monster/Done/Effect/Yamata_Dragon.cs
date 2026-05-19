@@ -1,13 +1,27 @@
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
-public sealed class Yamata_Dragon : EffectMonsterCard
+/// <summary>
+/// Cannot be Special Summoned. When this card deals unblocked damage, draw until you have 5 cards in your hand.
+/// </summary>
+public sealed class Yamata_Dragon : SpiritEffectMonsterCard
 {
+    private const int TargetHandSize = 5;
+
     public override int AttackPortionCount => 5;
+
     public Yamata_Dragon()
         : base(
             cost: 1,
@@ -25,19 +39,29 @@ public sealed class Yamata_Dragon : EffectMonsterCard
     {
     }
 
-    // Dictates the card pack tags this card will be included in.
     public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Burn | YgoCardPackTags.Dragon | YgoCardPackTags.Fire;
-    // You will always see bundled cards when RNG rolls this card, but not the other way around.
-    //public override Type[] BundledCards => new[]
-    //{
-    //    typeof(This_Card),
-    //    typeof(Another_Bundled_Card)
-    //};
 
-    // You will see these related cards more often with this card in your deck or side deck.
-    public override Type[] RelatedCards => new[]
+    public override Type[] RelatedCards => new[] { typeof(Flame_Ruler) };
+
+    public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => false;
+
+    public override async Task OnFirstUnblockedDamageToEnemyThisChainAsync(
+        AttackCommand command,
+        DamageResult r,
+        Player atkPlayer,
+        BlockingPlayerChoiceContext ctx)
     {
-        typeof(Flame_Ruler)
-    };
+        _ = command;
+        _ = r;
+        if (!DuelMonsterFieldRegistry.ContainsFieldMonster(atkPlayer, this))
+            return;
 
+        CardPile? hand = YgoPlayerPiles.Hand(atkPlayer);
+        CardPile? draw = YgoPlayerPiles.Draw(atkPlayer);
+        if (hand == null || draw == null)
+            return;
+
+        while (hand.Cards.Count < TargetHandSize && draw.Cards.Count > 0)
+            await CardPileCmd.Draw(ctx, 1, atkPlayer);
+    }
 }
