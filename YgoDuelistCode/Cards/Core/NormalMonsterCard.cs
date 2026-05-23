@@ -169,6 +169,9 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             if (tribute > 0 && !TributeSummonSelection.CanMeetTributeCostForSummon(Owner, this))
                 return false;
 
+            if (tribute <= 0 && !DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0))
+                return false;
+
             if (ReactorSlimeSummonGate.BlocksNonDivineSummons(Owner)
                 && GetEffectiveDuelMonsterRace() != DuelMonsterRace.DivineBeast)
                 return false;

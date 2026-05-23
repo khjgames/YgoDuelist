@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards;
@@ -31,8 +32,16 @@ public sealed class Physical_Double : BaseTrapCard
     protected override bool IsPlayable =>
         base.IsPlayable
         && Owner?.Creature?.CombatState != null
-        && Owner.Creature.CombatState.HittableEnemies.Any(e => e.IsAlive)
+        && AnyEnemyWithAttackIntent(Owner)
+        && DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(Owner, 0)
         && ReactorSlimeSummonGate.AllowsSummonPrintedRace(Owner, DuelMonsterRace.Warrior);
+
+    public override bool RefineIsValidTarget(Creature? target, bool vanillaResult)
+    {
+        if (!vanillaResult || target == null || Owner?.Creature == null)
+            return vanillaResult;
+        return YgoIntentAttackDamage.GetTotalAttackIntentDamage(target, Owner.Creature) > 0;
+    }
 
     protected override async Task OnTrapPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -44,6 +53,8 @@ public sealed class Physical_Double : BaseTrapCard
             return;
 
         int atk = YgoIntentAttackDamage.GetTotalAttackIntentDamage(target, Owner.Creature);
+        if (atk <= 0)
+            return;
         int def = atk;
         int level = 4;
 
@@ -64,4 +75,12 @@ public sealed class Physical_Double : BaseTrapCard
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
+    private static bool AnyEnemyWithAttackIntent(Player player)
+    {
+        Creature? pc = player.Creature;
+        if (pc?.CombatState is not CombatState cs)
+            return false;
+        return cs.HittableEnemies.Any(e => e.IsAlive && YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) > 0);
+    }
 }

@@ -20,7 +20,7 @@ public sealed class Mirage_Token : YgoTokenEffectMonster, IYgoOwnerBeforeTurnEnd
     [SavedProperty]
     public int MirageDef { get; set; }
 
-    /// <summary>When true, destroyed at end of turn (see <see cref="YgoDuelist.YgoDuelistCode.Services.YgoMirageTokenEndPhase"/>).</summary>
+    /// <summary>When true, destroyed at end of turn via <see cref="IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect"/>.</summary>
     [SavedProperty]
     public bool MirageDestroyAtEndOfTurn { get; set; }
 
@@ -57,7 +57,7 @@ public sealed class Mirage_Token : YgoTokenEffectMonster, IYgoOwnerBeforeTurnEnd
     }
 
     public bool IsOwnerBeforeTurnEndFlushFieldMonsterEffectActive(Creature pet) =>
-        MirageDestroyAtEndOfTurn && !FaceDown && pet.IsAlive;
+        MirageDestroyAtEndOfTurn && pet.IsAlive;
 
     public async Task TryResolveOwnerBeforeTurnEndFlushFieldMonsterEffectAsync(PlayerChoiceContext choiceContext, Player owner, Creature pet)
     {

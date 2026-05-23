@@ -63,6 +63,20 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         TrySummonDuelMonster(player, card, ctx, canAttackThisTurn: true, isSpecialSummonRoute: true);
 
     /// <summary>
+    /// Free replay duplicate summon: no tribute/material costs, special-summon route, same target from first play.
+    /// </summary>
+    public static Task<bool> TrySummonReplayDuplicateAsync(
+        Player player,
+        BaseMonsterCard card,
+        PlayerChoiceContext ctx,
+        Creature? target,
+        bool canAttackThisTurn)
+    {
+        _ = target;
+        return TrySummonDuelMonster(player, card, ctx, canAttackThisTurn, isSpecialSummonRoute: true);
+    }
+
+    /// <summary>
     /// Mirrors special-summon gates in <see cref="TrySummonDuelMonster"/> for pile-backed selection grids
     /// (Monster Reborn, Call of the Haunted, etc.).
     /// </summary>
@@ -145,6 +159,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         await CreatureCmd.Add(petCreature);
         // Track this card as an active field monster for aura/stat calculations and menu commands.
         DuelMonsterFieldRegistry.RegisterSummon(player, card, petCreature);
+        YgoReplayCoordinator.NoteHandSummonCanAttackThisTurn(card, canAttackThisTurn);
 
         YgoDuelMonsterSummonStyleContext.Push(!canAttackThisTurn);
         try

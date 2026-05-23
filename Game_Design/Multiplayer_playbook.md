@@ -104,6 +104,7 @@ Run (or add to CI as optional) greps under `YgoDuelistCode/`:
 | `.Cards.FirstOrDefault` | Zone pile “pick one” stability. |
 | `UnstableShuffle` / `TakeRandom` | Precede with stable ordering if inputs are peer-visible lists. |
 | `async void` + `Hook.` | Convert to `void` postfix + `TaskHelper.RunSafely(SomeAsync(...))`; avoid mutating combat state directly in `async void`. |
+| `TaskHelper.RunSafely` for **YGO replay drain** | Replay spawns after first resolve must be **awaited** on all peers inside **`YgoReplayPatch.OnPlayWrapper`** postfix — **not** fire-and-forget **`RunSafely`** — so clone STZ/summon grids and pile moves stay lockstep. |
 | `ValueProp.Move` + `Damage` + `player.Creature` | Confirm whether `Unpowered` is required for “cost” semantics. |
 | `foreach (var` + `HittableEnemies` | Same contract as typed `foreach (Creature ...)` — use **`HittableEnemiesAliveOrderedByCombatId`** / **`CreatureListOrderedByCombatId`**; do not rely on `var` hiding raw live-list iteration. |
 | `HittableEnemies` + newline + `.Where` / `.ToList` | Materialize through **`HittableEnemiesAliveOrderedByCombatId`** (or **`CreatureListOrderedByCombatId`**) before secondary filters so filtered lists and UI proxy ordering match the shared contract. |
@@ -236,7 +237,7 @@ Goal: **cover interaction classes**, not every card name.
 | Option pile / net play | `PlayCardFromOptionPilePatch`, `PlayCardActionRitualSpellPatch`, `PlayCardActionFusionSpellPatch`, `YgoPlayCardQueueDeferral`, `NetPlayCardAction*` patches in `PatchesForMultiplayer` / command patches |
 | Hand 0-tribute summon after Cost Down (level in hand vs `OnPlay`) | `NormalSummonHandTributeNeedLock`, `PlayCardActionNormalSummonHandTributeNeedLockPatch` (priority 799); tribute ≥1 still `PlayCardActionTributeSelectionPatch` + `TributeSummonPlayPayload` |
 | Trunk side marker / deck serial | `YgoSaveTrunkSideMarkerCard`, `PlayerToSerializableAppendYgoTrunkSidePatch` |
-| UI vs simulation (disposed nodes) | `NHealthBarDisposedChildrenGuardPatch` (when pet dies under UI) |
+| UI vs simulation (disposed nodes) | `NHealthBarBlockTrackingDisposeGuardPatch` (when pet dies under UI) |
 | Verbose MP prints | `YgoMpDiagnostics` |
 | Deterministic pet + combat-card ordering | `YgoMpCombatOrder` |
 | Multi-pile search ordering + selection wire | `YgoPileSearchSelection` |
@@ -297,7 +298,7 @@ The tables below merge those threads with the broader MP work already captured h
 | **Narrow Pass “first active”** | `GetFirstActive` depended on raw pile order when multiple tax cards could qualify. |
 | **Multi-pile search without stable union** | Concatenating or enumerating several piles for one grid without **`CardsSnapshotOrderedForMp`** on each slice and on the merged candidate list can make the same logical pool map to different row indices across peers after state changes. |
 | **Linked trap revive + pre-play** | Per-trap copies of pile scans + `FromSimpleGrid` + summon without a shared **`rebuildCanonicalForRemoteApply`** tied to the same ordered monster pool risk the same drift class as other pre-play pile grids. |
-| **UI vs simulation** | `NCardPlayQueue.TweenCardForCancellation` on disposed `NCard`; `NHealthBar.RefreshBlockUi` after pet `QueueFree` (ObjectDisposed on controls). |
+| **UI vs simulation** | `NCardPlayQueue.TweenCardForCancellation` on disposed `NCard`; `NHealthBar.RefreshBlockUi` / **`RefreshForeground`** after pet `QueueFree` or while **`YgoReplayPatch`** still drains hand-summon **`CombatAction`** block inside the same **`PlayCardAction`** (`ObjectDisposedException` on **`NinePatchRect`**). Guard: **`NHealthBarBlockTrackingDisposeGuardPatch`** (skip prefix when UI dead + **`HarmonyFinalizer`** on refresh methods; block-tracking handler uses explicit **`HarmonyTargetMethod`**). |
 | **Content / tooling** | Malformed BBCode (`[gold]...->...` under `[center]`) crashed Neow UI before combat MP. Duplicate **`AbstractModel`** id warnings: **do not** infer BaseLib “re-registers” from **`RelatedCards`** — BaseLib **3.1.2** `CustomContentDictionary.AddModel` only sees **`GetType()`** and dedupes by **`Type`**. Investigate **`sts2` / mod load** (e.g. two definitions of the same card type, stale second DLL) when that warn appears. Sole-self **`RelatedCards`** on **`YgoDuelistCard`** is still pointless for pack weighting; batch **79** removed it from **`Enraged_Battle_Ox`** after checksum **38**. |
 | **Log noise mistaken for MP** | Godot exit RID/shader/text leaks; `NeowDraft TaskCanceledException` on teardown; filter these when triaging **gameplay** divergence. |
 
@@ -327,12 +328,32 @@ The tables below merge those threads with the broader MP work already captured h
 | **Duel pet visual roster** | After pet death, banish-release, or hand-release, remove the `NCreature` node if still present and rerun ally pet layout + draw ordering. Summon/add patches are not enough because vanilla does not reshuffle surviving pets when a duel monster leaves. |
 | **Life costs** | Needle Ball-style self damage: `Move \| Unpowered` so Die For You does not redirect. |
 | **Narrow Pass / Seven Weapons** | Stable sort for first active; `SyncHunterPetsAsync` snapshots pets. |
-| **UI guards** | `NCardPlayQueueSkipDisposedTweenCancellationPatch`; `NHealthBarDisposedChildrenGuardPatch`. |
+| **UI guards** | `NCardPlayQueueSkipDisposedTweenCancellationPatch`; **`NHealthBarBlockTrackingDisposeGuardPatch`** (prefix skip + finalizer swallow on health bar refresh during replay block mirror / pet teardown). |
 | **Localization** | Copycat-style arrows: avoid raw `>` inside nested BBCode; use a Unicode arrow in `cards.json`. |
 | **Model registration** | BaseLib **`AddModel`** path: see **`CustomCardModel`** + **`CustomContentDictionary.AddModel`**. Avoid **two C# types / assemblies** mapping to the same logical card id. Sole-self **`RelatedCards`** on **`YgoDuelistCard`** is a separate (redundant) concern, not BaseLib double-`AddModel`. |
 | **Spear Cretin GY** | Serialize flip latch (**`[SavedProperty]`** **`FlippedThisTurn`**); defer **`RunAsync`** start to next frame when **`SceneTree`** exists; **`TryGetPlayerForGraveyardAdd`** for owner; **`[YgoDuelist][MP][SpearCretin]`** logs for skip vs start. |
 | **Tribute remote buffer hygiene** | Before **`WaitForRemoteChoice`** for combat-wire tribute: drop **empty** **`CombatCard`** pre-buffers that only matched via **future-id remap**; **dedupe** duplicate completed **`(owner, choiceId)`** buffers so **`FindIndex`** cannot prefer a stale empty row over the host’s real pick (**`PlayerChoiceSynchronizerDiscardInvalidBufferedGridIndexPatch`**, checksum **67**). |
 | **GY special summon continuous traps** | **`YgoLinkedSpecialSummonSelection`**: stable **`BuildMonsterCandidates`**, pre-play payload + matching rebuild, resolve through **`DuelMonsterSummon.TrySummonDuelMonsterSpecial`**, then **`AttachLinkedTrapIfPending`** (`Call_of_the_Haunted`, `Soul_Resurrection`). |
+| **Universal YGO replay (`YgoReplayCoordinator`)** | **`YgoReplayPatch`**: suppress vanilla multi-play on **`IYgoCard`**, **await** sequential drain after first **`OnPlayWrapper`** (no **`RunSafely`**). Replay grids reuse **`YgoPrePlayGridSelection`**, **`EquipSpellGridSelect`**, **`TributeSummonGridSelect`** with stable candidate rebuild. Zone gates: **`HasSpaceForSetOrPlay`**, **`HasRoomForDuelSummonAfterReleasing`**. Hand-summon monster replays re-run captured **`NormalMonsterCard.CombatAction`** (attack/block, same target). Spec: **`Game_Design/YgoDuelist_Replay_Mechanic_Interactions_Game_Design.md`**. |
+
+### YGO replay MP test matrix (manual)
+
+Run co-op after single-player smoke; compare **`[YgoDuelist][MP][Checksum][fp]`** and field/STZ snapshots on both peers.
+
+| Scenario | Pass criteria |
+|----------|----------------|
+| Glam + normal summon | Two field bodies; one tribute paid; both peers same monster-zone count |
+| Glam + hand summon in attack (e.g. Molten Zombie) | Both bodies deal damage to the **same** first-play target; both peers agree on HP/damage |
+| Glam + hand summon in defense | Both bodies grant block (same **`CombatAction`** defend path) |
+| Glam + hand summon stiff/fatigue | Both bodies show stiff/fatigue when the original normal hand summon did |
+| Glam + Spiral (+2 replay) | Up to three bodies if three zones; partial GY fizzle if only two zones |
+| Call of the Haunted | Two STZ copies; independent GY picks on each replay |
+| Equip spell replay | Cancel target grid → defaults to first-play monster; fizzle if none legal |
+| Monster Reborn / Raigeki replay | Needs STZ slot; resolves then GY when full |
+| Set monster (defense) | Second set copy with same stance |
+| Set spell face-down | **No** replay |
+| Fusion / ritual spell | Second fusion body; no second material selection |
+| Option-pile Dark Sage | Second sage if zone available |
 
 ### Process lessons (these threads)
 

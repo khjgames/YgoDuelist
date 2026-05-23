@@ -120,8 +120,15 @@ public static class YgoMpCombatOrder
     public static IEnumerable<CardModel> CardsOrderedForMp(IEnumerable<CardModel> cards) =>
         cards.OrderBy(c => NetCombatCardDb.Instance.GetCardId(c)).ThenBy(c => c.Id?.Entry ?? string.Empty);
 
-    public static List<CardModel> CardsSnapshotOrderedForMp(IEnumerable<CardModel>? cards) =>
-        cards == null ? new List<CardModel>() : CardsOrderedForMp(cards).ToList();
+    public static List<CardModel> CardsSnapshotOrderedForMp(IEnumerable<CardModel>? cards)
+    {
+        if (cards == null)
+            return new List<CardModel>();
+
+        List<CardModel> snapshot = cards as List<CardModel> ?? cards.ToList();
+        YgoNetCombatCardPileGate.EnsureMutableCombatCardsHaveNetIds(snapshot);
+        return CardsOrderedForMp(snapshot).ToList();
+    }
 
     public static CardModel? FirstCardWhereStable(IEnumerable<CardModel> cards, Func<CardModel, bool> predicate) =>
         CardsOrderedForMp(cards).FirstOrDefault(predicate);

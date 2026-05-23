@@ -4,7 +4,7 @@
   "name": "YgoDuelist",
   "author": "KHJGames",
   "description": "Slay the Spire 2 character mod created from a template for use with BaseLib",
-  "version": "v0.1.4",
+  "version": "v0.1.5",
   "has_pck": true,
   "has_dll": true,
   "dependencies": ["BaseLib"],
