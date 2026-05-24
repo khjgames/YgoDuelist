@@ -49,29 +49,20 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
         if (deck.Count == 0)
             return false;
 
-        ModelId markerId = ModelDb.Card<YgoSaveTrunkSideMarkerCard>().Id;
-        SerializableCard last = deck[^1];
-        if (!YgoSaveTrunkSideMarkerCard.IsMarker(last, markerId))
+        if (!YgoSerializableDeckLists.TryExtractTrailer(deck, out YgoSerializableDeckLists.SplitResult split))
             return false;
 
-        YgoSaveTrunkSideMarkerCard.ReadTrailerCounts(last, out int extraCount, out int trunkCount, out int sideCount);
+        SerializableCard marker = split.Marker;
+        int extraCount = split.Extra.Count;
+        int trunkCount = split.Trunk.Count;
+        int sideCount = split.Side.Count;
         int loadedMinDeck = YgoSaveTrunkSideMarkerCard.ReadMinimumDeckSizeOrDefault(
-            last,
+            marker,
             YgoPlayerMinimumDeck.StartingMinimum);
-        int loadedMinDeckReceivedCardProgress = YgoSaveTrunkSideMarkerCard.ReadMinimumDeckReceivedCardProgressOrDefault(last);
-        int loadedOwedRare = YgoSaveTrunkSideMarkerCard.ReadOwedRareCardVouchersOrDefault(last);
-        string? loadedPackTagBalance = YgoSaveTrunkSideMarkerCard.ReadPackTagBalanceOrNull(last);
-
-        int need = 1 + extraCount + trunkCount + sideCount;
-        if (deck.Count < need)
-        {
-            GD.Print(
-                $"{logPrefix} trailer rejected netId={netId} deckCount={deck.Count} need={need} " +
-                $"extra={extraCount} trunk={trunkCount} side={sideCount}");
-            return false;
-        }
-
-        deck.RemoveAt(deck.Count - 1);
+        int loadedMinDeckReceivedCardProgress =
+            YgoSaveTrunkSideMarkerCard.ReadMinimumDeckReceivedCardProgressOrDefault(marker);
+        int loadedOwedRare = YgoSaveTrunkSideMarkerCard.ReadOwedRareCardVouchersOrDefault(marker);
+        string? loadedPackTagBalance = YgoSaveTrunkSideMarkerCard.ReadPackTagBalanceOrNull(marker);
 
         var p = new YgoTrunkSideDeckLoadPending
         {
@@ -80,23 +71,9 @@ public static class PlayerLoadInventoryStripYgoTrunkSidePatch
             LoadedOwedRareCardVouchers = loadedOwedRare,
             LoadedPackTagBalance = loadedPackTagBalance
         };
-        for (int i = 0; i < sideCount; i++)
-        {
-            p.Side.Insert(0, deck[^1]);
-            deck.RemoveAt(deck.Count - 1);
-        }
-
-        for (int i = 0; i < trunkCount; i++)
-        {
-            p.Trunk.Insert(0, deck[^1]);
-            deck.RemoveAt(deck.Count - 1);
-        }
-
-        for (int i = 0; i < extraCount; i++)
-        {
-            p.Extra.Insert(0, deck[^1]);
-            deck.RemoveAt(deck.Count - 1);
-        }
+        p.Extra.AddRange(split.Extra);
+        p.Trunk.AddRange(split.Trunk);
+        p.Side.AddRange(split.Side);
 
         pending = p;
         GD.Print(

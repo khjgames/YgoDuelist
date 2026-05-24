@@ -14,6 +14,12 @@ public static class YgoCardRewardDescriptionPatch
     [HarmonyPostfix]
     public static void Postfix(CardReward __instance, ref LocString __result)
     {
+        if (YgoCombatPowerCardRewardOffer.IsPowerCardBonusReward(__instance))
+        {
+            __result = new LocString("combat_messages", "YGODUELIST-POWER_CARD_REWARD_MAP_LABEL");
+            return;
+        }
+
         if (!YgoCardPackRewardFlow.ShouldReplaceCardRewardSelection(__instance))
             return;
 

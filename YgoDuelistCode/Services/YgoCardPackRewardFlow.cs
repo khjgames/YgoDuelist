@@ -54,13 +54,12 @@ public static class YgoCardPackRewardFlow
 
     private static void ClearPackOfferCache(CardReward reward) => PackOfferRollsCache.Remove(reward);
 
-    /// <summary>Rebuild <paramref name="bundles"/> / <paramref name="packTagMasks"/> from template rolls (new <see cref="CardModel"/> instances each call).</summary>
+    /// <summary>Rebuild <paramref name="bundles"/> / <paramref name="packTagMasks"/> from template rolls (new <see cref="CardModel"/> instances each call). Relic card-reward hooks run only on the opened pack — see <see cref="ApplyChosenPackRewardHooks"/>.</summary>
     private static void MaterializeBundlesFromRolls(
         Player player,
         List<PackTemplateRoll> rolls,
         List<IReadOnlyList<CardModel>> bundles,
-        List<YgoCardPackTags> packTagMasks,
-        CardCreationOptions creationOptions)
+        List<YgoCardPackTags> packTagMasks)
     {
         bundles.Clear();
         packTagMasks.Clear();
@@ -78,7 +77,6 @@ public static class YgoCardPackRewardFlow
                 row.Add(player.RunState.CreateCard(template, player));
             foreach (CardModel template in roll.BonusBulkTemplates)
                 row.Add(player.RunState.CreateCard(template, player));
-            YgoPackCardRewardHooks.ApplyToPackRow(player, row, creationOptions);
             bundles.Add(row);
             int expected = mainN + bonusN;
             bool countOk = row.Count == expected;
@@ -95,9 +93,25 @@ public static class YgoCardPackRewardFlow
         }
     }
 
+    /// <summary>One vanilla <see cref="CardFactory.CreateForReward"/> hook pass for the sealed pack the player actually opened.</summary>
+    private static void ApplyChosenPackRewardHooks(
+        Player player,
+        List<CardModel> chosenRow,
+        CardCreationOptions creationOptions,
+        int bundleIndex)
+    {
+        YgoPackCardRewardHooks.ApplyToPackRow(player, chosenRow, creationOptions);
+        LogPackFlowPhase(
+            player,
+            "chosen_pack_hooks_applied",
+            $"bundleIndex={bundleIndex} | rowSize={chosenRow.Count} | {SummarizeRarities(chosenRow)}");
+    }
+
     public static bool ShouldReplaceCardRewardSelection(CardReward reward)
     {
         if (!YgoPlayerRunPiles.IsYgoRunPlayer(reward.Player))
+            return false;
+        if (YgoCombatPowerCardRewardOffer.IsPowerCardBonusReward(reward))
             return false;
         CardCreationOptions options = GetCardCreationOptions(reward);
         if (options.Source == CardCreationSource.Encounter)
@@ -171,15 +185,16 @@ public static class YgoCardPackRewardFlow
             LogPackFlowPhase(player, "pack_rolls_fresh", SummarizeRollsForLog(rolls));
         }
 
-        MaterializeBundlesFromRolls(player, cached.Rolls, bundles, packTagMasks, options);
+        int chosenBundleIndexForRelics = -1;
 
         void OnRelicObtainedDuringPack(RelicModel relic)
         {
-            foreach (IReadOnlyList<CardModel> bundle in bundles)
-            {
-                if (bundle is List<CardModel> row)
-                    YgoPackCardRewardHooks.ApplyRelicObtainedToPackRow(player, row, relic, options);
-            }
+            if (chosenBundleIndexForRelics < 0
+                || chosenBundleIndexForRelics >= bundles.Count
+                || bundles[chosenBundleIndexForRelics] is not List<CardModel> row)
+                return;
+
+            YgoPackCardRewardHooks.ApplyRelicObtainedToPackRow(player, row, relic, options);
         }
 
         player.RelicObtained += OnRelicObtainedDuringPack;
@@ -190,6 +205,10 @@ public static class YgoCardPackRewardFlow
         try
         {
     PickBundle:
+        RemoveAllCreatedCards(bundles, player);
+        MaterializeBundlesFromRolls(player, cached.Rolls, bundles, packTagMasks);
+        chosenBundleIndexForRelics = -1;
+
         LogPackFlowPhase(player, "choose_pack_phase_start", SummarizeBundlesForLog(bundles));
         try
         {
@@ -219,6 +238,13 @@ public static class YgoCardPackRewardFlow
             player,
             "choose_pack_phase_end",
             $"chosenBundleIndex={chosenBundleIndex} | chosenSize={chosenPack.Count} | {SummarizeRarities(chosenPack)}");
+
+        if (chosenBundleIndex >= 0 && bundles[chosenBundleIndex] is List<CardModel> chosenRow)
+        {
+            ApplyChosenPackRewardHooks(player, chosenRow, options, chosenBundleIndex);
+            chosenPack = chosenRow;
+            chosenBundleIndexForRelics = chosenBundleIndex;
+        }
 
         if (chosenBundleIndex >= 0 && chosenBundleIndex < cached.Rolls.Count)
         {
@@ -268,6 +294,7 @@ public static class YgoCardPackRewardFlow
         {
             YgoPlayerMinimumDeck.RevertReceivedCardsFromPacksOrShop(player, chosenPack.Count);
             LogPackFlowPhase(player, "assign_deck_cancelled_back_to_choose_pack", "");
+            chosenBundleIndexForRelics = -1;
             goto PickBundle;
         }
 

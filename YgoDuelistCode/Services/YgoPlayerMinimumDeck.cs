@@ -56,6 +56,16 @@ public static class YgoPlayerMinimumDeck
         return bumps;
     }
 
+    /// <summary>Combat power-card bonus: +1 required minimum deck size and one received-card toward save progress.</summary>
+    public static void ApplyPowerCardTakenMinimumDeckIncrease(Player player)
+    {
+        StrongBox<int> progress = ReceivedCardProgressTable.GetValue(player, static _ => new StrongBox<int>(0));
+        progress.Value = (progress.Value + 1) % ReceivedCardsPerMinimumIncrease;
+
+        StrongBox<int> min = Table.GetValue(player, static _ => new StrongBox<int>(StartingMinimum));
+        min.Value += 1;
+    }
+
     /// <summary>Undo uncommitted pack-choice progress when the player backs out to the pack choice screen.</summary>
     public static void RevertReceivedCardsFromPacksOrShop(Player player, int cardsReceived)
     {
