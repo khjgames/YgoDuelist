@@ -42,12 +42,12 @@ public sealed class Fusion_Gate : BaseFieldSpellCard, IFusionSpellSource, IYgoCa
     /// Multiplier for YGO pack reward weighted picks of this specific card (within its own rarity)(<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
     /// Applied to base weight before trunk copies, related bonus, and duplicate-in-pack damping. Default <c>1</c>.
     /// </summary>
-    public override float PackWeightMultiplier => 1.5f;
+    public override float PackWeightMultiplier => 1.8f;
 
     /// <summary>
     /// How likely it is (within its own rarity), to get duplicates of this card after the first (<see cref="YgoDuelist.YgoDuelistCode.Services.YgoCardPackGenerator"/>).
     /// </summary>
-    public override float DuplicateFatigue => 0.8f;
+    public override float DuplicateFatigue => 0.64f;
 
     public override Type[] RelatedCards => GetRelatedCards(typeof(Polymerization));
 

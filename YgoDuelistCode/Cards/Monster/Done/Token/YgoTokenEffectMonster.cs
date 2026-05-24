@@ -8,6 +8,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Token;
 
+/// <summary>Effect Token monsters: not deck-playable; vanish to Limbo when destroyed or sent to GY/Banished.</summary>
 public abstract class YgoTokenEffectMonster : EffectMonsterCard, IYgoTokenMonster
 {
     private int? _tokenPortraitVariantIndex;

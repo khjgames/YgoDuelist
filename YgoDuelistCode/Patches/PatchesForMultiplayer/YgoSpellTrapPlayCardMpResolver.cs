@@ -7,7 +7,9 @@ using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Models;
+using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Piles;
+using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForMultiplayer;
 
@@ -40,7 +42,7 @@ public static class YgoSpellTrapPlayCardMpResolver
 
     /// <summary>
     /// Prefer the spell/trap zone instance matching <see cref="PlayCardAction.CardModelId"/> when the net index
-    /// resolves to another pile's copy.
+    /// resolves to another pile's copy (face-down set / field spell only — not face-up equips or active continuous).
     /// </summary>
     public static CardModel? ResolveSpellTrapPlayCard(PlayCardAction action)
     {
@@ -74,6 +76,10 @@ public static class YgoSpellTrapPlayCardMpResolver
         foreach (CardModel c in zonePile.Cards)
         {
             if (c.Id != expectedId)
+                continue;
+            // Face-up non-field zone copies are already active (equipped/continuous). A hand play must keep
+            // the hand instance — rebinding to the field copy blocks equip-from-hand (see Burning Spear logs).
+            if (!IsFaceDownOrFieldSpellInZone(c))
                 continue;
             if (zoneMatch != null)
             {
@@ -117,4 +123,9 @@ public static class YgoSpellTrapPlayCardMpResolver
             $"[YgoDuelist][MP] PlayCardAction NetCombatCard rebound {action.CardModelId.Entry}: index {oldIndex} (pile {oldPile}) -> index {newNet.CombatCardIndex} (spell/trap zone instance)");
         return true;
     }
+
+    private static bool IsFaceDownOrFieldSpellInZone(CardModel card) =>
+        YgoSpellTrapZoneBridge.IsFieldSpell(card)
+        || card is BaseTrapCard { FaceDown: true }
+        || card is BaseSpellCard { FaceDown: true };
 }

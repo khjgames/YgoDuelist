@@ -1,3 +1,5 @@
+using System.Linq;
+using MegaCrit.Sts2.Core.Entities.Players;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
@@ -11,4 +13,9 @@ public static class YgoEquipSpellTargetRules
             return true;
         return equip.CanEquipTo(target);
     }
+
+    public static bool HasAnyLegalEquipTarget(Player? player, BaseEquipSpellCard equip) =>
+        player != null
+        && DuelMonsterFieldRegistry.OrderedFieldMonsters(player)
+            .Any(m => IsLegalEquipTarget(equip, m));
 }

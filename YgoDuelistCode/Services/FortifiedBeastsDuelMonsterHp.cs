@@ -2,11 +2,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
+using YgoDuelist.YgoDuelistCode.Piles;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -43,6 +48,27 @@ public static class FortifiedBeastsDuelMonsterHp
             await CreatureCmd.GainMaxHp(pet, delta);
         else if (delta < 0)
             await CreatureCmd.LoseMaxHp(YgoChoiceContexts.Blocking(), pet, -delta, isFromCard: false);
+    }
+
+    /// <summary>
+    /// When a monster enters the graveyard or banished pile, re-sync duel pet max HP
+    /// (e.g. <see cref="Cards.Monster.Done.Effect.Lava_Golem"/> FIRE count bonuses).
+    /// </summary>
+    public static void ScheduleSyncAfterMonsterGraveyardOrBanishedPileChanged(CardPile pile, CardModel card)
+    {
+        if (card is not BaseMonsterCard || !pile.IsCombatPile)
+            return;
+        if (pile.Type != GraveyardPile.CustomType && pile.Type != BanishedPile.CustomType)
+            return;
+
+        Player? player = card.Owner;
+        if (player?.Creature?.CombatState == null || player.Creature.Side != CombatSide.Player)
+        {
+            if (!YgoGraveyardPileHooks.TryGetPlayerForGraveyardAdd(pile, card, out player))
+                return;
+        }
+
+        TaskHelper.RunSafely(SyncAllPlayerDuelMonstersAsync(player));
     }
 
     /// <summary>Recompute max/current for every living duel monster the player controls (e.g. after playing Fortified Beasts).</summary>

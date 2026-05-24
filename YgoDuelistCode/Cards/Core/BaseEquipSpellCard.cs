@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -103,6 +103,14 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
 
     public override bool CardShowsBlightKeyword => CardShowsBlightKeywordHint;
 
+    /// <summary>
+    /// Equip spells pick their monster via <see cref="EquipSpellGridSelect"/>, not vanilla
+    /// <see cref="CardModel.IsValidTarget"/> creature routing (TargetType.Self rejects non-null targets).
+    /// </summary>
+    public override bool RefineIsValidTarget(Creature? target, bool vanillaResult) => true;
+
+    public override bool IsValidTargetForSpellTrapZonePlay(Creature? target) => true;
+
     protected override bool IsPlayable
     {
         get
@@ -115,10 +123,7 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
             {
                 if (!FaceDown || Owner == null)
                     return false;
-                return DuelMonsterFieldRegistry
-                    .GetFieldMonsters(Owner)
-                    .OfType<BaseMonsterCard>()
-                    .Any(m => YgoEquipSpellTargetRules.IsLegalEquipTarget(this, m));
+                return YgoEquipSpellTargetRules.HasAnyLegalEquipTarget(Owner, this);
             }
 
             if (Pile?.Type != PileType.Hand || Owner == null)
@@ -130,10 +135,7 @@ public abstract class BaseEquipSpellCard : BaseSpellCard
             if (!YgoSpellTrapZoneBridge.HasSpaceForSetOrPlay(Owner, this))
                 return false;
 
-            return DuelMonsterFieldRegistry
-                .GetFieldMonsters(Owner)
-                .OfType<BaseMonsterCard>()
-                .Any(m => YgoEquipSpellTargetRules.IsLegalEquipTarget(this, m));
+            return YgoEquipSpellTargetRules.HasAnyLegalEquipTarget(Owner, this);
         }
     }
 

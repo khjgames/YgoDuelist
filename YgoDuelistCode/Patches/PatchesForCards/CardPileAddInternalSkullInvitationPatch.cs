@@ -17,5 +17,6 @@ public static class CardPileAddInternalSkullInvitationPatch
         YgoGiantGermGraveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoLordPoisonGraveyard.OnCardAddedToGraveyardPile(__instance, card);
         YgoSpearCretinGraveyard.OnCardAddedToGraveyardPile(__instance, card);
+        FortifiedBeastsDuelMonsterHp.ScheduleSyncAfterMonsterGraveyardOrBanishedPileChanged(__instance, card);
     }
 }

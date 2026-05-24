@@ -8,7 +8,7 @@ using YgoDuelist.YgoDuelistCode.Models;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Token;
 
-/// <summary>Base for YGO Token normal monsters (not playable from the deck; only via card effects).</summary>
+/// <summary>Normal Token monsters: not deck-playable; vanish to Limbo when destroyed or sent to GY/Banished.</summary>
 public abstract class YgoTokenNormalMonster : NormalMonsterCard, IYgoTokenMonster
 {
     private int? _tokenPortraitVariantIndex;

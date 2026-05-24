@@ -16,6 +16,8 @@ using YgoDuelist.YgoDuelistCode.Models;
 using YgoDuelist.YgoDuelistCode.Piles;
 using YgoDuelist.YgoDuelistCode.Powers;
 using YgoDuelist.YgoDuelistCode.Services;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Events;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
@@ -37,7 +39,7 @@ public sealed class Endless_Decay : EffectMonsterCard, IMonsterActivatedEffect, 
             duelMonsterAttribute: DuelMonsterAttribute.Dark,
             baseAtk: 0,
             baseDef: 0,
-            baseMgc: 0,
+            baseMgc: 25,
             duelMonsterAttackPlayEnergyOverride: 1,
             duelMonsterRace: DuelMonsterRace.Zombie)
     {
@@ -63,7 +65,7 @@ public sealed class Endless_Decay : EffectMonsterCard, IMonsterActivatedEffect, 
 
     public override bool CanSummonDuelMonster => false;
 
-    public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => IsHandEffectFormActive && IsPlayerUnderQuarterHp(Owner);
+    public override bool AllowSpecialSummonIgnoringCanSummonDuelMonsterGate => IsHandEffectFormActive && IsPlayerUnderHpThreshold(Owner);
 
     public override int CurrentStarCost => IsHandEffectFormActive ? 0 : base.CurrentStarCost;
 
@@ -102,6 +104,8 @@ public sealed class Endless_Decay : EffectMonsterCard, IMonsterActivatedEffect, 
 
         await base.OnPlay(choiceContext, cardPlay);
     }
+
+    protected override void OnUpgrade() => DynamicVars["Mgc"].UpgradeValueBy(10m);
 
     public int ActivatedEffectEnergyCost => 0;
 
@@ -164,19 +168,19 @@ public sealed class Endless_Decay : EffectMonsterCard, IMonsterActivatedEffect, 
         MonsterCommandRegistry.SetHasUsedActivatedEffectThisTurn(selfPet, true);
     }
 
-    private static bool IsPlayerUnderQuarterHp(Player? player)
+    private bool IsPlayerUnderHpThreshold(Player? player)
     {
         Creature? hero = player?.Creature;
         if (hero == null || hero.MaxHp <= 0)
             return false;
-        return hero.CurrentHp < hero.MaxHp * 0.25m;
+        return hero.CurrentHp < hero.MaxHp * (DynamicVars["Mgc"].BaseValue / 100m);
     }
 
-    private static bool CanResolveHandSpecialSummon(Player? player)
+    private bool CanResolveHandSpecialSummon(Player? player)
     {
         if (player?.PlayerCombatState == null)
             return false;
-        if (!IsPlayerUnderQuarterHp(player))
+        if (!IsPlayerUnderHpThreshold(player))
             return false;
         if (!DuelMonsterSummon.HasRoomForDuelSummonAfterReleasing(player, 0))
             return false;

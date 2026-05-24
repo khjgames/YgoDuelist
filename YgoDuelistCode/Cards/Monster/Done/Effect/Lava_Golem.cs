@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -5,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -12,7 +14,10 @@ using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 
-/// <summary>On Summon: Reckless 4. Activate Effect: Tribute 1 other monster you control; this monster's pet heals {Mgc} HP.</summary>
+/// <summary>
+/// On Summon: Reckless 4. Gains {Mgc2} Max HP per FIRE monster in your Monster Zone, Banished pile, and Graveyard.
+/// Activate Effect: Tribute 1 other monster you control; this monster's pet heals {Mgc} HP.
+/// </summary>
 public sealed class Lava_Golem : EffectMonsterCard, IMonsterActivatedEffect, IMonsterActivatedEffectPrePlaySelection
 {
     private static readonly MegaCrit.Sts2.Core.Localization.LocString TributePrompt =
@@ -22,7 +27,7 @@ public sealed class Lava_Golem : EffectMonsterCard, IMonsterActivatedEffect, IMo
         : base(
             cost: 1,
             type: CardType.Attack,
-            rarity: CardRarity.Uncommon,
+            rarity: CardRarity.Rare,
             target: TargetType.AnyEnemy,
             duelMonsterLevel: 8,
             duelMonsterAttribute: DuelMonsterAttribute.Fire,
@@ -38,7 +43,25 @@ public sealed class Lava_Golem : EffectMonsterCard, IMonsterActivatedEffect, IMo
 
     public override Type[] RelatedCards => new[] { typeof(Lava_Golem) };
 
+    protected override IEnumerable<DynamicVar> CanonicalVars
+    {
+        get
+        {
+            foreach (DynamicVar v in base.CanonicalVars)
+                yield return v;
+            yield return new DynamicVar("Mgc2", 1m);
+        }
+    }
+
     public override int GetIntrinsicRecklessCombatSelfDamage() => 4;
+
+    public override int GetFortifiedBeastsBonusMaxHp(Player player)
+    {
+        int per = (int)DynamicVars["Mgc2"].BaseValue;
+        if (per <= 0)
+            return 0;
+        return CountFireMonstersInMonsterZoneBanishedAndGraveyard(player) * per;
+    }
 
     public int ActivatedEffectEnergyCost => 0;
 
@@ -119,5 +142,34 @@ public sealed class Lava_Golem : EffectMonsterCard, IMonsterActivatedEffect, IMo
     {
         base.OnUpgrade();
         DynamicVars["Mgc"].BaseValue = 15m;
+        DynamicVars["Mgc2"].BaseValue = 2m;
+    }
+
+    private static int CountFireMonstersInMonsterZoneBanishedAndGraveyard(Player player)
+    {
+        int count = 0;
+        foreach (BaseMonsterCard m in DuelMonsterFieldRegistry.OrderedFieldMonsters(player))
+        {
+            if (m.DuelMonsterAttribute == DuelMonsterAttribute.Fire)
+                count++;
+        }
+
+        foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(YgoPlayerPiles.GraveyardCards(player)))
+        {
+            if (c is BaseMonsterCard bm && bm.DuelMonsterAttribute == DuelMonsterAttribute.Fire)
+                count++;
+        }
+
+        CardPile? banished = YgoPlayerPiles.Banished(player);
+        if (banished != null)
+        {
+            foreach (CardModel c in YgoMpCombatOrder.CardsSnapshotOrderedForMp(banished.Cards))
+            {
+                if (c is BaseMonsterCard bm && bm.DuelMonsterAttribute == DuelMonsterAttribute.Fire)
+                    count++;
+            }
+        }
+
+        return count;
     }
 }

@@ -27,6 +27,8 @@ public static class YgoEquipSpellRegistry
         {
             DetachUnsafe(equip);
 
+            YgoNetCombatCardPileGate.EnsureMutableCombatCardHasNetId(equip);
+
             if (!ByMonster.TryGetValue(monster, out var list))
             {
                 list = new List<BaseEquipSpellCard>();
@@ -94,7 +96,7 @@ public static class YgoEquipSpellRegistry
     {
         lock (Gate)
         {
-            foreach (BaseEquipSpellCard equip in YgoMpCombatOrder.CardsOrderedForMp(EquipToMonster.Keys).OfType<BaseEquipSpellCard>())
+            foreach (BaseEquipSpellCard equip in EquipToMonster.Keys.ToList())
             {
                 equip.SetEquippedMonster(null);
                 equip.SetEquippedTargetPetCombatId(0);
@@ -133,7 +135,7 @@ public static class YgoEquipSpellRegistry
 
         lock (Gate)
         {
-            foreach (BaseEquipSpellCard equip in YgoMpCombatOrder.CardsOrderedForMp(EquipToMonster.Keys).OfType<BaseEquipSpellCard>())
+            foreach (BaseEquipSpellCard equip in YgoMpCombatOrder.CardsSnapshotOrderedForMp(EquipToMonster.Keys).OfType<BaseEquipSpellCard>())
             {
                 if (equip.Owner == null)
                 {

@@ -150,7 +150,9 @@ public static class PlayCardActionEquipSpellPatch
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
         Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
         CardPile? pile = card.Pile;
-        bool pileOk = pile != null && pile.Type == PileType.Hand;
+        bool pileOk = pile != null
+                      && (pile.Type == PileType.Hand
+                          || pile.Type == PileType.Play);
         if (!pileOk && card is BaseEquipSpellCard eq && pile?.Type == SpellTrapZonePile.CustomType && eq.FaceDown)
             pileOk = true;
         if (!pileOk)
@@ -172,7 +174,7 @@ public static class PlayCardActionEquipSpellPatch
         }
 
         bool observingOtherPlayer = action.Player != null && !LocalContext.IsMe(action.Player);
-        if (!observingOtherPlayer && (!card.CanPlay(out _, out _) || !card.IsValidTarget(target)))
+        if (!observingOtherPlayer && !card.CanPlay(out _, out _))
         {
             action.Cancel();
             return;

@@ -40,4 +40,7 @@ public static class YgoNetCombatCardPileGate
             db.IdCardForTesting(c);
         }
     }
+
+    public static void EnsureMutableCombatCardHasNetId(CardModel? card) =>
+        EnsureMutableCombatCardsHaveNetIds(new[] { card });
 }

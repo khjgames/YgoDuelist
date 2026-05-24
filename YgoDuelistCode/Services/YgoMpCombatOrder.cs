@@ -131,8 +131,8 @@ public static class YgoMpCombatOrder
     }
 
     public static CardModel? FirstCardWhereStable(IEnumerable<CardModel> cards, Func<CardModel, bool> predicate) =>
-        CardsOrderedForMp(cards).FirstOrDefault(predicate);
+        CardsSnapshotOrderedForMp(cards).FirstOrDefault(predicate);
 
     public static CardModel? FirstCardWithNetId(IEnumerable<CardModel> cards, uint netCombatCardId) =>
-        CardsOrderedForMp(cards).FirstOrDefault(c => NetCombatCardDb.Instance.GetCardId(c) == netCombatCardId);
+        CardsSnapshotOrderedForMp(cards).FirstOrDefault(c => NetCombatCardDb.Instance.GetCardId(c) == netCombatCardId);
 }

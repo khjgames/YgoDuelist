@@ -31,6 +31,8 @@ public static class YgoSpellTrapEquipLinkRegistry
         {
             DetachUnsafe(trapCard);
 
+            YgoNetCombatCardPileGate.EnsureMutableCombatCardHasNetId(trapCard);
+
             if (!ByMonster.TryGetValue(monster, out var list))
             {
                 list = new List<CardModel>();
@@ -132,7 +134,7 @@ public static class YgoSpellTrapEquipLinkRegistry
     {
         lock (Gate)
         {
-            foreach (CardModel trap in YgoMpCombatOrder.CardsOrderedForMp(TrapToMonster.Keys))
+            foreach (CardModel trap in TrapToMonster.Keys.ToList())
             {
                 if (trap is IYgoSpellTrapEquipLink link)
                 {
@@ -177,7 +179,7 @@ public static class YgoSpellTrapEquipLinkRegistry
 
         lock (Gate)
         {
-            foreach (CardModel trap in YgoMpCombatOrder.CardsOrderedForMp(TrapToMonster.Keys))
+            foreach (CardModel trap in YgoMpCombatOrder.CardsSnapshotOrderedForMp(TrapToMonster.Keys))
             {
                 if (trap is not IYgoSpellTrapEquipLink link)
                     continue;

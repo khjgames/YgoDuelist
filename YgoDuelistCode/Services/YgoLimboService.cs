@@ -18,6 +18,20 @@ public static class YgoLimboService
         return YgoPlayerPiles.Limbo(player);
     }
 
+    public static async Task SendToLimboAsync(Player player, CardModel card)
+    {
+        CardPile? pile = GetPile(player);
+        if (pile == null || card.Pile == pile)
+            return;
+
+        await CardPileCmd.Add(
+            new CardModel[] { card },
+            pile,
+            CardPilePosition.Top,
+            card,
+            false);
+    }
+
     public static async Task RemoveAllFromCombat(Player player)
     {
         CardPile? pile = GetPile(player);
