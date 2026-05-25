@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Core;
 using YgoDuelist.YgoDuelistCode.Models;
@@ -32,6 +34,16 @@ public sealed class Makyura_the_Destructor : EffectMonsterCard
     public override YgoCardPackTags PackTags => YgoCardPackTags.MultiplayerSafe | YgoCardPackTags.Dark | YgoCardPackTags.Warrior | YgoCardPackTags.Trap;
 
     public override Type[] RelatedCards => new[] { typeof(Makyura_the_Destructor) };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip t in base.ExtraHoverTips)
+                yield return t;
+            yield return HoverTipFactory.FromPower<HastenTrapPower>();
+        }
+    }
 
     public override void OnMovedToGraveyardFromHandOrField(PileType from)
     {

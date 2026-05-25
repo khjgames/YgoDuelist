@@ -16,7 +16,6 @@ using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.RunHistoryScreen;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Saves.Runs;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -38,25 +37,21 @@ public static class YgoDeckHistoryDisplay
     {
         ClearExtraSections(screen);
 
-        // Snapshot empty layout before the main section is populated (duplicate after that would copy card rows).
-        var headerPrototype = (MegaRichTextLabel)screen.GetNode<MegaRichTextLabel>("Header").Duplicate();
-        var marginPrototype = (MarginContainer)screen.GetNode<MarginContainer>("MarginContainer").Duplicate();
-        ClearCardContainer(marginPrototype);
-
-        MegaRichTextLabel mainHeader = screen.GetNode<MegaRichTextLabel>("Header");
+        MegaRichTextLabel themeHeader = screen.GetNode<MegaRichTextLabel>("Header");
+        MarginContainer themeMargin = screen.GetNode<MarginContainer>("MarginContainer");
         Control mainContainer = screen.GetNode<Control>("%CardContainer");
 
         var inspectCards = new List<CardModel>();
-        ApplySection(screen, player, mainHeader, mainContainer, split.Main, "YGODUELIST-RUN_HISTORY.deck_header", inspectCards);
+        ApplySection(screen, player, themeHeader, mainContainer, split.Main, "YGODUELIST-RUN_HISTORY.deck_header", inspectCards);
 
         if (split.Extra.Count > 0)
-            AddSection(screen, player, ExtraSectionName, split.Extra, "YGODUELIST-RUN_HISTORY.extra_deck_header", inspectCards, headerPrototype, marginPrototype);
+            AddSection(screen, player, ExtraSectionName, split.Extra, "YGODUELIST-RUN_HISTORY.extra_deck_header", inspectCards, themeHeader, themeMargin);
 
         if (split.Side.Count > 0)
-            AddSection(screen, player, SideSectionName, split.Side, "YGODUELIST-RUN_HISTORY.side_deck_header", inspectCards, headerPrototype, marginPrototype);
+            AddSection(screen, player, SideSectionName, split.Side, "YGODUELIST-RUN_HISTORY.side_deck_header", inspectCards, themeHeader, themeMargin);
 
         if (split.Trunk.Count > 0)
-            AddSection(screen, player, TrunkSectionName, split.Trunk, "YGODUELIST-RUN_HISTORY.trunk_header", inspectCards, headerPrototype, marginPrototype);
+            AddSection(screen, player, TrunkSectionName, split.Trunk, "YGODUELIST-RUN_HISTORY.trunk_header", inspectCards, themeHeader, themeMargin);
 
         var allCards = (List<CardModel>)AllCardsField.GetValue(screen)!;
         allCards.Clear();
@@ -79,29 +74,97 @@ public static class YgoDeckHistoryDisplay
         List<SerializableCard> cards,
         string headerLocKey,
         List<CardModel> inspectCards,
-        MegaRichTextLabel headerPrototype,
-        MarginContainer marginPrototype)
+        MegaRichTextLabel themeHeader,
+        MarginContainer themeMargin)
     {
         var section = new VBoxContainer { Name = sectionName };
         screen.AddChildSafely(section);
 
-        var header = (MegaRichTextLabel)headerPrototype.Duplicate();
-        header.Name = "Header";
+        MegaRichTextLabel header = CreateSectionHeader(themeHeader);
         section.AddChildSafely(header);
 
-        var margin = (MarginContainer)marginPrototype.Duplicate();
-        margin.Name = "MarginContainer";
+        MarginContainer margin = CreateSectionMargin(themeMargin);
         section.AddChildSafely(margin);
 
-        Control cardContainer = margin.GetNode<Control>(CardContainerNodeName);
+        var cardContainer = new HFlowContainer { Name = CardContainerNodeName };
+        margin.AddChildSafely(cardContainer);
+
         ApplySection(screen, player, header, cardContainer, cards, headerLocKey, inspectCards);
     }
 
-    private static void ClearCardContainer(MarginContainer margin)
+    private static MegaRichTextLabel CreateSectionHeader(MegaRichTextLabel source)
     {
-        Node container = margin.GetNode(CardContainerNodeName);
-        foreach (Node child in container.GetChildren())
-            child.QueueFreeSafely();
+        var header = new MegaRichTextLabel
+        {
+            Name = "Header",
+            ClipContents = source.ClipContents,
+            CustomMinimumSize = source.CustomMinimumSize,
+            BbcodeEnabled = source.BbcodeEnabled,
+            ScrollActive = source.ScrollActive,
+            AutowrapMode = source.AutowrapMode,
+            AutoSizeEnabled = source.AutoSizeEnabled,
+            MinFontSize = source.MinFontSize,
+            MaxFontSize = source.MaxFontSize,
+            MouseFilter = source.MouseFilter,
+        };
+        CopyRichTextLabelTheme(source, header);
+        return header;
+    }
+
+    private static MarginContainer CreateSectionMargin(MarginContainer source)
+    {
+        var margin = new MarginContainer
+        {
+            Name = "MarginContainer",
+            MouseFilter = source.MouseFilter,
+        };
+        CopyThemeConstantOverride(source, margin, "margin_left");
+        CopyThemeConstantOverride(source, margin, "margin_top");
+        CopyThemeConstantOverride(source, margin, "margin_right");
+        CopyThemeConstantOverride(source, margin, "margin_bottom");
+        return margin;
+    }
+
+    private static void CopyRichTextLabelTheme(MegaRichTextLabel source, MegaRichTextLabel target)
+    {
+        CopyThemeFontOverride(source, target, ThemeConstants.RichTextLabel.NormalFont);
+        CopyThemeFontOverride(source, target, ThemeConstants.RichTextLabel.BoldFont);
+        CopyThemeFontOverride(source, target, ThemeConstants.RichTextLabel.ItalicsFont);
+
+        CopyThemeFontSizeOverride(source, target, ThemeConstants.RichTextLabel.NormalFontSize);
+        CopyThemeFontSizeOverride(source, target, ThemeConstants.RichTextLabel.BoldFontSize);
+        CopyThemeFontSizeOverride(source, target, ThemeConstants.RichTextLabel.BoldItalicsFontSize);
+        CopyThemeFontSizeOverride(source, target, ThemeConstants.RichTextLabel.ItalicsFontSize);
+        CopyThemeFontSizeOverride(source, target, ThemeConstants.RichTextLabel.MonoFontSize);
+
+        CopyThemeColorOverride(source, target, ThemeConstants.RichTextLabel.DefaultColor);
+        CopyThemeColorOverride(source, target, ThemeConstants.RichTextLabel.FontShadowColor);
+        CopyThemeConstantOverride(source, target, "shadow_offset_x");
+        CopyThemeConstantOverride(source, target, "shadow_offset_y");
+    }
+
+    private static void CopyThemeFontOverride(Control source, Control target, StringName name)
+    {
+        if (source.HasThemeFontOverride(name))
+            target.AddThemeFontOverride(name, source.GetThemeFont(name));
+    }
+
+    private static void CopyThemeFontSizeOverride(Control source, Control target, StringName name)
+    {
+        if (source.HasThemeFontSizeOverride(name))
+            target.AddThemeFontSizeOverride(name, source.GetThemeFontSize(name));
+    }
+
+    private static void CopyThemeColorOverride(Control source, Control target, StringName name)
+    {
+        if (source.HasThemeColorOverride(name))
+            target.AddThemeColorOverride(name, source.GetThemeColor(name));
+    }
+
+    private static void CopyThemeConstantOverride(Control source, Control target, StringName name)
+    {
+        if (source.HasThemeConstantOverride(name))
+            target.AddThemeConstantOverride(name, source.GetThemeConstant(name));
     }
 
     private static void ApplySection(

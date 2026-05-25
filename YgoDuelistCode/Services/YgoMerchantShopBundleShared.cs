@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
@@ -74,5 +76,79 @@ public static class YgoMerchantShopBundleShared
             YgoMerchantShopBundleDiag.Log(
                 $"TryGetBundlingTemplate: FAIL cardClr={card.GetType().FullName} canonClr={canon.GetType().FullName} canonIsYgo=False");
         return false;
+    }
+
+    /// <summary>
+    /// Bundled / bulk-bundled mates for a shop offer (excludes the anchor card). Same resolution as stacked slot previews.
+    /// </summary>
+    public static void CollectBundledMateCards(
+        MerchantCardEntry entry,
+        CardModel offerCard,
+        YgoDuelistCard bundling,
+        List<CardModel> into,
+        out ModelId? bulkMateId)
+    {
+        into.Clear();
+        bulkMateId = null;
+        ModelId mainId = offerCard.CanonicalInstance.Id;
+        foreach (Type bt in bundling.BundledCards)
+        {
+            CardModel template;
+            try
+            {
+                template = YgoPackCardCatalog.CardFromType(bt);
+            }
+            catch
+            {
+                continue;
+            }
+
+            if (template.Id == mainId && !bundling.BundleGrantsExtraCopyOfSelf)
+                continue;
+
+            into.Add(template);
+        }
+
+        Player? shopPlayer = GetMerchantEntryPlayer(entry);
+        YgoCardPackTags rowTagMask = TryGetEntryTagMask(entry, out YgoCardPackTags mask)
+            ? mask
+            : YgoCardPackTags.None;
+        if (bundling.BulkBundled && shopPlayer != null
+            && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, shopPlayer, bundling, rowTagMask, out CardModel? bulkMate)
+            && bulkMate != null)
+        {
+            into.Add(bulkMate);
+            bulkMateId = bulkMate.Id;
+        }
+    }
+
+    /// <summary>
+    /// Full inspect-carousel list for a YGO bundle shop slot: anchor offer first, then bundled / bulk mates.
+    /// </summary>
+    public static bool TryBuildShopInspectCarousel(
+        MerchantCardEntry entry,
+        CardModel offerCard,
+        out List<CardModel> carousel,
+        out int startIndex)
+    {
+        carousel = new List<CardModel>();
+        startIndex = 0;
+
+        if (!TryGetBundlingTemplate(offerCard, out YgoDuelistCard bundling))
+            return false;
+
+        bool hasExplicitBundle = bundling.BundledCards.Length > 0;
+        bool hasBulk = bundling.BulkBundled && GetMerchantEntryPlayer(entry) != null;
+        if (!hasExplicitBundle && !hasBulk)
+            return false;
+
+        var mates = new List<CardModel>();
+        CollectBundledMateCards(entry, offerCard, bundling, mates, out _);
+        if (mates.Count == 0)
+            return false;
+
+        carousel.Add(offerCard);
+        carousel.AddRange(mates);
+        return true;
     }
 }

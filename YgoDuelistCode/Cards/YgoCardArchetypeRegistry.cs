@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using YgoDuelist.YgoDuelistCode.Cards.Command;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Fusion;
-using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Normal;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Monster.Elemental;
@@ -20,7 +15,6 @@ using YgoDuelist.YgoDuelistCode.Cards.Spell.Done.Ritual;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Continuos;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Linked;
 using YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Normal;
-using YgoDuelist.YgoDuelistCode.Services;
 
 namespace YgoDuelist.YgoDuelistCode.Cards;
 

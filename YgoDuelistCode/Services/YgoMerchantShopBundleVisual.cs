@@ -62,37 +62,8 @@ public static class YgoMerchantShopBundleVisual
             return;
         }
 
-        ModelId mainId = offerCard.CanonicalInstance.Id;
         List<CardModel> previews = new();
-        foreach (Type bt in bundling.BundledCards)
-        {
-            CardModel template;
-            try
-            {
-                template = YgoPackCardCatalog.CardFromType(bt);
-            }
-            catch
-            {
-                continue;
-            }
-
-            if (template.Id == mainId && !bundling.BundleGrantsExtraCopyOfSelf)
-                continue;
-
-            previews.Add(template);
-        }
-
-        ModelId? bulkSigId = null;
-        YgoCardPackTags rowTagMask = YgoMerchantShopBundleShared.TryGetEntryTagMask(entry, out YgoCardPackTags mask)
-            ? mask
-            : YgoCardPackTags.None;
-        if (bundling.BulkBundled && shopPlayer != null
-            && YgoBulkBundledResolver.TryGetMerchantBulkMateTemplate(entry, shopPlayer, bundling, rowTagMask, out CardModel? bulkMate)
-            && bulkMate != null)
-        {
-            previews.Add(bulkMate);
-            bulkSigId = bulkMate.Id;
-        }
+        YgoMerchantShopBundleShared.CollectBundledMateCards(entry, offerCard, bundling, previews, out ModelId? bulkSigId);
 
         if (previews.Count == 0)
         {

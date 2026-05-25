@@ -36,8 +36,7 @@ public sealed class Mist_Body : BaseEquipSpellCard
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         base.CanonicalKeywords.Append(UnyieldingKeyword);
 
-    public override bool CanEquipTo(BaseMonsterCard target) =>
-        target.DuelMonsterRace == DuelMonsterRace.BeastWarrior;
+    public override bool CanEquipTo(BaseMonsterCard target) => true;
 
     public override StatEffectTotal GetEquipStatEffect(BaseMonsterCard equipped) => StatEffectTotal.None;
 

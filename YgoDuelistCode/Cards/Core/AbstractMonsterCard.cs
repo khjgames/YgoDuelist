@@ -337,6 +337,7 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     protected virtual void AfterDisplayFormChanged()
     {
         CardModelEnergyCache.Invalidate(this);
+        UpdatePortionKeywordFromDisplayForm();
     }
 
     /// <summary>Conduit star cost via StarsVar on monster cards. Fusion and ritual overrides use 0.</summary>
@@ -540,9 +541,23 @@ public abstract class AbstractMonsterCard : YgoDuelistCard, IYgoCard
     {
         if (this is not BaseMonsterCard monster)
             yield break;
-        if (monster.AttackPortionCount < 2)
+        if (!IsAttackBattlePosition)
+            yield break;
+        if (monster.GetResolvedAttackPortionCount() < 2)
             yield break;
         yield return PortionKeyword;
+    }
+
+    /// <summary>Attack/defense/hand-effect toggle: Portion chip only applies in attack form.</summary>
+    public void UpdatePortionKeywordFromDisplayForm()
+    {
+        if (!IsMutable)
+            return;
+
+        _ = Keywords;
+        RemoveKeyword(PortionKeyword);
+        foreach (CardKeyword kw in GetPortionKeywordsFromMonster())
+            AddKeyword(kw);
     }
 
     private IEnumerable<CardKeyword> GetNamedFusionMaterialSubstituteKeywordsFromMonster()

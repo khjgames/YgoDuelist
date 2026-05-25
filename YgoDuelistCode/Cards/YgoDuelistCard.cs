@@ -150,7 +150,12 @@ public abstract class YgoDuelistCard(int cost, CardType type, CardRarity rarity,
     public static decimal GetNumPortionsDisplayValue(CardModel card)
     {
         if (card is BaseMonsterCard monster)
-            return monster.AttackPortionCount;
+        {
+            if (!monster.IsAttackBattlePosition)
+                return 0m;
+            return monster.GetResolvedAttackPortionCount();
+        }
+
         if (card is YgoDuelistCard ygo)
             return ygo.CardDamagePortionCount;
         return 0m;

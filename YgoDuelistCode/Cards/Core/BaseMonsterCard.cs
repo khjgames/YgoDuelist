@@ -251,7 +251,8 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     public override bool CardShowsBlightKeyword => AttackDealsBlightedDamage;
 
     /// <inheritdoc cref="YgoDuelistCard.CardShowsPortionKeyword" />
-    public override bool CardShowsPortionKeyword => GetResolvedAttackPortionCount() >= 2;
+    public override bool CardShowsPortionKeyword =>
+        IsAttackBattlePosition && GetResolvedAttackPortionCount() >= 2;
 
     /// <summary>
     /// When true, Command Attack and Command Defend each use a separate once-per-turn allowance; stiff/fatigue applies after both are used.

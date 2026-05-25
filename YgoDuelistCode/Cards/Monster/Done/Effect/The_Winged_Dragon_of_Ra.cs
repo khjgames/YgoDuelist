@@ -73,6 +73,7 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
+            yield return HoverTipFactory.FromPower<RaDoomedPower>();
             yield return HoverTipFactory.FromPower<DoomPower>();
             yield return HoverTipFactory.FromPower<RaRebirthPower>();
         }

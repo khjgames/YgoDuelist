@@ -51,6 +51,7 @@ public sealed class Magical_Scientist : EffectMonsterCard, IMonsterActivatedEffe
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
+            yield return HoverTipFactory.FromPower<RaDoomedPower>();
             yield return HoverTipFactory.FromPower<DoomPower>();
         }
     }

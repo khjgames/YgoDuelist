@@ -51,6 +51,7 @@ public sealed class Monster_Eye : EffectMonsterCard, IMonsterActivatedEffect
         {
             foreach (IHoverTip t in base.ExtraHoverTips)
                 yield return t;
+            yield return HoverTipFactory.FromPower<RaDoomedPower>();
             yield return HoverTipFactory.FromPower<DoomPower>();
         }
     }
