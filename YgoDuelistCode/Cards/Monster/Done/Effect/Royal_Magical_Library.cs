@@ -17,7 +17,7 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Effect;
 public sealed class Royal_Magical_Library : EffectMonsterCard, IMonsterActivatedEffect, IYgoSpellCounterMonster
 {
     [SavedProperty]
-    public int SpellCounters { get; set; }
+    public int YgoDuelist_SpellCounters { get; set; }
 
     public Royal_Magical_Library()
         : base(
@@ -38,23 +38,23 @@ public sealed class Royal_Magical_Library : EffectMonsterCard, IMonsterActivated
 
     public override Type[] RelatedCards => new[] { typeof(Royal_Magical_Library) };
 
-    public int CurrentSpellCounters => SpellCounters;
+    public int CurrentSpellCounters => YgoDuelist_SpellCounters;
     public int MaxSpellCounters => 3;
 
     public void AddSpellCounter(int amount = 1)
     {
         if (amount <= 0)
             return;
-        SpellCounters = Math.Min(MaxSpellCounters, SpellCounters + amount);
+        YgoDuelist_SpellCounters = Math.Min(MaxSpellCounters, YgoDuelist_SpellCounters + amount);
     }
 
     public bool TryConsumeSpellCounters(int amount)
     {
         if (amount <= 0)
             return true;
-        if (SpellCounters < amount)
+        if (YgoDuelist_SpellCounters < amount)
             return false;
-        SpellCounters -= amount;
+        YgoDuelist_SpellCounters -= amount;
         return true;
     }
 

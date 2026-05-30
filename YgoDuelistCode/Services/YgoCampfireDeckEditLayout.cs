@@ -34,8 +34,8 @@ public static class YgoCampfireDeckEditLayout
     /// <summary>Draw order for the full-screen layer that holds the corner button (higher = on top).</summary>
     public static int CornerLayerZIndex = 20;
 
-    /// <summary>Set false to silence GD.Print / PrintErr diagnostics.</summary>
-    public static bool DebugLogCornerUi = true;
+    /// <summary>Set true to emit GD.Print diagnostics for corner UI layout (off in release).</summary>
+    public static bool DebugLogCornerUi = false;
 
     // --- Campfire deck edit overlay (NYgoCampfireDeckEditMenuScreen) ---
 
@@ -52,5 +52,5 @@ public static class YgoCampfireDeckEditLayout
     public static float DeckEditLootPanelMinHeight = 640f;
 
     /// <summary>Verbose layout dump for the deck edit overlay (visibility, modulate, rects).</summary>
-    public static bool DebugLogDeckEditMenu = true;
+    public static bool DebugLogDeckEditMenu = false;
 }

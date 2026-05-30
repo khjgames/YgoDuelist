@@ -13,7 +13,7 @@ public sealed class Magical_Marionette : EffectMonsterCard, IYgoSpellCounterMons
 {
     public override int AttackPortionCount => 2;
     [SavedProperty]
-    public int SpellCounters { get; set; }
+    public int YgoDuelist_SpellCounters { get; set; }
 
     public Magical_Marionette()
         : base(
@@ -34,7 +34,7 @@ public sealed class Magical_Marionette : EffectMonsterCard, IYgoSpellCounterMons
 
     public override Type[] RelatedCards => new[] { typeof(Magical_Marionette) };
 
-    public int CurrentSpellCounters => SpellCounters;
+    public int CurrentSpellCounters => YgoDuelist_SpellCounters;
 
     public int MaxSpellCounters => 3;
 
@@ -42,16 +42,16 @@ public sealed class Magical_Marionette : EffectMonsterCard, IYgoSpellCounterMons
     {
         if (amount <= 0)
             return;
-        SpellCounters = Math.Min(MaxSpellCounters, SpellCounters + amount);
+        YgoDuelist_SpellCounters = Math.Min(MaxSpellCounters, YgoDuelist_SpellCounters + amount);
     }
 
     public bool TryConsumeSpellCounters(int amount)
     {
         if (amount <= 0)
             return true;
-        if (SpellCounters < amount)
+        if (YgoDuelist_SpellCounters < amount)
             return false;
-        SpellCounters -= amount;
+        YgoDuelist_SpellCounters -= amount;
         return true;
     }
 }

@@ -26,7 +26,7 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
         new("cards", "YGODUELIST-APPRENTICE_MAGICIAN.summon_spellcaster_fd");
 
     [SavedProperty]
-    public int SpellCounters { get; set; }
+    public int YgoDuelist_SpellCounters { get; set; }
 
     public Apprentice_Magician()
         : base(
@@ -54,7 +54,7 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
         && m.DuelMonsterLevel <= 2
         && m.CanSummonDuelMonster;
 
-    public int CurrentSpellCounters => SpellCounters;
+    public int CurrentSpellCounters => YgoDuelist_SpellCounters;
 
     public int MaxSpellCounters => 1;
 
@@ -62,16 +62,16 @@ public sealed class Apprentice_Magician : EffectMonsterCard, IYgoSpellCounterMon
     {
         if (amount <= 0)
             return;
-        SpellCounters = Math.Min(MaxSpellCounters, SpellCounters + amount);
+        YgoDuelist_SpellCounters = Math.Min(MaxSpellCounters, YgoDuelist_SpellCounters + amount);
     }
 
     public bool TryConsumeSpellCounters(int amount)
     {
         if (amount <= 0)
             return true;
-        if (SpellCounters < amount)
+        if (YgoDuelist_SpellCounters < amount)
             return false;
-        SpellCounters -= amount;
+        YgoDuelist_SpellCounters -= amount;
         return true;
     }
 

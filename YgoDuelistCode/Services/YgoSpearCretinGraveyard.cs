@@ -30,10 +30,10 @@ public static class YgoSpearCretinGraveyard
         if (!YgoGraveyardPileHooks.TryGetPlayerForGraveyardAdd(pile, addedCard, out Player? player))
             return;
 
-        if (!sc.FlippedThisTurn)
+        if (!sc.YgoDuelist_FlippedThisTurn)
         {
             GD.Print(
-                $"[YgoDuelist][MP][SpearCretin] skip GY effect (FlippedThisTurn=false) ownerNet={sc.Owner?.NetId} id={sc.Id?.Entry}");
+                $"[YgoDuelist][MP][SpearCretin] skip GY effect (YgoDuelist_FlippedThisTurn=false) ownerNet={sc.Owner?.NetId} id={sc.Id?.Entry}");
             return;
         }
 

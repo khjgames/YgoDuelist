@@ -75,11 +75,11 @@ public static class YgoDeckEditCornerUi
     {
         NMerchantRoom? room = NMerchantRoom.Instance;
         Control? layer = room?.GetNodeOrNull<Control>(LayerNameShop);
-        if (layer != null && GodotObject.IsInstanceValid(layer))
-        {
-            layer.Visible = visible;
-            Log($"Shop layer Visible set to {visible}");
-        }
+        if (layer == null || !GodotObject.IsInstanceValid(layer) || layer.Visible == visible)
+            return;
+
+        layer.Visible = visible;
+        Log($"Shop layer Visible set to {visible}");
     }
 
     private static void Ensure(Control host, Player player, string layerName, float offsetX, float offsetY, string tag)
@@ -200,6 +200,6 @@ public static class YgoDeckEditCornerUi
     private static void Log(string message)
     {
         if (YgoCampfireDeckEditLayout.DebugLogCornerUi)
-            GD.PrintErr($"[YgoDeckEditCorner] {message}");
+            GD.Print($"[YgoDeckEditCorner] {message}");
     }
 }

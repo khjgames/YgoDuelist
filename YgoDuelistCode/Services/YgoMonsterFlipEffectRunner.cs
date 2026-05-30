@@ -45,7 +45,7 @@ public static class YgoMonsterFlipEffectRunner
             return false;
 
         bm.ScheduleFlipFaceUpSideEffectsBeforeFlipPipeline();
-        bm.FlippedThisTurn = true;
+        bm.YgoDuelist_FlippedThisTurn = true;
         return true;
     }
 
