@@ -412,10 +412,18 @@ public static class TrunkSideDeckDeckCardSelectScreenPatch
         {
             g.Connect(
                 NCardGrid.SignalName.HolderPressed,
-                Callable.From<NCardHolder>(h => DeckOnCardClicked?.Invoke(screenRef, new object[] { h.CardModel })));
+                Callable.From<NCardHolder>(h =>
+                {
+                    if (h.CardModel != null)
+                        DeckOnCardClicked?.Invoke(screenRef, new object[] { h.CardModel });
+                }));
             g.Connect(
                 NCardGrid.SignalName.HolderAltPressed,
-                Callable.From<NCardHolder>(h => GridScreenShowCardDetail?.Invoke(screenRef, new object[] { h.CardModel })));
+                Callable.From<NCardHolder>(h =>
+                {
+                    if (h.CardModel != null)
+                        GridScreenShowCardDetail?.Invoke(screenRef, new object[] { h.CardModel });
+                }));
         }
 
         ConnectSplitGridSignals(freshLeft);

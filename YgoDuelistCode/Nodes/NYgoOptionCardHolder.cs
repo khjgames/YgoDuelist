@@ -140,7 +140,8 @@ public partial class NYgoOptionCardHolder : NHandCardHolder, IPoolable
         if (CardNode == null)
             return;
 
-        NHoverTipSet.CreateAndShow(this, CardNode.Model.HoverTips);
+        if (CardNode.Model?.HoverTips is { } hoverTips)
+            NHoverTipSet.CreateAndShow(this, hoverTips);
     }
 
     public void Reset()

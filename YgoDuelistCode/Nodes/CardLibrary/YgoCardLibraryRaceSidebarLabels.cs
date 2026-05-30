@@ -81,5 +81,6 @@ internal static class YgoCardLibraryRaceSidebarLabels
             DuelMonsterRace.TrapNormal => "Trap (Normal)",
             DuelMonsterRace.TrapContinuous => "Trap (Cont.)",
             DuelMonsterRace.TrapCounter => "Trap (Counter)",
+            _ => race.ToString(),
         };
 }

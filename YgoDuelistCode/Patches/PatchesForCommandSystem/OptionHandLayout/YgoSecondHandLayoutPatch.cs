@@ -41,15 +41,15 @@ public static class YgoSecondHandLayoutPatch
 
             // Access private fields needed for disable offset and dragged index/labels.
             var isDisabledField = AccessTools.Field(typeof(NPlayerHand), "_isDisabled");
-            bool isDisabled = (bool)(isDisabledField?.GetValue(__instance) ?? false);
+            bool isDisabled = isDisabledField?.GetValue(__instance) is true;
 
             var disablePosField = AccessTools.Field(typeof(NPlayerHand), "_disablePosition");
-            Vector2 disablePos = disablePosField is not null
-                ? (Vector2)disablePosField.GetValue(null)
+            Vector2 disablePos = disablePosField?.GetValue(null) is Vector2 disableVector
+                ? disableVector
                 : Vector2.Zero;
 
             var draggedIndexField = AccessTools.Field(typeof(NPlayerHand), "_draggedHolderIndex");
-            int draggedIndex = draggedIndexField is not null ? (int)draggedIndexField.GetValue(__instance) : -1;
+            int draggedIndex = draggedIndexField?.GetValue(__instance) is int indexValue ? indexValue : -1;
             bool hasDraggedHolder = draggedIndex >= 0;
 
             for (int i = 0; i < count; i++)

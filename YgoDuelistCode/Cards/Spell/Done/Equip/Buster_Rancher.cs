@@ -63,7 +63,7 @@ public sealed class Buster_Rancher : BaseEquipSpellCard
     {
         Creature? pc = owner?.Creature;
         CombatState? cs = pc?.CombatState;
-        if (cs == null)
+        if (cs == null || pc == null)
             return false;
 
         int threshold = (int)DynamicVars["Mgc3"].BaseValue;

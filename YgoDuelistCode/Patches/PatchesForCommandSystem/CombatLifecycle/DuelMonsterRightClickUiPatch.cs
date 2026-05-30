@@ -37,7 +37,7 @@ public static class DuelMonsterHoverTrackerPatch
             if (combatState == null || !CombatManager.Instance.IsInProgress)
                 return;
 
-            Player me;
+            Player? me;
             try
             {
                 me = LocalContext.GetMe(combatState);

@@ -49,7 +49,7 @@ public static class YgoBadgeDeckCountPatch
     {
         count = 0;
         var player = (SerializablePlayer)LocalPlayerField.GetValue(badge)!;
-        if (!YgoSerializableDeckLists.IsYgoCharacter(player.CharacterId))
+        if (player.CharacterId == null || !YgoSerializableDeckLists.IsYgoCharacter(player.CharacterId))
             return false;
 
         count = YgoSerializableDeckLists.MainDeckForCharacter(player.CharacterId, player.Deck).Count;

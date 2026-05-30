@@ -23,8 +23,7 @@ public static class YgoEnergyIconNodePatch
     [HarmonyPriority(Priority.Last)]
     public static void Postfix(NCard __instance)
     {
-        var model = __instance?.Model;
-        if (model == null)
+        if (__instance?.Model is not CardModel model)
             return;
 
         var icon = __instance.GetNodeOrNull<TextureRect>("%EnergyIcon");

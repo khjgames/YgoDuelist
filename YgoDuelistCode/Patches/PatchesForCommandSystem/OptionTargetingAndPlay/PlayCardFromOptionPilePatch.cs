@@ -200,7 +200,15 @@ public static class PlayCardFromOptionPilePatch
                 return;
             }
 
-            CardModel? canonical = TryResolveCanonicalOptionPileCard(action.Player, card);
+            Player? player = action.Player;
+            Creature? playerCreature = player?.Creature;
+            if (player == null || playerCreature == null)
+            {
+                action.Cancel();
+                return;
+            }
+
+            CardModel? canonical = TryResolveCanonicalOptionPileCard(player, card);
             if (canonical != null && !ReferenceEquals(canonical, card))
             {
                 GD.Print(
@@ -236,7 +244,7 @@ public static class PlayCardFromOptionPilePatch
                 && activate.SourceMonster is NormalMonsterCard sourceMonster)
             {
                 preplaySource = sourceMonster;
-                preparedPreplaySelection = await preplay.TryPrepareActivatedEffectPlayAsync(action.Player, sourceMonster);
+                preparedPreplaySelection = await preplay.TryPrepareActivatedEffectPlayAsync(player, sourceMonster);
                 if (!preparedPreplaySelection)
                 {
                     action.Cancel();
@@ -245,12 +253,18 @@ public static class PlayCardFromOptionPilePatch
             }
 
             NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
-            Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
+            if (playerCreature.CombatState is not CombatState combatState)
+            {
+                action.Cancel();
+                return;
+            }
+
+            Creature? target = await combatState.GetCreatureAsync(action.TargetId, 10.0);
 
             if (card is MonsterCommandCard mccResolved)
             {
                 GD.Print(
-                    $"[YgoDuelist][MP][OptionPile] post-target-resolve card={card.Id.Entry} source={mccResolved.SourceMonster?.Id.Entry} sourcePetId={mccResolved.SourcePetCombatId} actionTargetId={action.TargetId} resolvedTargetCombatId={target?.CombatId}");
+                    $"[YgoDuelist][MP][OptionPile] post-target-resolve card={card.Id?.Entry} source={mccResolved.SourceMonster?.Id?.Entry} sourcePetId={mccResolved.SourcePetCombatId} actionTargetId={action.TargetId} resolvedTargetCombatId={target?.CombatId}");
             }
 
             bool needsTarget = card.TargetType == TargetType.AnyEnemy || card.TargetType == TargetType.AnyAlly;
@@ -276,13 +290,13 @@ public static class PlayCardFromOptionPilePatch
                 && nmcTribute.TributeReleaseCount > 0)
             {
                 GD.Print(
-                    $"[YgoDuelist][MP][Tribute] OptionPile PreSelect owner={action.Player.NetId} netIdx={action.NetCombatCard.CombatCardIndex} card={card.Id?.Entry} printedLevel={nmcTribute.DuelMonsterLevel} effectiveLevel={nmcTribute.GetEffectiveDuelMonsterLevel()} tributeNeed={nmcTribute.TributeReleaseCount}");
+                    $"[YgoDuelist][MP][Tribute] OptionPile PreSelect owner={player.NetId} netIdx={action.NetCombatCard.CombatCardIndex} card={card.Id?.Entry} printedLevel={nmcTribute.DuelMonsterLevel} effectiveLevel={nmcTribute.GetEffectiveDuelMonsterLevel()} tributeNeed={nmcTribute.TributeReleaseCount}");
                 TributeSummonPendingResolution? resolution =
-                    await TributeSummonSelection.SelectTributesForNormalSummonAsync(action.Player, nmcTribute);
+                    await TributeSummonSelection.SelectTributesForNormalSummonAsync(player, nmcTribute);
                 if (resolution == null)
                 {
                     GD.Print(
-                        $"[YgoDuelist][MP][Tribute] OptionPile Select canceled/failed owner={action.Player.NetId} card={card.Id?.Entry}");
+                        $"[YgoDuelist][MP][Tribute] OptionPile Select canceled/failed owner={player.NetId} card={card.Id?.Entry}");
                     action.Cancel();
                     if (preparedPreplaySelection && preplaySource != null)
                     {
@@ -294,8 +308,8 @@ public static class PlayCardFromOptionPilePatch
                 }
 
                 GD.Print(
-                    $"[YgoDuelist][MP][Tribute] OptionPile SetPending netCardIdx={action.NetCombatCard.CombatCardIndex} owner={action.Player.NetId} pets={resolution.Pets.Count} card={card.Id?.Entry}");
-                TributeSummonPlayPayload.SetPending(action.Player.NetId, action.NetCombatCard.CombatCardIndex, resolution);
+                    $"[YgoDuelist][MP][Tribute] OptionPile SetPending netCardIdx={action.NetCombatCard.CombatCardIndex} owner={player.NetId} pets={resolution.Pets.Count} card={card.Id?.Entry}");
+                TributeSummonPlayPayload.SetPending(player.NetId, action.NetCombatCard.CombatCardIndex, resolution);
                 try
                 {
                     await ExecuteOptionPileSpendResourcesAndOnPlayAsync(
@@ -307,7 +321,7 @@ public static class PlayCardFromOptionPilePatch
                 }
                 finally
                 {
-                    TributeSummonPlayPayload.ClearForKey(action.Player.NetId, action.NetCombatCard.CombatCardIndex);
+                    TributeSummonPlayPayload.ClearForKey(player.NetId, action.NetCombatCard.CombatCardIndex);
                 }
 
                 return;

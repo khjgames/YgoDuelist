@@ -118,6 +118,8 @@ public sealed class The_Winged_Dragon_of_Ra : EffectMonsterCard, IMonsterActivat
 
     public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
     {
+        if (command.Attacker == null)
+            return;
         Player? atkPlayer = command.Attacker.Player;
         if (atkPlayer?.Creature == null)
             return;

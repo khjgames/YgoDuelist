@@ -234,7 +234,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
         if (player.PlayerCombatState == null)
             return;
 
-        CardPile targetPile = YgoPlayerPiles.MonsterZone(player);
+        CardPile? targetPile = YgoPlayerPiles.MonsterZone(player);
         if (targetPile == null)
             return;
 

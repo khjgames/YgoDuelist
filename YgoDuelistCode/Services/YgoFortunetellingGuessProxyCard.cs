@@ -1,6 +1,8 @@
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using BaseLib.Utils;
+using YgoDuelist.YgoDuelistCode.Character;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -12,6 +14,7 @@ public enum YgoFortuneGuessKind
 }
 
 /// <summary>Ephemeral grid card for <see cref="Cards.Trap.Todo.Continuos.Ominous_Fortunetelling"/> type guess; title from <see cref="Patches.PatchesForCards.YgoEnemyIntentProxyCardTitlePatch"/>.</summary>
+[Pool(typeof(YgoDuelistCardPool))]
 public sealed class YgoFortunetellingGuessProxyCard : CustomCardModel
 {
     public YgoFortuneGuessKind GuessKind { get; }

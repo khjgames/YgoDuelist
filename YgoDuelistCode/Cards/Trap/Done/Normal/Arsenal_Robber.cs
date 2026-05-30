@@ -66,9 +66,15 @@ public sealed class Arsenal_Robber : BaseTrapCard
         EnergyCost.UpgradeBy(-1);
     }
 
-    private static List<BaseEquipSpellCard> BuildEquipSpells(Player player) => YgoMpCombatOrder
-        .CardsSnapshotOrderedForMp(player.PlayerCombatState.DrawPile.Cards)
+    private static List<BaseEquipSpellCard> BuildEquipSpells(Player player)
+    {
+        PlayerCombatState? pcs = player.PlayerCombatState;
+        if (pcs == null)
+            return [];
+        return YgoMpCombatOrder
+        .CardsSnapshotOrderedForMp(pcs.DrawPile.Cards)
         .OfType<BaseEquipSpellCard>()
-        .Concat(YgoMpCombatOrder.CardsSnapshotOrderedForMp(player.PlayerCombatState.DiscardPile.Cards).OfType<BaseEquipSpellCard>())
+        .Concat(YgoMpCombatOrder.CardsSnapshotOrderedForMp(pcs.DiscardPile.Cards).OfType<BaseEquipSpellCard>())
         .ToList();
+    }
 }

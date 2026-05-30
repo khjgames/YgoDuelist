@@ -70,7 +70,10 @@ public static class PlayCardFromSpellTrapZonePatch
             return;
 
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
-        Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
+        Creature? playerCreature = action.Player.Creature;
+        if (playerCreature?.CombatState is not CombatState combatState)
+            return;
+        Creature? target = await combatState.GetCreatureAsync(action.TargetId, 10.0);
 
         if (card is BaseSpellCard bs)
         {

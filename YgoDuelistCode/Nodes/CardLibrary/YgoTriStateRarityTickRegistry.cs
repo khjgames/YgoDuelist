@@ -12,7 +12,7 @@ internal static class YgoTriStateRarityTickRegistry
 
     internal static bool TryGet(NCardRarityTickbox box, out YgoTriStateRarityTickController? controller)
     {
-        if (Table.TryGetValue(box, out YgoTriStateRarityTickController c))
+        if (Table.TryGetValue(box, out YgoTriStateRarityTickController? c) && c is not null)
         {
             controller = c;
             return true;

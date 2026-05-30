@@ -67,6 +67,11 @@ public partial class MainFile : Node
         ModHelper.AddModelToPool<YgoDuelistRelicPool, ExtraDeckRelic>();
         ModHelper.AddModelToPool<YgoDuelistRelicPool, CardOptionsRelic>();
 
+        ModHelper.AddModelToPool<YgoDuelistCardPool, YgoDieFaceProxyCard>();
+        ModHelper.AddModelToPool<YgoDuelistCardPool, YgoEnemyIntentProxyCard>();
+        ModHelper.AddModelToPool<YgoDuelistCardPool, YgoFortunetellingGuessProxyCard>();
+        ModHelper.AddModelToPool<YgoDuelistCardPool, YgoSaveTrunkSideMarkerCard>();
+
         RegisterAllYgoCards();
 
         // Prewarm pool for the ZGO option-hand holders so NodePool.Get<NYgoOptionCardHolder>()

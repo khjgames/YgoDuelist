@@ -13,12 +13,12 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 /// </summary>
 public sealed class GracefulDicePower : YgoDuelistPower
 {
-    private static string IconPath =>
+    private static string GracefulDiceIconPath =>
         "graceful_dice.png".CardImagePath().Replace('\\', '/');
 
-    public override string CustomPackedIconPath => IconPath;
+    public override string CustomPackedIconPath => GracefulDiceIconPath;
 
-    public override string CustomBigIconPath => IconPath;
+    public override string CustomBigIconPath => GracefulDiceIconPath;
 
     public override PowerType Type => PowerType.Buff;
 

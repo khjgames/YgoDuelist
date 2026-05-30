@@ -2,7 +2,9 @@ using System;
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using YgoDuelist.YgoDuelistCode.Character;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
@@ -13,6 +15,7 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// <see cref="YgoSaveTrunkSideMarkerNetPropertyNames"/> for replay / net serialization.
 /// Minimum deck size and <see cref="OwedRareCardVouchersProp"/> use int props when non-default.
 /// </summary>
+[Pool(typeof(YgoDuelistCardPool))]
 public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
 {
     public const string ExtraDeckCountProp = "ygo_extra_count";

@@ -57,8 +57,11 @@ public sealed class Panther_Warrior : EffectMonsterCard,
         _ = choiceContext;
         if (owner.Creature == null || FaceDown)
             return;
+        PlayerCombatState? pcs = owner.PlayerCombatState;
+        if (pcs == null)
+            return;
         Creature? pet = YgoMpCombatOrder.FirstPetWhere(
-            owner.PlayerCombatState,
+            pcs,
             p => DuelMonsterFieldRegistry.HasSourceCard(p, this) && p.IsAlive);
         if (pet == null)
             return;

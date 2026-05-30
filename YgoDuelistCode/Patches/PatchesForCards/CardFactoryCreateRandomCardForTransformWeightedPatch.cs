@@ -54,6 +54,8 @@ public static class CardFactoryCreateRandomCardForTransformWeightedPatch
     {
         CardModel template = rng.WeightedNextItem(templates, YgoTransformSelectionWeight.ForCard)
             ?? throw new InvalidOperationException("Weighted transform pick returned no card.");
+        if (original.Owner == null || original.CardScope == null)
+            throw new InvalidOperationException("Transform source card has no owner or card scope.");
         return original.CardScope.CreateCard(template, original.Owner);
     }
 }

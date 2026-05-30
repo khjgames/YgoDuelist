@@ -354,6 +354,8 @@ public static class TributeSummonGridSelect
         // OperationCanceledException, and SyncCancelIfMp → empty combat-card wire for the reserved choice id — host
         // and observer then diverge (spurious "Grid cancel → empty" at the tribute id; second attempt uses shifted ids).
         NSimpleCardSelectScreen screen = NSimpleCardSelectScreen.Create(cards, prefs);
+        if (NOverlayStack.Instance == null)
+            return [];
         NOverlayStack.Instance.Push(screen);
         try
         {

@@ -401,7 +401,7 @@ public abstract class NormalMonsterCard : BaseMonsterCard
             }
         }
 
-        if (Owner == null)
+        if (Owner?.Creature == null)
             return;
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.AttackAnimDelay);

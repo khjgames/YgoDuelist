@@ -202,16 +202,16 @@ public class YgoDuelist : PlaceholderCharacterModel
     public override string CustomCharacterSelectLockedIconPath => "char_select_char_name_locked.png".CharacterUiPath();
     public override string CustomMapMarkerPath => "map_marker_char_name.png".CharacterUiPath();
 
-    public override string? CustomArmPointingTexturePath =>
+    public override string CustomArmPointingTexturePath =>
         ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{HandTextureBaseName}_point.png");
 
-    public override string? CustomArmRockTexturePath =>
+    public override string CustomArmRockTexturePath =>
         ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{HandTextureBaseName}_rock.png");
 
-    public override string? CustomArmPaperTexturePath =>
+    public override string CustomArmPaperTexturePath =>
         ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{HandTextureBaseName}_paper.png");
 
-    public override string? CustomArmScissorsTexturePath =>
+    public override string CustomArmScissorsTexturePath =>
         ImageHelper.GetImagePath($"ui/hands/multiplayer_hand_{HandTextureBaseName}_scissors.png");
 
 }

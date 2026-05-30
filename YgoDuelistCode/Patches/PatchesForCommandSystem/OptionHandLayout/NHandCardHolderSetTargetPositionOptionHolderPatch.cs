@@ -20,9 +20,10 @@ public static class NHandCardHolderSetTargetPositionOptionHolderPatch
         if (__instance is not NYgoOptionCardHolder opt || !opt.OptionDragAnchor.HasValue)
             return;
 
-        CanvasItem parent = __instance.GetParent() as CanvasItem;
-        Viewport vp = __instance.GetViewport();
-        if (parent == null || vp == null)
+        if (__instance.GetParent() is not CanvasItem parent)
+            return;
+        Viewport? vp = __instance.GetViewport();
+        if (vp == null)
             return;
 
         // position is in viewport space (GetMousePosition). Convert to parent-local, clamp to anchor ± 100, convert back.

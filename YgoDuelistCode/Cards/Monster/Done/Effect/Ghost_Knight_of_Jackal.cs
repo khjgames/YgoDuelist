@@ -43,6 +43,8 @@ public sealed class Ghost_Knight_of_Jackal : EffectMonsterCard
         if (!YgoExecuteKillShared.AnyEnemyExecutedKill(command))
             return;
 
+        if (command.Attacker == null)
+            return;
         Player? player = command.Attacker.Player;
         if (player?.Creature == null)
             return;

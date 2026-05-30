@@ -88,6 +88,8 @@ public static class EquipSpellGridSelect
                         // Same as TributeSummonGridSelect.SelectLocalGridResultsAsync: no CancelAllCardPlay before nested
                         // simple grid during an active combat card play — it can cancel the grid await and desync MP.
                         NSimpleCardSelectScreen screen = NSimpleCardSelectScreen.Create(cards, prefs);
+                        if (NOverlayStack.Instance == null)
+                            return [];
                         NOverlayStack.Instance.Push(screen);
                         try
                         {

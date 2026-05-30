@@ -186,6 +186,8 @@ public static class YgoDeckHistoryDisplay
 
         foreach (SerializableCard card in cards)
         {
+            if (card.Id == null)
+                continue;
             CardRarity rarity = SaveUtil.CardOrDeprecated(card.Id).Rarity;
             rarityCounts[rarity]++;
         }
@@ -227,6 +229,8 @@ public static class YgoDeckHistoryDisplay
 
         void OnEntryClicked(NDeckHistoryEntry clicked)
         {
+            if (NGame.Instance == null)
+                return;
             List<CardModel> pile = (List<CardModel>)AllCardsField.GetValue(screen)!;
             NGame.Instance.GetInspectCardScreen().Open(pile, pile.IndexOf(clicked.Card));
         }

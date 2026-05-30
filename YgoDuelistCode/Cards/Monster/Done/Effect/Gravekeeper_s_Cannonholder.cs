@@ -87,8 +87,11 @@ public sealed class Gravekeeper_s_Cannonholder : EffectMonsterCard, IMonsterActi
         if (!ActivatedEffectTributeSelectionPayload.TryTakePending(source, out var chosen) || chosen == null)
             return;
 
+        PlayerCombatState? pcs = player.PlayerCombatState;
+        if (pcs == null)
+            return;
         Creature? tributePet = YgoMpCombatOrder.FirstPetWhere(
-            player.PlayerCombatState,
+            pcs,
             p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, chosen));
         if (tributePet == null || !tributePet.IsAlive)
             return;

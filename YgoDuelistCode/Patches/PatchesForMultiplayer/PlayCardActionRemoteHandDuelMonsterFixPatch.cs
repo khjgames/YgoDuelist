@@ -100,7 +100,11 @@ public static class PlayCardActionRemoteHandDuelMonsterFixPatch
 
         // Do not call CanPlay/IsValidTarget here: for the observing peer, replicated resources/hooks can disagree with
         // the owner for one frame while the action is still authoritative (vanilla would not run this body at all on remotes).
-        string? targetLabel = target == null ? null : (target.IsPlayer ? $"Player {target.Player.NetId}" : target.Name);
+        string? targetLabel = target == null
+            ? null
+            : target.IsPlayer && target.Player is { } targetPlayer
+                ? $"Player {targetPlayer.NetId}"
+                : target.Name;
         string targetPart = targetLabel != null
             ? $"targeting {targetLabel} (combatId {target?.CombatId})"
             : "no target";
@@ -118,18 +122,22 @@ public static class PlayCardActionRemoteHandDuelMonsterFixPatch
 
         if (!card.IsDupe && card.EnergyCost.CostsX)
             card.EnergyCost.CapturedXValue = energySpent;
-        if (energySpent > 0)
+        Creature? playerCreature = action.Player.Creature;
+        CombatState? combatState = playerCreature?.CombatState;
+        if (energySpent > 0 && combatState != null)
         {
-            CombatManager.Instance.History.EnergySpent(action.Player.Creature.CombatState, energySpent, action.Player);
+            CombatManager.Instance.History.EnergySpent(combatState, energySpent, action.Player);
             action.Player.PlayerCombatState?.LoseEnergy(System.Math.Max(0, energySpent));
         }
-        await Hook.AfterEnergySpent(action.Player.Creature.CombatState, card, energySpent);
+        if (combatState != null)
+            await Hook.AfterEnergySpent(combatState, card, energySpent);
         if (!card.IsDupe)
             card.LastStarsSpent = starsSpent;
         if (starsSpent > 0)
         {
             action.Player.PlayerCombatState?.LoseStars(starsSpent);
-            await Hook.AfterStarsSpent(action.Player.Creature.CombatState, starsSpent, action.Player);
+            if (combatState != null)
+                await Hook.AfterStarsSpent(combatState, starsSpent, action.Player);
         }
         int energyAfter = action.Player.PlayerCombatState?.Energy ?? -1;
         GD.Print(

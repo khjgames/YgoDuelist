@@ -59,8 +59,12 @@ public static class NDeckCardSelectScreenPreviewSelectionPatch
         foreach (CardModel selectedCard in selectedCards)
         {
             grid.UnhighlightCard(selectedCard);
-            NCard nCard = NCard.Create(selectedCard);
-            NPreviewCardHolder child = NPreviewCardHolder.Create(nCard, showHoverTips: true, scaleOnHover: false);
+            NCard? nCard = NCard.Create(selectedCard);
+            if (nCard == null)
+                continue;
+            NPreviewCardHolder? child = NPreviewCardHolder.Create(nCard, showHoverTips: true, scaleOnHover: false);
+            if (child == null)
+                continue;
             previewCards.AddChildSafely(child);
             PileType pileForVisual = selectedCard.Pile?.Type ?? PileType.None;
             nCard.UpdateVisuals(pileForVisual, CardPreviewMode.Normal);

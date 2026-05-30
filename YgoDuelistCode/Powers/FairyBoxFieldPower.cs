@@ -69,8 +69,8 @@ internal static class FairyBoxFieldPowerShared
         if (side != CombatSide.Player || ownerCreature.Side != CombatSide.Player)
             return;
 
-        Player player = ownerCreature.Player;
-        if (!YgoAnnualTracker.TryConsumeAnnual(player, "FAIRY_BOX_UPKEEP"))
+        Player? player = ownerCreature.Player;
+        if (player == null || !YgoAnnualTracker.TryConsumeAnnual(player, "FAIRY_BOX_UPKEEP"))
             return;
 
         BaseTrapCard? src = FaceUpTrapForTier(player, expectPlus);

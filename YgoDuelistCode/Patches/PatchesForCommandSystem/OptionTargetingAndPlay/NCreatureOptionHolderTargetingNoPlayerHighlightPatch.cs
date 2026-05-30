@@ -31,6 +31,7 @@ public static class NCreatureOptionHolderTargetingNoPlayerHighlightPatch
         if (__instance.Entity.Side == CombatSide.Enemy)
             return;
 
-        NRun.Instance?.GlobalUi?.MultiplayerPlayerContainer?.UnhighlightPlayer(__instance.Entity.Player);
+        if (__instance.Entity.Player is { } player)
+            NRun.Instance?.GlobalUi?.MultiplayerPlayerContainer?.UnhighlightPlayer(player);
     }
 }

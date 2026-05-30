@@ -225,6 +225,8 @@ public static class TrunkSideDeckGuiService
             {
                 NPlayerHand.Instance?.CancelAllCardPlay();
                 NDeckCardSelectScreen screen = NDeckCardSelectScreen.Create(cards, prefs);
+                if (NOverlayStack.Instance == null)
+                    return [];
                 NOverlayStack.Instance.Push(screen);
                 result = (await screen.CardsSelected()).ToList();
             }

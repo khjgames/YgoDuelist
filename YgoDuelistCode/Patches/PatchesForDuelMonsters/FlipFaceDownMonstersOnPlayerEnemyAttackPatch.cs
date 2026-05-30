@@ -86,7 +86,8 @@ public static class FlipFaceDownMonstersOnPlayerEnemyAttackPatch
 
             if (card is not IMonsterFlipEffect)
             {
-                FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpNow(card, choiceContext);
+                if (card != null)
+                    FlipFaceDownOnPlayerEnemyAttackHelpers.ForceFlipFaceUpNow(card, choiceContext);
                 continue;
             }
 
@@ -306,7 +307,8 @@ internal static class FlipFaceDownOnPlayerEnemyAttackHelpers
 
         if (card is not IMonsterFlipEffect)
         {
-            ForceFlipFaceUpWithoutActivatingEffectNow(card, choiceContext);
+            if (card != null)
+                ForceFlipFaceUpWithoutActivatingEffectNow(card, choiceContext);
             return;
         }
 

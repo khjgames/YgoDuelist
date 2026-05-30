@@ -120,8 +120,11 @@ public sealed class Solar_Flare_Dragon : EffectMonsterCard, IYgoOwnerTurnStartFi
         _ = choiceContext;
         if (self is not Solar_Flare_Dragon || Owner?.Creature?.CombatState == null)
             return;
+        PlayerCombatState? pcs = Owner.PlayerCombatState;
+        if (pcs == null)
+            return;
         Creature? pet = YgoMpCombatOrder.FirstPetWhere(
-            Owner.PlayerCombatState,
+            pcs,
             p => p.IsAlive && DuelMonsterFieldRegistry.HasSourceCard(p, this));
         if (pet == null)
             return;

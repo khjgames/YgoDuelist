@@ -100,7 +100,7 @@ public sealed class Dark_Spirit_of_the_Silent : BaseTrapCard
     {
         Creature? pc = player.Creature;
         CombatState? cs = pc?.CombatState;
-        if (cs == null)
+        if (cs == null || pc == null)
             return 0;
         return YgoMpCombatOrder.HittableEnemiesAliveOrderedByCombatId(cs)
             .Count(e => YgoIntentAttackDamage.GetTotalAttackIntentDamage(e, pc) > 0);

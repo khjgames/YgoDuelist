@@ -29,16 +29,18 @@ public static class CardFactoryGetDistinctForCombatYgoPotionPackWeightSpPatch
         Rng rng,
         ref IEnumerable<CardModel> __result)
     {
-        if (!YgoSkillAttackPotionCardPoolFilter.IsYgoSkillOrAttackPotionContext(player))
+        if (player == null || !YgoSkillAttackPotionCardPoolFilter.IsYgoSkillOrAttackPotionContext(player))
             return true;
-        if (YgoMpDiagnostics.IsMultiplayer && player?.Creature?.CombatState is CombatState)
+        if (YgoMpDiagnostics.IsMultiplayer && player.Creature?.CombatState is CombatState)
             return true;
 
         IEnumerable<CardModel> afterPlayerCount = FilterForPlayerCount(player.RunState, cards);
         List<CardModel> list = CardFactory.FilterForCombat(afterPlayerCount).ToList();
         list.Sort((a, b) => string.CompareOrdinal(a.Id.Entry, b.Id.Entry));
         List<CardModel> picked = YgoSkillAttackPotionPackWeightedPick.TakeDistinctWeighted(list, count, rng);
-        __result = picked.Select(c => player.Creature!.CombatState.CreateCard(c, player));
+        if (player.Creature?.CombatState is not CombatState combatState)
+            return true;
+        __result = picked.Select(c => combatState.CreateCard(c, player));
         return false;
     }
 

@@ -163,7 +163,7 @@ public static class NMouseCardPlayStartAsyncOptionPilePatch
             return;
         }
 
-        if (!card.CanPlay(out UnplayableReason reason, out AbstractModel preventer))
+        if (!card.CanPlay(out UnplayableReason reason, out AbstractModel? preventer))
         {
             LogLifecycle("M9_CannotPlay_Cancel", self, $"reason={reason}");
             CannotPlayFtueMethod.Invoke(self, new object[] { card });
@@ -172,10 +172,10 @@ public static class NMouseCardPlayStartAsyncOptionPilePatch
             if (line != null)
             {
                 var room = NCombatRoom.Instance;
-                if (room != null)
+                if (room != null && card.Owner?.Creature is { } speaker)
                 {
                     room.CombatVfxContainer.AddChildSafely(
-                        NThoughtBubbleVfx.Create(line.GetFormattedText(), card.Owner.Creature, 1.0));
+                        NThoughtBubbleVfx.Create(line.GetFormattedText(), speaker, 1.0));
                 }
             }
             return;

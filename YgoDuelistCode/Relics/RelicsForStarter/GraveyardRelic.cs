@@ -59,9 +59,8 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     private static void SplinterLog(string message)
     {
-        if (!SplinterDebugLog)
-            return;
-        GD.Print($"[YgoDuelist][Splinter] {message}");
+        if (SplinterDebugLog)
+            GD.Print($"[YgoDuelist][Splinter] {message}");
     }
 
     /// <summary>
@@ -223,11 +222,14 @@ public sealed class GraveyardRelic : YgoDuelistRelic
     private async Task AfterAttack_FromDuelMonsterAsync(AttackCommand command, BaseMonsterCard monster)
     {
         var ctx = YgoChoiceContexts.Blocking();
-        CombatState? cs = command.Attacker.CombatState;
+        Creature? attacker = command.Attacker;
+        if (attacker == null)
+            return;
+        CombatState? cs = attacker.CombatState;
         if (cs == null)
             return;
 
-        Player? atkOwner = command.Attacker.Player;
+        Player? atkOwner = attacker.Player;
         Player? atkPlayer = atkOwner;
 
         bool portionSalvo = monster.GetResolvedAttackPortionCount() >= 2 && YgoPortionedSalvo.IsMonsterSalvoFor(monster);
@@ -334,7 +336,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
             if (consumedPortionFinal)
             {
-                foreach (Creature victim in cs.GetOpponentsOf(command.Attacker))
+                foreach (Creature victim in cs.GetOpponentsOf(attacker))
                 {
                     if (!victim.IsAlive || victim.CombatId is not uint cid)
                         continue;
@@ -345,7 +347,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     if (blight <= 0)
                         continue;
 
-                    await PowerCmd.Apply<BlightPower>(victim, blight, command.Attacker, monster);
+                    await PowerCmd.Apply<BlightPower>(victim, blight, attacker, monster);
                 }
             }
             else
@@ -360,7 +362,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     if (blight <= 0)
                         continue;
 
-                    await PowerCmd.Apply<BlightPower>(r.Receiver, blight, command.Attacker, monster);
+                    await PowerCmd.Apply<BlightPower>(r.Receiver, blight, attacker, monster);
                 }
             }
         }
@@ -383,7 +385,10 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
     private async Task AfterAttack_FromPortionedYgoCardAsync(AttackCommand command, YgoDuelistCard card)
     {
-        CombatState? cs = command.Attacker.CombatState;
+        Creature? attacker = command.Attacker;
+        if (attacker == null)
+            return;
+        CombatState? cs = attacker.CombatState;
         if (cs == null)
             return;
 
@@ -409,7 +414,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
 
             if (consumedFinal)
             {
-                foreach (Creature victim in cs.GetOpponentsOf(command.Attacker))
+                foreach (Creature victim in cs.GetOpponentsOf(attacker))
                 {
                     if (!victim.IsAlive || victim.CombatId is not uint cid)
                         continue;
@@ -420,7 +425,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     if (blight <= 0)
                         continue;
 
-                    await PowerCmd.Apply<BlightPower>(victim, blight, command.Attacker, card);
+                    await PowerCmd.Apply<BlightPower>(victim, blight, attacker, card);
                 }
             }
             else
@@ -435,7 +440,7 @@ public sealed class GraveyardRelic : YgoDuelistRelic
                     if (blight <= 0)
                         continue;
 
-                    await PowerCmd.Apply<BlightPower>(r.Receiver, blight, command.Attacker, card);
+                    await PowerCmd.Apply<BlightPower>(r.Receiver, blight, attacker, card);
                 }
             }
         }
@@ -546,7 +551,9 @@ public sealed class GraveyardRelic : YgoDuelistRelic
         int? aggregatedPastBlockOnPrimary = null,
         Creature? aggregatedMainReceiver = null)
     {
-        Creature attacker = command.Attacker;
+        Creature? attacker = command.Attacker;
+        if (attacker == null)
+            return;
         if (aggregatedPastBlockOnPrimary is int pbAgg
             && aggregatedMainReceiver != null
             && aggregatedMainReceiver.Side == CombatSide.Enemy

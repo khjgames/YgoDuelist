@@ -46,7 +46,6 @@ public static class YgoPreviewGridSelection
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(cards);
         ArgumentNullException.ThrowIfNull(player);
-        ArgumentNullException.ThrowIfNull(prefs);
 
         await TributeSummonGridSelect.FromSimpleGridIndexed(
             context,

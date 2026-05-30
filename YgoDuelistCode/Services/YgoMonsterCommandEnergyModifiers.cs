@@ -23,7 +23,7 @@ public static class YgoMonsterCommandEnergyModifiers
     /// <summary>Command Attack row: discounts for the attack command (not the monster&apos;s current field stance), then field-wide adds.</summary>
     public static int GetFieldCommandAttackEnergyCost(NormalMonsterCard source)
     {
-        if (TryGetPetForFieldSource(source, out Creature? pet) && pet.GetPower<FleetingFollowupPower>() != null)
+        if (TryGetPetForFieldSource(source, out Creature? pet) && pet is { } fleetingPet && fleetingPet.GetPower<FleetingFollowupPower>() != null)
             return 0;
 
         int baseCost = source.DuelMonsterAttackPlayEnergy;

@@ -69,7 +69,7 @@ public sealed class NecroticRitualPower : YgoDuelistPower
         }
 
         Godot.GD.Print(
-            $"[YgoDuelist][NecroticRitual] Applied turn-start owner={ownerPlayer.NetId} source={sourceCard?.Id?.Entry} targets={applied} amountBefore={Amount}");
+            $"[YgoDuelist][NecroticRitual] Applied turn-start owner={ownerPlayer!.NetId} source={sourceCard?.Id?.Entry} targets={applied} amountBefore={Amount}");
         await PowerCmd.Decrement(this);
     }
 }

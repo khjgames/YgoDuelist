@@ -20,9 +20,8 @@ public static class NCardHolderConnectSignalsOptionPatch
         if (__instance is not NYgoOptionCardHolder)
             return true;
 
-        NClickableControl hitbox = __instance.GetNodeOrNull<NClickableControl>("%Hitbox");
-        if (hitbox == null)
-            hitbox = __instance.GetChildren().OfType<NClickableControl>().FirstOrDefault();
+        NClickableControl? hitbox = __instance.GetNodeOrNull<NClickableControl>("%Hitbox");
+        hitbox ??= __instance.GetChildren().OfType<NClickableControl>().FirstOrDefault();
 
         if (hitbox == null)
             return true; // let original run and throw

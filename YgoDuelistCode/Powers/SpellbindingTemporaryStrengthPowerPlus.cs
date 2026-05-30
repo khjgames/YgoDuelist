@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
@@ -8,7 +9,7 @@ using YgoDuelist.YgoDuelistCode.Cards.Trap.Done.Continuos;
 namespace YgoDuelist.YgoDuelistCode.Powers;
 
 /// <summary>Temporary Strength loss from upgraded <see cref="Spellbinding_Circle"/> (Spellbinding +).</summary>
-public sealed class SpellbindingTemporaryStrengthPowerPlus : TemporaryStrengthPower
+public sealed class SpellbindingTemporaryStrengthPowerPlus : TemporaryStrengthPower, ICustomModel
 {
     private AbstractModel? _origin;
 

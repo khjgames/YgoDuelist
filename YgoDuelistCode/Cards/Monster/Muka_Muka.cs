@@ -70,7 +70,9 @@ public sealed class Muka_Muka : EffectMonsterCard
             return 0;
         if (CombatManager.Instance?.IsInProgress != true)
             return 0;
-        var handPile = YgoPlayerPiles.Hand(card.Owner);
+        CardPile? handPile = YgoPlayerPiles.Hand(card.Owner);
+        if (handPile == null)
+            return 0;
         var hand = handPile.Cards;
         return Math.Max(0, hand.Count(c => c != card));
     }

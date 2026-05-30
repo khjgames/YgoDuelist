@@ -1,10 +1,13 @@
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using BaseLib.Utils;
+using YgoDuelist.YgoDuelistCode.Character;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>Ephemeral card for choosing an enemy in <see cref="Cards.Trap.Todo.Normal.Dark_Spirit_of_the_Silent"/> second-target grid; title comes from <see cref="Patches.PatchesForCards.YgoEnemyIntentProxyCardTitlePatch"/>.</summary>
+[Pool(typeof(YgoDuelistCardPool))]
 public sealed class YgoEnemyIntentProxyCard : CustomCardModel
 {
     public Creature? TargetCreature { get; }

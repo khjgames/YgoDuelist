@@ -38,7 +38,7 @@ public static class DuelMonsterMonsterOptionsMenu
         if (sourceCard is not NormalMonsterCard monsterCard)
             return Task.CompletedTask;
 
-        CardPile optionPile = YgoPlayerPiles.OptionPile(player);
+        CardPile? optionPile = YgoPlayerPiles.OptionPile(player);
         if (optionPile == null)
             return Task.CompletedTask;
 

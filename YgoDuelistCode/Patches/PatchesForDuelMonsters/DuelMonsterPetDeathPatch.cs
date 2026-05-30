@@ -165,7 +165,7 @@ public static class DuelMonsterPetDeathPatch
             CardPile? hand = YgoPlayerPiles.Hand(player);
             if (hand != null && graveyard != null && card.Pile != hand && card is BaseMonsterCard bmBounce)
             {
-                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: bounce {card.Id.Entry} to hand (equips to GY).");
+                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: bounce {card.Id?.Entry} to hand (equips to GY).");
                 await MoveEquipsToGraveyardThenMonsterToPileAsync(player, bmBounce, hand, graveyard);
             }
         }
@@ -173,12 +173,12 @@ public static class DuelMonsterPetDeathPatch
         {
             if (card is IYgoCustomFieldMonsterDeathGraveyardRelocation customGy)
             {
-                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: custom GY relocation {card.Id.Entry}");
+                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: custom GY relocation {card.Id?.Entry}");
                 await customGy.RunCustomFieldMonsterDeathGraveyardRelocationAsync(player, graveyard);
             }
             else if (card is BaseMonsterCard bmToGy)
             {
-                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id.Entry} (and equips) toward Graveyard.");
+                GD.Print($"[ZGO] DuelMonsterPetDeathPatch: moving {card.Id?.Entry} (and equips) toward Graveyard.");
                 await MoveEquipsToGraveyardThenMonsterToPileAsync(player, bmToGy, graveyard, graveyard);
             }
         }
@@ -189,7 +189,7 @@ public static class DuelMonsterPetDeathPatch
         await NotifyZoneCardsAfterDuelMonsterDiedAsync(player, ctx);
 
         if (card is BaseMonsterCard bmDeathHook)
-            TaskHelper.RunSafely(bmDeathHook.OnAfterDuelMonsterPetDeathBeforeUnregisterAsync(player));
+            await TaskHelper.RunSafely(bmDeathHook.OnAfterDuelMonsterPetDeathBeforeUnregisterAsync(player));
         if (player.Creature != null)
             await FortifiedBeastsDuelMonsterHp.SyncAllPlayerDuelMonstersAsync(player);
         GD.Print("[ZGO] DuelMonsterPetDeathPatch: unregistered pet and cleared command state.");

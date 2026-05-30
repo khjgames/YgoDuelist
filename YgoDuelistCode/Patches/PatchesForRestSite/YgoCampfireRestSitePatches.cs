@@ -35,7 +35,7 @@ public static class NRestSiteRoomYgoCampfireDeckEditCornerPatch
     {
         IRunState runState = Traverse.Create(__instance).Field<IRunState>("_runState").Value;
         Player? me = LocalContext.GetMe(runState);
-        if (!YgoPlayerRunPiles.IsYgoRunPlayer(me))
+        if (me == null || !YgoPlayerRunPiles.IsYgoRunPlayer(me))
         {
             __instance.GetNodeOrNull<Control>(YgoDeckEditCornerUi.LayerNameRest)?.QueueFree();
             if (YgoCampfireDeckEditLayout.DebugLogCornerUi && me == null)

@@ -1,10 +1,13 @@
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using BaseLib.Utils;
+using YgoDuelist.YgoDuelistCode.Character;
 
 namespace YgoDuelist.YgoDuelistCode.Services;
 
 /// <summary>Ephemeral cards for the d6 grid in <see cref="YgoBlindDestructionContinuous"/>.</summary>
+[Pool(typeof(YgoDuelistCardPool))]
 public sealed class YgoDieFaceProxyCard : CustomCardModel
 {
     public int Face { get; }

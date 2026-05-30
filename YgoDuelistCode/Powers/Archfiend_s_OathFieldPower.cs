@@ -97,7 +97,10 @@ public sealed class Archfiend_s_Oath_FieldPower : YgoDuelistPower
                     or YgoCardType.RitualMonster;
             }
 
-            CardPile handPile = player.PlayerCombatState.Hand;
+            PlayerCombatState? pcs = player.PlayerCombatState;
+            if (pcs == null)
+                continue;
+            CardPile handPile = pcs.Hand;
             CardPile? gyPile = YgoDuelist.YgoDuelistCode.Services.YgoPlayerPiles.Graveyard(player);
             if (gyPile == null)
                 continue;

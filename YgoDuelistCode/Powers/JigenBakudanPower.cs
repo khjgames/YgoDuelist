@@ -61,16 +61,18 @@ public sealed class JigenBakudanPower : YgoDuelistPower
         await base.AfterApplied(applier, cardSource);
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {
         if (side != CombatSide.Player || Owner.Side != CombatSide.Player)
-            return;
+            return Task.CompletedTask;
 
         if (_waitingForPlayerTurnEndToArm)
         {
             _waitingForPlayerTurnEndToArm = false;
             _armedForExplode = true;
         }
+
+        return Task.CompletedTask;
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)

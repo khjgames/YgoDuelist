@@ -100,7 +100,7 @@ public sealed class Burst_Stream_of_Destruction
     private static Creature? TryPeekPendingResolvedTarget(CardModel source)
     {
         lock (PendingGate)
-            return PendingResolvedTargets.TryGetValue(source, out Creature target) ? target : null;
+            return PendingResolvedTargets.TryGetValue(source, out Creature? target) ? target : null;
     }
 
     public static async Task<Creature?> PickBlueEyesOnFieldAsync(Player player, bool cancelable)

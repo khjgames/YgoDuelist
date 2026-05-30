@@ -22,9 +22,6 @@ namespace YgoDuelist.YgoDuelistCode.Patches.PatchesForRestSite;
 /// </summary>
 internal static class YgoRestSiteMpHealSync
 {
-    /// <summary>Log when a round-trip completes (verbose).</summary>
-    public static bool DebugLog;
-
     /// <summary>Log one line per player before/after PostHeal sync.</summary>
     public static bool LogHpSnapshots = true;
 
@@ -54,11 +51,7 @@ internal static class YgoRestSiteMpHealSync
     internal static async Task RunRoundTripAsync(RunManager rm, string phase, Player? healTargetForLog)
     {
         if (!ShouldRunMpSync(rm, out string? skip))
-        {
-            if (DebugLog)
-                GD.Print($"[YgoDuelist][MP][RestSite][{phase}] skip: {skip}");
             return;
-        }
 
         if (LogHpSnapshots)
             LogAllPlayerHp(phase + "_before", healTargetForLog);
@@ -69,8 +62,6 @@ internal static class YgoRestSiteMpHealSync
             await rm.CombatStateSynchronizer.WaitForSync();
             if (LogHpSnapshots)
                 LogAllPlayerHp(phase + "_after", healTargetForLog);
-            if (DebugLog)
-                GD.Print($"[YgoDuelist][MP][RestSite][{phase}] CombatStateSynchronizer round-trip finished.");
         }
         catch (Exception ex)
         {

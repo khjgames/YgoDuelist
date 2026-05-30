@@ -84,7 +84,7 @@ public partial class NYgoConvulsionPreviewHolder : NHandCardHolder, IPoolable
             SetCard(cardNode);
 
             // Make sure the hitbox receives hover/click.
-            CardNode.MouseFilter = Control.MouseFilterEnum.Ignore;
+            cardNode.MouseFilter = Control.MouseFilterEnum.Ignore;
         }
         else
         {
@@ -113,7 +113,8 @@ public partial class NYgoConvulsionPreviewHolder : NHandCardHolder, IPoolable
         if (CardNode == null)
             return;
 
-        NHoverTipSet.CreateAndShow(this, CardNode.Model.HoverTips);
+        if (CardNode.Model?.HoverTips is { } hoverTips)
+            NHoverTipSet.CreateAndShow(this, hoverTips);
     }
 
     void IPoolable.OnInstantiated()

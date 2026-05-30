@@ -88,11 +88,15 @@ public sealed class Des_Feral_Imp : EffectMonsterCard, IMonsterFlipEffect
         if (maxPick <= 0)
             return;
 
-        CardPile gravePile = YgoPlayerPiles.Graveyard(player);
+        CardPile? gravePile = YgoPlayerPiles.Graveyard(player);
+        if (gravePile == null)
+            return;
         List<CardModel> BuildGraveyardTargets()
         {
-            CardPile latestGravePile = YgoPlayerPiles.Graveyard(player);
-            return YgoMpCombatOrder.CardsSnapshotOrderedForMp(latestGravePile.Cards);
+            CardPile? latestGravePile = YgoPlayerPiles.Graveyard(player);
+            return latestGravePile == null
+                ? []
+                : YgoMpCombatOrder.CardsSnapshotOrderedForMp(latestGravePile.Cards);
         }
 
         List<CardModel> inGrave = BuildGraveyardTargets();
@@ -114,7 +118,9 @@ public sealed class Des_Feral_Imp : EffectMonsterCard, IMonsterFlipEffect
         if (toShuffle.Count == 0)
             return;
 
-        CardPile drawPile = YgoPlayerPiles.Draw(player);
+        CardPile? drawPile = YgoPlayerPiles.Draw(player);
+        if (drawPile == null)
+            return;
         foreach (CardModel card in toShuffle)
             await CardPileCmd.Add(card, drawPile, CardPilePosition.Random, card, false);
 

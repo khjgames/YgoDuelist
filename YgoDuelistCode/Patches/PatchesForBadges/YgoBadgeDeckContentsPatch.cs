@@ -25,9 +25,9 @@ public static class YgoBadgeDeckContentsPatch
             return true;
 
         List<SerializableCard> nonBasic = main
-            .Where(c => SaveUtil.CardOrDeprecated(c.Id).Rarity != CardRarity.Basic)
+            .Where(c => c.Id != null && SaveUtil.CardOrDeprecated(c.Id).Rarity != CardRarity.Basic)
             .ToList();
-        __result = nonBasic.Select(c => c.Id).Distinct().Count() == nonBasic.Count;
+        __result = nonBasic.Select(c => c.Id!).Distinct().Count() == nonBasic.Count;
         return false;
     }
 
@@ -41,6 +41,8 @@ public static class YgoBadgeDeckContentsPatch
         int curseCount = 0;
         foreach (SerializableCard card in main)
         {
+            if (card.Id == null)
+                continue;
             if (SaveUtil.CardOrDeprecated(card.Id).Type == CardType.Curse)
                 curseCount++;
         }
@@ -57,10 +59,10 @@ public static class YgoBadgeDeckContentsPatch
             return true;
 
         List<SerializableCard> nonBasic = main
-            .Where(c => SaveUtil.CardOrDeprecated(c.Id).Rarity != CardRarity.Basic)
+            .Where(c => c.Id != null && SaveUtil.CardOrDeprecated(c.Id).Rarity != CardRarity.Basic)
             .ToList();
         __result = nonBasic
-            .GroupBy(c => c.Id)
+            .GroupBy(c => c.Id!)
             .Any(g => g.Count() >= 5);
         return false;
     }
@@ -69,7 +71,7 @@ public static class YgoBadgeDeckContentsPatch
     {
         main = [];
         var player = (SerializablePlayer)LocalPlayerField.GetValue(badge)!;
-        if (!YgoSerializableDeckLists.IsYgoCharacter(player.CharacterId))
+        if (player.CharacterId == null || !YgoSerializableDeckLists.IsYgoCharacter(player.CharacterId))
             return false;
 
         main = YgoSerializableDeckLists.MainDeckForCharacter(player.CharacterId, player.Deck).ToList();

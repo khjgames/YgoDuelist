@@ -67,7 +67,8 @@ public static class YgoMerchantRoomCardTraderReadyPatch
 
         btn.Pressed += () => OnCardTraderPressed(__instance, btn);
 
-        NMerchantInventory invUi = __instance.Inventory;
+        if (__instance.Inventory is not NMerchantInventory invUi)
+            return;
         invUi.Connect(
             NMerchantInventory.SignalName.InventoryClosed,
             Callable.From(() =>

@@ -12,7 +12,7 @@ internal static class YgoQuadStatePackTagTickRegistry
 
     internal static bool TryGet(NCardRarityTickbox box, out YgoQuadStatePackTagTickController? controller)
     {
-        if (Table.TryGetValue(box, out YgoQuadStatePackTagTickController c))
+        if (Table.TryGetValue(box, out YgoQuadStatePackTagTickController? c))
         {
             controller = c;
             return true;

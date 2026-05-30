@@ -90,8 +90,10 @@ public sealed class Slifer_the_Sky_Dragon : EffectMonsterCard, IYgoSliferSkyDrag
             return 0;
         if (CombatManager.Instance?.IsInProgress != true)
             return 0;
-        var hand = YgoPlayerPiles.Hand(card.Owner).Cards;
-        return hand.Count(c => c != card);
+        CardPile? handPile = YgoPlayerPiles.Hand(card.Owner);
+        if (handPile == null)
+            return 0;
+        return handPile.Cards.Count(c => c != card);
     }
 
     private static decimal GetPrintedAtk(CardModel card, Slifer_the_Sky_Dragon m) =>

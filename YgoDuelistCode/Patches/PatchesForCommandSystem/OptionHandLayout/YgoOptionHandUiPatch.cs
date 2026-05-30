@@ -99,9 +99,11 @@ public static class YgoOptionHandUiPatch
 
     private static void OnSecondHandCardsChanged(Player player, IReadOnlyList<CardModel> cards)
     {
+        if (player.RunState == null)
+            return;
         try
         {
-            GD.Print("[YgoDuelist] OnSecondHandCardsChanged ENTER player=", player?.GetHashCode() ?? 0, " cardsCount=", cards?.Count ?? 0);
+            GD.Print("[YgoDuelist] OnSecondHandCardsChanged ENTER player=", player.GetHashCode(), " cardsCount=", cards?.Count ?? 0);
             if (cards != null && cards.Count > 0)
             {
                 for (int i = 0; i < cards.Count; i++)
@@ -115,7 +117,7 @@ public static class YgoOptionHandUiPatch
                 return;
             }
 
-            Player me;
+            Player? me;
             try
             {
                 me = LocalContext.GetMe(player.RunState);
@@ -126,12 +128,14 @@ public static class YgoOptionHandUiPatch
                 return;
             }
 
-            if (me != player)
+            if (me == null || me != player)
             {
                 GD.Print("[YgoDuelist] OnSecondHandCardsChanged EXIT me != player");
                 return;
             }
 
+            if (cards == null)
+                return;
             Vector2 viewportSize = ui.GetViewportRect().Size;
             RebuildForPlayer(player, cards, ui, viewportSize);
             GD.Print("[YgoDuelist] OnSecondHandCardsChanged EXIT RebuildForPlayer done");
@@ -284,8 +288,8 @@ public static class YgoOptionHandUiPatch
             bool visible = h.Visible;
             bool cardOk = h.CardNode != null && h.CardNode.IsInsideTree();
             bool hitboxOk = h.Hitbox != null;
-            bool hitboxVisible = hitboxOk && h.Hitbox.Visible;
-            bool hitboxEnabled = hitboxOk && h.Hitbox.IsEnabled;
+            bool hitboxVisible = h.Hitbox is { Visible: true };
+            bool hitboxEnabled = h.Hitbox is { IsEnabled: true };
             bool inActiveRow = activeOpts.Contains(h) || OptionHolderIsDetachedForActivePlay(hand, h);
             bool focusStale = hand.FocusedHolder == h && !GodotObject.IsInstanceValid(h);
 

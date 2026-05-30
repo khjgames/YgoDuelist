@@ -53,7 +53,7 @@ public static class CardPileCmdFieldMonsterGraveyardEffectsPatch
                 continue;
 
             if (card is IFieldToGraveyardDeckSearchEffect && card is BaseMonsterCard bmSearch)
-                TaskHelper.RunSafely(YgoFieldToGraveyardDeckSearch.OnSentFromFieldToGraveyardAsync(player, bmSearch));
+                await TaskHelper.RunSafely(YgoFieldToGraveyardDeckSearch.OnSentFromFieldToGraveyardAsync(player, bmSearch));
         }
     }
 }

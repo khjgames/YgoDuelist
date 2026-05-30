@@ -44,7 +44,7 @@ public sealed class Burst_Breath : BaseTrapCard
         if (dragons.Count == 0)
             return;
 
-        BaseMonsterCard selectedDragon = dragons[0];
+        BaseMonsterCard? selectedDragon = dragons[0];
         if (dragons.Count > 1)
         {
             var ctx = YgoDuelist.YgoDuelistCode.Services.YgoChoiceContexts.Blocking();

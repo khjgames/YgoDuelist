@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
@@ -11,7 +12,7 @@ namespace YgoDuelist.YgoDuelistCode.Powers;
 /// Uses base-game temporary Strength-down behavior (TemporaryStrengthPower / Regent-style):
 /// apply negative Strength now, then automatically restore at end of owner's side turn.
 /// </summary>
-public sealed class YgoTemporaryStrengthLossPower : TemporaryStrengthPower
+public sealed class YgoTemporaryStrengthLossPower : TemporaryStrengthPower, ICustomModel
 {
     private AbstractModel? _origin;
 

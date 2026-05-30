@@ -162,7 +162,10 @@ public static class PlayCardActionPrePlayCancelableGridPatch
             return;
 
         NCardPlayQueue.Instance?.UpdateCardBeforeExecution(action);
-        Creature? target = await action.Player.Creature.CombatState.GetCreatureAsync(action.TargetId, 10.0);
+        Creature? playerCreature = action.Player.Creature;
+        if (playerCreature?.CombatState is not CombatState combatState)
+            return;
+        Creature? target = await combatState.GetCreatureAsync(action.TargetId, 10.0);
 
         if (card is BaseSpellCard spell)
         {
@@ -208,7 +211,7 @@ public static class PlayCardActionPrePlayCancelableGridPatch
         if (observingOtherPlayer)
         {
             GD.Print(
-                $"[YgoDuelist][MP][PrePlayGrid] observing_remote_skip_playability_checks owner={action.Player.NetId} card={card.Id?.Entry}");
+                $"[YgoDuelist][MP][PrePlayGrid] observing_remote_skip_playability_checks owner={action.Player!.NetId} card={card.Id?.Entry}");
         }
 
         if (!observingOtherPlayer && (!card.CanPlay(out _, out _) || !card.IsValidTarget(target)))

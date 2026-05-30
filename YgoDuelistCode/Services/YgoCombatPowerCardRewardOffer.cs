@@ -19,6 +19,8 @@ public static class YgoCombatPowerCardRewardOffer
 {
     public const float OfferChance = 0.15f;
 
+    private static readonly object PowerBonusRewardTag = new();
+
     private static readonly ConditionalWeakTable<CardReward, object> TaggedPowerBonusRewards = new();
 
     public static bool IsPowerCardBonusReward(CardReward reward) =>
@@ -54,7 +56,7 @@ public static class YgoCombatPowerCardRewardOffer
             static c => c is BaseYgoPowerCard);
 
         var reward = new CardReward(options, cardCount: 1, player);
-        TaggedPowerBonusRewards.Add(reward, null);
+        TaggedPowerBonusRewards.Add(reward, PowerBonusRewardTag);
         return reward;
     }
 

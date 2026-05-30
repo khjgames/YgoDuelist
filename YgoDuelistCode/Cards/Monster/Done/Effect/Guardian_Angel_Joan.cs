@@ -37,6 +37,8 @@ public sealed class Guardian_Angel_Joan : EffectMonsterCard
 
     public override async Task OnEnemyExecutedByThisAttackAsync(AttackCommand command, CombatState cs)
     {
+        if (command.Attacker == null)
+            return;
         Player? atkPlayer = command.Attacker.Player;
         if (atkPlayer?.Creature == null)
             return;

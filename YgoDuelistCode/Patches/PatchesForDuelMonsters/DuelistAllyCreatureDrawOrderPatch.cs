@@ -283,7 +283,7 @@ public static class DuelistAllyCreatureDrawOrder
         if (!GodotObject.IsInstanceValid(gui))
             return;
 
-        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState state))
+        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState? state) || state == null)
         {
             state = new HoverEnemyGuiRestoreState(gui.ZIndex, gui.ZAsRelative);
             HoverEnemyGuiRestoreStates[gui] = state;
@@ -306,7 +306,7 @@ public static class DuelistAllyCreatureDrawOrder
         if (!GodotObject.IsInstanceValid(gui))
             return;
 
-        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState state))
+        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState? state) || state == null)
             return;
 
         state.Serial = ++_hoverEnemyGuiSerial;
@@ -327,7 +327,7 @@ public static class DuelistAllyCreatureDrawOrder
         if (!GodotObject.IsInstanceValid(gui))
             return;
 
-        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState state) || state.Serial != serial)
+        if (!HoverEnemyGuiRestoreStates.TryGetValue(gui, out HoverEnemyGuiRestoreState? state) || state == null || state.Serial != serial)
             return;
 
         gui.ZIndex = state.ZIndex;
