@@ -24,7 +24,7 @@ public sealed class Hannibal_Necromancer : EffectMonsterCard, IMonsterActivatedE
     private static readonly LocString SelectPrompt = new("combat_messages", "TRIBUTE_SUMMON_SELECT");
 
     [SavedProperty]
-    public int SpellCounters { get; set; }
+    public int YgoDuelist_SpellCounters { get; set; }
 
     public Hannibal_Necromancer()
         : base(
@@ -45,23 +45,23 @@ public sealed class Hannibal_Necromancer : EffectMonsterCard, IMonsterActivatedE
 
     public override Type[] RelatedCards => new[] { typeof(Hannibal_Necromancer) };
 
-    public int CurrentSpellCounters => SpellCounters;
+    public int CurrentSpellCounters => YgoDuelist_SpellCounters;
     public int MaxSpellCounters => 3;
 
     public void AddSpellCounter(int amount = 1)
     {
         if (amount <= 0)
             return;
-        SpellCounters = Math.Min(MaxSpellCounters, SpellCounters + amount);
+        YgoDuelist_SpellCounters = Math.Min(MaxSpellCounters, YgoDuelist_SpellCounters + amount);
     }
 
     public bool TryConsumeSpellCounters(int amount)
     {
         if (amount <= 0)
             return true;
-        if (SpellCounters < amount)
+        if (YgoDuelist_SpellCounters < amount)
             return false;
-        SpellCounters -= amount;
+        YgoDuelist_SpellCounters -= amount;
         return true;
     }
 

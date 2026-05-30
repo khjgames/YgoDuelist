@@ -11,18 +11,39 @@ namespace YgoDuelist.YgoDuelistCode.Services;
 /// <summary>
 /// Save-file trailer only: never offered or played. Marks appended extra/trunk/side blocks in <see cref="SerializablePlayer.Deck"/>.
 /// Trunk/side counts use <see cref="SerializableCard.CurrentUpgradeLevel"/> / <see cref="SerializableCard.FloorAddedToDeck"/>.
-/// Extra deck, min deck, owed rare vouchers, and pack tag balance use <see cref="SavedProperties"/> keys registered in
-/// <see cref="YgoSaveTrunkSideMarkerNetPropertyNames"/> for replay / net serialization.
+/// Extra deck, min deck, owed rare vouchers, and pack tag balance use <see cref="SavedProperties"/> keys on the
+/// marker's <see cref="SerializableCard.Props"/>; the matching <see cref="SavedProperty"/> fields below register net IDs
+/// via <see cref="SavedPropertiesTypeCache"/> for replay / multiplayer serialization.
 /// Minimum deck size and <see cref="OwedRareCardVouchersProp"/> use int props when non-default.
 /// </summary>
 [Pool(typeof(YgoDuelistCardPool))]
 public sealed class YgoSaveTrunkSideMarkerCard : CustomCardModel
 {
-    public const string ExtraDeckCountProp = "ygo_extra_count";
+    public const string ExtraDeckCountProp = "YgoDuelist_ygo_extra_count";
     public const string MinDeckSizeProp = "ygo_min_deck_size";
     public const string MinDeckReceivedCardProgressProp = "ygo_min_deck_received_card_progress";
     public const string OwedRareCardVouchersProp = "ygo_owed_rare_vouchers";
     public const string PackTagBalanceProp = "ygo_pack_tag_balance";
+
+    /// <summary>Registers <see cref="ExtraDeckCountProp"/> with <see cref="SavedPropertiesTypeCache"/> (trailer uses Props.ints).</summary>
+    [SavedProperty]
+    public int YgoDuelist_ygo_extra_count { get; set; }
+
+    /// <summary>Registers <see cref="MinDeckSizeProp"/> with <see cref="SavedPropertiesTypeCache"/>.</summary>
+    [SavedProperty]
+    public int ygo_min_deck_size { get; set; }
+
+    /// <summary>Registers <see cref="MinDeckReceivedCardProgressProp"/> with <see cref="SavedPropertiesTypeCache"/>.</summary>
+    [SavedProperty]
+    public int ygo_min_deck_received_card_progress { get; set; }
+
+    /// <summary>Registers <see cref="OwedRareCardVouchersProp"/> with <see cref="SavedPropertiesTypeCache"/>.</summary>
+    [SavedProperty]
+    public int ygo_owed_rare_vouchers { get; set; }
+
+    /// <summary>Registers <see cref="PackTagBalanceProp"/> with <see cref="SavedPropertiesTypeCache"/>.</summary>
+    [SavedProperty]
+    public string ygo_pack_tag_balance { get; set; } = "";
 
     public const int MaxSerializedPileCount = 255;
 

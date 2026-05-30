@@ -39,7 +39,7 @@ public static class NRestSiteRoomYgoCampfireDeckEditCornerPatch
         {
             __instance.GetNodeOrNull<Control>(YgoDeckEditCornerUi.LayerNameRest)?.QueueFree();
             if (YgoCampfireDeckEditLayout.DebugLogCornerUi && me == null)
-                GD.PrintErr("[YgoDeckEditCorner] RestSite: LocalContext.GetMe is null — corner not shown");
+                GD.Print("[YgoDeckEditCorner] RestSite: LocalContext.GetMe is null — corner not shown");
             return;
         }
 

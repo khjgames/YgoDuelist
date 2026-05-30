@@ -5,7 +5,6 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Saves.Runs;
 using BaseLib.Utils;
 using YgoDuelist.YgoDuelistCode.Cards;
 using YgoDuelist.YgoDuelistCode.Character;
@@ -28,8 +27,6 @@ public partial class MainFile : Node
 
     public static void Initialize()
     {
-        SavedPropertiesTypeCache.InjectTypeIntoCache(typeof(YgoSaveTrunkSideMarkerNetPropertyNames));
-
         Harmony harmony = new(ModId);
 
         // PatchAll() with no assembly uses GetCallingAssembly(); the mod loader may not be YgoDuelist.dll,

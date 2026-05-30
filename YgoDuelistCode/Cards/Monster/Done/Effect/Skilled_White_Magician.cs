@@ -24,7 +24,7 @@ public sealed class Skilled_White_Magician : EffectMonsterCard, IMonsterActivate
     private static readonly LocString SelectPrompt = new("combat_messages", "FUSION_SUMMON_PICK_TARGET");
 
     [SavedProperty]
-    public int SpellCounters { get; set; }
+    public int YgoDuelist_SpellCounters { get; set; }
 
     public Skilled_White_Magician()
         : base(
@@ -45,23 +45,23 @@ public sealed class Skilled_White_Magician : EffectMonsterCard, IMonsterActivate
 
     public override Type[] RelatedCards => new[] { typeof(Skilled_White_Magician), typeof(Buster_Blader) };
 
-    public int CurrentSpellCounters => SpellCounters;
+    public int CurrentSpellCounters => YgoDuelist_SpellCounters;
     public int MaxSpellCounters => 3;
 
     public void AddSpellCounter(int amount = 1)
     {
         if (amount <= 0)
             return;
-        SpellCounters = Math.Min(MaxSpellCounters, SpellCounters + amount);
+        YgoDuelist_SpellCounters = Math.Min(MaxSpellCounters, YgoDuelist_SpellCounters + amount);
     }
 
     public bool TryConsumeSpellCounters(int amount)
     {
         if (amount <= 0)
             return true;
-        if (SpellCounters < amount)
+        if (YgoDuelist_SpellCounters < amount)
             return false;
-        SpellCounters -= amount;
+        YgoDuelist_SpellCounters -= amount;
         return true;
     }
 

@@ -182,13 +182,13 @@ public partial class NYgoCampfireDeckEditMenuScreen : Control, IOverlayScreen, I
         {
             if (c == null || !GodotObject.IsInstanceValid(c))
             {
-                GD.PrintErr($"[YgoDeckEditMenu] {tag} {label}: null");
+                GD.Print($"[YgoDeckEditMenu] {tag} {label}: null");
                 return;
             }
 
             Rect2 g = c.GetGlobalRect();
             Control? p = c.GetParent() as Control;
-            GD.PrintErr(
+            GD.Print(
                 $"[YgoDeckEditMenu] {tag} {label}: type={c.GetType().Name} visible={c.Visible} modulate={c.Modulate} " +
                 $"clip={c.ClipContents} mouse={c.MouseFilter} z={c.ZIndex} layoutMode={c.LayoutMode} " +
                 $"pos={c.Position} size={c.Size} min={c.CustomMinimumSize} globalRect={g} " +

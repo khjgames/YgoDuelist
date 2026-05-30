@@ -193,7 +193,7 @@ public abstract class BaseMonsterCard : AbstractMonsterCard
     /// Serialized on combat card copies so observers agree with the acting peer (e.g. <see cref="YgoSpearCretinGraveyard"/> GY gate).
     /// </summary>
     [SavedProperty]
-    public bool FlippedThisTurn { get; set; }
+    public bool YgoDuelist_FlippedThisTurn { get; set; }
 
     /// <summary>Duel monster attribute (EARTH/WATER/FIRE/WIND/LIGHT/DARK) from the original YgoDuelist card.</summary>
     public override DuelMonsterAttribute DuelMonsterAttribute => GetEffectiveDuelMonsterAttribute();

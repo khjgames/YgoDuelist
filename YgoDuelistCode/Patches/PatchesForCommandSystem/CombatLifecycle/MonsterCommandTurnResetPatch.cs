@@ -46,7 +46,7 @@ public static class MonsterCommandTurnResetPatch
         foreach (Creature pet in petsAtTurnStart)
         {
             if (DuelMonsterFieldRegistry.GetSourceMonster<BaseMonsterCard>(pet) is BaseMonsterCard bm)
-                bm.FlippedThisTurn = false;
+                bm.YgoDuelist_FlippedThisTurn = false;
             if (!MonsterCommandRegistry.TryGet(pet, out MonsterCommandState state))
                 continue;
             if (state.KeepCommandLockOnNextTurnStart)

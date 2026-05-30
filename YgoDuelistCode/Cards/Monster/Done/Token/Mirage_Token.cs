@@ -15,10 +15,10 @@ namespace YgoDuelist.YgoDuelistCode.Cards.Monster.Done.Token;
 public sealed class Mirage_Token : YgoTokenEffectMonster, IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect
 {
     [SavedProperty]
-    public int MirageAtk { get; set; }
+    public int YgoDuelist_MirageAtk { get; set; }
 
     [SavedProperty]
-    public int MirageDef { get; set; }
+    public int YgoDuelist_MirageDef { get; set; }
 
     /// <summary>When true, destroyed at end of turn via <see cref="IYgoOwnerBeforeTurnEndFlushFieldMonsterEffect"/>.</summary>
     [SavedProperty]
@@ -43,15 +43,15 @@ public sealed class Mirage_Token : YgoTokenEffectMonster, IYgoOwnerBeforeTurnEnd
 
     protected override (int atk, int def) GetSecondaryStats()
     {
-        int atk = MirageAtk - BaseAtk;
-        int def = MirageDef - BaseDef;
+        int atk = YgoDuelist_MirageAtk - BaseAtk;
+        int def = YgoDuelist_MirageDef - BaseDef;
         return (atk, def);
     }
 
     public void ApplyMirageStats(int atk, int def, int level)
     {
-        MirageAtk = atk;
-        MirageDef = def;
+        YgoDuelist_MirageAtk = atk;
+        YgoDuelist_MirageDef = def;
         MirageDestroyAtEndOfTurn = true;
         SetDuelMonsterLevel(level);
     }
